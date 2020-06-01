@@ -1,0 +1,450 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ entity }}{% endblock %}
+
+{% block stylesheets %}
+
+    <!-- Data Table CSS -->
+
+    <link href="{{ asset('assets/plugins/datatables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/buttons.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/fixedHeader.bootstrap.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/responsive.bootstrap.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/scroller.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/dataTables.colVis.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/dataTables.bootstrap.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/fixedColumns.dataTables.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+
+    <link rel="stylesheet" href="{{ asset('assets/leaflet/leaflet.css') }}" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ asset('assets/leaflet/leaflet-locationpicker.css') }}" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ asset('assets/leaflet/Leaflet.Coordinates-0.1.5.css') }}" rel="stylesheet"/>
+
+    <script src="{{ asset('assets/leaflet/leaflet.js') }}"></script>
+
+    <script src="{{ asset('assets/leaflet/Leaflet.Coordinates-0.1.5.min.js') }}"></script>
+    <script src="{{ asset('assets/leaflet/Leaflet.Sleep.js') }}"></script>
+
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-lg-3 col-md-4">
+
+                    <div class="text-center property-card">
+                        <div class="property-image"
+
+                             style="background: url('{{ asset('/resources/images/no-image.jpg')}}') center center / cover no-repeat;">
+                            <!--<span class="property-label label label-warning">Validated</span>-->
+                        </div>
+
+                        <div class="listingInfo">
+                            <div class="">
+                                <h4 class="m-b-5"><i>{{ entity.relation }}</i></h4>
+                                <p class="text-muted">{{ entity.relation.authority }}</p>
+                            </div>
+
+                        </div>
+                        <div class>
+
+                            {% if not entity.relation.WormsUrl %}
+                                <p>No WoRMS Link |</p>
+                            {% elseif entity.relation.WormsUrl %}
+                                <a href="{{ entity.relation.WormsUrl }}" target="_blank"
+                                   class="text-custom waves-light waves-effect mb-2" role="button">WoRMS Link</a>|
+                            {% endif %}
+                            {% if not entity.relation.itislink %}
+                                <p>No ITIS Link |</p>
+                            {% elseif entity.relation.itislink %}
+                                <a href="{{ entity.relation.itislink }}" target="_blank"
+                                   class="text-custom waves-light waves-effect mb-2" role="button">ITIS Link</a>|
+                            {% endif %}
+                            {% if not entity.relation.GBIFlink %}
+                                <p>No GBIF Link </p>
+                            {% elseif entity.relation.GBIFlink %}
+                                <a href="{{ entity.relation.GBIFlink }}" target="_blank"
+                                   class="text-custom waves-light waves-effect mb-2" role="button">GBIF Link</a>
+                            {% endif %}
+
+                        </div>
+
+                        <a href="{{ path('species_declaration') }}"
+                           class="btn-xs btn-primary waves-light waves-effect float-right">Report New Occurence</a>
+
+                        <hr/>
+                        <div class="property-content">
+                            <div class="text-left">
+                                <h5 class="text-custom m-b-10 "> Synonyms </h5>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <ul class="list-inline">
+                                            {% if entity.relation.Synonyms is empty %}
+                                                <p>No Synonyms </p>
+                                            {% elseif entity.relation.GBIFlink %}
+                                                {% for u in entity.relation.Synonyms %}
+                                                    <span class="text-dark"><b>{{ u.SpeciesSynonym }}</b></span> <span
+                                                    class="text-custom">/</span>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!--<button type="button" class="btn btn-success btn-sm w-sm waves-effect m-t-10 waves-light">Follow</button>
+                                <button type="button" class="btn btn-danger btn-sm w-sm waves-effect m-t-10 waves-light">Message</button>-->
+                                <hr/>
+                                <div class="text-left">
+                                    <h5 class="text-custom m-b-10">Taxonomy </h5>
+                                    <div class="row mb-4">
+                                        <div class="col-md-12">
+                                            <span class="text-custom">Kingdom: </span><b><span
+                                                    class="text-dark">{{ entity.relation.kingdom }}</span></b> |
+                                            <span class="text-custom">Phylum : </span><b><span
+                                                    class="text-dark">{{ entity.relation.phylum }}</span></b> |
+                                            <span class="text-custom"> Class : </span><b> <span
+                                                    class="text-dark">{{ entity.relation.class }}</span></b>
+                                            |
+                                            <span class="text-custom"> Order : </span><b><span
+                                                    class="text-dark">{{ entity.relation.ordersp }}</span></b></span>
+                                            |
+                                            <span class="text-custom"> Family : </span><b><span
+                                                    class="text-dark">{{ entity.relation.family }}</span></b>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <hr/>
+                                <div class="text-left">
+                                    <h5 class="text-custom m-b-10">Introduction </h5>
+                                    <div class="table table-responsive  table-condensed">
+                                        <table class="table">
+                                            <tbody>
+                                            <tr>
+                                                <td><p class="text-custom font-13"><strong>Ecofunctional Group:</strong>
+                                                    </p></td>
+                                                <td>
+                                                    <span class="text-dark "><b>{{ entity.Ecofunctional }}</b></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><p class="text-custom font-13"><strong>Origin:</strong></td>
+                                                <td><span class=" text-dark "><b>{{ entity.Origin }}</b></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><p class="text-custom font-13"><strong>First Mediterranean
+                                                            Sighting:</strong></td>
+                                                <td><span class="text-dark "><b>{{ entity.firstMedSighting }}</b></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><p class="text-custom font-13"><strong>First Mediterranean
+                                                            Ciatation:</strong></p></td>
+                                                <td><span class=" text-dark "><b>#</b></span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><p class="text-custom font-13">
+                                                        <strong>Establishement/Success:</strong></p></td>
+                                                <td><span class="text-dark "><b>{{ entity.Success }}</b></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><p class="text-custom font-13"><strong>Impact:</strong></p></td>
+                                                <td><span class=" text-dark "><b>{{ entity.invasive }}</b></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><p class="text-custom font-13"><strong>Pathway/Vector:</strong></p>
+                                                </td>
+                                                {% for u in entity.Pathway %}
+                                                    <td>
+                                                        <span
+                                                            class="text-dark "><b>{{ u.VectorName }} - {{ u.Certainty }}</b></span>
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    </p>
+
+                                </div>
+
+
+                                <!--<ul class="social-links list-inline m-t-30">
+                                    <li>
+                                        <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li>
+                                        <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a>
+                                    </li>
+                                    <li>
+                                        <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Skype"><i class="fa fa-skype"></i></a>
+                                    </li>
+                                </ul>-->
+                            </div>
+
+                        </div>
+                    </div> <!-- end card-box -->
+
+                </div> <!-- end col -->
+
+                <div class="col-md-8 col-lg-9">
+                    <div class="property-card">
+                        <div class="clearfix">
+                            <div class="property-content">
+                                <h4 class="text-custom m-b-10 ">National Occurences </h4>
+                                <table id="datatable-buttons"
+                                       class="table table-striped table-hover table-responsive table-bordered table-condensed nowrap"
+                                       style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th>Country</th>
+                                        <th>EcAp/MSFD Subregion</th>
+                                        <th> Seas</th>
+                                        <th> Country Sighting</th>
+                                        <th> First Occurence </th>
+                                        <th> Species Status</th>
+                                        <th>Establishement</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in entity.Distribution %}
+                                        <tr>
+                                            <td>{{ item.country }}</td>
+                                            <td>{{ item.ecap }}</td>
+                                            <td>{{ item.regionalSea }}</td>
+                                            <td>{{ item.AreaSighting }}</td>
+                                            <td>{{ item.fisrtSighting }}</td>
+                                            <td>{{ item.nationalstatus }}</td>
+                                            <td>{{ item.areaSuccess }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property-card">
+                        <div class="property-content">
+                            <div id="container" style="height: 600px">
+                                <div class="loading">
+                                    <i class="icon-spinner icon-spin icon-large"></i>
+                                    Loading data from MAMIAS Database...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="property-card">
+                <div class="property-content">
+                    <h4 class="text-custom m-b-10 "> Georefrenced Occurences </h4>
+                    <div class="clearfix">
+                        {% if entity.Geo is empty %}
+                          No Georefrenced Occurences for this species
+                        {% else %}
+                                <div id="map"
+                                     style="height: 500px; border-style: solid; border-color:#d9e3e9"></div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div
+
+{% endblock %}
+{% block javascripts %}
+    <!-- Required datatable js -->
+    <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.bootstrap.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/buttons.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/jszip.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.fixedHeader.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.keyTable.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/responsive.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.scroller.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.colVis.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.fixedColumns.min.js') }}"></script>
+    <script src="{{ asset('assets/leaflet/leaflet-locationpicker.js') }}"></script>
+    <script src="{{ asset('assets/highcharts/highmaps.src.js') }}"></script>
+    <script src="{{ asset('assets/highcharts/modules/data.src.js') }}"></script>
+    {% if is_granted('ROLE_REGSITREDUSER') %}
+        <script src="{{ asset('assets/highcharts/modules/exporting.src.js') }}"></script>
+        <script src="{{ asset('assets/highcharts/modules/offline-exporting.src.js') }}"></script>
+    {% endif %}
+    <script src="{{ asset('assets/highcharts/modules/series-label.src.js') }}"></script>
+    <script src="{{ asset('assets/highcharts/modules/marker-clusters.js') }}"></script>
+    <script src="{{ asset('assets/highcharts/modules/coloraxis.js') }}"></script>
+
+    <script src="{{ asset('assets/highcharts/modules/no-data-to-display.src.js') }}"></script>
+    <script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //Buttons examples
+            var table = $('#datatable-buttons').DataTable({
+                {% if is_granted('ROLE_REGSITREDUSER') %}
+                dom: 'Bltip',
+                //lengthChange: true,
+                "searching": false,
+                "responsive": true,
+                "pageLength": 10,
+                "ordering": true,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                buttons: {
+                    buttons: [
+                        ,
+                        { extend: 'excel', className: 'btn-primary waves-effect w-md waves-light' }
+                    ]
+                },
+                {% else %}
+
+                "dom": 'ltip',
+                "responsive": true,
+                "autoWidth": false,
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 10,
+                "ordering": true,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+
+                {% endif %}
+            });
+            
+
+            // Responsive Datatable
+            $('#responsive-datatable').DataTable();
+
+            table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+        })
+    </script>
+    <script>
+        var map = L.map('map', {
+            sleep: true,
+            sleepTime: 750,
+            wakeTime: 750,
+            sleepNote: true,
+            hoverToWake: true
+        }).setView([39, 18], 5);
+        map.options.minZoom = 4;
+        map.options.maxZoom = 14;
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
+                 'contributors &copy; <a href="http://www.rac-spa.org/">SPA/RAC</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+            //L.control.coordinates().addTo(map);
+            L.control.coordinates({
+                decimals: 2,
+                labelTemplateLat: "Latitude: {y}",
+                labelTemplateLng: "Longitude: {x}"
+            }).addTo(map);
+             {% for item in entity.Geo %}
+
+                 {% if item.Status == "Validated" %}
+                     var customPopup = "<div class=\"table-responsive\"><table class=\"table  m-b-0\"><tbody>\
+                            <tr><th  scope=\"row\"><b><span class=\"text-primary\">Country</span></b></th>\
+                            <td nowrap ><span><i>{{ item.Country }}</i></span></td></tr>\
+                            <tr><th nowrap  scope=\"row\"><b><span class=\"text-primary\">Reporting date:</span></b>\
+                            </th><td ><span> {{ item.DateOccurence |date("d/m/Y") }}</span></td></tr>\
+                            <tr><th nowrap  scope=\"row\"><b><span class=\"text-primary\">Observer:</span></b>\
+                             </th><td ><span> {{ item.user.firstname  }} {{ item.user.Lastname  }}</span></td></tr>\
+                            </tbody></table></div>";
+                    var marker = new L.marker([{{ item.Location.longitude }},{{ item.Location.latitude }}],{opacity: 1}).bindPopup(customPopup).addTo(map);
+                    marker.bindPopup(customPopup);
+                    {% else %}
+                     var marker = new L.marker([{{ item.Location.longitude }},{{ item.Location.latitude }}],{opacity: 0}).addTo(map);
+                     {% endif %}
+                {% endfor %}
+  </script>
+
+    <script>
+
+       var data = {{ NbperCountry | raw }}
+
+       var newDatas = [];
+       for (var i = 0; i < data.length; i++) {
+           newDatas[i] = [data[i]['country'], data[i]['count']];
+
+       }
+
+    Highcharts.getJSON('{{ asset('assets/geojson/medcountries2020.geojson') }}', function (geojson) {
+
+            // Initiate the chart
+            Highcharts.mapChart('container', {
+                chart: {
+                    map: geojson
+                },
+
+                title: {
+                    text: 'Occurences of  <i>{{ entity.relation }} </i> by Country',
+                    style: {
+                        color: '#03568C',
+                        font: "Roboto",
+                        fontSize: '18px',
+                        fontWeight: 'bold'
+                    }
+                },
+
+                mapNavigation: {
+                    enabled: true,
+                    buttonOptions: {
+                        verticalAlign: 'bottom'
+                    }
+                },lang: {
+                    noData: 'No occurence is availabe'
+                },
+
+                colorAxis: {
+                    tickPixelInterval: 1000
+
+                }, credits: {
+                    text: 'www.mamias.org',
+                    href: 'http://www.mamias.org',
+                    position: {
+                        align: 'right',
+                        x: 1
+                    }
+                },
+                series: [{
+                    data: newDatas,
+                    keys: ['NAME', 'value'],
+                    joinBy: 'NAME',
+                    name: 'Occurences of  {{ entity.relation }}',
+
+                    states: {
+                        hover: {
+                            color: '#0099d4'
+                        }
+                    },
+
+                }]
+            });
+        });
+
+    </script>
+{% endblock %}

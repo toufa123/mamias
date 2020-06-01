@@ -1,0 +1,380 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Search NIS Species{% endblock %}
+
+{% block stylesheets %}
+
+    <!-- Data Table CSS -->
+
+    <link href="{{ asset('assets/plugins/datatables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/buttons.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/fixedHeader.bootstrap.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/responsive.bootstrap.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/scroller.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/dataTables.colVis.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/dataTables.bootstrap.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/datatables/fixedColumns.dataTables.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+
+    <!-- select2 -->
+
+    <link href="{{ asset('assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/multiselect/css/multi-select.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/select2/css/select2.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ asset('assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/plugins/switchery/switchery.min.css') }}"
+          rel="stylesheet" type="text/css"/>
+
+{% endblock %}
+{% block body %}
+
+    <div class="row text-center">
+        <div class="col-sm-12">
+            <h3 class="m-t-20">Search MAMIAS for NIS </h3>
+            <div class="border center-block m-b-20"></div>
+        </div>
+    </div>
+    <!-- end row -->
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="property-card">
+                <div class="property-content mb">
+                    {{ form_start(form) }}
+                    {{ form_errors(form) }}
+                    <div class="row ">
+                        <div class="col-sm">
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_errors(form.speciesName ) }}
+                                    <span class="border"></span>
+                                    {{ form_widget(form.speciesName,{'attr': {'class': 'form-control select2' }}) }}
+                                    </span>
+                                    {{ form_errors(form.ecofunctional) }}
+                                    {{ form_widget(form.ecofunctional,{'attr': {'class': 'form-control select2'}}) }}
+                                    <br><br>
+                                    {{ form_errors(form.origin) }}
+                                    {{ form_widget(form.origin,{'attr': {'class': 'form-control  select2'}}) }}
+
+
+                                    <div class="checkbox checkbox-inline checkbox-primary ">
+                                        <input type="checkbox" class="custom-control-input" id="show">
+                                        <label for="show" class="custom-control-label"> More searching Criteria
+                                            (Advanced Searching) </label>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="search" style="display: none">
+                        <div class="col-sm">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {{ form_errors(form.med1stSighting) }}
+                                    {{ form_widget(form.med1stSighting,{'attr': {'class': 'form-control select2'}}) }}
+                                    <br><br>
+                                    {{ form_errors(form.MedsuccessType) }}
+                                    {{ form_widget(form.MedsuccessType,{'attr': {'class': 'form-control select2'}}) }}
+                                    <br><br>
+                                    {{ form_errors(form.Medstatus) }}
+                                    {{ form_widget(form.Medstatus,{'attr': {'class': 'form-control select2'}}) }}
+                                </div>
+                                <div class="col-md-4">
+
+
+                                    <br><br>
+
+                                    <br><br>
+
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form_errors(form.MedvectorName) }}
+                                    {{ form_widget(form.MedvectorName,{'attr': {'class': 'form-control  select2'}}) }}
+                                    <br><br>
+                                    {{ form_errors(form.invasive) }}
+                                    {{ form_widget(form.invasive, {'attr': {'class': 'form-control select2'}}) }}
+                                    <br><br>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {{ form_errors(form.country) }}
+                                    {{ form_widget(form.country, {'attr': {'class': 'form-control  select2'}}) }}
+                                    <br><br>
+                                    {{ form_errors(form.med1stSighting) }}
+                                    {{ form_widget(form.med1stSighting,{'attr': {'class': 'form-control select2'}}) }}
+
+                                    <br><br>
+                                    {{ form_errors(form.Ecap) }}
+                                    {{ form_widget(form.Ecap, {'attr': {'class': 'form-control  select2'}}) }}
+                                </div>
+                                <div class="col-md-4">
+
+
+                                    <br><br>
+
+                                    <br><br>
+
+                                </div>
+                                <div class="col-md-4">
+
+                                    <br><br>
+
+                                    <br><br>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-row text-right">
+        <div class="form-group ">
+            <button type="submit" value="Search" class="btn btn-primary waves-effect waves-light"><i
+                    class="mdi mdi-magnify m-r-5"></i>Search
+            </button>
+            <!--<button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light"><i
+                    class="mdi mdi-refresh m-r-5"></i>Reset
+            </button>-->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="property-card table-responsive">
+                <div class="property-content">
+
+                    <table id="datatable-buttons"
+                           class="table table-striped table-bordered table-hover table-condensed nowrap "
+                           style="border:solid 1px #0179C2;border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                        <tr>
+                            <th class="text-left">ID</th>
+                            <th class="text-left">Species Name</th>
+                            <th class="text-center">EcoFunctional Group</th>
+                            <th class="text-center">Origin</th>
+                            <th class="text-center">Species Status</th>
+                            <th class="text-center">Establishment</th>
+                            <th class="text-center">Med. Fisrt Sighting</th>
+                            <!--<th class="text-center">Impact</th>-->
+                            <th class="text-center">Action</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in species %}
+                            <tr>
+                                <td class="text-left">{{ item.id }}</td>
+                                <td class="text-left"><i>{{ item.relation }}</i></td>
+                                <td class="text-center">{{ item.Ecofunctional }}</td>
+                                <td class="text-center">{{ item.Origin }}</td>
+                                {% if not item.status %}
+                                    <td class="text-center"><p>Unknown</p></td>
+                                {% elseif item.status %}
+                                    <td class="text-center">{{ item.status }}</td>
+                                {% endif %}
+
+                                <td class="text-center">{{ item.Success }}</td>
+                                {% if not item.firstMedSighting %}
+                                    <td class="text-center"><p>Unknown</p></td>
+                                {% elseif item.firstMedSighting %}
+                                    <td class="text-center">{{ item.firstMedSighting }}</td>
+                                {% endif %}
+                                <!--<td class="text-center">{{ item.invasive }}</td>-->
+                                <td class="text-center"><a
+                                        class="btn1 btn-primary waves-effect w-xs waves-light text-primary"
+                                        href="{{ path('species_fiche', {'id':item.id}) }}"
+                                        target="_blank"><i>View</i></a></td>
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+{% block javascripts %}
+    <!-- Data Table JavaScript -->
+    <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.bootstrap.js') }}"></script>
+
+    <script src="{{ asset('assets/plugins/datatables/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/buttons.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/jszip.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.fixedHeader.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.keyTable.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/responsive.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.scroller.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.colVis.js') }}"></script>
+    <script src="{{ asset('assets/plugins/datatables/dataTables.fixedColumns.min.js') }}"></script>
+
+    <!-- Select2 JavaScript -->
+    <script src="{{ asset('assets/plugins/bootstrap-tagsinput/js/bootstrap-tagsinput.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/multiselect/js/jquery.multi-select.js') }}"></script>
+    <script src="{{ asset('assets/plugins/jquery-quicksearch/jquery.quicksearch.js') }}"></script>
+    <script src="{{ asset('assets/plugins/select2/js/select2.full.js') }}"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-select/js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/switchery/switchery.min.js') }}"></script>
+    <script type="text/javascript">
+        "use strict";
+
+        jQuery(document).ready(function () {
+
+            //Buttons examples
+            var currentDate = new Date();
+            var day = currentDate.getDate();
+            var month = currentDate.getMonth() + 1;
+            var year = currentDate.getFullYear();
+            var d = day + "-" + month + "-" + year;
+
+            var table = $('#datatable-buttons').DataTable({
+                {% if is_granted('ROLE_REGSITREDUSER') %}
+                dom: 'Bltip',
+                "responsive": true,
+                "autoWidth": false,
+                "lengthChange": true,
+                //"processing": true,
+                //"serverSide": true,
+                //"ajax":"{{ path('search') }}",
+                "searching": false,
+
+                "pageLength": 10,
+                "ordering": true,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                "buttons": [
+                    {
+                        extend: 'excelHtml5',
+                        //extension: 'xlsx',
+                        className: 'btn-primary waves-effect w-md waves-light',
+                        title: 'MAMIAS_Export_' + d,
+                        download: 'open',
+                        header: 'Marine Mediterranean Invasive Alien Species (MAMIAS) Database',
+                        footer: 'http://www.mamias.org accessed ' + d,
+                        sheetName: 'NIS LIST',
+                    },
+                    //{
+                    //    extend: 'pdfHtml5',
+                    //    title: 'MAMIAS_Export_' + d,
+                    //    orientation: 'landscape',
+                    //    header: true,
+                    //    footer: true,
+                    //    messageTop: 'Marine Mediterranean Invasive Alien Species (MAMIAS) Database',
+                    //    messageBottom: 'http://www.mamias.org accessed  ' + d,
+                    //    pageSize: 'A4',
+                    //download: 'open',
+                    //    customize: function (doc) {
+                    //        doc.content[1].margin = [100, 0, 100, 0]; //left, top, right, bottom
+                    //        doc.pageMargins = [15, 30, 15, 30];
+                    //        doc.defaultStyle.fontSize = 10;
+                    //        doc.styles.tableHeader.fontSize = 10;
+                    //        doc.styles.title.fontSize = 10;
+                    // Remove spaces around page title
+                    //        doc.content[0].text = doc.content[0].text.trim();
+                    // Create a footer
+                    //        doc['footer'] = (function (page, pages) {
+                    //            return {
+                    //                columns: [
+                    //                    'http://www.mamias.org accessed ' + d,
+                    //                    {
+                    // This is the right column
+                    //                        alignment: 'right',
+                    //                        text: ['page ', {text: page.toString()}, ' of ', {text: pages.toString()}]
+                    //                    }
+                    //                ],
+                    //                margin: [10, 10]
+                    //            }
+                    //        });
+                    // Styling the table: create style object
+                    //        var objLayout = {};
+                    // Horizontal line thickness
+                    //        objLayout['hLineWidth'] = function (i) {
+                    //            return .5;
+                    //        };
+                    // Vertikal line thickness
+                    //        objLayout['vLineWidth'] = function (i) {
+                    //            return .5;
+                    //        };
+                    // Horizontal line color
+                    //        objLayout['hLineColor'] = function (i) {
+                    //            return '#aaa';
+                    //        };
+                    // Vertical line color
+                    //        objLayout['vLineColor'] = function (i) {
+                    //            return '#aaa';
+                    //        };
+                    // Left padding of the cell
+                    //        objLayout['paddingLeft'] = function (i) {
+                    //            return 4;
+                    //        };
+                    // Right padding of the cell
+                    //        objLayout['paddingRight'] = function (i) {
+                    //            return 4;
+                    //        };
+                    // Inject the object in the document
+                    //        doc.content[1].layout = objLayout;
+
+                    //    }
+
+                    //},
+                ],
+                {% else %}
+
+                "dom": 'ltip',
+                "responsive": true,
+                "autoWidth": false,
+                //"processing": true,
+                //"serverSide": true,
+                //"ajax":"{{ path('search') }}",
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 10,
+                "ordering": true,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+
+                {% endif %}
+            });
+
+            // Select2
+            $(".select2").select2();
+            $("#show").click(function () {
+                $("#search").slideToggle();
+            });
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+{% block field %}
+    <div>
+        {% if object.imageName != null %}
+
+            <a href="#"
+               class="btn btn-sm btn-default edit_link"
+               data-toggle="modal"
+               data-target="#Picture-{{ object.id }}">
+                <i class="fa fa-image" aria-hidden="true"></i>
+                Picture Link </a>
+
+
+        {% else %}
+            <span>No picture</span>
+        {% endif %}
+
+        <div class="modal fade" id="Picture-{{ object.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="Picture">{{ object.mamias }}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <img class='centre'
+                             src="{{ asset('/resources/upload/GeoOccurence/images/' ~ object.imageName ) }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+

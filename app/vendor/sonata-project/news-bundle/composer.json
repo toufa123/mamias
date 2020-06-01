@@ -1,0 +1,97 @@
+{
+    "name": "sonata-project/news-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony SonataNewsBundle",
+    "keywords": [
+        "blog",
+        "sonata",
+        "news",
+        "post"
+    ],
+    "homepage": "https://sonata-project.org/bundles/news",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thomas Rabaix",
+            "email": "thomas.rabaix@sonata-project.org",
+            "homepage": "https://sonata-project.org"
+        },
+        {
+            "name": "Sonata Community",
+            "homepage": "https://github.com/sonata-project/SonataNewsBundle/contributors"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "sonata-project/classification-bundle": "^3.6",
+        "sonata-project/core-bundle": "^3.13.7",
+        "sonata-project/datagrid-bundle": "^2.3",
+        "sonata-project/doctrine-extensions": "^1.5.1",
+        "sonata-project/easy-extends-bundle": "^2.5",
+        "sonata-project/formatter-bundle": "^3.4 || ^4.0",
+        "sonata-project/intl-bundle": "^2.4",
+        "sonata-project/media-bundle": "^3.10",
+        "swiftmailer/swiftmailer": "^4.3 || ^5.0 || ^6.0",
+        "symfony/config": "^3.4 || ^4.2",
+        "symfony/console": "^3.4 || ^4.2",
+        "symfony/dependency-injection": "^3.4 || ^4.2",
+        "symfony/event-dispatcher": "^3.4 || ^4.0",
+        "symfony/form": "^3.4 || ^4.2",
+        "symfony/framework-bundle": "^3.4 || ^4.2",
+        "symfony/http-foundation": "^3.4.35 || ^4.2.12",
+        "symfony/http-kernel": "^3.4 || ^4.2",
+        "symfony/options-resolver": "^3.4 || ^4.2",
+        "symfony/routing": "^3.4 || ^4.2",
+        "symfony/security-core": "^3.4 || ^4.2",
+        "symfony/templating": "^3.4 || ^4.2",
+        "twig/twig": "^1.35 || ^2.4"
+    },
+    "conflict": {
+        "doctrine/dbal": "<2.6.0",
+        "friendsofsymfony/rest-bundle": "<1.8 || >=3.0",
+        "jms/serializer": "<0.13",
+        "nelmio/api-doc-bundle": "<2.0 || >=3.0",
+        "sonata-project/admin-bundle": "<3.59",
+        "sonata-project/block-bundle": "<3.18",
+        "sonata-project/doctrine-orm-admin-bundle": "<3.0 || >=4.0",
+        "sonata-project/notification-bundle": "<3.0 || >=4.0",
+        "sonata-project/seo-bundle": "<2.0 || >=3.0"
+    },
+    "require-dev": {
+        "doctrine/orm": "^2.4",
+        "friendsofsymfony/rest-bundle": "^1.8 || ^2.1",
+        "jms/serializer-bundle": "^1.0 || ^2.0",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.1",
+        "nelmio/api-doc-bundle": "^2.4",
+        "sonata-project/admin-bundle": "^3.59",
+        "sonata-project/block-bundle": "^3.18",
+        "sonata-project/doctrine-orm-admin-bundle": "^3.4",
+        "sonata-project/notification-bundle": "^3.3",
+        "sonata-project/seo-bundle": "^2.5",
+        "symfony/phpunit-bridge": "^5.0"
+    },
+    "suggest": {
+        "nelmio/api-doc-bundle": "If you want to use the API",
+        "sonata-project/block-bundle": "For rendering block lists.",
+        "sonata-project/doctrine-orm-admin-bundle": "^2.2",
+        "sonata-project/notification-bundle": "^2.2"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.x-dev"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Sonata\\NewsBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sonata\\NewsBundle\\Tests\\": "tests/"
+        }
+    }
+}
