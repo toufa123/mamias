@@ -7,8 +7,8 @@
 Checkout this project and create and run the Docker containers using [docker-compose](https://github.com/docker/compose):
 
 ```bash
-git clone https://github.com/webdevops/php-docker-boilerplate.git projectname
-cd projectname
+git clone https://github.com/toufa123/mamias.git mamias
+cd mamias
 
 # copy favorite docker-compose.*.yml to docker-compose.yml
 cp docker-compose.development.yml docker-compose.yml

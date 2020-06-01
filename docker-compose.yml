@@ -4,7 +4,7 @@ services:
   # PHP application Docker container
   #######################################
   app:
-    container_name: "app"
+    container_name: "mamias_app"
     restart: always
     build:
       context: .
@@ -57,7 +57,7 @@ services:
   # PostgreSQL server
   #######################################
   postgres:
-    container_name: "database"
+    container_name: "mamias_database"
     restart: always
     build:
       context: docker/postgres/
@@ -186,7 +186,7 @@ services:
   #######################################
   portainer:
     image: portainer/portainer
-    container_name: "MAMIAS_portainer"
+    container_name: "mamias_portainer"
     restart: always
     ports:
       - "9001:80"
@@ -199,8 +199,8 @@ services:
   # Traefik
   #######################################
   traefik:
-    image: traefik:v2.2
-    container_name: "MAMIAS_traefik"
+    image: traefik:latest
+    container_name: "mamias_traefik"
     restart: always
     command: --api.insecure=true --providers.docker
     ports:
