@@ -128,19 +128,10 @@
                     $formMapper
                         ->add('country', null, ['label' => 'Country1', 'disabled' => false])
                         ->add('Location', null, ['label' => 'Coordinates', 'disabled' => false, 'required' => true])
-                        ->add(
-                            'date_occurence',
-                            DatePickerType::class,
+                        ->add('date_occurence', DatePickerType::class,
                             ['label' => 'Date of the Occurence', 'disabled' => false],
-                            [
-                                'format' => 'yyyy',
-                                'dp_use_current' => true,
-                                'dp_show_today' => true,
-                                'dp_collapse' => true,
-                                'dp_view_mode' => 'decades',
-                                'dp_min_view_mode' => 'years',
-                            ]
-                        )
+                            ['format' => 'yyyy', 'dp_use_current' => true, 'dp_show_today' => true,
+                                'dp_collapse' => true, 'dp_view_mode' => 'decades', 'dp_min_view_mode' => 'years'])
                         //->add('note_occurence', null, array('label' => 'Note'))
                         // ->add ('createdAt', DatePickerType::class,['label' => 'Created At', 'disabled' => false],
                         //     ['format' => 'd/M/yy','dp_side_by_side' => true,'dp_use_current' => true,'dp_collapse' => true,
@@ -160,8 +151,7 @@
                                 'download_uri' => true,
                                 'image_uri' => true,
                                 'disabled' => true,
-                            ]
-                        )
+                            ])
                         ->add('user', null, ['label' => 'declared By', 'disabled' => false, 'data' => $user])
                         ->add(
                             'status',
@@ -291,15 +281,15 @@
                     
                     ->add(
                         'imageFile',
-                        VichImageType::class,
-                        [
+                        VichImageType::class, [
                             'label' => 'Picture',
-                            'required' => false,
-                            'download_link' => true,
-                            'allow_delete' => true,
-                            'download_uri' => true,
+                            //    'required' => false,
+                            'download_link' => false,
+                            'allow_delete' => false,
+                            'download_uri' => false,
                             'image_uri' => true,
                             'disabled' => true,
+    
                         ]
                     )
                     ->add('user', null, ['label' => 'declared By', 'disabled' => true, 'data' => $user])

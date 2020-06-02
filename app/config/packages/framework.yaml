@@ -26,7 +26,6 @@ framework:
                 - 'SonataMediaBundle:Form:media_widgets.html.twig'
                 - 'SonataCoreBundle:Form:datepicker.html.twig'
                 - '@SonataMedia/Form/media_widgets.html.twig'
-                - '@VichUploader/Form/fields.html.twig'
 
     #eu_cookie_law:
     #    response_injection: true # default true

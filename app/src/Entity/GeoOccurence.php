@@ -122,6 +122,7 @@
          * @var string
          */
         private $imageName;
+    
         /**
          * @ORM\ManyToOne(targetEntity="App\Entity\Mamias", inversedBy="Geo")
          */
@@ -211,7 +212,7 @@
         
         public function __toString()
         {
-            return (string)$this->getMamias();   // TODO: Implement __toString() method.
+            return (string)$this->getMamias()->getRelation();   // TODO: Implement __toString() method.
         }
         
         public function getMamias(): ?Mamias
@@ -393,4 +394,6 @@
             
             return $this;
         }
+    
+    
     }

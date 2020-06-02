@@ -149,6 +149,7 @@
                 ->end();
             
             $subject = $this->getSubject();
+            //dump($subject);die;
             
             if (null === $this->getSubject()->getId()) {
                 $formMapper
@@ -175,6 +176,9 @@
                     ->end()
                     ->with('Pathways')
                     ->add('vectors', null, ['label' => 'Pathway/Vectors'])
+                    ->add('Pathway', CollectionType::class,
+                        ['label' => 'Pathway CBD 2014', 'type_options' => ['delete' => true],
+                        ], ['by_reference' => true, 'edit' => 'inline', 'inline' => 'table', 'required' => true])
                     ->end()
                     ->with('Admin')
                     ->add('createdAt', DatePickerType::class, ['label' => 'Created At'],
@@ -189,17 +193,17 @@
                     //      ->add('Lit', CollectionType::class, array('label' => 'Literature ',
                     //        'type_options' => array('delete' => true)), array('by_reference' => true,'edit' => 'inline','inline' => 'table','required' => true,))
                     //->end()
-                    
+        
                     ->tab('Country-level occurrences')
                     ->with('Occurrences')
                     ->add('Distribution', CollectionType::class, ['label' => 'Country Level Occurence of ',
-                        'type_options' => ['delete' => true, 'entry_type' => CountryDistribution::class],], ['by_reference' => true, 'edit' => 'inline',
+                        'type_options' => ['delete' => true]], ['by_reference' => true, 'edit' => 'inline',
                         'inline' => 'table', 'required' => true])
                     ->end()
                     ->end()
                     ->tab('Geo-referenced records')
                     ->with('Geo Occurence')
-                    ->add('Geo', CollectionType::class, ['label' => 'Geo-Occurence of ', 'type_options' => ['delete' => true, 'entry_type' => GeoOccurence::class],
+                    ->add('Geo', CollectionType::class, ['label' => 'Geo-Occurence of ', 'type_options' => ['delete' => true],
                     ], ['by_reference' => true, 'edit' => 'inline', 'inline' => 'table', 'required' => false])
                     ->end()
                     ->end(); //->add('id')

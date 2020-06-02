@@ -443,21 +443,22 @@
             
             return $this;
         }
-        
-        public function __toString()
-        {
-            return (string)$this->getRelation();   // TODO: Implement __toString() method.
-        }
-        
+    
+    
         public function getRelation(): ?Catalogue
         {
             return $this->relation;
         }
-        
+    
         public function setRelation(?Catalogue $relation): self
         {
             $this->relation = $relation;
-            
+        
             return $this;
+        }
+    
+        public function __toString()
+        {
+            return (string)$this->getRelation();   // TODO: Implement __toString() method.
         }
     }
