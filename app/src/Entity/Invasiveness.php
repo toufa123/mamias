@@ -26,21 +26,21 @@
          * @ORM\Column(type="text", nullable=true)
          */
         private $def;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getDef(): ?string
         {
             return $this->def;
         }
-        
+    
         public function setDef(?string $def): self
         {
             $this->def = $def;
-            
+    
             return $this;
         }
         
@@ -48,16 +48,16 @@
         {
             return (string)$this->getInvasivness(); // TODO: Implement __toString() method.
         }
-        
+    
         public function getInvasivness(): ?string
         {
             return $this->invasivness;
         }
-        
+    
         public function setInvasivness(?string $invasivness): self
         {
             $this->invasivness = $invasivness;
-            
+    
             return $this;
         }
     }

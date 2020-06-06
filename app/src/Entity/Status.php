@@ -30,21 +30,21 @@
          * @ORM\Column(type="string", length=128, nullable=true, name="def")
          */
         private $def;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getDef(): ?string
         {
             return $this->def;
         }
-        
+    
         public function setDef(?string $def): self
         {
             $this->def = $def;
-            
+    
             return $this;
         }
         
@@ -52,16 +52,16 @@
         {
             return (string)$this->getStatus();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getStatus(): ?string
         {
             return $this->status;
         }
-        
+    
         public function setStatus(?string $status): self
         {
             $this->status = $status;
-            
+    
             return $this;
         }
     }

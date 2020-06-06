@@ -25,13 +25,12 @@
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
             $builder
-                //General
                 ->add(
                     'speciesName',
                     EntityType::class,
                     [
                         'class' => Mamias::class,
-                        'placeholder' => 'Select your Species Name',
+                        'placeholder' => 'Select your Species',
                         'choice_label' => 'relation',
                         'choice_value' => 'id',
                         'required' => false
@@ -42,7 +41,7 @@
                     EntityType::class,
                     [
                         'class' => Ecofunctional::class,
-                        'placeholder' => 'Select a EcoFunctional Group',
+                        'placeholder' => 'Select an EcoFunctional Group',
                         'choice_value' => 'id',
                         'choice_label' => 'ecofunctional',
                         'attr' => ['class' => 'select2'],
@@ -60,19 +59,18 @@
                         'required' => false,
                     ]
                 )
-                //Med
                 ->add(
                     'med1stSighting',
                     ChoiceType::class,
                     [
                         'choices' => $this->getYears(1750),
-                        'placeholder' => 'Select Year of First Mediterranean Sighting',
+                        'placeholder' => 'Select Year of First Sighting',
                         'attr' => ['class' => 'select2'],
                         'required' => false
                     ]
                 )
                 ->add(
-                    'MedsuccessType',
+                    'successType',
                     EntityType::class,
                     [
                         'class' => SuccessType::class,
@@ -83,50 +81,11 @@
                         'required' => false,
                     ]
                 )
-                ->add(
-                    'Medinvasive',
-                    EntityType::class,
-                    [
-                        'class' => Invasiveness::class,
-                        'placeholder' => 'Select Impact',
-                        'choice_label' => 'invasivness',
-                        'choice_value' => 'id',
-                        'attr' => ['class' => 'select2'],
-                        'required' => false
-                    ]
-                )
-                ->add(
-                    'Medstatus',
-                    EntityType::class,
-                    [
-                        'class' => Status::class,
-                        'placeholder' => 'Select Species Status',
-                        'choice_label' => 'status',
-                        'choice_value' => 'id',
-                        'attr' => ['class' => 'select2'],
-                        'required' => false
-                    ]
-                )
-                ->add(
-                    'MedvectorName',
-                    EntityType::class,
-                    [
-                        'class' => VectorName::class,
-                        'choice_label' => 'vectorName',
-                        'expanded' => false,
-                        'required' => false,
-                        'placeholder' => 'Select A Pathway',
-                        'attr' => ['class' => 'select2'],
-                        'multiple' => false,
-                        //'attr' => [
-                        //    'class' => 'select2 select2-multiple',
-                        //    'multiple' => 'multiple',
-                        //    'multiple',
-                        //    'data-placeholder' => 'Select A Vector/Pathway'
-                        // ],
-                    ]
-                )
-                //country
+                //->add('invasive', ChoiceType::class, ['placeholder' => 'Select Invasive Caracteristics', 'attr' => ['class' => 'chzn-select'], 'choices' => [
+    
+                //'Yes' => 1,
+                //  'No' => 0,
+                //],])
                 ->add(
                     'country',
                     EntityType::class,
@@ -135,16 +94,6 @@
                         'placeholder' => 'Select A country',
                         'choice_label' => 'country',
                         'choice_value' => 'id',
-                        'attr' => ['class' => 'select2'],
-                        'required' => false
-                    ]
-                )
-                ->add(
-                    'country1stSighting',
-                    ChoiceType::class,
-                    [
-                        'choices' => $this->getYears(1750),
-                        'placeholder' => 'Select Year of First Mediterranean Sighting',
                         'attr' => ['class' => 'select2'],
                         'required' => false
                     ]
@@ -174,19 +123,19 @@
                     ]
                 )
                 ->add(
-                    'countrysuccessType',
+                    'invasive',
                     EntityType::class,
                     [
-                        'class' => SuccessType::class,
-                        'placeholder' => 'Select Establishment Type',
-                        'choice_label' => 'successType',
+                        'class' => Invasiveness::class,
+                        'placeholder' => 'Select Impact',
+                        'choice_label' => 'invasivness',
                         'choice_value' => 'id',
                         'attr' => ['class' => 'select2'],
-                        'required' => false,
+                        'required' => false
                     ]
                 )
                 ->add(
-                    'countrystatus',
+                    'status',
                     EntityType::class,
                     [
                         'class' => Status::class,
@@ -198,7 +147,7 @@
                     ]
                 )
                 ->add(
-                    'countryvectorName',
+                    'vectorName',
                     EntityType::class,
                     [
                         'class' => VectorName::class,

@@ -37,7 +37,11 @@ sonata_admin:
     show_mosaic_button: false
     persist_filters: true
     security:
-        role_admin: ROLE_REGSITREDUSER
+        handler:              sonata.admin.security.handler.noop
+
+        role_admin: ROLE_ADMIN
+        role_super_admin: ROLE_SUPER_ADMIN
+        #role_s : ROLE_S
 
 
     templates:
@@ -162,7 +166,7 @@ sonata_admin:
                     - admin.pathway
                     - admin.country_distribution
                     - admin.geo_occurence
-            #        roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN', 'ROLE_S']
+                roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN', 'ROLE_S']
 
             Literrature:
                 label:           Mamias Literature
@@ -170,7 +174,7 @@ sonata_admin:
                 icon:            '<i class="fa fa-book"></i>'
                 items:
                     - admin.literature
-            #   roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN', 'ROLE_S']
+                roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN', 'ROLE_S']
 
             News:
                 label:           News
@@ -179,7 +183,7 @@ sonata_admin:
                 items:
                     - sonata.classification.admin.collection
                     - sonata.news.admin.post
-                #roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
+                roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
 
             CMS:
                 label:           CMS
@@ -188,7 +192,7 @@ sonata_admin:
                 items:
                     - admin.category
                     - admin.page
-                #roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
+                roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
 
             Settings:
                 label:           MAMIAS Settings
@@ -205,7 +209,7 @@ sonata_admin:
                     - admin.country
                     - admin.ec_ap
                     - admin.regional_sea
-            #       roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
+                roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
 
             User:
                 label:           User Management
@@ -214,4 +218,4 @@ sonata_admin:
                 items:
                     - sonata.user.admin.user
                     - sonata.user.admin.group
-                #roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']
+                roles: ['ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN']

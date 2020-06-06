@@ -30,21 +30,21 @@
          * @ORM\Column(type="string", length=100, nullable=true, name="origin_region")
          */
         private $originRegion;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getOriginCode(): ?string
         {
             return $this->originCode;
         }
-        
+    
         public function setOriginCode(?string $originCode): self
         {
             $this->originCode = $originCode;
-            
+    
             return $this;
         }
         
@@ -52,16 +52,16 @@
         {
             return (string)$this->getOriginRegion();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getOriginRegion(): ?string
         {
             return $this->originRegion;
         }
-        
+    
         public function setOriginRegion(?string $originRegion): self
         {
             $this->originRegion = $originRegion;
-            
+    
             return $this;
         }
     }

@@ -20,6 +20,10 @@ footer p {
     margin: 0;
 }
 
+.breadcrumb > .active {
+    color: #fffcfc;
+}
+
 footer a {
     color: #f6f6f6;
 }

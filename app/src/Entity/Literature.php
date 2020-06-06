@@ -89,105 +89,105 @@
          * @ORM\ManyToOne(targetEntity="App\Application\Sonata\UserBundle\Entity\User", inversedBy="literature", fetch="EAGER")
          */
         private $users;
-        
+
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getLiteratureCode(): ?string
         {
             return $this->literatureCode;
         }
-        
+    
         public function setLiteratureCode(?string $literatureCode): self
         {
             $this->literatureCode = $literatureCode;
-            
+    
             return $this;
         }
-        
+    
         public function getDOI(): ?string
         {
             return $this->DOI;
         }
-        
+    
         public function setDOI(?string $DOI): self
         {
             $this->DOI = $DOI;
-            
+    
             return $this;
         }
-        
+    
         public function getTitle(): ?string
         {
             return $this->Title;
         }
-        
+    
         public function setTitle(?string $Title): self
         {
             $this->Title = $Title;
-            
+    
             return $this;
         }
-        
+    
         public function getWhere(): ?string
         {
             return $this->where;
         }
-        
+    
         public function setWhere(?string $where): self
         {
             $this->where = $where;
-            
+    
             return $this;
         }
-        
+    
         public function getLitlink(): ?string
         {
             return $this->litlink;
         }
-        
+    
         public function setLitlink(?string $litlink): self
         {
             $this->litlink = $litlink;
-            
+    
             return $this;
         }
-        
+    
         public function getLitNote(): ?string
         {
             return $this->lit_note;
         }
-        
+    
         public function setLitNote(?string $lit_note): self
         {
             $this->lit_note = $lit_note;
-            
+    
             return $this;
         }
-        
+    
         public function getMamias(): ?Mamias
         {
             return $this->mamias;
         }
-        
+    
         public function setMamias(?Mamias $mamias): self
         {
             $this->mamias = $mamias;
-            
+    
             return $this;
         }
-        
+    
         public function getUsers(): ?User
         {
             return $this->users;
         }
-        
+    
         public function setUsers(?User $users): self
         {
             $this->users = $users;
-            
+    
             return $this;
         }
         
@@ -195,41 +195,41 @@
         {
             return (string)$this->getAuthors() . ',' . $this->getYear() . ',' . $this->getCountry();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getAuthors(): ?string
         {
             return $this->Authors;
         }
-        
+    
         public function setAuthors(?string $Authors): self
         {
             $this->Authors = $Authors;
-            
+    
             return $this;
         }
-        
+    
         public function getYear(): ?string
         {
             return $this->Year;
         }
-        
+    
         public function setYear(?string $Year): self
         {
             $this->Year = $Year;
-            
+        
             return $this;
         }
-        
-        public function getCountry(): ?country
+    
+        public function getCountry(): ?Country
         {
             return $this->country;
         }
-        
-        public function setCountry(?country $country): self
+    
+        public function setCountry(?Country $country): self
         {
             $this->country = $country;
-            
+        
             return $this;
         }
-        
+    
     }

@@ -58,48 +58,48 @@
         {
             $this->Lit = new ArrayCollection();
         }
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getCountryCode(): ?string
         {
             return $this->countryCode;
         }
-        
+    
         public function setCountryCode(?string $countryCode): self
         {
             $this->countryCode = $countryCode;
-            
+    
             return $this;
         }
-        
+    
         public function getLatitude(): ?string
         {
             return $this->latitude;
         }
-        
+    
         public function setLatitude(?string $latitude): self
         {
             $this->latitude = $latitude;
-            
+    
             return $this;
         }
-        
+    
         public function getLongitude(): ?string
         {
             return $this->longitude;
         }
-        
+    
         public function setLongitude(?string $longitude): self
         {
             $this->longitude = $longitude;
-            
+    
             return $this;
         }
-        
+    
         /**
          * @return Collection|Literature[]
          */
@@ -107,17 +107,17 @@
         {
             return $this->Lit;
         }
-        
+    
         public function addLit(Literature $lit): self
         {
             if (!$this->Lit->contains($lit)) {
                 $this->Lit[] = $lit;
                 $lit->setCountry($this);
             }
-            
+    
             return $this;
         }
-        
+    
         public function removeLit(Literature $lit): self
         {
             if ($this->Lit->contains($lit)) {
@@ -127,7 +127,7 @@
                     $lit->setCountry(null);
                 }
             }
-            
+    
             return $this;
         }
         
@@ -135,16 +135,16 @@
         {
             return (string)$this->getCountry();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getCountry(): ?string
         {
             return $this->country;
         }
-        
+    
         public function setCountry(?string $country): self
         {
             $this->country = $country;
-            
+    
             return $this;
         }
     }

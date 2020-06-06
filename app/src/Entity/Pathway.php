@@ -34,33 +34,33 @@
          * @ORM\Column(name="Certainty", type="string", nullable=true)
          */
         private $Certainty;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getCertainty(): ?string
         {
             return $this->Certainty;
         }
-        
+    
         public function setCertainty(?string $Certainty): self
         {
             $this->Certainty = $Certainty;
-            
+    
             return $this;
         }
-        
+    
         public function getMamias(): ?Mamias
         {
             return $this->mamias;
         }
-        
+    
         public function setMamias(?Mamias $mamias): self
         {
             $this->mamias = $mamias;
-            
+    
             return $this;
         }
         
@@ -68,16 +68,16 @@
         {
             return (string)$this->getVectorName();    // TODO: Implement __toString() method.
         }
-        
+    
         public function getVectorName(): ?VectorName
         {
             return $this->VectorName;
         }
-        
+    
         public function setVectorName(?VectorName $VectorName): self
         {
             $this->VectorName = $VectorName;
-            
+    
             return $this;
         }
         

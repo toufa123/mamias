@@ -14,24 +14,36 @@
     use Sonata\AdminBundle\Show\ShowMapper;
     use Sonata\CoreBundle\Form\Type\DatePickerType;
     use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+    use Symfony\Component\Form\Extension\Core\Type\IntegerType;
     use Symfony\Component\Form\Extension\Core\Type\TextType;
+    use Symfony\Component\Form\Extension\Core\Type\DateType;
+    use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
     use Vich\UploaderBundle\Form\Type\VichImageType;
     use App\Application\Sonata\UserBundle\Entity\User;
     use Doctrine\ORM\EntityRepository;
     use App\Repository\UserRepository;
     use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-    
+    use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
+
     final class GeoOccurenceAdmin extends AbstractAdmin
     {
-        
+    
+    
+        protected $baseRouteName = 'Geo';
+        protected $classnameLabel = 'GeoOccurence';
+    
         public function prePersist($object)
         {
+            $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
+            $object->setUser($user);
+        
             $parser = new Parser('Point(' . $object->getLocation() . ')');
             $geo = $parser->parse();
             $g = new \CrEOF\Spatial\PHP\Types\Geometry\Point($geo['value'], '4326');
             $object->setLocation($g);
             //dump ('prepersist',$geo,$g);die;
-            
+        
+        
         }
         
         public function preUpdate($object)
@@ -41,6 +53,8 @@
             $g = new \CrEOF\Spatial\PHP\Types\Geometry\Point($geo['value'], '4326');
             $object->setLocation($g);
             //dump ('preupdate',$geo,$g);die;
+            $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
+            $object->setUser($user);
         }
         
         
@@ -48,10 +62,10 @@
         {
             $datagridMapper
                 //->add('id')
-                
+        
                 ->add('mamias', null, ['label' => 'Species Name', 'show_filter' => true])
                 ->add('date_occurence', null, ['label' => 'Date of the Occurence', 'format' => 'd/M/y'])
-                ->add('createdAt', null, ['label' => 'Created At', 'format' => 'dd/MM/y'])
+                ->add('createdAt', null, ['label' => 'Created At', 'format' => 'y'])
                 //->add('updatedAt', null, array('label' => 'Updated At', 'format' => 'dd/MM/y'))
                 //->add('validator', null, ['label' => 'Validated by'])
                 ->add(
@@ -82,7 +96,7 @@
                 ->add('imageFile', null, ['label' => 'Picture', 'template' => 'declaration/picture.html.twig'])
                 ->add('Location', null, ['label' => 'Coordinates'])
                 //->add('longitude', null, array('label' => 'longitude'))
-                ->add('date_occurence', null, ['label' => 'Date of the Occurence', 'date_format' => 'yyyy'])
+                ->add('date_occurence', DateTimeType::class, ['label' => 'Reporting Date', 'template' => 'admin/Mamias/date.html.twig'])
                 //->add('note_occurence', null, array('label' => 'Note'))
                 ->add(
                     'status',
@@ -99,9 +113,9 @@
                         ['label' => 'Status'],
                     ]
                 )
-                ->add('createdAt', null, ['label' => 'Created At', 'format' => 'd/M/y'])
+                //->add('createdAt', null, ['label' => 'Created At', 'format' => 'd/M/y'])
                 //->add('updatedAt', null, array('label' => 'Updated At','format' => 'd/M/y'))
-                ->add('user', null, ['label' => 'declared By'])
+                //->add('user', null, ['label' => 'declared By'])
                 ->add('validator', null, ['label' => 'Validated by', 'disabled' => true])
                 ->add(
                     '_action',
@@ -121,38 +135,52 @@
             $user = $this->getConfigurationPool()->getContainer()->get('security.token_storage')->getToken()->getUser();
             $formtest1 = $this->id($this->getSubject());
             //$formtest2 = $this->getSubject ()->getId ();
-            //dump($formtest1);die;
+            //dump($user);die;
             
             if (null === $formtest1) {
                 if ($this->hasParentFieldDescription()) {
+                    //to be added through MAMIAS
                     $formMapper
-                        ->add('country', null, ['label' => 'Country1', 'disabled' => false])
+                        ->add('country', null, ['label' => 'Country', 'disabled' => false])
                         ->add('Location', null, ['label' => 'Coordinates', 'disabled' => false, 'required' => true])
                         ->add('date_occurence', DatePickerType::class,
-                            ['label' => 'Date of the Occurence', 'disabled' => false],
-                            ['format' => 'yyyy', 'dp_use_current' => true, 'dp_show_today' => true,
+                            ['label' => 'Reporting Date', 'disabled' => false],
+                            ['format' => 'dd/mm/yyyy', 'dp_use_current' => true, 'dp_show_today' => true, 'dp_view_timezone' => 'Europe/Paris', 'dp_model_timezone' => 'Europe/Paris',
                                 'dp_collapse' => true, 'dp_view_mode' => 'decades', 'dp_min_view_mode' => 'years'])
-                        //->add('note_occurence', null, array('label' => 'Note'))
-                        // ->add ('createdAt', DatePickerType::class,['label' => 'Created At', 'disabled' => false],
-                        //     ['format' => 'd/M/yy','dp_side_by_side' => true,'dp_use_current' => true,'dp_collapse' => true,
-                        //         'dp_calendar_weeks' => false,'dp_view_mode' => 'days','dp_min_view_mode' => 'days',])
-                        //->add('updatedAt', DatePickerType::class, array('label' => 'Updated At'), ['format' => 'dd/MM/yyyy',
-                        //    'dp_side_by_side' => true,'dp_use_current' => true,'dp_collapse' => true,'dp_view_mode' => 'days',
-                        //    'dp_min_view_mode' => 'year',])
-                        
                         ->add(
                             'imageFile',
-                            VichImageType::class,
-                            [
+                            VichImageType::class, [
                                 'label' => 'Picture',
                                 'required' => false,
-                                'download_link' => true,
-                                'allow_delete' => true,
-                                'download_uri' => true,
+                                //'download_link' => false,
+                                'allow_delete' => false,
+                                //'download_uri' => false,
                                 'image_uri' => true,
-                                'disabled' => true,
-                            ])
-                        ->add('user', null, ['label' => 'declared By', 'disabled' => false, 'data' => $user])
+                                'disabled' => false
+            
+                            ]
+                        )
+                        ->add('depth', IntegerType::class, ['label' => 'Depth', 'required' => false,
+                        ])
+                        ->add('PlantsAnimals', ChoiceType::class, ['choices' => ['' => '', 'Coverage in m2' => 'Coverage in m2',
+                            'Numbre of indivudals' => 'Numbre of indivudals'],
+                            'label' => 'Type of observation',
+                            'required' => false,])
+                        ->add('nvalues', IntegerType::class, ['label' => 'Values', 'required' => false,
+                            ]
+                        )
+                        ->add('EstimatedMeasured', ChoiceType::class, ['choices' => ['Estimated' => 'Estimated',
+                            'Measured' => 'Measured'], 'expanded' => false, 'multiple' => false,
+                            'label_attr' => [
+                                'class' => 'radio-inline radio-primary'
+                            ], 'label' => 'Accuracy',
+                            'required' => false,
+                        ])
+        
+        
+        
+        
+                        //->add('user', null, ['label' => 'declared By', 'disabled' => false, 'data' => $user])
                         ->add(
                             'status',
                             ChoiceType::class,
@@ -177,58 +205,57 @@
                             }])
                         ->add('notes', null, ['label' => 'Comments by the Admin']);
                 } else {
+                    //added through Geo
                     $formMapper
                         ->add('mamias', null, ['label' => 'Species Name', 'disabled' => false])
                         ->add('country', null, ['label' => 'Country', 'disabled' => false])
-                        ->add('Location', null, ['label' => 'Coordinates', 'disabled' => false])
-                        ->add('validator', null, ['label' => 'Validated by', 'disabled' => false])
-                        //->add(' Location', PointType::class, array('label' => 'Coordinates'))
-                        //->add('longitude', null, array('label' => 'longitude'))
+                        ->add('Location', null, ['label' => 'Coordinates', 'disabled' => false, 'required' => true])
                         ->add(
                             'date_occurence',
                             DatePickerType::class,
-                            ['label' => 'Date of the Occurence', 'disabled' => false],
+                            ['label' => 'Reporting Date', 'disabled' => false],
                             [
-                                'format' => 'yyyy',
+                                'format' => 'dd/mm/yyyy',
                                 'dp_use_current' => true,
                                 'dp_show_today' => true,
                                 'dp_collapse' => true,
                                 'dp_view_mode' => 'years',
                                 'dp_min_view_mode' => 'years',
+                                'dp_view_timezone' => 'Europe/Paris', 'dp_model_timezone' => 'Europe/Paris',
                             ]
                         )
-                        //->add('note_occurence', null, array('label' => 'Note'))
-                        ->add(
-                            'createdAt',
-                            DatePickerType::class,
-                            ['label' => 'Created At', 'disabled' => true],
-                            [
-                                'format' => 'd/M/yy',
-                                'dp_side_by_side' => true,
-                                'dp_use_current' => true,
-                                'dp_collapse' => true,
-                                'dp_calendar_weeks' => false,
-                                'dp_view_mode' => 'days',
-                                'dp_min_view_mode' => 'days',
-                            ]
-                        )
-                        //->add('updatedAt', DatePickerType::class, array('label' => 'Updated At'), ['format' => 'dd/MM/yyyy',
-                        //    'dp_side_by_side' => true,'dp_use_current' => true,'dp_collapse' => true,'dp_view_mode' => 'days',
-                        //    'dp_min_view_mode' => 'year',])
                         ->add(
                             'imageFile',
-                            VichImageType::class,
-                            [
+                            VichImageType::class, [
                                 'label' => 'Picture',
                                 'required' => false,
-                                'download_link' => true,
-                                'allow_delete' => true,
-                                'download_uri' => true,
+                                //'download_link' => false,
+                                'allow_delete' => false,
+                                //'download_uri' => false,
                                 'image_uri' => true,
-                                'disabled' => true,
+                                'disabled' => false
+            
                             ]
                         )
-                        ->add('user', null, ['label' => 'declared By', 'disabled' => true, 'data' => $user])
+                        ->add('depth', IntegerType::class, ['label' => 'Depth', 'required' => false,
+                        ])
+                        ->add('PlantsAnimals', ChoiceType::class, ['choices' => ['' => '', 'Coverage in m2' => 'Coverage in m2',
+                            'Numbre of indivudals' => 'Numbre of indivudals'],
+                            'label' => 'Type of observation',
+                            'required' => false,])
+                        ->add('nvalues', IntegerType::class, ['label' => 'Values', 'required' => false,
+                            ]
+                        )
+                        ->add('EstimatedMeasured', ChoiceType::class, ['choices' => ['Estimated' => 'Estimated',
+                            'Measured' => 'Measured'], 'expanded' => false, 'multiple' => false,
+                            'label_attr' => [
+                                'class' => 'radio-inline radio-primary'
+                            ], 'label' => 'Accuracy',
+                            'required' => false,
+                        ])
+        
+        
+                        //->add('user', null, ['label' => 'declared By', 'disabled' => true, 'data' => $user])
                         ->add(
                             'status',
                             ChoiceType::class,
@@ -255,44 +282,56 @@
                         ->add('notes', null, ['label' => 'Comments by the Admin']);
                 }
             } else {
+                // mamias already added
                 $formMapper
-                    ->add('country', null, ['label' => 'Country3', 'disabled' => true])
-                    ->add('Location', null, ['label' => 'Coordinates', 'disabled' => true])
+                    ->add('country', null, ['label' => 'Country', 'disabled' => true])
+                    ->add('Location', null, ['label' => 'Coordinates', 'disabled' => true, 'required' => true])
                     ->add(
                         'date_occurence',
                         DatePickerType::class,
-                        ['label' => 'Date of the Occurence', 'disabled' => true],
+                        ['label' => 'Reporting Date', 'disabled' => true],
                         [
-                            'format' => 'yyyy',
+                            'format' => 'dd/mm/yyyy',
                             'dp_use_current' => true,
                             'dp_show_today' => true,
                             'dp_collapse' => true,
                             'dp_view_mode' => 'years',
                             'dp_min_view_mode' => 'years',
-                        ]
+                            'dp_view_timezone' => 'Europe/Paris', 'dp_model_timezone' => 'Europe/Paris',]
                     )
-                    //->add('note_occurence', null, array('label' => 'Note'))
-                    // ->add ('createdAt', DatePickerType::class,['label' => 'Created At', 'disabled' => false],
-                    //     ['format' => 'd/M/yy','dp_side_by_side' => true,'dp_use_current' => true,'dp_collapse' => true,
-                    //         'dp_calendar_weeks' => false,'dp_view_mode' => 'days','dp_min_view_mode' => 'days',])
-                    //->add('updatedAt', DatePickerType::class, array('label' => 'Updated At'), ['format' => 'dd/MM/yyyy',
-                    //    'dp_side_by_side' => true,'dp_use_current' => true,'dp_collapse' => true,'dp_view_mode' => 'days',
-                    //    'dp_min_view_mode' => 'year',])
-                    
                     ->add(
                         'imageFile',
                         VichImageType::class, [
                             'label' => 'Picture',
-                            //    'required' => false,
-                            'download_link' => false,
+                            'required' => false,
+                            //'download_link' => false,
                             'allow_delete' => false,
-                            'download_uri' => false,
+                            //'download_uri' => false,
                             'image_uri' => true,
-                            'disabled' => true,
+                            'disabled' => false
     
                         ]
                     )
-                    ->add('user', null, ['label' => 'declared By', 'disabled' => true, 'data' => $user])
+                    ->add('depth', IntegerType::class, ['label' => 'Depth', 'required' => false,
+                    ])
+                    ->add('PlantsAnimals', ChoiceType::class, ['choices' => ['' => '', 'Coverage in m2' => 'Coverage in m2',
+                        'Numbre of indivudals' => 'Numbre of indivudals'],
+                        'label' => 'Type of observation',
+                        'required' => false,])
+                    ->add('nvalues', IntegerType::class, ['label' => 'Values', 'required' => false,
+                        ]
+                    )
+                    ->add('EstimatedMeasured', ChoiceType::class, ['choices' => ['Estimated' => 'Estimated',
+                        'Measured' => 'Measured'], 'expanded' => false, 'multiple' => false,
+                        'label_attr' => [
+                            'class' => 'radio-inline radio-primary'
+                        ], 'label' => 'Accuracy',
+                        'required' => false,
+                    ])
+        
+        
+        
+                    //->add('user', null, ['label' => 'declared By', 'disabled' => true, 'data' => $user])
                     ->add(
                         'status',
                         ChoiceType::class,

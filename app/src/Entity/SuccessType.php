@@ -37,33 +37,33 @@
          * @ORM\Column(type="text", name="success_exp", nullable=true)
          */
         private $successexpl;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getSuccessCode(): ?string
         {
             return $this->successCode;
         }
-        
+    
         public function setSuccessCode(?string $successCode): self
         {
             $this->successCode = $successCode;
-            
+    
             return $this;
         }
-        
+    
         public function getSuccessexpl(): ?string
         {
             return $this->successexpl;
         }
-        
+    
         public function setSuccessexpl(?string $successexpl): self
         {
             $this->successexpl = $successexpl;
-            
+    
             return $this;
         }
         
@@ -71,16 +71,16 @@
         {
             return (string)$this->getSuccessType();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getSuccessType(): ?string
         {
             return $this->successType;
         }
-        
+    
         public function setSuccessType(?string $successType): self
         {
             $this->successType = $successType;
-            
+    
             return $this;
         }
     }

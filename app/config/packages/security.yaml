@@ -88,6 +88,7 @@ security:
         # This config requires being logged for the whole site and having the admin role for the admin part.
         # Change these rules to adapt them to your needs
         - { path: ^/admin, role: [ROLE_SUPER_ADMIN, ROLE_S, ROLE_ADMIN] }
+        - { path: ^/admin/dashboard, role: [ROLE_SUPER_ADMIN, ROLE_S, ROLE_ADMIN] }
         - { path: ^/admin/efconnect, role: [ROLE_SUPER_ADMIN] }
         - { path: ^/admin/elfinder, role: [ROLE_SUPER_ADMIN] }
         - { path: ^/elfinder, role: [ROLE_SUPER_ADMIN] }

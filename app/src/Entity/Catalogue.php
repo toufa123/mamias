@@ -155,234 +155,234 @@
             $this->status = 'Validated';
             $this->Synonym = new ArrayCollection();
         }
-        
+
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getAuthority(): ?string
         {
             return $this->authority;
         }
-        
+    
         public function setAuthority(?string $authority): self
         {
             $this->authority = $authority;
-            
+    
             return $this;
         }
-        
+    
         public function getAphia(): ?int
         {
             return $this->Aphia;
         }
-        
+    
         public function setAphia(?int $Aphia): self
         {
             $this->Aphia = $Aphia;
-            
+    
             return $this;
         }
-        
+    
         public function getWormsUrl(): ?string
         {
             return $this->WormsUrl;
         }
-        
+    
         public function setWormsUrl(?string $WormsUrl): self
         {
             $this->WormsUrl = $WormsUrl;
-            
+    
             return $this;
         }
-        
+    
         public function getKingdom(): ?string
         {
             return $this->kingdom;
         }
-        
+    
         public function setKingdom(?string $kingdom): self
         {
             $this->kingdom = $kingdom;
-            
+    
             return $this;
         }
-        
+    
         public function getPhylum(): ?string
         {
             return $this->phylum;
         }
-        
+    
         public function setPhylum(?string $phylum): self
         {
             $this->phylum = $phylum;
-            
+    
             return $this;
         }
-        
+    
         public function getClass(): ?string
         {
             return $this->class;
         }
-        
+    
         public function setClass(?string $class): self
         {
             $this->class = $class;
-            
+    
             return $this;
         }
-        
+    
         public function getOrdersp(): ?string
         {
             return $this->ordersp;
         }
-        
+    
         public function setOrdersp(?string $ordersp): self
         {
             $this->ordersp = $ordersp;
-            
+    
             return $this;
         }
-        
+    
         public function getFamily(): ?string
         {
             return $this->family;
         }
-        
+    
         public function setFamily(?string $family): self
         {
             $this->family = $family;
-            
+    
             return $this;
         }
-        
+    
         public function getRefTax(): ?string
         {
             return $this->refTax;
         }
-        
+    
         public function setRefTax(?string $refTax): self
         {
             $this->refTax = $refTax;
-            
+    
             return $this;
         }
-        
+    
         public function getItisLink(): ?string
         {
             return $this->itisLink;
         }
-        
+    
         public function setItisLink(?string $itisLink): self
         {
             $this->itisLink = $itisLink;
-            
+    
             return $this;
         }
-        
+    
         public function getCoLlink(): ?string
         {
             return $this->CoLlink;
         }
-        
+    
         public function setCoLlink(?string $CoLlink): self
         {
             $this->CoLlink = $CoLlink;
-            
+    
             return $this;
         }
-        
+    
         public function getEoLlink(): ?string
         {
             return $this->EoLlink;
         }
-        
+    
         public function setEoLlink(?string $EoLlink): self
         {
             $this->EoLlink = $EoLlink;
-            
+    
             return $this;
         }
-        
+    
         public function getGBIFlink(): ?string
         {
             return $this->GBIFlink;
         }
-        
+    
         public function setGBIFlink(?string $GBIFlink): self
         {
             $this->GBIFlink = $GBIFlink;
-            
+    
             return $this;
         }
-        
+    
         public function getStatus(): ?string
         {
             return $this->status;
         }
-        
+    
         public function setStatus(?string $status): self
         {
             $this->status = $status;
-            
+    
             return $this;
         }
-        
+    
         public function getCreatedAt(): ?\DateTimeInterface
         {
             return $this->createdAt;
         }
-        
+    
         public function setCreatedAt(\DateTimeInterface $createdAt): self
         {
             $this->createdAt = $createdAt;
-            
+    
             return $this;
         }
-        
+    
         public function getUpdatedAt(): ?\DateTimeInterface
         {
             return $this->updatedAt;
         }
-        
+    
         public function setUpdatedAt(\DateTimeInterface $updatedAt): self
         {
             $this->updatedAt = $updatedAt;
-            
+    
             return $this;
         }
-        
+    
         public function getCatalogueNotes(): ?string
         {
             return $this->catalogue_notes;
         }
-        
+    
         public function setCatalogueNotes(?string $catalogue_notes): self
         {
             $this->catalogue_notes = $catalogue_notes;
-            
+    
             return $this;
         }
-        
+    
         /**
-         * @return Collection|Synonyms[]
+         * @return Collection|Synonym[]
          */
         public function getSynonyms(): Collection
         {
             return $this->Synonyms;
         }
-        
+    
         public function addSynonym(Synonym $synonym): self
         {
             if (!$this->Synonyms->contains($synonym)) {
                 $this->Synonyms[] = $synonym;
                 $synonym->setCatalogue($this);
             }
-            
+    
             return $this;
         }
-        
+    
         public function removeSynonym(Synonym $synonym): self
         {
             if ($this->Synonyms->contains($synonym)) {
@@ -392,19 +392,19 @@
                     $synonym->setCatalogue(null);
                 }
             }
-            
+    
             return $this;
         }
-        
+    
         public function getSpeciesCode(): ?string
         {
             return $this->speciesCode;
         }
-        
+    
         public function setSpeciesCode(?string $speciesCode): self
         {
             $this->speciesCode = $speciesCode;
-            
+    
             return $this;
         }
         
@@ -412,16 +412,16 @@
         {
             return (string)$this->getSpecies();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getSpecies(): ?string
         {
             return $this->Species;
         }
-        
+    
         public function setSpecies(string $Species): self
         {
             $this->Species = $Species;
-            
+    
             return $this;
         }
         

@@ -1126,6 +1126,14 @@ Real Estate
     background-clip: padding-box;
 }
 
+.property-card .property-content2 {
+    position: relative;
+    box-sizing: border-box;
+    padding: 25px;
+    border-radius: 0 0 2px 2px;
+    background-clip: padding-box;
+}
+
 .property-card .property-image {
     display: block;
     height: 230px;

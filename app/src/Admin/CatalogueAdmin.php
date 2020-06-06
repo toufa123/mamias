@@ -21,10 +21,16 @@
     use Symfony\Component\Form\Extension\Core\Type\TextareaType;
     use Symfony\Component\HttpFoundation\RedirectResponse;
     use UniqueConstraintViolationException;
-    
+    use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
+
+    /**
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Route("/admin")
+     */
     final class CatalogueAdmin extends AbstractAdmin
     {
-        
+    
         protected $perPageOptions = [10, 20, 50, 100, 'All'];
         protected $maxPerPage = '50';
         protected $datagridValues = [
@@ -33,6 +39,8 @@
             '_sort_by' => 'Species',
             '_per_page' => '20',
         ];
+    
+    
         protected $baseRouteName = 'Catalogue';
         protected $classnameLabel = 'Non-Indigenous Species';
         
@@ -699,7 +707,7 @@
                 ->add(
                     'status',
                     null,
-                    ['label' => 'Catalogue Status', 'show_filter' => true],
+                    ['label' => 'Status in Catalogue ', 'show_filter' => true],
                     ChoiceType::class,
                     [
                         'choices' => [

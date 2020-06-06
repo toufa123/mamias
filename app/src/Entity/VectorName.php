@@ -74,72 +74,72 @@
         {
             $this->children = new ArrayCollection();
         }
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getVectorIcone(): ?string
         {
             return $this->vectorIcone;
         }
-        
+    
         public function setVectorIcone(?string $vectorIcone): self
         {
             $this->vectorIcone = $vectorIcone;
-            
+    
             return $this;
         }
-        
+    
         public function getLft(): ?int
         {
             return $this->lft;
         }
-        
+    
         public function setLft(?int $lft): self
         {
             $this->lft = $lft;
-            
+    
             return $this;
         }
-        
+    
         public function getLvl(): ?int
         {
             return $this->lvl;
         }
-        
+    
         public function setLvl(?int $lvl): self
         {
             $this->lvl = $lvl;
-            
+    
             return $this;
         }
-        
+    
         public function getRgt(): ?int
         {
             return $this->rgt;
         }
-        
+    
         public function setRgt(?int $rgt): self
         {
             $this->rgt = $rgt;
-            
+    
             return $this;
         }
-        
+    
         public function getRoot(): ?self
         {
             return $this->root;
         }
-        
+    
         public function setRoot(?self $root): self
         {
             $this->root = $root;
-            
+    
             return $this;
         }
-        
+    
         /**
          * @return Collection|VectorName[]
          */
@@ -147,17 +147,17 @@
         {
             return $this->children;
         }
-        
+    
         public function addChild(VectorName $child): self
         {
             if (!$this->children->contains($child)) {
                 $this->children[] = $child;
                 $child->setParent($this);
             }
-            
+    
             return $this;
         }
-        
+    
         public function removeChild(VectorName $child): self
         {
             if ($this->children->contains($child)) {
@@ -167,19 +167,19 @@
                     $child->setParent(null);
                 }
             }
-            
+    
             return $this;
         }
-        
+    
         public function getParent(): ?self
         {
             return $this->parent;
         }
-        
+    
         public function setParent(?self $parent): self
         {
             $this->parent = $parent;
-            
+    
             return $this;
         }
         
@@ -187,16 +187,16 @@
         {
             return (string)$this->getVectorName();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getVectorName(): ?string
         {
             return $this->vectorName;
         }
-        
+    
         public function setVectorName(?string $vectorName): self
         {
             $this->vectorName = $vectorName;
-            
+    
             return $this;
         }
         

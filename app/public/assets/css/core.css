@@ -503,6 +503,8 @@ input[type="date"]:valid::before {
 .col-xs-9 {
     padding-left: 10px;
     padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .breadcrumb {

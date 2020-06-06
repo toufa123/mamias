@@ -31,21 +31,21 @@
          * @ORM\Column(type="string", length=128, nullable=true, name="ecap")
          */
         private $ecap;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getCode(): ?string
         {
             return $this->code;
         }
-        
+    
         public function setCode(?string $code): self
         {
             $this->code = $code;
-            
+    
             return $this;
         }
         
@@ -53,16 +53,16 @@
         {
             return (string)$this->getEcap();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getEcap(): ?string
         {
             return $this->ecap;
         }
-        
+    
         public function setEcap(?string $ecap): self
         {
             $this->ecap = $ecap;
-            
+    
             return $this;
         }
     }

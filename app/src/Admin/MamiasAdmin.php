@@ -242,14 +242,15 @@
                     //->end()
                     ->end()
                     ->tab('Country-level occurrences')
-                    ->with('Occurrences')
-                    ->add('Distribution', CollectionType::class, ['label' => 'Country Level Occurence of ', 'type_options' => ['delete' => true],
-                    ], ['by_reference' => true, 'edit' => 'inline', 'inline' => 'table', 'required' => true,])
+                    ->with('')
+                    ->add('Distribution', CollectionType::class, ['label' => 'Country Level Occurence', 'type_options' => ['delete' => true],
+                    ], ['by_reference' => true, 'edit' => 'inline', 'inline' => 'table', 'required' => false])
                     ->end()
+                    //->end()
                     ->end()
                     ->tab('Geo-referenced records')
-                    ->with('Geo Occurence')
-                    ->add('Geo', CollectionType::class, ['label' => 'Geo-Occurence of ', 'type_options' => ['delete' => true],
+                    ->with('')
+                    ->add('Geo', CollectionType::class, ['label' => 'Geo-Occurence ', 'type_options' => ['delete' => true],
                     ], ['by_reference' => true, 'edit' => 'inline', 'inline' => 'table', 'required' => false])
                     ->end()
                     ->end(); //->add('id')

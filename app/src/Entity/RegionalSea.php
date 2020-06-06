@@ -30,21 +30,21 @@
          * @ORM\Column(type="string", length=128, nullable=true, name="regional_sea")
          */
         private $regionalSea;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getRegionalSeaCode(): ?string
         {
             return $this->regionalSeaCode;
         }
-        
+    
         public function setRegionalSeaCode(?string $regionalSeaCode): self
         {
             $this->regionalSeaCode = $regionalSeaCode;
-            
+    
             return $this;
         }
         
@@ -52,16 +52,16 @@
         {
             return (string)$this->getRegionalSea();        // TODO: Implement __toString() method.
         }
-        
+    
         public function getRegionalSea(): ?string
         {
             return $this->regionalSea;
         }
-        
+    
         public function setRegionalSea(?string $regionalSea): self
         {
             $this->regionalSea = $regionalSea;
-            
+    
             return $this;
         }
     }

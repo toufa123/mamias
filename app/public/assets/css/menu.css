@@ -48,15 +48,15 @@ File: Menu
 }
 
 #topnav .has-submenu.active a {
-    color: #00acc1;
+    color: #dcdcdc;
 }
 
 #topnav .has-submenu.active a i {
-    color: #00acc1;
+    color: #dcdcdc;
 }
 
 #topnav .has-submenu.active .submenu li.active > a {
-    color: #00acc1;
+    color: #00a4ff;
 }
 
 #topnav .topbar-main {
@@ -419,7 +419,7 @@ File: Menu
     }
 
     #topnav .navigation-menu > li .submenu li a:hover {
-        color: #00acc1;
+        color: #08c;
     }
 
     #topnav .navigation-menu > li .submenu li span {
@@ -493,7 +493,7 @@ File: Menu
     }
 
     #topnav .navigation-menu > li .submenu li a:hover {
-        color: #00acc1;
+        color: #08c;
     }
 
     #topnav .navigation-menu > li .submenu li.has-submenu > a:after {
@@ -532,7 +532,7 @@ File: Menu
     }
 
     #topnav .navigation-menu > li.has-submenu.open > a {
-        color: #00acc1;
+        color: #08c;
     }
 
     #topnav .navbar-header {
@@ -584,7 +584,7 @@ File: Menu
     bottom: 0px;
     color: #58666e;
     text-align: left !important;
-    padding: 20px 0px;
+    padding: 10px 0px;
     position: absolute;
     right: 0px;
     left: 0px;

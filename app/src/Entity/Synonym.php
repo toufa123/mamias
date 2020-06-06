@@ -31,21 +31,21 @@
          * @ORM\ManyToOne(targetEntity="Catalogue", inversedBy="Synonyms", fetch="EAGER")
          */
         private $Catalogue;
-        
+    
         public function getId(): ?int
         {
             return $this->id;
         }
-        
+    
         public function getCatalogue(): ?Catalogue
         {
             return $this->Catalogue;
         }
-        
+    
         public function setCatalogue(?Catalogue $Catalogue): self
         {
             $this->Catalogue = $Catalogue;
-            
+    
             return $this;
         }
         
@@ -53,16 +53,16 @@
         {
             return (string)$this->getSpeciesSynonym();   // TODO: Implement __toString() method.
         }
-        
+    
         public function getSpeciesSynonym(): ?string
         {
             return $this->Species_Synonym;
         }
-        
+    
         public function setSpeciesSynonym(?string $Species_Synonym): self
         {
             $this->Species_Synonym = $Species_Synonym;
-            
+    
             return $this;
         }
     }
