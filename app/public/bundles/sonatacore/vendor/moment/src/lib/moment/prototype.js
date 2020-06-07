@@ -111,12 +111,10 @@ proto.minute = proto.minutes = getSetMinute;
 
 // Second
 import {getSetSecond} from '../units/second';
-
 proto.second = proto.seconds = getSetSecond;
 
 // Millisecond
 import {getSetMillisecond} from '../units/millisecond';
-
 proto.millisecond = proto.milliseconds = getSetMillisecond;
 
 // Offset

@@ -15,7 +15,6 @@
     padding: 0;
     vertical-align: middle;
 }
-
 .ui-spinner-input {
     border: none;
     background: none;
@@ -26,7 +25,6 @@
     margin-left: .4em;
     margin-right: 22px;
 }
-
 .ui-spinner-button {
     width: 16px;
     height: 50%;
@@ -40,14 +38,12 @@
     overflow: hidden;
     right: 0;
 }
-
 /* more specificity required here to override default borders */
 .ui-spinner a.ui-spinner-button {
     border-top: none;
     border-bottom: none;
     border-right: none;
 }
-
 /* vertically center icon */
 .ui-spinner .ui-icon {
     position: absolute;
@@ -55,11 +51,9 @@
     top: 50%;
     left: 0;
 }
-
 .ui-spinner-up {
     top: 0;
 }
-
 .ui-spinner-down {
     bottom: 0;
 }

@@ -1,3 +1,4 @@
+
 /********************************************************************\
    Page tree
 \********************************************************************/
@@ -9,12 +10,10 @@
     overflow: hidden;
     padding-bottom: 10px;
 }
-
 .sonata-tree ul {
     list-style: none;
     padding-left: 30px;
 }
-
 .sonata-tree__item {
     display: block;
     padding: 7px 15px 7px 7px;
@@ -26,37 +25,30 @@
     color: #444;
     background: #fff;
 }
-
 .sonata-tree__item .label {
     font-size: 12px;
     margin-top: 2px;
     border-radius: 2px;
 }
-
 .sonata-tree__item .label-warning {
     margin-right: 5px;
 }
-
 .sonata-tree__item .fa-caret-right {
     position: absolute;
     top: 10px;
     left: -20px;
     color: #3c8dbc;
 }
-
 .sonata-tree__item:hover {
     background: #eee;
     color: #000;
 }
-
 .sonata-tree__item__is-hybrid {
     margin-right: 5px;
 }
-
 .sonata-tree__item.is-active {
     border: 1px solid #3c8dbc;
 }
-
 .sonata-tree__item.is-active:after,
 .sonata-tree__item.is-active:before {
     left: 100%;
@@ -68,25 +60,21 @@
     position: absolute;
     pointer-events: none;
 }
-
 .sonata-tree__item.is-active:after {
     border-color: rgba(255, 255, 255, 0);
     border-left-color: #fff;
     border-width: 8px;
     margin-top: -8px;
 }
-
 .sonata-tree__item.is-active:before {
     border-color: rgba(255, 255, 255, 0);
     border-left-color: #3c8dbc;
     border-width: 9px;
     margin-top: -9px;
 }
-
 .sonata-tree__item.is-active:hover:after {
     border-left-color: #eee;
 }
-
 .sonata-tree__item.is-toggled .fa-caret-right {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
@@ -94,11 +82,9 @@
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
 }
-
 .sonata-tree__item__edit {
     font-weight: bold;
 }
-
 .sonata-tree__item__edit:hover {
     text-decoration: underline;
 }
@@ -109,15 +95,12 @@
 .sonata-tree--toggleable li > ul {
     display: none;
 }
-
 .sonata-tree--toggleable .sonata-tree__item {
     margin-left: 20px;
 }
-
 .sonata-tree--toggleable .sonata-tree__item .fa-caret-right {
     cursor: pointer;
 }
-
 .sonata-tree--toggleable .sonata-tree__item:last-child .fa-caret-right {
     display: none;
 }

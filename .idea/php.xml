@@ -211,6 +211,11 @@
       <path value="$PROJECT_DIR$/app/vendor/whiteoctober/breadcrumbs-bundle" />
       <path value="$PROJECT_DIR$/app/vendor/zendframework/zend-code" />
       <path value="$PROJECT_DIR$/app/vendor/zendframework/zend-eventmanager" />
+      <path value="$PROJECT_DIR$/app/vendor/maennchen/zipstream-php" />
+      <path value="$PROJECT_DIR$/app/vendor/myclabs/php-enum" />
+      <path value="$PROJECT_DIR$/app/vendor/sonata-project/twig-extensions" />
+      <path value="$PROJECT_DIR$/app/vendor/sonata-project/form-extensions" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-php80" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />

@@ -10,7 +10,6 @@ function plural(word, num) {
     var forms = word.split('_');
     return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
 }
-
 function relativeTimeWithPlural(number, withoutSuffix, key) {
     var format = {
         'mm': withoutSuffix ? 'минута_минуты_минут' : 'минуту_минуты_минут',
@@ -25,7 +24,6 @@ function relativeTimeWithPlural(number, withoutSuffix, key) {
         return number + ' ' + plural(format[key], +number);
     }
 }
-
 var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
 
 // http://new.gramota.ru/spravka/rules/139-prop : § 103

@@ -56,6 +56,7 @@ div.connection div input.big {
 }
 
 
+
 div.sonata-ba-field-inline-table input.title {
     width: 100px;
 }
@@ -114,7 +115,6 @@ div.sonata-actions {
 td.sonata-ba-list-field.sonata-ba-list-field-boolean i {
     margin-right: 1ex;
 }
-
 td.sonata-ba-list-field.sonata-ba-list-field-boolean a:hover {
     text-decoration: none;
 }
@@ -247,7 +247,6 @@ input[type="file"] {
 .sonata-ba-view-container.history-audit-compare td {
     width: 40%;
 }
-
 .sonata-ba-view-container.history-audit-compare th.diff {
     background: pink;
 }
@@ -382,11 +381,9 @@ body.fixed .content-header .navbar.stuck {
         margin: 0;
         width: 100%;
     }
-
     body.fixed .main-sidebar {
         position: absolute;
     }
-
     /* disable slimScroll */
     body.fixed .main-sidebar .slimScrollDiv,
     body.fixed .main-sidebar .sidebar {

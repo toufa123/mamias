@@ -9,7 +9,6 @@ function plural(word, num) {
     var forms = word.split('_');
     return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
 }
-
 function relativeTimeWithPlural(number, withoutSuffix, key) {
     var format = {
         'mm': withoutSuffix ? 'хвилина_хвилини_хвилин' : 'хвилину_хвилини_хвилин',
@@ -26,7 +25,6 @@ function relativeTimeWithPlural(number, withoutSuffix, key) {
         return number + ' ' + plural(format[key], +number);
     }
 }
-
 function weekdaysCaseReplace(m, format) {
     var weekdays = {
             'nominative': 'неділя_понеділок_вівторок_середа_четвер_п’ятниця_субота'.split('_'),
@@ -40,7 +38,6 @@ function weekdaysCaseReplace(m, format) {
                 'nominative');
     return weekdays[nounCase][m.day()];
 }
-
 function processHoursFunction(str) {
     return function () {
         return str + 'о' + (this.hours() === 11 ? 'б' : '') + '] LT';

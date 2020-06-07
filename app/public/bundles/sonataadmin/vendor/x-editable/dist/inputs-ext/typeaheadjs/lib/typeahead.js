@@ -204,7 +204,6 @@
             this.ttlKey = "__ttl__";
             this.keyMatcher = new RegExp("^" + this.prefix);
         }
-
         if (ls && window.JSON) {
             methods = {
                 _prefix: function (key) {
@@ -321,7 +320,6 @@
             };
             this._get = (/^throttle$/i.test(o.rateLimitFn) ? utils.throttle : utils.debounce)(this._get, o.rateLimitWait || 300);
         }
-
         utils.mixin(Transport.prototype, {
             _get: function (url, cb) {
                 var that = this;
@@ -412,7 +410,6 @@
             this.adjacencyList = {};
             this.storage = o.name ? new PersistentStorage(o.name) : null;
         }
-
         utils.mixin(Dataset.prototype, {
             _processLocalData: function (data) {
                 this._mergeProcessedData(this._processData(data));
@@ -441,7 +438,6 @@
                     deferred = $.getJSON(o.url).done(processPrefetchData);
                 }
                 return deferred;
-
                 function processPrefetchData(data) {
                     var filteredData = o.filter ? o.filter(data) : data,
                         processedData = that._processData(filteredData), itemHash = processedData.itemHash,
@@ -554,7 +550,6 @@
                     cacheHit = this.transport.get(query, processRemoteData);
                 }
                 !cacheHit && cb && cb(suggestions);
-
                 function processRemoteData(data) {
                     suggestions = suggestions.slice(0);
                     utils.each(data, function (i, datum) {
@@ -570,7 +565,6 @@
             }
         });
         return Dataset;
-
         function compileTemplate(template, engine, valueKey) {
             var renderFn, compiledTemplate;
             if (utils.isFunction(template)) {
@@ -614,7 +608,6 @@
             this.query = this.$input.val();
             this.$overflowHelper = buildOverflowHelper(this.$input);
         }
-
         utils.mixin(InputView.prototype, EventTarget, {
             _handleFocus: function () {
                 this.trigger("focused");
@@ -689,7 +682,6 @@
             }
         });
         return InputView;
-
         function buildOverflowHelper($input) {
             return $("<span></span>").css({
                 position: "absolute",
@@ -730,7 +722,6 @@
                 whiteSpace: "normal"
             }
         };
-
         function DropdownView(o) {
             utils.bindAll(this);
             this.isOpen = false;
@@ -738,7 +729,6 @@
             this.isMouseOverDropdown = false;
             this.$menu = $(o.menu).on("mouseenter.tt", this._handleMouseenter).on("mouseleave.tt", this._handleMouseleave).on("click.tt", ".tt-suggestion", this._handleSelection).on("mouseover.tt", ".tt-suggestion", this._handleMouseover);
         }
-
         utils.mixin(DropdownView.prototype, EventTarget, {
             _handleMouseenter: function () {
                 this.isMouseOverDropdown = true;
@@ -936,7 +926,6 @@
                 marginTop: "-1px"
             });
         }
-
         function TypeaheadView(o) {
             var $menu, $input, $hint;
             utils.bindAll(this);
@@ -955,7 +944,6 @@
                 hint: $hint
             }).on("focused", this._openDropdown).on("blured", this._closeDropdown).on("blured", this._setInputValueToQuery).on("enterKeyed tabKeyed", this._handleSelection).on("queryChanged", this._clearHint).on("queryChanged", this._clearSuggestions).on("queryChanged", this._getSuggestions).on("whitespaceChanged", this._updateHint).on("queryChanged whitespaceChanged", this._openDropdown).on("queryChanged whitespaceChanged", this._setLanguageDirection).on("escKeyed", this._closeDropdown).on("escKeyed", this._setInputValueToQuery).on("tabKeyed upKeyed downKeyed", this._managePreventDefault).on("upKeyed downKeyed", this._moveDropdownCursor).on("upKeyed downKeyed", this._openDropdown).on("tabKeyed leftKeyed rightKeyed", this._autocomplete);
         }
-
         utils.mixin(TypeaheadView.prototype, EventTarget, {
             _managePreventDefault: function (e) {
                 var $e = e.data, hint, inputValue, preventDefault = false;
@@ -1077,7 +1065,6 @@
             }
         });
         return TypeaheadView;
-
         function buildDomStructure(input) {
             var $wrapper = $(html.wrapper), $dropdown = $(html.dropdown), $input = $(input), $hint = $(html.hint);
             $wrapper = $wrapper.css(css.wrapper);
@@ -1108,7 +1095,6 @@
             }
             return $input.wrap($wrapper).parent().prepend($hint).append($dropdown);
         }
-
         function destroyDomStructure($node) {
             var $input = $node.find(".tt-query");
             utils.each($input.data("ttAttrs"), function (key, val) {
@@ -1135,7 +1121,6 @@
                     return dataset;
                 });
                 return this.each(initialize);
-
                 function initialize() {
                     var $input = $(this), deferreds, eventBus = new EventBus({
                         el: $input

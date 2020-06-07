@@ -18,11 +18,9 @@
     font-family: Verdana, Arial, sans-serif /*{ffDefault}*/;
     font-size: 1.1em /*{fsDefault}*/;
 }
-
 .ui-widget .ui-widget {
     font-size: 1em;
 }
-
 .ui-widget input,
 .ui-widget select,
 .ui-widget textarea,
@@ -30,24 +28,20 @@
     font-family: Verdana, Arial, sans-serif /*{ffDefault}*/;
     font-size: 1em;
 }
-
 .ui-widget-content {
     border: 1px solid #aaaaaa /*{borderColorContent}*/;
     background: #ffffff /*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png) /*{bgImgUrlContent}*/ 50% /*{bgContentXPos}*/ 50% /*{bgContentYPos}*/ repeat-x /*{bgContentRepeat}*/;
     color: #222222 /*{fcContent}*/;
 }
-
 .ui-widget-content a {
     color: #222222 /*{fcContent}*/;
 }
-
 .ui-widget-header {
     border: 1px solid #aaaaaa /*{borderColorHeader}*/;
     background: #cccccc /*{bgColorHeader}*/ url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) /*{bgImgUrlHeader}*/ 50% /*{bgHeaderXPos}*/ 50% /*{bgHeaderYPos}*/ repeat-x /*{bgHeaderRepeat}*/;
     color: #222222 /*{fcHeader}*/;
     font-weight: bold;
 }
-
 .ui-widget-header a {
     color: #222222 /*{fcHeader}*/;
 }
@@ -62,14 +56,12 @@
     font-weight: normal /*{fwDefault}*/;
     color: #555555 /*{fcDefault}*/;
 }
-
 .ui-state-default a,
 .ui-state-default a:link,
 .ui-state-default a:visited {
     color: #555555 /*{fcDefault}*/;
     text-decoration: none;
 }
-
 .ui-state-hover,
 .ui-widget-content .ui-state-hover,
 .ui-widget-header .ui-state-hover,
@@ -81,7 +73,6 @@
     font-weight: normal /*{fwDefault}*/;
     color: #212121 /*{fcHover}*/;
 }
-
 .ui-state-hover a,
 .ui-state-hover a:hover,
 .ui-state-hover a:link,
@@ -93,7 +84,6 @@
     color: #212121 /*{fcHover}*/;
     text-decoration: none;
 }
-
 .ui-state-active,
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
@@ -102,7 +92,6 @@
     font-weight: normal /*{fwDefault}*/;
     color: #212121 /*{fcActive}*/;
 }
-
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
@@ -119,13 +108,11 @@
     background: #fbf9ee /*{bgColorHighlight}*/ url(images/ui-bg_glass_55_fbf9ee_1x400.png) /*{bgImgUrlHighlight}*/ 50% /*{bgHighlightXPos}*/ 50% /*{bgHighlightYPos}*/ repeat-x /*{bgHighlightRepeat}*/;
     color: #363636 /*{fcHighlight}*/;
 }
-
 .ui-state-highlight a,
 .ui-widget-content .ui-state-highlight a,
 .ui-widget-header .ui-state-highlight a {
     color: #363636 /*{fcHighlight}*/;
 }
-
 .ui-state-error,
 .ui-widget-content .ui-state-error,
 .ui-widget-header .ui-state-error {
@@ -133,25 +120,21 @@
     background: #fef1ec /*{bgColorError}*/ url(images/ui-bg_glass_95_fef1ec_1x400.png) /*{bgImgUrlError}*/ 50% /*{bgErrorXPos}*/ 50% /*{bgErrorYPos}*/ repeat-x /*{bgErrorRepeat}*/;
     color: #cd0a0a /*{fcError}*/;
 }
-
 .ui-state-error a,
 .ui-widget-content .ui-state-error a,
 .ui-widget-header .ui-state-error a {
     color: #cd0a0a /*{fcError}*/;
 }
-
 .ui-state-error-text,
 .ui-widget-content .ui-state-error-text,
 .ui-widget-header .ui-state-error-text {
     color: #cd0a0a /*{fcError}*/;
 }
-
 .ui-priority-primary,
 .ui-widget-content .ui-priority-primary,
 .ui-widget-header .ui-priority-primary {
     font-weight: bold;
 }
-
 .ui-priority-secondary,
 .ui-widget-content .ui-priority-secondary,
 .ui-widget-header .ui-priority-secondary {
@@ -159,7 +142,6 @@
     filter: Alpha(Opacity=70);
     font-weight: normal;
 }
-
 .ui-state-disabled,
 .ui-widget-content .ui-state-disabled,
 .ui-widget-header .ui-state-disabled {
@@ -167,7 +149,6 @@
     filter: Alpha(Opacity=35);
     background-image: none;
 }
-
 .ui-state-disabled .ui-icon {
     filter: Alpha(Opacity=35); /* For IE8 - See #6059 */
 }
@@ -180,25 +161,20 @@
     width: 16px;
     height: 16px;
 }
-
 .ui-icon,
 .ui-widget-content .ui-icon {
     background-image: url(images/ui-icons_222222_256x240.png) /*{iconsContent}*/;
 }
-
 .ui-widget-header .ui-icon {
     background-image: url(images/ui-icons_222222_256x240.png) /*{iconsHeader}*/;
 }
-
 .ui-state-default .ui-icon {
     background-image: url(images/ui-icons_888888_256x240.png) /*{iconsDefault}*/;
 }
-
 .ui-state-hover .ui-icon,
 .ui-state-focus .ui-icon {
     background-image: url(images/ui-icons_454545_256x240.png) /*{iconsHover}*/;
 }
-
 .ui-state-active .ui-icon {
     background-image: url(images/ui-icons_454545_256x240.png) /*{iconsActive}*/;
 }
@@ -925,21 +901,18 @@
 .ui-corner-tl {
     border-top-left-radius: 4px /*{cornerRadius}*/;
 }
-
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-right,
 .ui-corner-tr {
     border-top-right-radius: 4px /*{cornerRadius}*/;
 }
-
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-left,
 .ui-corner-bl {
     border-bottom-left-radius: 4px /*{cornerRadius}*/;
 }
-
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-right,
@@ -953,7 +926,6 @@
     opacity: .3 /*{opacityOverlay}*/;
     filter: Alpha(Opacity=30) /*{opacityFilterOverlay}*/;
 }
-
 .ui-widget-shadow {
     margin: -8px /*{offsetTopShadow}*/ 0 0 -8px /*{offsetLeftShadow}*/;
     padding: 8px /*{thicknessShadow}*/;

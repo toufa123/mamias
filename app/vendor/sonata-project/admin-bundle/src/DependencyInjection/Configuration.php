@@ -178,7 +178,7 @@ CASESENSITIVE;
                             ->info('Use text filters from "twig/extensions" instead of those provided by "twig/string-extra".')
                             ->defaultValue(static function (): bool {
                                 @trigger_error(
-                                    'Using `true` as value for "sonata.admin.configuration.legacy_twig_text_extension" option is deprecated since sonata-project/admin-bundle 3.64.'.
+                                    'Using `true` as value for "sonata_admin.options.legacy_twig_text_extension" option is deprecated since sonata-project/admin-bundle 3.64. '.
                                     'You should set it to `false`, which will be the default value since version 4.0.'
                                 );
 
@@ -188,7 +188,7 @@ CASESENSITIVE;
                                 ->ifTrue()
                                 ->then(static function (bool $v): bool {
                                     @trigger_error(
-                                        'Using `true` as value for "sonata.admin.configuration.legacy_twig_text_extension" option is deprecated since sonata-project/admin-bundle 3.64.'.
+                                        'Using `true` as value for "sonata_admin.options.legacy_twig_text_extension" option is deprecated since sonata-project/admin-bundle 3.64. '.
                                         'You should set it to `false`, which will be the default value since version 4.0.'
                                     );
 
@@ -226,7 +226,7 @@ CASESENSITIVE;
                                 ->children()
                                     ->scalarNode('label')->end()
                                     ->scalarNode('label_catalogue')->end()
-                                    ->scalarNode('icon')->defaultValue('<i class="fa fa-folder"></i>')->end()
+                                    ->scalarNode('icon')->end()
                                     ->scalarNode('on_top')->defaultFalse()->info('Show menu item in side dashboard menu without treeview')->end()
                                     ->scalarNode('keep_open')->defaultFalse()->info('Keep menu group always open')->end()
                                     ->scalarNode('provider')->end()

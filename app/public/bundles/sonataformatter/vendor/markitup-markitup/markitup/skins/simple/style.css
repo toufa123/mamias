@@ -44,7 +44,6 @@
 .markItUpFooter {
     width: 100%;
 }
-
 .markItUpResizeHandle {
     overflow: hidden;
     width: 22px;
@@ -54,7 +53,6 @@
     background-image: url(images/handle.png);
     cursor: n-resize;
 }
-
 /***************************************************************************************/
 /* first row of buttons */
 .markItUpHeader ul li {
@@ -71,11 +69,9 @@
     background: transparent url(images/menu.png) no-repeat 115% 50%;
     margin-right: 5px;
 }
-
 .markItUpHeader ul .markItUpDropMenu li {
     margin-right: 0px;
 }
-
 /* next rows of buttons */
 .markItUpHeader ul ul {
     display: none;
@@ -85,16 +81,13 @@
     background: #FFF;
     border: 1px solid #000;
 }
-
 .markItUpHeader ul ul li {
     float: none;
     border-bottom: 1px solid #000;
 }
-
 .markItUpHeader ul ul .markItUpDropMenu {
     background: #FFF url(images/submenu.png) no-repeat 100% 50%;
 }
-
 .markItUpHeader ul .markItUpSeparator {
     margin: 0 10px;
     width: 1px;
@@ -102,24 +95,20 @@
     overflow: hidden;
     background-color: #CCC;
 }
-
 .markItUpHeader ul ul .markItUpSeparator {
     width: auto;
     height: 1px;
     margin: 0px;
 }
-
 /* next rows of buttons */
 .markItUpHeader ul ul ul {
     position: absolute;
     top: -1px;
     left: 150px;
 }
-
 .markItUpHeader ul ul ul li {
     float: none;
 }
-
 .markItUpHeader ul a {
     display: block;
     width: 16px;

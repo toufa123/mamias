@@ -8,7 +8,7 @@
 
     $.fn.select2.locales['eu'] = {
         formatNoMatches: function () {
-            return "Ez da bat datorrenik aurkitu";
+          return "Ez da bat datorrenik aurkitu";
         },
         formatInputTooShort: function (input, min) {
             var n = min - input.length;

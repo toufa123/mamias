@@ -873,6 +873,7 @@ rangy.createModule("DomRange", function (api, module) {
         this.clonePartiallySelectedTextNodes = clonePartiallySelectedTextNodes;
 
 
+
         if (!range.collapsed) {
             this.sc = range.startContainer;
             this.so = range.startOffset;
@@ -1904,6 +1905,7 @@ rangy.createModule("WrappedRange", function (api, module) {
     var DomRange = api.DomRange;
 
 
+
     /*----------------------------------------------------------------------------------------------------------------*/
 
     /*
@@ -1955,6 +1957,7 @@ rangy.createModule("WrappedRange", function (api, module) {
             containerElement = wholeRangeContainerElement;
 
         }
+
 
 
         // Deal with nodes that cannot "contain rich HTML markup". In practice, this means form inputs, images and
@@ -2037,6 +2040,7 @@ rangy.createModule("WrappedRange", function (api, module) {
             // a position within that, and likewise for a start boundary preceding a character data node
             previousNode = (isCollapsed || !isStart) && workingNode.previousSibling;
             nextNode = (isCollapsed || isStart) && workingNode.nextSibling;
+
 
 
             if (nextNode && dom.isCharacterDataNode(nextNode)) {
@@ -2477,6 +2481,7 @@ rangy.createModule("WrappedSelection", function (api, module) {
         getSelection,
         selectionIsCollapsed,
         CONTROL = "Control";
+
 
 
     function getWinSelection(winParam) {

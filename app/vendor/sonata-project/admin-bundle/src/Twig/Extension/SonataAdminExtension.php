@@ -256,6 +256,13 @@ class SonataAdminExtension extends AbstractExtension
         } catch (NoValueException $e) {
             if ($fieldDescription->getAssociationAdmin()) {
                 $value = $fieldDescription->getAssociationAdmin()->getNewInstance();
+            } else {
+                // NEXT_MAJOR: throw the NoValueException.
+                @trigger_error(
+                    'Accessing a non existing value is deprecated'
+                    .' since sonata-project/admin-bundle 3.67 and will throw an exception in 4.0.',
+                    E_USER_DEPRECATED
+                );
             }
         }
 
@@ -283,6 +290,13 @@ class SonataAdminExtension extends AbstractExtension
         try {
             $value = $fieldDescription->getValue($object);
         } catch (NoValueException $e) {
+            // NEXT_MAJOR: Remove the try catch in order to throw the NoValueException.
+            @trigger_error(
+                'Accessing a non existing value is deprecated'
+                .' since sonata-project/admin-bundle 3.67 and will throw an exception in 4.0.',
+                E_USER_DEPRECATED
+            );
+
             $value = null;
         }
 
@@ -317,12 +331,26 @@ class SonataAdminExtension extends AbstractExtension
         try {
             $baseValue = $fieldDescription->getValue($baseObject);
         } catch (NoValueException $e) {
+            // NEXT_MAJOR: Remove the try catch in order to throw the NoValueException.
+            @trigger_error(
+                'Accessing a non existing value is deprecated'
+                .' since sonata-project/admin-bundle 3.67 and will throw an exception in 4.0.',
+                E_USER_DEPRECATED
+            );
+
             $baseValue = null;
         }
 
         try {
             $compareValue = $fieldDescription->getValue($compareObject);
         } catch (NoValueException $e) {
+            // NEXT_MAJOR: Remove the try catch in order to throw the NoValueException.
+            @trigger_error(
+                'Accessing a non existing value is deprecated'
+                .' since sonata-project/admin-bundle 3.67 and will throw an exception in 4.0.',
+                E_USER_DEPRECATED
+            );
+
             $compareValue = null;
         }
 
@@ -330,12 +358,14 @@ class SonataAdminExtension extends AbstractExtension
             'admin' => $fieldDescription->getAdmin(),
             'field_description' => $fieldDescription,
             'value' => $baseValue,
+            'object' => $baseObject,
         ]);
 
         $compareValueOutput = $template->render([
             'field_description' => $fieldDescription,
             'admin' => $fieldDescription->getAdmin(),
             'value' => $compareValue,
+            'object' => $compareObject,
         ]);
 
         // Compare the rendered output of both objects by using the (possibly) overridden field block
@@ -347,6 +377,7 @@ class SonataAdminExtension extends AbstractExtension
             'value_compare' => $compareValue,
             'is_diff' => $isDiff,
             'admin' => $fieldDescription->getAdmin(),
+            'object' => $baseObject,
         ], $environment);
     }
 

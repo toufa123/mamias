@@ -16,17 +16,14 @@
     height: 400px; /* Height must be fixed px value */
     margin-bottom: 28px;
 }
-
 .nivoGallery.loaded {
     background: #000; /* Remove the loading gif */
 }
-
 .nivoGallery ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-
 .nivoGallery ul li {
     position: absolute;
     top: 0;
@@ -37,7 +34,6 @@
     font: 14px/1.6em arial, sans-serif;
     color: #fff;
 }
-
 .nivoGallery ul img {
     display: block;
     max-width: 100%;
@@ -94,20 +90,16 @@
     -o-transition: opacity 150ms ease-in-out;
     transition: opacity 150ms ease-in-out;
 }
-
 .nivoGallery-directionNav .nivoGallery-prev {
     left: 10px;
 }
-
 .nivoGallery-directionNav .nivoGallery-next {
     right: 10px;
     background-position: -32px 0;
 }
-
 .nivoGallery:hover .nivoGallery-directionNav a {
     opacity: 0.7;
 }
-
 .nivoGallery:hover .nivoGallery-directionNav a:hover {
     opacity: 1;
 }
@@ -130,7 +122,6 @@
     border-top: 1px solid #222;
     z-index: 5;
 }
-
 .nivoGallery-play {
     display: inline-block;
     width: 32px;
@@ -140,11 +131,9 @@
     cursor: pointer;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
 }
-
 .nivoGallery-play.playing {
     background-position: 50% -92px;
 }
-
 .nivoGallery-count {
     display: inline-block;
     vertical-align: top;
@@ -155,7 +144,6 @@
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     text-shadow: 0 1px 0 #000;
 }
-
 .nivoGallery-caption {
     display: inline-block;
     vertical-align: top;
@@ -166,13 +154,11 @@
     color: #aaa;
     text-shadow: 0 1px 0 #000;
 }
-
 .nivoGallery-captionTitle {
     color: #fff;
     font-weight: bold;
     margin-right: 5px;
 }
-
 .nivoGallery-fullscreen {
     float: right;
     display: inline-block;
@@ -204,7 +190,6 @@
     height: 100% !important;
     z-index: 10000;
 }
-
 .nivoGallery.fullscreen .nivoGallery-caption {
     position: fixed;
     top: 0;
@@ -215,20 +200,17 @@
     padding: 20px;
     opacity: 0.8;
 }
-
 .nivoGallery.fullscreen .nivoGallery-play {
     position: fixed;
     top: 20px;
     right: 45px;
     z-index: 6;
 }
-
 .nivoGallery.fullscreen .nivoGallery-fullscreen {
     position: fixed;
     top: 20px;
     right: 20px;
 }
-
 .nivoGallery.fullscreen .nivoGallery-htmlwrap {
     padding: 90px 20px 20px 20px;
 }

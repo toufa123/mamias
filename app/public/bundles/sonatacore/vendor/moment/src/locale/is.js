@@ -12,7 +12,6 @@ function plural(n) {
     }
     return true;
 }
-
 function translate(number, withoutSuffix, key, isFuture) {
     var result = number + ' ';
     switch (key) {

@@ -12,7 +12,6 @@
 .CodeMirror-lines {
     padding: 4px 0; /* Vertical padding around content */
 }
-
 .CodeMirror pre {
     padding: 0 4px; /* Horizontal padding of content */
 }
@@ -58,13 +57,11 @@
 .CodeMirror div.CodeMirror-secondarycursor {
     border-left: 1px solid silver;
 }
-
 .CodeMirror.cm-fat-cursor div.CodeMirror-cursor {
     width: auto;
     border: 0;
     background: #7e7;
 }
-
 .CodeMirror.cm-fat-cursor div.CodeMirror-cursors {
     z-index: 1;
 }
@@ -287,7 +284,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     outline: none; /* Prevent dragging from highlighting the element */
     position: relative;
 }
-
 .CodeMirror-sizer {
     position: relative;
     border-right: 30px solid transparent;
@@ -301,26 +297,22 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     z-index: 6;
     display: none;
 }
-
 .CodeMirror-vscrollbar {
     right: 0;
     top: 0;
     overflow-x: hidden;
     overflow-y: scroll;
 }
-
 .CodeMirror-hscrollbar {
     bottom: 0;
     left: 0;
     overflow-y: hidden;
     overflow-x: scroll;
 }
-
 .CodeMirror-scrollbar-filler {
     right: 0;
     bottom: 0;
 }
-
 .CodeMirror-gutter-filler {
     left: 0;
     bottom: 0;
@@ -332,7 +324,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     top: 0;
     z-index: 3;
 }
-
 .CodeMirror-gutter {
     white-space: normal;
     height: 100%;
@@ -342,19 +333,16 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     *zoom: 1;
     *display: inline;
 }
-
 .CodeMirror-gutter-wrapper {
     position: absolute;
     z-index: 4;
     height: 100%;
 }
-
 .CodeMirror-gutter-elt {
     position: absolute;
     cursor: default;
     z-index: 4;
 }
-
 .CodeMirror-gutter-wrapper {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -365,7 +353,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     cursor: text;
     min-height: 1px; /* prevents collapsing before first draw */
 }
-
 .CodeMirror pre {
     /* Reset some styles that the rest of the page might have set */
     -moz-border-radius: 0;
@@ -385,7 +372,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     overflow: visible;
     -webkit-tap-highlight-color: transparent;
 }
-
 .CodeMirror-wrap pre {
     word-wrap: break-word;
     white-space: pre-wrap;

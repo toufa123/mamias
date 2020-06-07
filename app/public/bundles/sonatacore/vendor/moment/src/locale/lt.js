@@ -16,7 +16,6 @@ var units = {
     'y': 'metai_metų_metus',
     'yy': 'metai_metų_metus'
 };
-
 function translateSeconds(number, withoutSuffix, key, isFuture) {
     if (withoutSuffix) {
         return 'kelios sekundės';
@@ -24,19 +23,15 @@ function translateSeconds(number, withoutSuffix, key, isFuture) {
         return isFuture ? 'kelių sekundžių' : 'kelias sekundes';
     }
 }
-
 function translateSingular(number, withoutSuffix, key, isFuture) {
     return withoutSuffix ? forms(key)[0] : (isFuture ? forms(key)[1] : forms(key)[2]);
 }
-
 function special(number) {
     return number % 10 === 0 || (number > 10 && number < 20);
 }
-
 function forms(key) {
     return units[key].split('_');
 }
-
 function translate(number, withoutSuffix, key, isFuture) {
     var result = number + ' ';
     if (number === 1) {
@@ -51,7 +46,6 @@ function translate(number, withoutSuffix, key, isFuture) {
         }
     }
 }
-
 export default moment.defineLocale('lt', {
     months: {
         format: 'sausio_vasario_kovo_balandžio_gegužės_birželio_liepos_rugpjūčio_rugsėjo_spalio_lapkričio_gruodžio'.split('_'),

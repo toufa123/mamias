@@ -164,32 +164,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for item in species %}
-                            <tr>
-                                <td class="text-left">{{ item.id }}</td>
-                                <td class="text-left"><i>{{ item.relation }}</i></td>
-                                <td class="text-center">{{ item.Ecofunctional }}</td>
-                                <td class="text-center">{{ item.Origin }}</td>
-                                {% if not item.status %}
-                                    <td class="text-center"><p>Unknown</p></td>
-                                {% elseif item.status %}
-                                    <td class="text-center">{{ item.status }}</td>
-                                {% endif %}
 
-                                <td class="text-center">{{ item.Success }}</td>
-                                {% if not item.firstMedSighting %}
-                                    <td class="text-center"><p>Unknown</p></td>
-                                {% elseif item.firstMedSighting %}
-                                    <td class="text-center">{{ item.firstMedSighting }}</td>
-                                {% endif %}
-                                <!--<td class="text-center">{{ item.invasive }}</td>-->
-                                <td class="text-center"><a
-                                        class="btn1 btn-primary waves-effect w-xs waves-light text-primary"
-                                        href="{{ path('species_fiche', {'id':item.id}) }}"
-                                        target="_blank"><i>View</i></a></td>
-
-                            </tr>
-                        {% endfor %}
                         </tbody>
                     </table>
 
@@ -247,9 +222,9 @@
                 "responsive": true,
                 "autoWidth": false,
                 "lengthChange": true,
-                //"processing": true,
-                //"serverSide": true,
-                //"ajax":"{{ path('search') }}",
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{{ path('search') }}",
                 "searching": false,
 
                 "pageLength": 10,
@@ -336,9 +311,22 @@
                 "dom": 'ltip',
                 "responsive": true,
                 "autoWidth": false,
-                //"processing": true,
-                //"serverSide": true,
-                //"ajax":"{{ path('search') }}",
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ path('search') }}"
+                },
+                "columns": [
+                    {"data": "ID"},
+                    {"data": "Species Name"},
+                    {"data": "EcoFunctional Group"},
+                    {"data": "Origin"},
+                    {"data": "Species Status"},
+                    {"data": "Establishment"},
+                    {"data": "Med. Fisrt Sighting"},
+                    {"data": "Action"},
+
+                ],
                 "lengthChange": true,
                 "searching": false,
                 "pageLength": 10,

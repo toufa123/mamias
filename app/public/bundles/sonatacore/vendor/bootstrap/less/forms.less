@@ -234,7 +234,6 @@ input[type="search"] {
         cursor: pointer;
     }
 }
-
 .radio input[type="radio"],
 .radio-inline input[type="radio"],
 .checkbox input[type="checkbox"],
@@ -260,7 +259,6 @@ input[type="search"] {
     font-weight: normal;
     cursor: pointer;
 }
-
 .radio-inline + .radio-inline,
 .checkbox-inline + .checkbox-inline {
     margin-top: 0;
@@ -279,7 +277,6 @@ input[type="checkbox"] {
         cursor: @cursor-disabled;
     }
 }
-
 // These classes are used directly on <label>s
 .radio-inline,
 .checkbox-inline {
@@ -288,7 +285,6 @@ input[type="checkbox"] {
         cursor: @cursor-disabled;
     }
 }
-
 // These classes are used on elements with <label> descendants
 .radio,
 .checkbox {
@@ -333,7 +329,6 @@ input[type="checkbox"] {
 .input-sm {
     .input-size(@input-height-small; @padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @input-border-radius-small);
 }
-
 .form-group-sm {
     .form-control {
         height: @input-height-small;
@@ -365,7 +360,6 @@ input[type="checkbox"] {
 .input-lg {
     .input-size(@input-height-large; @padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @input-border-radius-large);
 }
-
 .form-group-lg {
     .form-control {
         height: @input-height-large;
@@ -408,7 +402,6 @@ input[type="checkbox"] {
         padding-right: (@input-height-base * 1.25);
     }
 }
-
 // Feedback icon (requires .glyphicon classes)
 .form-control-feedback {
     position: absolute;
@@ -422,7 +415,6 @@ input[type="checkbox"] {
     text-align: center;
     pointer-events: none;
 }
-
 .input-lg + .form-control-feedback,
 .input-group-lg + .form-control-feedback,
 .form-group-lg .form-control + .form-control-feedback {
@@ -430,7 +422,6 @@ input[type="checkbox"] {
     height: @input-height-large;
     line-height: @input-height-large;
 }
-
 .input-sm + .form-control-feedback,
 .input-group-sm + .form-control-feedback,
 .form-group-sm .form-control + .form-control-feedback {
@@ -443,11 +434,9 @@ input[type="checkbox"] {
 .has-success {
     .form-control-validation(@state-success-text; @state-success-text; @state-success-bg);
 }
-
 .has-warning {
     .form-control-validation(@state-warning-text; @state-warning-text; @state-warning-bg);
 }
-
 .has-error {
     .form-control-validation(@state-danger-text; @state-danger-text; @state-danger-bg);
 }

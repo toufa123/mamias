@@ -20,14 +20,16 @@
     use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\Routing\Annotation\Route;
-    use Symfony\Contracts\Cache\CacheInterface;
-    
+
+    use Symfony\Component\HttpFoundation\JsonResponse;
+
+
     class SearchController extends AbstractController
     {
         /**
          * @Route("services/search", name="search")
          */
-        public function index(Request $request, cacheInterface $cache)
+        public function index(Request $request)
         {
             $sId = null;
             $eco = null;
@@ -97,7 +99,11 @@
             } else {
                 $em = $this->getDoctrine()->getManager();
                 $species = $em->getRepository(Mamias::class)->findAll();
-                
+    
+    
+                $data = new JsonResponse($species);
+                //dump($data);die;
+    
             }
             
             //unset($form);

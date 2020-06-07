@@ -90,7 +90,11 @@ class MetadataFactory implements AdvancedMetadataFactoryInterface
 
                 if (null !== $classMetadata) {
                     if (!$classMetadata instanceof ClassMetadata) {
-                        throw new \LogicException(sprintf('The cache must return instances of ClassMetadata, but got %s.', var_export($classMetadata, true)));
+                        throw new \LogicException(sprintf(
+                            'The cache must return instances of ClassMetadata for class %s, but got %s.',
+                            $className,
+                            var_export($classMetadata, true)
+                        ));
                     }
 
                     if ($this->debug && !$classMetadata->isFresh()) {
@@ -154,7 +158,8 @@ class MetadataFactory implements AdvancedMetadataFactoryInterface
             }
         } else {
             if (null === $metadata) {
-                $metadata = new $this->hierarchyMetadataClass();
+                $class = $this->hierarchyMetadataClass;
+                $metadata = new $class();
             }
 
             $metadata->addClassMetadata($toAdd);

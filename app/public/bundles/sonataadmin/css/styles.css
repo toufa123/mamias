@@ -20,10 +20,6 @@ footer p {
     margin: 0;
 }
 
-.breadcrumb > .active {
-    color: #fffcfc;
-}
-
 footer a {
     color: #f6f6f6;
 }
@@ -75,6 +71,7 @@ body > .header .logo {
 .btn.btn-danger.btn-outline:hover {
     color: #fff;
 }
+
 
 
 /* navigation */
@@ -346,27 +343,21 @@ body.fixed .sonata-list-table {
 td.sonata-ba-list-field .editable {
     cursor: pointer;
 }
-
 td.sonata-ba-list-field .btn.editable {
     border-bottom: solid 1px #BBB;
 }
-
 td.sonata-ba-list-field .editable-empty:not(.editable-open) {
     display: none;
 }
-
 .sonata-ba-list tr:hover .editable-empty {
     display: inline-block;
 }
-
 .editable-pre-wrapped {
     white-space: normal;
 }
-
 .editable-container .prev:before {
     content: "\2190 ";
 }
-
 .editable-container .next:before {
     content: "\2192 ";
 }
@@ -398,7 +389,6 @@ td.sonata-ba-list-field .editable-empty:not(.editable-open) {
     margin-right: 5px;
     margin-top: -3px;
 }
-
 .form-inline .checkbox div[class^="icheckbox"],
 .form-inline .checkbox-inline div[class^="icheckbox"],
 .form-inline .radio div[class^="iradio"],
@@ -409,7 +399,6 @@ td.sonata-ba-list-field .editable-empty:not(.editable-open) {
     margin-right: 5px;
     margin-top: -3px;
 }
-
 /* Hide Delete checkbox on sonata_type_collection tables */
 .sonata-ba-field-inline-table td > div.checkbox > label > .control-label__text {
     position: absolute;
