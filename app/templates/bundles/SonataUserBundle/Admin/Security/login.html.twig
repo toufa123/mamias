@@ -5,8 +5,10 @@
 {% block body %}
     <div class="row">
         <div class="col-lg-6">
-            <span><img src="{{ asset('resources/images/signin.svg') }}"
-                       alt="MAMIAS 3.0"></span>
+            <div class="wrapper-page2">
+                <img src="{{ asset('resources/images/signin.svg') }}"
+                     alt="MAMIAS 3.0" style="width:100%;height:auto">
+            </div>
         </div>
         <div class="col-lg-6">
             <div class="wrapper-page">
@@ -20,7 +22,7 @@
                         </h2>
 
                     </div>
-                    <div class="property-content">
+                    <div class="property-content bg-white">
                         {% if error is defined %}
                             {% if error %}
                                 <div class="alert alert-danger" role="alert">
@@ -79,7 +81,7 @@
                             <div class="form-group account-btn text-center m-t-20 ">
                                 <div class="col-sm-12 m-t-5 ">
                                     <button
-                                        class="btn btn-block w-md btn-bordered btn-primary waves-effect waves-light m-t-10"
+                                        class="btn btn-block w-md btn-bordered btn-custom waves-effect waves-light m-t-10"
                                         type="submit">{{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}</button>
                                 </div>
                             </div>
@@ -90,9 +92,9 @@
                 </div>
                 <div class="row m-t-20">
                     <div class="col-sm-12 text-center">
-                        <p class="text-custom">Don't have an account? <a
+                        <p class="text-muted">Don't have an account? <a
                                 href="{{ path('fos_user_registration_register') }}"
-                                class="text-primary m-l-5"><b>Register</b></a>
+                                class="text-custom m-l-5"><b>Register</b></a>
                         </p>
                     </div>
                 </div>

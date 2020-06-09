@@ -96,28 +96,28 @@
 
             this.extend();
             this.o = $.extend({
-                    // Config
-                    min: this.$.data('min') !== undefined ? this.$.data('min') : 0,
-                    max: this.$.data('max') !== undefined ? this.$.data('max') : 100,
-                    stopper: true,
-                    readOnly: this.$.data('readonly') || (this.$.attr('readonly') === 'readonly'),
+                // Config
+                min: this.$.data('min') !== undefined ? this.$.data('min') : 0,
+                max: this.$.data('max') !== undefined ? this.$.data('max') : 100,
+                stopper: true,
+                readOnly: this.$.data('readonly') || (this.$.attr('readonly') === 'readonly'),
 
-                    // UI
-                    cursor: this.$.data('cursor') === true && 30
-                        || this.$.data('cursor') || 0,
-                    thickness: this.$.data('thickness')
-                        && Math.max(Math.min(this.$.data('thickness'), 1), 0.01)
-                        || 0.35,
-                    lineCap: this.$.data('linecap') || 'butt',
-                    width: this.$.data('width') || 200,
-                    height: this.$.data('height') || 200,
-                    displayInput: this.$.data('displayinput') == null || this.$.data('displayinput'),
-                    displayPrevious: this.$.data('displayprevious'),
-                    fgColor: this.$.data('fgcolor') || '#87CEEB',
-                    inputColor: this.$.data('inputcolor'),
-                    font: this.$.data('font') || 'Arial',
-                    fontWeight: this.$.data('font-weight') || 'bold',
-                    inline: false,
+                // UI
+                cursor: this.$.data('cursor') === true && 30
+                    || this.$.data('cursor') || 0,
+                thickness: this.$.data('thickness')
+                    && Math.max(Math.min(this.$.data('thickness'), 1), 0.01)
+                    || 0.35,
+                lineCap: this.$.data('linecap') || 'butt',
+                width: this.$.data('width') || 200,
+                height: this.$.data('height') || 200,
+                displayInput: this.$.data('displayinput') == null || this.$.data('displayinput'),
+                displayPrevious: this.$.data('displayprevious'),
+                fgColor: this.$.data('fgcolor') || '#87CEEB',
+                inputColor: this.$.data('inputcolor'),
+                font: this.$.data('font') || 'Arial',
+                fontWeight: this.$.data('font-weight') || 'bold',
+                inline: false,
                     step: this.$.data('step') || 1,
                     rotation: this.$.data('rotation'),
 
@@ -128,9 +128,9 @@
                     release: null, // function (value) {}
 
                     // Output formatting, allows to add unit: %, ms ...
-                    format: function (v) {
-                        return v;
-                    },
+                format: function (v) {
+                    return v;
+                },
                     parse: function (v) {
                         return parseFloat(v);
                     }

@@ -1,6 +1,6 @@
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
-This is an easy customizable docker boilerplate for any PHP-based projects like _Symfony Framework_, _laravel_,  and many other frameworks or applications.
+This is an easy customizable docker boilerplate for any PHP-based projects like _Symfony Framework_, _laravel_,  and many other frameworks or applications.It was used to develop and deploy MAMIAS web Application.
 
 Supports:
 

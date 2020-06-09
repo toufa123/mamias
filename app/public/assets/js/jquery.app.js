@@ -1,3 +1,9 @@
+/**
+ * Theme: Zircos - Bootstrap 4 Admin Dashboard
+ * Author: Coderthemes
+ * Module/App: Main Js
+ */
+
 (function ($) {
 
     'use strict';
@@ -52,8 +58,3 @@
     init();
 
 })(jQuery);
-
-/* particlesJS.load(@dom-id, @path-json, @callback (optional)); */
-/*particlesJS.load('particles-js', '../assets/particule/particles.json', function () {
-    console.log('callback - particles.js config loaded');
-});*/

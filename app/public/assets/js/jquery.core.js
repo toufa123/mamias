@@ -1,3 +1,10 @@
+/**
+ * Theme: Zircos - Bootstrap 4 Admin Dashboard
+ * Author: Coderthemes
+ * Module/App: Core js
+ */
+
+
 //portlets
 !function ($) {
     "use strict";
@@ -12,7 +19,7 @@
             this.$portletRefresher = '.portlet a[data-toggle="reload"]'
     };
 
-    //on init
+//on init
     Portlet.prototype.init = function () {
         // Panel closest
         var $this = this;
@@ -20,15 +27,9 @@
             ev.preventDefault();
             var $portlet = $(this).closest($this.$portletIdentifier);
             var $portlet_parent = $portlet.parent();
-
-
-            $portlet.slideUp("slow", function () {
-                $(this).remove();
-            });
+            $portlet.remove();
             if ($portlet_parent.children().length == 0) {
-                $portlet_parent.slideUp("slow", function () {
-                    $(this).remove();
-                });
+                $portlet_parent.remove();
             }
         });
 
@@ -46,7 +47,7 @@
             }, 500 + 300 * (Math.random() * 5));
         });
     },
-        //
+//
         $.Portlet = new Portlet, $.Portlet.Constructor = Portlet
 
 }(window.jQuery),
@@ -224,6 +225,7 @@
         "use strict";
         $.Components.init();
     }(window.jQuery);
+
 
 
 

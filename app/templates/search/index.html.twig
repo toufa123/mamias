@@ -35,19 +35,16 @@
 
 {% endblock %}
 {% block body %}
-
-    <div class="row text-center">
-        <div class="col-sm-12">
-            <h3 class="m-t-20">Search MAMIAS for NIS </h3>
-            <div class="border center-block m-b-20"></div>
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center m-t-20">
+            <h3 class="h4"><b>Search MAMIAS for NIS</b></h3>
         </div>
     </div>
     <!-- end row -->
-
     <div class="row">
         <div class="col-sm-12">
-            <div class="property-card">
-                <div class="property-content2 mb">
+            <div class="property-card bg-white">
+                <div class="property-content">
                     {{ form_start(form) }}
                     {{ form_errors(form) }}
                     <div class="row ">
@@ -127,7 +124,6 @@
 
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -143,7 +139,7 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <div class="property-card table-responsive">
+            <div class="property-card bg-white table-responsive">
                 <div class="property-content">
 
                     <table id="datatable-buttons"
@@ -314,16 +310,16 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ path('search') }}"
+                    "url": "{{ datajson }}"
                 },
                 "columns": [
-                    {"data": "ID"},
-                    {"data": "Species Name"},
+                    {"data": "id"},
+                    {"data": "relation.Species"},
                     {"data": "EcoFunctional Group"},
                     {"data": "Origin"},
                     {"data": "Species Status"},
                     {"data": "Establishment"},
-                    {"data": "Med. Fisrt Sighting"},
+                    {"data": "firstMedSighting"},
                     {"data": "Action"},
 
                 ],

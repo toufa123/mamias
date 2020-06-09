@@ -1011,13 +1011,11 @@
 
     c3_chart_internal_fn.generateResize = function () {
         var resizeFunctions = [];
-
         function callResizeFunctions() {
             resizeFunctions.forEach(function (f) {
                 f();
             });
         }
-
         callResizeFunctions.add = function (f) {
             resizeFunctions.push(f);
         };
@@ -1321,7 +1319,6 @@
 
     c3_chart_internal_fn.loadConfig = function (config) {
         var this_config = this.config, target, keys, read;
-
         function find() {
             var key = keys.shift();
             //        console.log("key =>", key, ", target =>", target);
@@ -1334,7 +1331,6 @@
                 return undefined;
             }
         }
-
         Object.keys(this_config).forEach(function (key) {
             target = config;
             keys = key.split('_');
@@ -7283,7 +7279,6 @@
     // 2. ceil values of translate/x/y to int for half pixel antialiasing
     // 3. multiline tick text
     var tickTextCharSize;
-
     function c3_axis(d3, params) {
         var scale = d3.scale.linear(), orient = "bottom", innerTickSize = 6, outerTickSize, tickPadding = 3,
             tickValues = null, tickFormat, tickArguments;
@@ -7298,18 +7293,15 @@
                 return "translate(" + Math.ceil(x(d) + tickOffset) + ", 0)";
             });
         }
-
         function axisY(selection, y) {
             selection.attr("transform", function (d) {
                 return "translate(0," + Math.ceil(y(d)) + ")";
             });
         }
-
         function scaleExtent(domain) {
             var start = domain[0], stop = domain[domain.length - 1];
             return start < stop ? [start, stop] : [stop, start];
         }
-
         function generateTicks(scale) {
             var i, domain, ticks = [];
             if (scale.ticks) {
@@ -7324,7 +7316,6 @@
             }
             return ticks;
         }
-
         function copyScale() {
             var newScale = scale.copy(), domain;
             if (params.isCategory) {
@@ -7333,12 +7324,10 @@
             }
             return newScale;
         }
-
         function textFormatted(v) {
             var formatted = tickFormat ? tickFormat(v) : v;
             return typeof formatted !== 'undefined' ? formatted : '';
         }
-
         function getSizeFor1Char(tick) {
             if (tickTextCharSize) {
                 return tickTextCharSize;
@@ -7360,11 +7349,9 @@
             tickTextCharSize = size;
             return size;
         }
-
         function transitionise(selection) {
             return params.withoutTransition ? selection : d3.transition(selection);
         }
-
         function axis(g) {
             g.each(function () {
                 var g = axis.g = d3.select(this);
@@ -7477,21 +7464,18 @@
                     }
                     return rotate > 0 ? "start" : "end";
                 }
-
                 function textTransform(rotate) {
                     if (!rotate) {
                         return '';
                     }
                     return "rotate(" + rotate + ")";
                 }
-
                 function dxForText(rotate) {
                     if (!rotate) {
                         return 0;
                     }
                     return 8 * Math.sin(Math.PI * (rotate / 180));
                 }
-
                 function yForText(rotate) {
                     if (!rotate) {
                         return tickLength;
@@ -7561,7 +7545,6 @@
                 tickUpdate.call(tickTransform, scale1);
             });
         }
-
         axis.scale = function (x) {
             if (!arguments.length) {
                 return scale;

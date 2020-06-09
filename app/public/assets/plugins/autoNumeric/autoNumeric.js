@@ -36,11 +36,10 @@
     "use strict";
     /*jslint browser: true*/
     /*global jQuery: false*/
-
     /*Cross browser routine for getting selected range/cursor position
      */
 
-    /**
+   /**
      * Cross browser routine for getting selected range/cursor position
      */
     function getElementSelection(that) {
@@ -528,7 +527,6 @@
         this.settingsClone = autoCode(this.$that, this.settings);
         this.value = that.value;
     }
-
     AutoNumericHolder.prototype = {
         init: function (e) {
             this.value = this.that.value;

@@ -20,7 +20,7 @@
     use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\Routing\Annotation\Route;
-
+    use Symfony\Component\HttpFoundation\Response;
     use Symfony\Component\HttpFoundation\JsonResponse;
 
 
@@ -97,19 +97,19 @@
                     $sId, $eco, $origin, $su, $year, $country, $ecapmed, $status, $pathway);
                 //return $this->render('search/MAMIASNutshell.html.twig', ['form' => $form, 'species' => $species]);
             } else {
-                $em = $this->getDoctrine()->getManager();
-                $species = $em->getRepository(Mamias::class)->findAll();
-    
-    
-                $data = new JsonResponse($species);
-                //dump($data);die;
-    
+                $em = $this->getDoctrine ()->getManager ();
+                $species = $em->getRepository (Mamias::class)->findAllS ();
+                $datajson = null;
+                $datajson = new JsonResponse($species);
+
+                //dump($datajson);die;
+
             }
             
             //unset($form);
             //$form = $this->createForm(SearchType::class, $search);
-            
-            return $this->render('search/index.html.twig', ['form' => $form->createView(), 'species' => $species]);
+
+            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'datajson' => $datajson]);
         }
         
         /**

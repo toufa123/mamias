@@ -47,23 +47,33 @@
             ;
         }
         */
-        
-        public function findAllSpecies()
+
+        public function findAllSpecies ()
         {
-            return $this->createQueryBuilder('m')
-                ->from('Mamias', 'a')
-                ->join('Catalogue', 'b')
-                ->getQuery()
-                ->getOneOrNullResult();
+            return $this->createQueryBuilder ('m')
+                ->from ('Mamias', 'a')
+                ->join ('Catalogue', 'b')
+                ->getQuery ()
+                ->getOneOrNullResult ();
+
         }
-        
-        public function getNbEstablished()
+
+        public function findAllS ()
         {
-            return $this->createQueryBuilder('a')
-                ->select('COUNT(a)')
-                ->Where('a.Success=6')
-                ->getQuery()
-                ->getSingleScalarResult();
+            return $this->createQueryBuilder ('z')
+                ->leftJoin ('z.relation', 'Catalogue')
+                ->addSelect ('Catalogue')
+                ->getQuery ()
+                ->getArrayResult ();
+        }
+
+        public function getNbEstablished ()
+        {
+            return $this->createQueryBuilder ('a')
+                ->select ('COUNT(a)')
+                ->Where ('a.Success=6')
+                ->getQuery ()
+                ->getSingleScalarResult ();
         }
         
         public function getNbInvasive()

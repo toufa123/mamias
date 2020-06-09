@@ -2,7 +2,7 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  *
- * Version: 1.3.8
+ * Version: 1.3.6
  *
  */
 (function ($) {
@@ -99,8 +99,8 @@
                     var offset = me.scrollTop();
 
                     // find bar and rail
-                    bar = me.siblings('.' + o.barClass);
-                    rail = me.siblings('.' + o.railClass);
+                    bar = me.closest('.' + o.barClass);
+                    rail = me.closest('.' + o.railClass);
 
                     getBarHeight();
 
@@ -113,10 +113,6 @@
                             var height = me.parent().parent().height();
                             me.parent().css('height', height);
                             me.css('height', height);
-                        } else if ('height' in options) {
-                            var h = options.height;
-                            me.parent().css('height', h);
-                            me.css('height', h);
                         }
 
                         if ('scrollTo' in options) {

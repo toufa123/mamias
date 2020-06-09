@@ -71,9 +71,9 @@
                 $ob->chart->type('line');
                 $ob->chart->renderTo('linechart');
                 $ob->title->text('Temporal variability in numbers of new reported marine NIS');
-                $ob->xAxis->categories($cat);
-                $ob->title->style(['fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']);
-                $ob->credits->text('www.mamias.org');
+                $ob->xAxis->categories ($cat);
+                $ob->title->style (['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']);
+                $ob->credits->text ('www.mamias.org');
                 $ob->credits->href('http://www.mamias.org _target="blank"');
                 //$ob->yAxis->tickInterval(10);
                 $ob->xAxis->title(['text' => 'Years']);
@@ -87,8 +87,8 @@
                         'showInLegend' => true,
                     ]
                 );
-                
-                $ob->series([['name' => 'Cumulative Number of NIS', 'data' => $datacu]]);
+
+                $ob->series ([['name' => 'Cumulative Number of NIS', 'color' => '#00AEEF', 'data' => $datacu]]);
                 
                 //groups per country
                 $n6 = $em->getRepository(Mamias::class)->getSpeciesbyGroupandCountry($co);
@@ -102,9 +102,9 @@
                 $ob2->chart->renderTo('piechart');
                 $ob2->chart->type('pie');
                 $ob2->chart->options3d(['enabled' => true, 'alpha' => '50', 'beta' => '0', 'depth' => '20', 'viewDistance' => '25']);
-                $ob2->title->text('Ecofunctional Groups of NIS');
-                $ob2->title->style(['fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']);
-                $ob2->credits->text('www.mamias.org');
+                $ob2->title->text ('Ecofunctional Groups of NIS');
+                $ob2->title->style (['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']);
+                $ob2->credits->text ('www.mamias.org');
                 $ob2->credits->href('http://www.mamias.org _target="blank"');
                 $ob2->plotOptions->pie(
                     [
@@ -141,16 +141,16 @@
                 
                 
                 $ob3->yAxis->title(['text' => 'Numbre of NIS']);
-                $ob3->xAxis->categories($categories);
-                $ob3->title->style(['fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']);
-                $ob3->credits->text('www.mamias.org');
+                $ob3->xAxis->categories ($categories);
+                $ob3->title->style (['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']);
+                $ob3->credits->text ('www.mamias.org');
                 $ob3->credits->href('http://www.mamias.org _target="blank"');
                 //$ob5->legend->enabled(true);
                 $ob3->yAxis->allowDecimals(false);
                 $ob3->labels->enabled(true);
                 
                 //$data = array($status,$results2);
-                $ob3->series([['type' => 'column', 'name' => 'Number of NIS', 'data' => $data3]]);
+                $ob3->series ([['type' => 'column', 'name' => 'Number of NIS', 'color' => '#00AEEF', 'data' => $data3]]);
                 
                 //Pathways for countries
                 $n6 = $em->getRepository(Mamias::class)->getnumberbypathwayspercountry($co);
@@ -171,15 +171,15 @@
                 $ob4->title->text('Pathways/vectors of NIS');
                 $ob4->yAxis->title(['text' => 'Numbre of NIS']);
                 $ob4->xAxis->categories($categories);
-                $ob4->yAxis->allowDecimals(false);
-                $ob4->title->style(['fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']);
-                $ob4->credits->text('www.mamias.org');
+                $ob4->yAxis->allowDecimals (false);
+                $ob4->title->style (['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']);
+                $ob4->credits->text ('www.mamias.org');
                 $ob4->credits->href('http://www.mamias.org _target="blank"');
                 //$ob5->legend->enabled(true);
                 $ob4->labels->enabled(true);
                 
                 //$data = array($status,$results2);
-                $ob4->series([['type' => 'bar', 'name' => 'Number of NIS', 'data' => $data4]]);
+                $ob4->series ([['type' => 'bar', 'name' => 'Number of NIS', 'color' => '#00AEEF', 'data' => $data4]]);
             }
             
             return $this->render(

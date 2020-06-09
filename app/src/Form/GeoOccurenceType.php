@@ -20,31 +20,32 @@
     use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
     use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
     use Symfony\Component\Form\Extension\Core\Type\ResetType;
-    
-    
+
+
     class GeoOccurenceType extends AbstractType
     {
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
             $builder
-                ->add('country', null, ['label' => 'Country', 'required' => true,
-                    'help' => 'Please Choose a country'])
+                ->add ('country', null, ['label' => 'Country', 'required' => true
+                    //,'help' => 'Choose a country'
+                ])
                 ->add(
                     'mamias',
                     EntityType::class,
                     [
                         'class' => Mamias::class,
                         'query_builder' => function (EntityRepository $er) {
-                            return $er->createQueryBuilder('u')
-                                ->orderBy('u.relation', 'ASC');
+                            return $er->createQueryBuilder ('u')
+                                ->orderBy ('u.relation', 'ASC');
                         },
                         'choice_label' => 'relation',
                         'label' => 'Species Name',
-                        'required' => true, 'empty_data' => '', 'help' => 'Please Choose a Species'
+                        'required' => true, 'empty_data' => ''//, 'help' => 'Choose a Species'
                     ]
                 )
-                ->add('Location', null, ['label' => 'Coordinates', 'required' => true, 'empty_data' => '',
-                    'help' => 'Please Move the marker on the map to get the location'])
+                ->add ('Location', null, ['label' => 'Coordinates', 'required' => true, 'empty_data' => '',
+                    'help' => ' Move marker to get location'])
                 ->add(
                     'imageFile',
                     VichImageType::class,
@@ -56,40 +57,42 @@
                         'download_uri' => false,
                         'image_uri' => false,
                         'attr' => [
-                            'type' => 'file',
-                            'class' => 'filestyle',
-                            'placeholder' => 'Please upload the taken photo',
+                            //'type' => 'file',
+                            //'class' => 'filestyle',
+                            //'placeholder' => 'Upload the taken photo',
                             'data-buttontext' => 'Select a photo',
-                            'data-buttonname' => 'btn-primary',
+                            'data-buttonname' => 'btn-custom',
+                            'data-size' => 'sm',
                             'data-preview-file-type' => 'text',
                             'multiple' => '',
                             'data-allowed-file-extensions' => '["jpeg", "png", "jpg"]',
-                        
+
                         ],
                     ]
                 )
                 //->add('latitude', null, ['label' => 'Latitude', 'required' => true])
                 //->add('longitude', null, ['label' => 'Longitude', 'required' => true,])
-                ->add('date_occurence', DateType::class, ['widget' => 'single_text', 'html5' => false,
-                    'format' => 'dd-mm-yyyy', 'help' => 'Please indicate the Reporting date',
+                ->add ('date_occurence', DateType::class, ['widget' => 'single_text', 'html5' => false,
+                    'format' => 'dd-mm-yyyy', 'help' => 'Reporting date',
                     'label' => 'Reporting date',
                     'required' => true,
                 ])
-                ->add('depth', IntegerType::class, ['label' => 'Depth', 'required' => false,
-                    'help' => 'Please Provide the depth in meter'])
-                ->add('PlantsAnimals', ChoiceType::class, ['choices' => ['' => '', 'Coverage in m2' => 'Coverage in m2',
+                ->add ('depth', IntegerType::class, ['label' => 'Depth', 'required' => false,
+                    'help' => 'depth in meter'])
+                ->add ('PlantsAnimals', ChoiceType::class, ['choices' => ['' => '', 'Coverage in m2' => 'Coverage in m2',
                     'Numbre of indivudals' => 'Numbre of indivudals'],
                     'label' => 'Type of observation',
-                    'required' => false, 'help' => 'Please indicate type of observation'])
+                    'required' => false, 'help' => 'type of observation'])
                 ->add('nvalues', IntegerType::class, ['label' => 'Values', 'required' => false,
-                        'help' => 'Please indicate values (nb of indivudals or Coverage in m2']
+                        'help' => 'nb of indivudals or Coverage in m2']
                 )
                 ->add('EstimatedMeasured', ChoiceType::class, ['choices' => ['Estimated' => 'Estimated',
-                    'Measured' => 'Measured'], 'expanded' => true, 'multiple' => false,
-                    'label_attr' => [
-                        'class' => 'radio-inline radio-primary'
-                    ], 'label' => 'Accuracy',
-                    'required' => false, 'help' => 'Please indicate Accurancy',
+                    'Measured' => 'Measured'],
+                    //'expanded' => true, 'multiple' => false,
+                    //'label_attr' => [
+                    //'class' => 'radio-custom'
+                    //], 'label' => 'Accuracy',
+                    'required' => false, 'help' => 'Accurancy',
                 ])
                 ->add('note_occurence', TextareaType::class, ['label' => 'Notes',
                     'required' => false, 'empty_data' => ''])

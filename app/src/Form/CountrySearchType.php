@@ -4,6 +4,7 @@
     
     use App\Entity\Country;
     use App\Entity\SearchCountry;
+    use App\Repository\CountryRepository;
     use Symfony\Bridge\Doctrine\Form\Type\EntityType;
     use Symfony\Component\Form\AbstractType;
     use Symfony\Component\Form\FormBuilderInterface;
@@ -19,10 +20,14 @@
                     EntityType::class,
                     [
                         'class' => Country::class,
+                        'query_builder' => function (CountryRepository $er) {
+                            return $er->createQueryBuilder ('f')
+                                ->orderBy ('f.country', 'ASC');
+                        },
                         'placeholder' => 'Select A country',
                         'choice_label' => 'country',
                         'choice_value' => 'id',
-                        'attr' => ['class' => 'select2'],
+                        'attr' => ['class' => 'form-control select2'],
                         'required' => false
                     ]
                 );

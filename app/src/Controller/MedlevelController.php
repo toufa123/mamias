@@ -48,7 +48,7 @@
             $ob7->xAxis->categories($categoriesc);
             $ob7->yAxis->title(['text' => 'Numbre of NIS']);
             $ob7->title->style(
-                ['fontFamily' => 'roboto', 'fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']
+                ['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']
             );
             $ob7->credits->text('www.mamias.org');
             $ob7->credits->href('http://www.mamias.org _target="blank"');
@@ -56,7 +56,7 @@
             $ob7->labels->enabled(true);
             
             //$data = array($status,$results2);
-            $ob7->series([['type' => 'column', 'name' => 'Number of NIS', 'data' => $datac]]);
+            $ob7->series ([['type' => 'column', 'name' => 'Number of NIS', 'color' => '#00AEEF', 'data' => $datac]]);
             
             //draw cumulative numbre of NIS
             $cumulative = $em->getRepository(Mamias::class)->getcumulative();
@@ -80,9 +80,9 @@
             $ob8->title->text('Temporal variability in numbers of new reported marine non-indigenous species');
             $ob8->title->style(
                 [
-                    'fontFamily' => 'roboto',
+                    'fontFamily' => 'Roboto Light',
                     'fontSize' => '18px',
-                    'color' => '#03568C',
+                    'color' => '#00AEEF',
                     'fontWeight' => 'bold'
                 ]
             );
@@ -101,8 +101,8 @@
                     //'pointStart' => 1792
                 ]
             );
-            
-            $ob8->series([['name' => 'Cumulative Number of NIS', 'data' => $datacu]]);
+
+            $ob8->series ([['name' => 'Cumulative Number of NIS', 'color' => '#00AEEF', 'data' => $datacu]]);
             //Ecofunctional Groups of NIS
             $groups = $em->getRepository(Mamias::class)->getSpeciesbyGroup();
             //dump($groups); die;
@@ -116,7 +116,7 @@
             $ob3->chart->style(['fontFamily' => 'roboto']);
             $ob3->title->text('Ecofunctional Groups of NIS');
             $ob3->title->style(
-                ['fontFamily' => 'roboto', 'fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']
+                ['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']
             );
             
             $ob3->credits->text('www.mamias.org');
@@ -152,7 +152,7 @@
             $ob4->chart->renderTo('piechart2');
             $ob4->title->text('Status & Establishment of the NIS');
             $ob4->title->style(
-                ['fontFamily' => 'roboto', 'fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']
+                ['fontFamily' => 'Roboto Light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']
             );
             $ob4->credits->text('www.mamias.org');
             $ob4->credits->href('http://www.mamias.org _target="blank"');
@@ -189,7 +189,7 @@
             $ob6->lang->noData("No Data to display");
             $ob6->title->text('Number of NIS / EcAp Sub-region');
             $ob6->title->style(
-                ['fontFamily' => 'roboto', 'fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']
+                ['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']
             );
             
             $ob6->credits->text('www.mamias.org');
@@ -229,23 +229,11 @@
             $ob5->chart->renderTo('barchart1');
             $ob5->chart->options3d(['enabled' => true, 'alpha' => '5', 'beta' => '30', 'depth' => '100', 'viewDistance' => '25']);
             $ob5->title->text('Origin of the NIS');
-            $ob5->chart->color(
-                '#7cb5ec',
-                'orange',
-                'red',
-                '#f7a35c',
-                '#8085e9',
-                '#f15c80',
-                '#e4d354',
-                '#2b908f',
-                '#f45b5b',
-                '#91e8e1'
-            );
-            
+
             $ob5->yAxis->title(['text' => 'Numbre of NIS']);
             $ob5->xAxis->categories($categories);
             $ob5->title->style(
-                ['fontFamily' => 'roboto', 'fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']
+                ['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']
             );
             $ob5->credits->text('www.mamias.org');
             $ob5->credits->href('http://www.mamias.org _target="blank"');
@@ -254,7 +242,7 @@
             $ob5->labels->enabled(true);
             
             //$data = array($status,$results2);
-            $ob5->series([['type' => 'column', 'name' => 'Number of NIS', 'data' => $data3]]);
+            $ob5->series ([['type' => 'column', 'name' => 'Number of NIS', 'color' => '#00AEEF', 'data' => $data3]]);
             
             //numbre of NIS by Pathway
             $vector = $em->getRepository(Mamias::class)->getnumberbypathways();
@@ -276,14 +264,14 @@
             $ob9->yAxis->title(['text' => 'Numbre of NIS']);
             $ob9->yAxis->allowDecimals(false);
             $ob9->title->style(
-                ['fontFamily' => 'roboto', 'fontSize' => '18px', 'color' => '#03568C', 'fontWeight' => 'bold']
+                ['fontFamily' => 'Roboto light', 'fontSize' => '18px', 'color' => '#00AEEF', 'fontWeight' => 'bold']
             );
             $ob9->credits->text('www.mamias.org');
             $ob9->credits->href('http://www.mamias.org _target="blank"');
             //$ob5->legend->enabled(true);
             $ob9->labels->enabled(true);
             //$data = array($status,$results2);
-            $ob9->series([['type' => 'bar', 'name' => 'Number of NIS', 'data' => $pdatac]]);
+            $ob9->series ([['type' => 'bar', 'name' => 'Number of NIS', 'color' => '#00AEEF', 'data' => $pdatac]]);
             
             return $this->render(
                 'medlevel/index.html.twig',

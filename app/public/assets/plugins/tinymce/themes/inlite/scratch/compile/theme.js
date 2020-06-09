@@ -297,6 +297,7 @@ define('tinymce/inlite/alien/Bookmark', [], function () {
 });
 
 
+
 defineGlobal("global!tinymce.dom.TreeWalker", tinymce.dom.TreeWalker);
 defineGlobal("global!tinymce.dom.RangeUtils", tinymce.dom.RangeUtils);
 /**
@@ -515,6 +516,7 @@ define('tinymce/inlite/core/UrlType', [], function () {
         isAbsolute: isAbsolute
     };
 });
+
 
 
 /**
@@ -1066,6 +1068,7 @@ define('tinymce/inlite/file/Conversions', [
 });
 
 
+
 /**
  * Picker.js
  *
@@ -1104,6 +1107,7 @@ define('tinymce/inlite/file/Picker', [
         pickFile: pickFile
     };
 });
+
 
 
 /**
@@ -1231,6 +1235,7 @@ define('tinymce/inlite/core/SkinLoader', [
         load: load
     };
 });
+
 
 
 /**

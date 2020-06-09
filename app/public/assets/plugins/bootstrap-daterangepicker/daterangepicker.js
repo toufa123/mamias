@@ -52,7 +52,7 @@
         this.ranges = {};
 
         this.opens = 'right';
-        if (this.element.hasClass('pull-right'))
+        if (this.element.hasClass('float-right'))
             this.opens = 'left';
 
         this.drops = 'down';
@@ -61,7 +61,7 @@
 
         this.buttonClasses = 'btn btn-sm';
         this.applyClass = 'btn-success';
-        this.cancelClass = 'btn-default';
+        this.cancelClass = 'btn-secondary';
 
         this.locale = {
             direction: 'ltr',

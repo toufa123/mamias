@@ -1,11 +1,6 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Home{% endblock %}
-
 {% block body %}
-
-
-
     <div class="row">
         <div class="col-lg-4 col-md-6">
             <div class="card-box widget-box-two widget-two-info">
@@ -17,7 +12,7 @@
                     <h2 class="text-white"><span data-plugin="counterup">{{ NISCount }}</span>
 
                     </h2>
-                    <p class="m-0">Catalogue: Version 1.0 - Total Number :{{ NIStotal }} - last update
+                    <p class="m-0">Catalogue: Version 1.0 - last update
                         : {{ catalogueDate |date("d/m/Y") }}</p>
                 </div>
             </div>
@@ -56,7 +51,7 @@
     <div class="row">
         <div class="col-lg-6">
             <div class="property-card">
-                <div class="property-content">
+                <div class="property-card bg-white">
                     <div id="highcontainer" style="height: 520px;">
                         <div class="loading">
                             <i class="icon-spinner icon-spin icon-large"></i>
@@ -70,7 +65,7 @@
         </div>
         <div class="col-lg-6">
             <div class="property-card">
-                <div class="property-content">
+                <div class="property-card bg-white">
                     <div id="container" style="min-width: 310px; height: 520px; margin: 0 auto"></div>
                 </div>
             </div>
@@ -79,7 +74,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="property-card">
-                <div class="property-content">
+                <div class="property-card bg-white">
                     <div class="m-t-1 p-t-1">
                         <!--<h4 class="text-uppercase">Last publication</h4>
                          <div class="border m-b-30"></div>-->
@@ -89,7 +84,7 @@
                                 <div class="about-team-member">
                                     <img src="https://easin.jrc.ec.europa.eu/easin/images/ec-logo.gif" alt="EASIN"
                                          class="img-responsive thumb-xl">
-                                    <h4><a href="https://easin.jrc.ec.europa.eu/easin/">MAMIAS is EASIN Data Patners</a>
+                                    <h4><a class='text-custom' href="https://easin.jrc.ec.europa.eu/easin/">MAMIAS is EASIN Data Patners</a>
                                     </h4>
                                     <p>2016</p>
 
@@ -100,7 +95,7 @@
                                     <img src="{{ asset('resources/images/imap.png') }}" alt="IMAP"
                                          class="img-responsive thumb-xl">
                                     <h4>
-                                        <a href="https://wedocs.unep.org/bitstream/handle/20.500.11822/17012/imap_2017_eng.pdf?sequence=5&isAllowed=y">Integrated
+                                        <a class='text-custom' href="https://wedocs.unep.org/bitstream/handle/20.500.11822/17012/imap_2017_eng.pdf?sequence=5&isAllowed=y">Integrated
                                             Monitoring and Assessment Programme of the Mediterranean Sea and Coast and
                                             related Assessment Criteria (IMAP)</a>
                                     </h4>
@@ -114,7 +109,7 @@
                                     <img src="https://web.unep.org/unepmap/sites/unep.org.unepmap/files/webqsr.jpg"
                                          alt="UNEP-MAP"
                                          class="img-responsive thumb-xl">
-                                    <h4><a href="https://www.medqsr.org/">Mediterranean 2017 Quality Status Report</a>
+                                    <h4><a class='text-custom' href="https://www.medqsr.org/">Mediterranean 2017 Quality Status Report</a>
                                     </h4>
                                     <p>2017</p>
                                 </div>
@@ -166,8 +161,8 @@
                 title: {
                     text: 'Number of Marine NIS by Country',
                     style: {
-                        color: '#337ab7',
-                        font: "Roboto",
+                        color: '#00AEEF',
+                        font: "Roboto Light",
                         fontSize: '18px',
                         fontWeight: 'bold'
                     }
@@ -239,6 +234,7 @@
                 }, {
                     type: 'mapbubble',
                     mapData: geojson,
+                    color: '#00AEEF',
                     //mapData: geojson,
                     joinBy: ['NAME', 'country'],
                     data: data,
@@ -250,7 +246,7 @@
                         allowOverlap: false,
                         format: '{point.z}'
                     }, tooltip: {
-                        pointFormat: '<p class="text-success"> <b>{point.country}<b>: {point.z}</p>'
+                        pointFormat: '<p class="text-custom"> <b>{point.country}<b>: {point.z}</p>'
                     }
 
                 }]
@@ -265,11 +261,8 @@
         var data3 = {{ cat1 |raw }};
         data4 = [];
         data4 = {{ datareg1 | raw }};
-
         const result = regression.linear(data4);
-
-        console.log(data4);
-
+        //console.log(data4);
         $(function () {
             $('#container').highcharts({
                 chart: {
@@ -280,8 +273,8 @@
                     text: 'Temporal variability in numbers of new reported marine non-indigenous species ' +
                         '  & Trends',
                     style: {
-                        color: '#337ab7',
-                        font: "Roboto",
+                        color: '#00AEEF',
+                        font: "Roboto Light",
                         fontSize: '18px',
                         fontWeight: 'bold'
                     }
@@ -333,7 +326,6 @@
                     backgroundColor: '#FFFFFF',
                     borderWidth: 1
                 },
-
                 series: [{
                     regression: true,
                     regressionSettings: {
@@ -343,14 +335,11 @@
                         name: "%eq | r2: %r"
                     },
                     name: 'Cumulative Number of NIS',
-                    color: 'rgb(24,133,226)',
+                    color: 'rgb(0,174,239)',
                     data: data4
 
                 }]
             });
         });
-
     </script>
-
-
 {% endblock %}

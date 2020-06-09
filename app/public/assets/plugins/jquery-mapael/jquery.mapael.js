@@ -1385,6 +1385,7 @@
             var cssClass = self.$tooltip.attr('class');
 
 
+
             var updateTooltipPosition = function (x, y) {
 
                 var offsetLeft = 10;

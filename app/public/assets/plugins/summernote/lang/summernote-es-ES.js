@@ -32,7 +32,8 @@
                 maximumFileSize: 'Tamaño máximo del archivo',
                 maximumFileSizeError: 'Has superado el tamaño máximo del archivo.',
                 url: 'URL de la imagen',
-                remove: 'Eliminar imagen'
+                remove: 'Eliminar imagen',
+                original: 'Original'
             },
             video: {
                 video: 'Vídeo',
@@ -51,7 +52,14 @@
                 openInNewWindow: 'Abrir en una nueva ventana'
             },
             table: {
-                table: 'Tabla'
+                table: 'Tabla',
+                addRowAbove: 'Añadir fila encima',
+                addRowBelow: 'Añadir fila debajo',
+                addColLeft: 'Añadir columna izquierda',
+                addColRight: 'Añadir columna derecha',
+                delRow: 'Borrar fila',
+                delCol: 'Eliminar columna',
+                delTable: 'Eliminar tabla'
             },
             hr: {
                 insert: 'Insertar línea horizontal'

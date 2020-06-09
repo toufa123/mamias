@@ -378,7 +378,7 @@ if (Tablesaw.mustard) {
         $menuButton = $("<a href='#" + id + "' class='btn btn-micro " + this.classes.columnBtn + "' data-popup-link>" +
             "<span>" + Tablesaw.i18n.columnBtnText + "</span></a>");
         $popup = $("<div class='dialog-table-coltoggle " + this.classes.popup + "' id='" + id + "'></div>");
-        $menu = $("<div class='btn-group'></div>");
+        $menu = $("<div class='btn-group d-block'></div>");
 
         var hasNonPersistentHeaders = false;
         $(this.headers).not("td").each(function () {

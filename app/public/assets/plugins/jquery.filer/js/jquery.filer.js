@@ -1,8 +1,8 @@
 /*!
  * jQuery.filer
- * Copyright (c) 2016 CreativeDream
+ * Copyright (c) 2015 CreativeDream
  * Website: https://github.com/CreativeDream/jquery.filer
- * Version: 1.3 (14-Sep-2016)
+ * Version: 1.0.5 (19-Nov-2015)
  * Requires: jQuery v1.7.1 or later
  */
 (function ($) {
@@ -25,8 +25,8 @@
                         f._changeInput();
                     },
                     _bindInput: function () {
-                        if (n.changeInput && o.length > 0) {
-                            o.on("click", f._clickHandler);
+                        if (n.changeInput && o.size() > 0) {
+                            o.bind("click", f._clickHandler);
                         }
                         s.on({
                             "focus": function () {
@@ -35,59 +35,31 @@
                             "blur": function () {
                                 o.removeClass('focused');
                             },
-                            "change": f._onChange
+                            "change": function () {
+                                f._onChange();
+                            }
                         });
                         if (n.dragDrop) {
-                            n.dragDrop.dragContainer.on("drag dragstart dragend dragover dragenter dragleave drop", function (e) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            });
-                            n.dragDrop.dragContainer.on("drop", f._dragDrop.drop);
-                            n.dragDrop.dragContainer.on("dragover", f._dragDrop.dragEnter);
-                            n.dragDrop.dragContainer.on("dragleave", f._dragDrop.dragLeave);
+                            (o.length > 0 ? o : s)
+                                .bind("drop", f._dragDrop.drop)
+                                .bind("dragover", f._dragDrop.dragEnter)
+                                .bind("dragleave", f._dragDrop.dragLeave);
                         }
                         if (n.uploadFile && n.clipBoardPaste) {
                             $(window)
                                 .on("paste", f._clipboardPaste);
                         }
                     },
-                    _unbindInput: function (all) {
-                        if (n.changeInput && o.length > 0) {
-                            o.off("click", f._clickHandler);
-                        }
-
-                        if (all) {
-                            s.off("change", f._onChange);
-                            if (n.dragDrop) {
-                                n.dragDrop.dragContainer.off("drop", f._dragDrop.drop);
-                                n.dragDrop.dragContainer.off("dragover", f._dragDrop.dragEnter);
-                                n.dragDrop.dragContainer.off("dragleave", f._dragDrop.dragLeave);
-                            }
-                            if (n.uploadFile && n.clipBoardPaste) {
-                                $(window)
-                                    .off("paste", f._clipboardPaste);
-                            }
+                    _unbindInput: function () {
+                        if (n.changeInput && o.size() > 0) {
+                            o.unbind("click", f._clickHandler);
                         }
                     },
                     _clickHandler: function () {
-                        if (!n.uploadFile && n.addMore && s.val().length != 0) {
-                            f._unbindInput(true);
-                            var elem = $('<input type="file" />');
-                            var attributes = s.prop("attributes");
-                            $.each(attributes, function () {
-                                if (this.name == "required") return;
-                                elem.attr(this.name, this.value);
-                            });
-                            s.after(elem);
-                            sl.push(elem);
-                            s = elem;
-                            f._bindInput();
-                            f._set('props');
-                        }
                         s.click()
                     },
                     _applyAttrSettings: function () {
-                        var d = ["name", "limit", "maxSize", "fileMaxSize", "extensions", "changeInput", "showThumbs", "appendTo", "theme", "addMore", "excludeName", "files", "uploadUrl", "uploadData", "options"];
+                        var d = ["name", "limit", "maxSize", "extensions", "changeInput", "showThumbs", "appendTo", "theme", "addMore", "excludeName", "files", "uploadUrl", "uploadData", "options"];
                         for (var k in d) {
                             var j = "data-jfiler-" + d[k];
                             if (f._assets.hasAttr(j)) {
@@ -162,23 +134,12 @@
                             }
                         }
                         s.prop("jFiler").newInputEl = o;
-                        if (n.dragDrop) {
-                            n.dragDrop.dragContainer = n.dragDrop.dragContainer ? $(n.dragDrop.dragContainer) : o;
-                        }
                         if (!n.limit || (n.limit && n.limit >= 2)) {
                             s.attr("multiple", "multiple");
                             s.attr("name")
                                 .slice(-2) != "[]" ? s.attr("name", s.attr("name") + "[]") : null;
                         }
-                        if (!s.attr("disabled") && !n.disabled) {
-                            n.disabled = false;
-                            f._bindInput();
-                            p.removeClass("jFiler-disabled");
-                        } else {
-                            n.disabled = true;
-                            f._unbindInput(true);
-                            p.addClass("jFiler-disabled");
-                        }
+                        f._bindInput();
                         if (n.files) {
                             f._append(false, {
                                 files: n.files
@@ -203,7 +164,7 @@
                                     sl[i].remove();
                                 }
                                 sl = [];
-                                f._unbindInput(true);
+                                f._unbindInput();
                                 if (f._isGn) {
                                     s = f._isGn;
                                 } else {
@@ -221,9 +182,11 @@
                             .files_list = f._itFl;
                         s.prop("jFiler")
                             .current_file = f._itFc;
-                        f._itFr = [];
-                        p.find("input[name^='jfiler-items-exclude-']:hidden")
-                            .remove();
+                        if (!f._prEr) {
+                            f._itFr = [];
+                            p.find("input[name^='jfiler-items-exclude-']:hidden")
+                                .remove();
+                        }
                         l.fadeOut("fast", function () {
                             $(this)
                                 .remove();
@@ -233,7 +196,7 @@
                     _set: function (element, value) {
                         switch (element) {
                             case 'input':
-                                s.val(value);
+                                s.val("");
                                 break;
                             case 'feedback':
                                 if (o.length > 0) {
@@ -256,21 +219,6 @@
                                             return f._append(false, {
                                                 files: [data]
                                             });
-                                        },
-                                        enable: function () {
-                                            if (!n.disabled)
-                                                return;
-                                            n.disabled = false;
-                                            s.removeAttr("disabled");
-                                            p.removeClass("jFiler-disabled");
-                                            f._bindInput();
-                                        },
-                                        disable: function () {
-                                            if (n.disabled)
-                                                return;
-                                            n.disabled = true;
-                                            p.addClass("jFiler-disabled");
-                                            f._unbindInput(true);
                                         },
                                         remove: function (id) {
                                             f._remove(null, {
@@ -296,14 +244,14 @@
                     _filesCheck: function () {
                         var s = 0;
                         if (n.limit && f.files.length + f._itFl.length > n.limit) {
-                            n.dialogs.alert(f._assets.textParse(n.captions.errors.filesLimit));
+                            alert(f._assets.textParse(n.captions.errors.filesLimit));
                             return false
                         }
                         for (var t = 0; t < f.files.length; t++) {
-                            var file = f.files[t],
-                                x = file.name.split(".")
+                            var x = f.files[t].name.split(".")
                                     .pop()
                                     .toLowerCase(),
+                                file = f.files[t],
                                 m = {
                                     name: file.name,
                                     size: file.size,
@@ -311,42 +259,35 @@
                                     type: file.type,
                                     ext: x
                                 };
-                            if (n.extensions != null && $.inArray(x, n.extensions) == -1 && $.inArray(m.type, n.extensions) == -1) {
-                                n.dialogs.alert(f._assets.textParse(n.captions.errors.filesType, m));
+                            if (n.extensions != null && $.inArray(x, n.extensions) == -1) {
+                                alert(f._assets.textParse(n.captions.errors.filesType, m));
                                 return false;
+                                break
                             }
-                            if ((n.maxSize != null && f.files[t].size > n.maxSize * 1048576) || (n.fileMaxSize != null && f.files[t].size > n.fileMaxSize * 1048576)) {
-                                n.dialogs.alert(f._assets.textParse(n.captions.errors.filesSize, m));
+                            if (n.maxSize != null && f.files[t].size > n.maxSize * 1048576) {
+                                alert(f._assets.textParse(n.captions.errors.filesSize, m));
                                 return false;
+                                break
                             }
                             if (file.size == 4096 && file.type.length == 0) {
-                                n.dialogs.alert(f._assets.textParse(n.captions.errors.folderUpload, m));
                                 return false;
+                                break
                             }
-                            if (n.onFileCheck != null && typeof n.onFileCheck == "function" ? n.onFileCheck(m, n, f._assets.textParse) === false : null) {
-                                return false;
-                            }
-
-                            if ((n.uploadFile || n.addMore) && !n.allowDuplicates) {
-                                var m = f._itFl.filter(function (a, b) {
-                                    if (a.file.name == file.name && a.file.size == file.size && a.file.type == file.type && (file.lastModified ? a.file.lastModified == file.lastModified : true)) {
-                                        return true;
-                                    }
-                                });
-                                if (m.length > 0) {
-                                    if (f.files.length == 1) {
-                                        return false;
-                                    } else {
-                                        file._pendRemove = true;
-                                    }
-                                }
-                            }
-
                             s += f.files[t].size
                         }
                         if (n.maxSize != null && s >= Math.round(n.maxSize * 1048576)) {
-                            n.dialogs.alert(f._assets.textParse(n.captions.errors.filesSizeAll));
+                            alert(f._assets.textParse(n.captions.errors.filesSizeAll));
                             return false
+                        }
+                        if ((n.addMore || n.uploadFile)) {
+                            var m = f._itFl.filter(function (a, b) {
+                                if (a.file.name == file.name && a.file.size == file.size && a.file.type == file.type && (file.lastModified ? a.file.lastModified == file.lastModified : true)) {
+                                    return true;
+                                }
+                            });
+                            if (m.length > 0) {
+                                return false
+                            }
                         }
                         return true;
                     },
@@ -356,8 +297,7 @@
                                 id = (f._itFc ? f._itFc.id : i),
                                 name = file.name,
                                 size = file.size,
-                                url = file.file,
-                                type = file.type ? file.type.split("/", 1) : ""
+                                type = file.type.split("/", 1)
                                     .toString()
                                     .toLowerCase(),
                                 ext = name.indexOf(".") != -1 ? name.split(".")
@@ -369,7 +309,6 @@
                                     name: name,
                                     size: size,
                                     size2: f._assets.bytesToSize(size),
-                                    url: url,
                                     type: type,
                                     extension: ext,
                                     icon: f._assets.getIcon(ext, type),
@@ -405,7 +344,7 @@
                         },
                         renderFile: function (file, html, opts) {
                             if (html.find('.jFiler-item-thumb-image')
-                                .length == 0) {
+                                .size() == 0) {
                                 return false;
                             }
                             if (file.file && opts.type == "image") {
@@ -424,56 +363,23 @@
                                     });
                                 return true;
                             }
-                            if (window.File && window.FileList && window.FileReader && opts.type == "image" && opts.size < 1e+7) {
+                            if (window.File && window.FileList && window.FileReader && opts.type == "image" && opts.size < 6e+6) {
                                 var y = new FileReader;
                                 y.onload = function (e) {
-                                    var m = html.find('.jFiler-item-thumb-image.fi-loading');
-                                    if (n.templates.canvasImage) {
-                                        var canvas = document.createElement('canvas'),
-                                            context = canvas.getContext('2d'),
-                                            img = new Image();
-
-                                        img.onload = function () {
-                                            var height = m.height(),
-                                                width = m.width(),
-                                                heightRatio = img.height / height,
-                                                widthRatio = img.width / width,
-                                                optimalRatio = heightRatio < widthRatio ? heightRatio : widthRatio,
-                                                optimalHeight = img.height / optimalRatio,
-                                                optimalWidth = img.width / optimalRatio,
-                                                steps = Math.ceil(Math.log(img.width / optimalWidth) / Math.log(2));
-
-                                            canvas.height = height;
-                                            canvas.width = width;
-
-                                            if (img.width < canvas.width || img.height < canvas.height || steps <= 1) {
-                                                var x = img.width < canvas.width ? canvas.width / 2 - img.width / 2 : img.width > canvas.width ? -(img.width - canvas.width) / 2 : 0,
-                                                    y = img.height < canvas.height ? canvas.height / 2 - img.height / 2 : 0
-                                                context.drawImage(img, x, y, img.width, img.height);
-                                            } else {
-                                                var oc = document.createElement('canvas'),
-                                                    octx = oc.getContext('2d');
-                                                oc.width = img.width * 0.5;
-                                                oc.height = img.height * 0.5;
-                                                octx.fillStyle = "#fff";
-                                                octx.fillRect(0, 0, oc.width, oc.height);
-                                                octx.drawImage(img, 0, 0, oc.width, oc.height);
-                                                octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
-
-                                                context.drawImage(oc, optimalWidth > canvas.width ? optimalWidth - canvas.width : 0, 0, oc.width * 0.5, oc.height * 0.5, 0, 0, optimalWidth, optimalHeight);
-                                            }
-                                            m.removeClass('fi-loading').html('<img src="' + canvas.toDataURL("image/png") + '" draggable="false" />');
-                                        }
-                                        img.onerror = function () {
+                                    var g = '<img src="' + e.target.result + '" draggable="false" />',
+                                        m = html.find('.jFiler-item-thumb-image.fi-loading');
+                                    $(g)
+                                        .error(function () {
+                                            g = f._thumbCreator.generateIcon(opts);
                                             html.addClass('jFiler-no-thumbnail');
                                             m.removeClass('fi-loading')
-                                                .html(f._thumbCreator.generateIcon(opts));
-                                        }
-                                        img.src = e.target.result;
-                                    } else {
-                                        m.removeClass('fi-loading').html('<img src="' + e.target.result + '" draggable="false" />');
-                                    }
-                                }
+                                                .html(g);
+                                        })
+                                        .load(function () {
+                                            m.removeClass('fi-loading')
+                                                .html(g);
+                                        });
+                                };
                                 y.readAsDataURL(file);
                             } else {
                                 var g = f._thumbCreator.generateIcon(opts),
@@ -485,8 +391,8 @@
                         },
                         generateIcon: function (obj) {
                             var m = new Array(3);
-                            if (obj && obj.type && obj.type[0] && obj.extension) {
-                                switch (obj.type[0]) {
+                            if (obj && obj.type && obj.extension) {
+                                switch (obj.type) {
                                     case "image":
                                         m[0] = "f-image";
                                         m[1] = "<i class=\"icon-jfi-file-image\"></i>"
@@ -514,9 +420,16 @@
                                 var c = f._assets.text2Color(obj.extension);
                                 if (c) {
                                     var j = $(el)
-                                        .appendTo("body");
-
-                                    j.css('background-color', f._assets.text2Color(obj.extension));
+                                            .appendTo("body"),
+                                        h = j.css("box-shadow");
+                                    h = c + h.substring(h.replace(/^.*(rgba?\([^)]+\)).*$/, '$1')
+                                        .length, h.length);
+                                    j.css({
+                                        '-webkit-box-shadow': h,
+                                        '-moz-box-shadow': h,
+                                        'box-shadow': h
+                                    })
+                                        .attr('style', '-webkit-box-shadow: ' + h + '; -moz-box-shadow: ' + h + '; box-shadow: ' + h + ';');
                                     el = j.prop('outerHTML');
                                     j.remove();
                                 }
@@ -541,14 +454,10 @@
                                     .appendTo(appendTo);
                                 l.on('click', n.templates._selectors.remove, function (e) {
                                     e.preventDefault();
-                                    var m = [params ? params.remove.event : e, params ? params.remove.el : $(this).closest(n.templates._selectors.item)],
-                                        c = function (a) {
-                                            f._remove(m[0], m[1]);
-                                        };
-                                    if (n.templates.removeConfirmation) {
-                                        n.dialogs.confirm(n.captions.removeConfirmation, c);
-                                    } else {
-                                        c();
+                                    var cf = n.templates.removeConfirmation ? confirm(n.captions.removeConfirmation) : true;
+                                    if (cf) {
+                                        f._remove(params ? params.remove.event : e, params ? params.remove.el : $(this)
+                                            .closest(n.templates._selectors.item));
                                     }
                                 });
                             }
@@ -560,17 +469,15 @@
                         }
                     },
                     _upload: function (i) {
-                        var c = f._itFl[i],
-                            el = c.html,
+                        var el = f._itFc.html,
                             formData = new FormData();
-                        formData.append(s.attr('name'), c.file, (c.file.name ? c.file.name : false));
-                        if (n.uploadFile.data != null && $.isPlainObject(typeof (n.uploadFile.data) == "function" ? n.uploadFile.data(c.file) : n.uploadFile.data)) {
+                        formData.append(s.attr('name'), f._itFc.file, (f._itFc.file.name ? f._itFc.file.name : false));
+                        if (n.uploadFile.data != null && $.isPlainObject(n.uploadFile.data)) {
                             for (var k in n.uploadFile.data) {
                                 formData.append(k, n.uploadFile.data[k])
                             }
                         }
-
-                        f._ajax.send(el, formData, c);
+                        f._ajax.send(el, formData, f._itFc);
                     },
                     _ajax: {
                         send: function (el, formData, c) {
@@ -591,14 +498,8 @@
                                 complete: function (jqXHR, textStatus) {
                                     c.ajax = false;
                                     f._ajFc++;
-
-                                    if (n.uploadFile.synchron && c.id + 1 < f._itFl.length) {
-                                        f._upload(c.id + 1);
-                                    }
-
                                     if (f._ajFc >= f.files.length) {
                                         f._ajFc = 0;
-                                        s.get(0).value = "";
                                         n.uploadFile.onComplete != null && typeof n.uploadFile.onComplete == "function" ? n.uploadFile.onComplete(l, p, o, s, jqXHR, textStatus) : null;
                                     }
                                 },
@@ -633,26 +534,25 @@
                     },
                     _dragDrop: {
                         dragEnter: function (e) {
-                            clearTimeout(f._dragDrop._drt);
-                            n.dragDrop.dragContainer.addClass('dragged');
+                            e.preventDefault();
+                            e.stopPropagation();
+                            p.addClass('dragged');
                             f._set('feedback', n.captions.drop);
                             n.dragDrop.dragEnter != null && typeof n.dragDrop.dragEnter == "function" ? n.dragDrop.dragEnter(e, o, s, p) : null;
                         },
                         dragLeave: function (e) {
-                            clearTimeout(f._dragDrop._drt);
-                            f._dragDrop._drt = setTimeout(function (e) {
-                                if (!f._dragDrop._dragLeaveCheck(e)) {
-                                    f._dragDrop.dragLeave(e);
-                                    return false;
-                                }
-                                n.dragDrop.dragContainer.removeClass('dragged');
-                                f._set('feedback', n.captions.feedback);
-                                n.dragDrop.dragLeave != null && typeof n.dragDrop.dragLeave == "function" ? n.dragDrop.dragLeave(e, o, s, p) : null;
-                            }, 100, e);
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!f._dragDrop._dragLeaveCheck(e)) {
+                                return false
+                            }
+                            p.removeClass('dragged');
+                            f._set('feedback', n.captions.feedback);
+                            n.dragDrop.dragLeave != null && typeof n.dragDrop.dragLeave == "function" ? n.dragDrop.dragLeave(e, o, s, p) : null;
                         },
                         drop: function (e) {
-                            clearTimeout(f._dragDrop._drt);
-                            n.dragDrop.dragContainer.removeClass('dragged');
+                            e.preventDefault();
+                            p.removeClass('dragged');
                             f._set('feedback', n.captions.feedback);
                             if (e && e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files && e.originalEvent.dataTransfer.files.length > 0) {
                                 f._onChange(e, e.originalEvent.dataTransfer.files);
@@ -660,13 +560,13 @@
                             n.dragDrop.drop != null && typeof n.dragDrop.drop == "function" ? n.dragDrop.drop(e.originalEvent.dataTransfer.files, e, o, s, p) : null;
                         },
                         _dragLeaveCheck: function (e) {
-                            var related = $(e.currentTarget),
-                                insideEls = 0;
-                            if (!related.is(o)) {
-                                insideEls = o.find(related).length;
-
-                                if (insideEls > 0) {
-                                    debugger;
+                            var related = e.relatedTarget,
+                                inside = false;
+                            if (related !== o) {
+                                if (related) {
+                                    inside = $.contains(o, related);
+                                }
+                                if (inside) {
                                     return false;
                                 }
                             }
@@ -733,20 +633,7 @@
                     },
                     _onSelect: function (i) {
                         if (n.uploadFile && !$.isEmptyObject(n.uploadFile)) {
-                            if (!n.uploadFile.synchron || (n.uploadFile.synchron && $.grep(f._itFl, function (a) {
-                                return a.ajax
-                            }).length == 0)) {
-                                f._upload(f._itFc.id)
-                            }
-                        }
-                        if (f.files[i]._pendRemove) {
-                            f._itFc.html.hide();
-                            f._remove(null, {
-                                binded: true,
-                                data: {
-                                    id: f._itFc.id
-                                }
-                            });
+                            f._upload(i)
                         }
                         n.onSelect != null && typeof n.onSelect == "function" ? n.onSelect(f.files[i], f._itFc.html, l, p, o, s) : null;
                         if (i + 1 >= f.files.length) {
@@ -783,13 +670,6 @@
                         if (!f._filesCheck() || (n.beforeSelect != null && typeof n.beforeSelect == "function" ? !n.beforeSelect(f.files, l, p, o, s) : false)) {
                             f._set('input', '');
                             f._clear();
-                            if (n.addMore && sl.length > 0) {
-                                f._unbindInput(true);
-                                sl[sl.length - 1].remove();
-                                sl.splice(sl.length - 1, 1);
-                                s = sl.length > 0 ? sl[sl.length - 1] : $(r);
-                                f._bindInput();
-                            }
                             return false
                         }
                         f._set('feedback', f.files.length + f._itFl.length + ' ' + n.captions.feedback2);
@@ -801,6 +681,19 @@
                                 f._addToMemory(i);
                                 f._onSelect(i);
                             }
+                        }
+                        if (!n.uploadFile && n.addMore) {
+                            var elem = $('<input type="file" />');
+                            var attributes = s.prop("attributes");
+                            $.each(attributes, function () {
+                                elem.attr(this.name, this.value);
+                            });
+                            s.after(elem);
+                            f._unbindInput();
+                            sl.push(elem);
+                            s = elem;
+                            f._bindInput();
+                            f._set('props');
                         }
                     },
                     _append: function (e, data) {
@@ -858,7 +751,7 @@
                         if (el.binded) {
                             if (typeof (el.data.id) != "undefined") {
                                 el = l.find(n.templates._selectors.item + "[data-jfiler-index='" + el.data.id + "']");
-                                if (el.length == 0) {
+                                if (el.size() == 0) {
                                     return false
                                 }
                             }
@@ -866,42 +759,47 @@
                                 el = el.data.el;
                             }
                         }
-                        var excl_input = function (val) {
+                        var attrId = el.get(0)
+                                .jfiler_id || el.attr('data-jfiler-index'),
+                            id = null,
+                            excl_input = function (id) {
                                 var input = p.find("input[name^='jfiler-items-exclude-']:hidden")
-                                    .first();
-
-                                if (input.length == 0) {
+                                        .first(),
+                                    item = f._itFl[id],
+                                    val = [];
+                                if (input.size() == 0) {
                                     input = $('<input type="hidden" name="jfiler-items-exclude-' + (n.excludeName ? n.excludeName : (s.attr("name")
                                         .slice(-2) != "[]" ? s.attr("name") : s.attr("name")
                                         .substring(0, s.attr("name")
                                             .length - 2)) + "-" + t) + '">');
                                     input.appendTo(p);
                                 }
-
-                                if (val && $.isArray(val)) {
+                                if (item.file._choosed || item.file._appended || item.uploaded) {
+                                    f._prEr = true;
+                                    f._itFr.push(item);
+                                    if (n.addMore) {
+                                        var current_input = item.input,
+                                            count_same_input = 0;
+                                        f._itFl.filter(function (val, index) {
+                                            if (val.file._choosed && val.input.get(0) == current_input.get(0)) count_same_input++;
+                                        });
+                                        if (count_same_input == 1) {
+                                            f._itFr = f._itFr.filter(function (val, index) {
+                                                return val.file._choosed ? val.input.get(0) != current_input.get(0) : true;
+                                            });
+                                            current_input.val("");
+                                            f._prEr = false;
+                                        }
+                                    }
+                                    for (var i = 0; i < f._itFr.length; i++) {
+                                        val.push(f._itFr[i].file.name);
+                                    }
                                     val = JSON.stringify(val);
                                     input.val(val);
                                 }
                             },
                             callback = function (el, id) {
-                                var item = f._itFl[id],
-                                    val = [];
-
-                                if (item.file._choosed || item.file._appended || item.uploaded) {
-                                    f._itFr.push(item);
-
-                                    var m = f._itFl.filter(function (a) {
-                                        return a.file.name == item.file.name;
-                                    });
-
-                                    for (var i = 0; i < f._itFr.length; i++) {
-                                        if (n.addMore && f._itFr[i] == item && m.length > 0) {
-                                            f._itFr[i].remove_name = m.indexOf(item) + "://" + f._itFr[i].file.name;
-                                        }
-                                        val.push(f._itFr[i].remove_name ? f._itFr[i].remove_name : f._itFr[i].file.name);
-                                    }
-                                }
-                                excl_input(val);
+                                excl_input(id);
                                 f._itFl.splice(id, 1);
                                 if (f._itFl.length < 1) {
                                     f._reset();
@@ -914,11 +812,6 @@
                                         .remove();
                                 });
                             };
-
-                        var attrId = el.get(0)
-                                .jfiler_id || el.attr('data-jfiler-index'),
-                            id = null;
-
                         for (var key in f._itFl) {
                             if (key === 'length' || !f._itFl.hasOwnProperty(key)) continue;
                             if (f._itFl[key].id == attrId) {
@@ -933,9 +826,8 @@
                             callback(el, id);
                             return;
                         }
-                        if (n.onRemove != null && typeof n.onRemove == "function" ? n.onRemove(el, f._itFl[id].file, id, l, p, o, s) !== false : true) {
-                            callback(el, id);
-                        }
+                        n.onRemove != null && typeof n.onRemove == "function" ? n.onRemove(el, f._itFl[id].file, id, l, p, o, s) : null;
+                        callback(el, id);
                     },
                     _addToMemory: function (i) {
                         f._itFl.push({
@@ -945,7 +837,7 @@
                             ajax: false,
                             uploaded: false,
                         });
-                        if (n.addMore || f.files[i]._appended) f._itFl[f._itFl.length - 1].input = s;
+                        if (n.addMore && !f.files[i]._appended) f._itFl[f._itFl.length - 1].input = s;
                         f._itFc = f._itFl[f._itFl.length - 1];
                         s.prop("jFiler")
                             .files_list = f._itFl;
@@ -981,7 +873,6 @@
                             opts = $.extend({}, {
                                 limit: n.limit,
                                 maxSize: n.maxSize,
-                                fileMaxSize: n.fileMaxSize,
                                 extensions: n.extensions ? n.extensions.join(',') : null,
                             }, (opts && $.isPlainObject(opts) ? opts : {}), n.options);
                             switch (typeof (text)) {
@@ -1022,8 +913,8 @@
                     _itFl: [],
                     _itFc: null,
                     _itFr: [],
-                    _itPl: [],
-                    _ajFc: 0
+                    _ajFc: 0,
+                    _prEr: false
                 }
 
             s.on("filer.append", function (e, data) {
@@ -1049,7 +940,6 @@
     $.fn.filer.defaults = {
         limit: null,
         maxSize: null,
-        fileMaxSize: null,
         extensions: null,
         changeInput: true,
         showThumbs: false,
@@ -1062,7 +952,6 @@
             progressBar: '<div class="bar"></div>',
             itemAppendToEnd: false,
             removeConfirmation: true,
-            canvasImage: true,
             _selectors: {
                 list: '.jFiler-items-list',
                 item: '.jFiler-item',
@@ -1074,7 +963,6 @@
         uploadFile: null,
         dragDrop: null,
         addMore: false,
-        allowDuplicates: false,
         clipBoardPaste: true,
         excludeName: null,
         beforeRender: null,
@@ -1082,19 +970,10 @@
         beforeShow: null,
         beforeSelect: null,
         onSelect: null,
-        onFileCheck: null,
         afterShow: null,
         onRemove: null,
         onEmpty: null,
         options: null,
-        dialogs: {
-            alert: function (text) {
-                return alert(text);
-            },
-            confirm: function (text, callback) {
-                confirm(text) ? callback() : null;
-            }
-        },
         captions: {
             button: "Choose Files",
             feedback: "Choose files To Upload",
@@ -1103,10 +982,9 @@
             removeConfirmation: "Are you sure you want to remove this file?",
             errors: {
                 filesLimit: "Only {{fi-limit}} files are allowed to be uploaded.",
-                filesType: "Only Excel files are allowed to be uploaded.",
-                filesSize: "{{fi-name}} is too large! Please upload file up to {{fi-fileMaxSize}} MB.",
-                filesSizeAll: "Files you've choosed are too large! Please upload files up to {{fi-maxSize}} MB.",
-                folderUpload: "You are not allowed to upload folders."
+                filesType: "Only Images are allowed to be uploaded.",
+                filesSize: "{{fi-name}} is too large! Please upload file up to {{fi-maxSize}} MB.",
+                filesSizeAll: "Files you've choosed are too large! Please upload files up to {{fi-maxSize}} MB."
             }
         }
     }
