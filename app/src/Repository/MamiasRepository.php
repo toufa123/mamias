@@ -63,6 +63,7 @@
             return $this->createQueryBuilder ('z')
                 ->leftJoin ('z.relation', 'Catalogue')
                 ->addSelect ('Catalogue')
+                ->orderBy ('z.id')
                 ->getQuery ()
                 ->getArrayResult ();
         }

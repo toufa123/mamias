@@ -92,24 +92,20 @@
                     $pathway = $em->getRepository(VectorName::class)->findOneBy(['vectorName' => $pat])->getId();
                 }
                 //dump($st, $pat, $status, $pathway);die;
-                
-                $species = $em->getRepository(Mamias::class)->findSpeciesByParametres(
+
+                $species = $em->getRepository (Mamias::class)->findSpeciesByParametres (
                     $sId, $eco, $origin, $su, $year, $country, $ecapmed, $status, $pathway);
                 //return $this->render('search/MAMIASNutshell.html.twig', ['form' => $form, 'species' => $species]);
             } else {
                 $em = $this->getDoctrine ()->getManager ();
                 $species = $em->getRepository (Mamias::class)->findAllS ();
-                $datajson = null;
-                $datajson = new JsonResponse($species);
+                $response = json_encode ($species);
+                //dump ($response);die;
 
-                //dump($datajson);die;
 
             }
-            
-            //unset($form);
-            //$form = $this->createForm(SearchType::class, $search);
 
-            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'datajson' => $datajson]);
+            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'response' => $response]);
         }
         
         /**
