@@ -98,18 +98,37 @@
                 //return $this->render('search/MAMIASNutshell.html.twig', ['form' => $form, 'species' => $species]);
             } else {
                 $em = $this->getDoctrine ()->getManager ();
-                $species = $em->getRepository (Mamias::class)->findAllS ();
-                $response = json_encode ($species);
-                //dump ($response);die;
+                $species = $em->getRepository (Mamias::class)->findAll ();
+                $d = array ();
+
+                foreach ($species as $item) {
+
+                    $i = array ('id' => $item->getId (), 'species' => $item->getRelation ()->getSpecies (),
+                        'ecofunctionl' => ($item->getEcofunctional ())->getEcofunctional (), 'origin' => $item->getOrigin (), 'fisrt' => $item->getFirstMedSighting (),
+                        'status' => $item->getSpeciesstatus (), 'establishment' => $item->getSuccess ()
+                    );
+
+                }
+                array_push ($d, $i);
+                dump ($d);
+                die;
 
 
             }
+            $response = json_encode (array ('data' => $d));
+            //dump(json_encode ($response));die;
+            $fs = new \Symfony\Component\Filesystem\Filesystem();
+            $file = $this->getParameter ('kernel.project_dir') . '/public/species.json';
+            try {
+                $fs->dumpFile ($file, $response);
+            } catch (IOException $e) {
+            }
 
-            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'response' => $response]);
+            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'file' => $file, 'response' => $response]);
         }
-        
+
         /**
-         * @Route("serach/{id}/show", name="species_fiche")
+         * @Route("services/search/{id}/show", name="species_fiche")
          */
         public function show($id)
         {

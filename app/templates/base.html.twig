@@ -165,7 +165,7 @@
                     {% if is_granted('ROLE_REGSITREDUSER') %}
 
                     <li class="dropdown navbar-c-items">
-                        <a href="" class="dropdown-toggle  waves-effect waves-light profile" data-toggle="dropdown"
+                        <a href="" class="dropdown-toggle waves-effect waves-light profile" data-toggle="dropdown"
                            aria-expanded="true">
                             <img src="{{ asset('resources/logo/avatarb.png') }}"
                                  alt="{{ app.user.username|default('undefined') }}" class="img-circle"> </a>
@@ -174,9 +174,9 @@
                                 <h5>Hi {{ app.user.username|default('undefined') }}</h5>
                             </li>
                             <li class="divider"></li>
-                            <li><a href="{{ path('fos_user_profile_show') }}"><i class="ti-user m-r-5"></i> Profile</a>
+                            <li><a class="dropdown-item" href="{{ path('fos_user_profile_show') }}"><i class="ti-user m-r-5"></i> Profile</a>
                             </li>
-                            <li><a href="{{ path('declaration') }}"><i class="mdi mdi-file-excel-box m-r-5"></i> My
+                            <li><a class="dropdown-item" href="{{ path('declaration') }}"><i class="mdi mdi-file-excel-box m-r-5"></i> My
                                     Species
                                     records</a>
                             </li>
@@ -188,12 +188,12 @@
                             </li>
                             {% elseif is_granted('ROLE_FOCALPOINT') %}
                             <li class="divider"></li>
-                            <li><a href="{{ path('nfp') }}"><i class=" mdi mdi-book-open-page-variant m-r-5"></i> My
+                            <li><a class="dropdown-item" href="{{ path('nfp') }}"><i class=" mdi mdi-book-open-page-variant m-r-5"></i> My
                                     country Profile</a>
                                 {% endif %}
                                 {% if is_granted('ROLE_USER') %}
 
-                            <li><a href="{{ path('sonata_user_admin_security_logout') }}"><i
+                            <li><a class="dropdown-item" href="{{ path('sonata_user_admin_security_logout') }}"><i
                                         class="ti-power-off m-r-5"></i> Logout</a></li>
                         </ul>
                     </li>

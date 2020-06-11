@@ -56,23 +56,38 @@
                                 </div>
                                 <div class="col-md-4">
                                     {{ form_errors(form.speciesName ) }}
-                                    <span class="border"></span>
                                     {{ form_widget(form.speciesName,{'attr': {'class': 'form-control select2' }}) }}
-                                    </span>
-                                    <div class="checkbox checkbox-inline checkbox-primary ">
-                                        <input type="checkbox" class="custom-control-input" id="show">
-                                        <label for="show" class="custom-control-label"> More searching Criteria
-                                            (Advanced Searching) </label>
+                                    <div class="row m-t-10">
+                                        <div class="col-md-2">
+                                            <input type="checkbox" id="switch1" data-switch="none"/>
+                                            <label for="switch1" data-on-label="On"
+                                                   data-off-label="Off"></label>
+                                        </div>
+                                        <div class="col-md-10"> More searching Criteria (Advanced Searching)
+                                        </div>
+                                        <div class="col-md-4">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <input type="checkbox" id="switch2" data-switch="none"/>
+                                            <label for="switch2" data-on-label="On"
+                                                   data-off-label="Off"></label>
+                                        </div>
+                                        <div class="col-md-5 text-left">
+                                            Mediterranean Level
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="checkbox" id="switch3" data-switch="none"/>
+                                            <label for="switch3" data-on-label="On"
+                                                   data-off-label="Off"></label>
+                                        </div>
+                                        <div class="col-md-3 text-left">
+                                            National Level
+                                        </div>
 
                                     </div>
-                                    <div class="checkbox checkbox-inline checkbox-primary">
-                                        <input type="checkbox" id="inlineCheckbox1" value="option1">
-                                        <label for="inlineCheckbox1"> Mediterranean Level </label>
-                                    </div>
-                                    <div class="checkbox checkbox-inline checkbox-primary">
-                                        <input type="checkbox" id="inlineCheckbox2" value="option2">
-                                        <label for="inlineCheckbox2"> National Level </label>
-                                    </div>
+
                                 </div>
                                 <div class="col-md-4">
                                 </div>
@@ -115,36 +130,35 @@
                                     <br><br>
                                     {{ form_errors(form.country) }}
                                     {{ form_widget(form.country, {'attr': {'class': 'form-control  select2'}}) }}
-
-
                                 </div>
-
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="form-row text-right">
-        <div class="form-group ">
-            <button type="submit" value="Search" class="btn btn-primary waves-effect waves-light"><i
-                    class="mdi mdi-magnify m-r-5"></i>Search
-            </button>
-            <!--<button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light"><i
-                    class="mdi mdi-refresh m-r-5"></i>Reset
-            </button>-->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group float-right">
+                <button type="submit" value="Search" class="btn btn-custom waves-effect waves-light"><i
+                        class="mdi mdi-magnify m-r-5"></i>Search
+                </button>
+                <!--<button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light"><i
+                        class="mdi mdi-refresh m-r-5"></i>Reset
+                </button>-->
+            </div>
         </div>
     </div>
+
+
     <div class="row">
         <div class="col-sm-12">
             <div class="property-card bg-white table-responsive">
                 <div class="property-content">
 
                     <table id="datatable-buttons"
-                           class="table table-striped table-bordered table-hover table-condensed nowrap "
+                           class="table table-striped table-bordered table-hover table-condensed nowrap table-sm"
                            style="border:solid 1px #0179C2;border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                         <tr>
@@ -206,7 +220,8 @@
         "use strict";
 
         jQuery(document).ready(function () {
-            //Buttons examples
+            var d = {{ response | raw }};
+            console.log(d);
             var currentDate = new Date();
             var day = currentDate.getDate();
             var month = currentDate.getMonth() + 1;
@@ -219,8 +234,16 @@
                 "autoWidth": false,
                 "lengthChange": true,
                 "processing": true,
-                "serverSide": true,
-                "ajax": "{{ path('search') }}",
+                //"serverSide": true,
+                "ajax": {
+                    "url": "{{ response | raw }}",
+                    //"url": "./../species.json",
+                    "dataSrc": ""
+                },
+                "Columns": [
+                    {"data": "id"},
+                    {"data": "first"},
+                ],
                 "searching": false,
 
                 "pageLength": 10,
@@ -230,7 +253,7 @@
                     {
                         extend: 'excelHtml5',
                         //extension: 'xlsx',
-                        className: 'btn-primary waves-effect w-md waves-light',
+                        className: 'btn-sm btn-custom waves-effect w-md waves-light',
                         title: 'MAMIAS_Export_' + d,
                         download: 'open',
                         header: 'Marine Mediterranean Invasive Alien Species (MAMIAS) Database',
@@ -326,11 +349,41 @@
                 {% endif %}
             });
 
+            $(".dataTables_length").css('clear', 'none');
+            $(".dataTables_length").css('float', 'right');
+
+            //info -> reset clear and padding
+            $(".dataTables_info").css('clear', 'none');
+            $(".dataTables_info").css('padding', '10');
+
+            // Responsive Datatable
+            $('#responsive-datatable').DataTable();
+
+            table.buttons().container()
+                .appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+
             // Select2
             $(".select2").select2();
-            $("#show").click(function () {
+
+            $("#switch1").click(function () {
+
                 $("#search").slideToggle();
+                console.log($('#divUpdateContent').is(":visible"));
+
             });
+
+            $('switch1').change(function () {
+                var $hidey = $(this).next('.hidey');
+                if ($(this).is(':checked')) {
+                    $hidey.show();
+                } else {
+                    $hidey.hide();
+                }
+            })
+
+            $('#search').trigger('change');
+
+
         });
 
     </script>

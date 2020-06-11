@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "id": 1343,
+            "species": "Synchiropus sechellensis",
+            "ecofunction": {
+                "__initializer__": null,
+                "__cloner__": null,
+                "__isInitialized__": true
+            },
+            "origin": {
+                "__initializer__": null,
+                "__cloner__": null,
+                "__isInitialized__": true
+            },
+            "fisrt": "2014",
+            "status": null,
+            "establishment": {
+                "__initializer__": null,
+                "__cloner__": null,
+                "__isInitialized__": true
+            }
+        }
+    ]
+}

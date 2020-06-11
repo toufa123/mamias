@@ -226,7 +226,8 @@
         {
             return $this->Ecofunctional;
         }
-    
+
+
         public function setEcofunctional(?Ecofunctional $Ecofunctional): self
         {
             $this->Ecofunctional = $Ecofunctional;
