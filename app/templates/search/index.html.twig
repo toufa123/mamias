@@ -220,7 +220,7 @@
         "use strict";
 
         jQuery(document).ready(function () {
-            var d = {{ response | raw }};
+            var d = JSON.parse(JSON.stringify({{ response | raw }}));
             console.log(d);
             var currentDate = new Date();
             var day = currentDate.getDate();
@@ -236,13 +236,13 @@
                 "processing": true,
                 //"serverSide": true,
                 "ajax": {
-                    "url": "{{ response | raw }}",
+                    "url": JSON.parse(JSON.stringify({{ response | raw }})),
                     //"url": "./../species.json",
                     "dataSrc": ""
                 },
                 "Columns": [
-                    {"data": "id"},
-                    {"data": "first"},
+
+                    {"data": "firstMedSighting"},
                 ],
                 "searching": false,
 

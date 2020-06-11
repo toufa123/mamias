@@ -98,25 +98,10 @@
                 //return $this->render('search/MAMIASNutshell.html.twig', ['form' => $form, 'species' => $species]);
             } else {
                 $em = $this->getDoctrine ()->getManager ();
-                $species = $em->getRepository (Mamias::class)->findAll ();
-                $d = array ();
-
-                foreach ($species as $item) {
-
-                    $i = array ('id' => $item->getId (), 'species' => $item->getRelation ()->getSpecies (),
-                        'ecofunctionl' => ($item->getEcofunctional ())->getEcofunctional (), 'origin' => $item->getOrigin (), 'fisrt' => $item->getFirstMedSighting (),
-                        'status' => $item->getSpeciesstatus (), 'establishment' => $item->getSuccess ()
-                    );
-
-                }
-                array_push ($d, $i);
-                dump ($d);
-                die;
-
-
+                $species = $em->getRepository (Mamias::class)->findAllS ();
             }
-            $response = json_encode (array ('data' => $d));
-            //dump(json_encode ($response));die;
+            $response = json_encode (array ('data' => $species));
+            //dump($response);die;
             $fs = new \Symfony\Component\Filesystem\Filesystem();
             $file = $this->getParameter ('kernel.project_dir') . '/public/species.json';
             try {
