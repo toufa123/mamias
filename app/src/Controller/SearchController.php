@@ -100,16 +100,24 @@
                 $em = $this->getDoctrine ()->getManager ();
                 $species = $em->getRepository (Mamias::class)->findAllS ();
             }
-            $response = json_encode (array ('data' => $species));
+            $data = (object)[
+                'data' => [[
+                    $species
+                ]]
+            ];
+            //echo json_encode($data);
+
+            $r2 = json_encode (array ('data' => $species));
             //dump($response);die;
+            $r = json_encode ($data);
             $fs = new \Symfony\Component\Filesystem\Filesystem();
             $file = $this->getParameter ('kernel.project_dir') . '/public/species.json';
             try {
-                $fs->dumpFile ($file, $response);
+                $fs->dumpFile ($file, $r);
             } catch (IOException $e) {
             }
 
-            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'file' => $file, 'response' => $response]);
+            return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'file' => $file, 'response' => $r2]);
         }
 
         /**

@@ -162,17 +162,15 @@
                            style="border:solid 1px #0179C2;border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                         <tr>
-
-
                             <th class="text-left">ID</th>
-                            <!--<th class="text-left">Species Name</th>
+                            <th class="text-left">Species Name</th>
                             <th class="text-center">EcoFunctional Group</th>
+                            <th class="text-center">Med. Fisrt Sighting</th>
                             <th class="text-center">Origin</th>
                             <th class="text-center">Species Status</th>
-                            <th class="text-center">Establishment</th>-->
-                            <th class="text-center">Med. Fisrt Sighting</th>
+                            <th class="text-center">Establishment</th>
                             <!--<th class="text-center">Impact</th>-->
-                            <!--<th class="text-center">Action</th>-->
+                            <th class="text-center">Action</th>
 
                         </tr>
                         </thead>
@@ -218,10 +216,15 @@
     <script src="{{ asset('assets/plugins/switchery/switchery.min.js') }}"></script>
     <script type="text/javascript">
         "use strict";
+        //var n = document.createElement('script');
+        //n.setAttribute('language', 'JavaScript');
+        //n.setAttribute('src', 'https://debug.datatables.net/debug.js');
+        //document.body.appendChild(n);
+
 
         jQuery(document).ready(function () {
-            var d = JSON.parse(JSON.stringify({{ response | raw }}));
-            console.log(d);
+            var data = {{ response |raw }}
+                console.log(data)
             var currentDate = new Date();
             var day = currentDate.getDate();
             var month = currentDate.getMonth() + 1;
@@ -235,14 +238,16 @@
                 "lengthChange": true,
                 "processing": true,
                 //"serverSide": true,
-                "ajax": {
-                    "url": JSON.parse(JSON.stringify({{ response | raw }})),
-                    //"url": "./../species.json",
-                    "dataSrc": ""
-                },
-                "Columns": [
-
-                    {"data": "firstMedSighting"},
+                "data": data.data,
+                //"dataSrc":"data",
+                "aoColumns": [
+                    {"data": 'id', "name": "ID"},
+                    {"data": 'Species', "name": "Species Name"},
+                    {"data": "ecofunctional", "name": "EcoFunctional Group"},
+                    {"data": "firstMedSighting", "name": "Med. Fisrt Sighting"},
+                    {"data": "originRegion", "name": "Origin"},
+                    {"data": "status", "name": "Species Status"},
+                    {"data": "successType", "name": "Establishment"}
                 ],
                 "searching": false,
 
@@ -330,16 +335,27 @@
                 "dom": 'ltip',
                 "responsive": true,
                 "autoWidth": false,
-                "processing": true,
-                "serverSide": false,
-                "ajax": {
-                    "dataSrc": {{ response | raw }}
+                //"processing": true,
+                //"serverSide": false,
+                "data": data.data,
+                //"dataSrc":"data",
+                "aoColumns": [
+                    {"data": "id", "title": "ID", "autoWidth": true},
+                    {"data": 'Species', "autoWidth": true},
+                    {"data": "ecofunctional", "autoWidth": true},
+                    {"data": "firstMedSighting", "autoWidth": true},
+                    {"data": "originRegion", "autoWidth": true},
+                    {"data": "status", "autoWidth": true},
+                    {"data": "successType", "autoWidth": true},
+                    {
+                        "data": function (data, type, row, meta) {
+                            return '<a class="btn-sm btn-custom waves-effect w-xs waves-light text-center" href="{{ path('species_fiche', {'id':"' + data.id + '"}) }}" target="_blank">View</a>'
+                        }
+                    }
 
-                },
-                "Columns": [
-                    {"data": "id"},
-                    {"data": "firstMedSighting"},
+
                 ],
+
                 "lengthChange": true,
                 "searching": false,
                 "pageLength": 10,
@@ -366,12 +382,9 @@
             $(".select2").select2();
 
             $("#switch1").click(function () {
-
                 $("#search").slideToggle();
                 console.log($('#divUpdateContent').is(":visible"));
-
             });
-
             $('switch1').change(function () {
                 var $hidey = $(this).next('.hidey');
                 if ($(this).is(':checked')) {
@@ -382,8 +395,6 @@
             })
 
             $('#search').trigger('change');
-
-
         });
 
     </script>
