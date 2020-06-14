@@ -241,13 +241,18 @@
                 "data": data.data,
                 //"dataSrc":"data",
                 "aoColumns": [
-                    {"data": 'id', "name": "ID"},
-                    {"data": 'Species', "name": "Species Name"},
-                    {"data": "ecofunctional", "name": "EcoFunctional Group"},
-                    {"data": "firstMedSighting", "name": "Med. Fisrt Sighting"},
-                    {"data": "originRegion", "name": "Origin"},
-                    {"data": "status", "name": "Species Status"},
-                    {"data": "successType", "name": "Establishment"}
+                    {"data": "id", "title": "ID", "autoWidth": true},
+                    {"data": 'Species', "autoWidth": true},
+                    {"data": "ecofunctional", "autoWidth": true},
+                    {"data": "firstMedSighting", "autoWidth": true},
+                    {"data": "originRegion", "autoWidth": true},
+                    {"data": "status", "autoWidth": true},
+                    {"data": "successType", "autoWidth": true},
+                    {
+                        "data": "id", render : function (data, type, row, meta) {
+                            return '<a class="btn-sm btn-custom waves-effect w-xs waves-light text-center" href="{{ path('species_fiche', {'id':"' + data.id + '"}) }}" target="_blank">View</a>'
+                        }
+                    }
                 ],
                 "searching": false,
 
@@ -348,8 +353,8 @@
                     {"data": "status", "autoWidth": true},
                     {"data": "successType", "autoWidth": true},
                     {
-                        "data": function (data, type, row, meta) {
-                            return '<a class="btn-sm btn-custom waves-effect w-xs waves-light text-center" href="{{ path('species_fiche', {'id':"' + data.id + '"}) }}" target="_blank">View</a>'
+                        "data": "id", render : function (data, type, row, meta) {
+                            return '<a class="btn-sm btn-custom waves-effect w-xs waves-light text-center" href="{{ path('species_fiche', {'id': 'row.id' })|escape('js') }}" target="_blank">View</a>'
                         }
                     }
 

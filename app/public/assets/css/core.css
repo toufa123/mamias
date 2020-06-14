@@ -1,5 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Varela+Round);
-@import 'https://fonts.googleapis.com/css?family=Hind+Madurai:600,700';
+@import url(https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,600);
 
 /*
 Template Name: Bootstrap 4 Admin Dashboard
@@ -60,8 +59,9 @@ p {
 }
 b,
 strong {
+    font-size: 16px;
     font-weight: 600;
-    font-family: 'Hind Madurai', sans-serif;
+    font-family: 'Roboto Medium', sans-serif;
 }
 
 a:hover {
