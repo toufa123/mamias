@@ -103,8 +103,20 @@
         {
             $query = $this->createQueryBuilder('m');
             $query = $query
-                ->select('m', 'c')
-                ->leftJoin('m.Distribution', 'c')
+                ->select ('m.id')
+                ->AddSelect ('m.firstMedSighting')
+                ->leftJoin ('m.relation', 'Catalogue')
+                ->addSelect ('Catalogue.Species')
+                ->leftJoin ('m.Ecofunctional', 'Ecofunctional')
+                ->addSelect ('Ecofunctional.ecofunctional')
+                ->leftJoin ('m.Origin', 'Origin')
+                ->addSelect ('Origin.originRegion')
+                ->leftJoin ('m.Success', 'success')
+                ->addSelect ('success.successType')
+                ->leftJoin ('m.speciesstatus', 'speciesstatus')
+                ->addSelect ('speciesstatus.status')
+                ->orderBy ('m.id')
+                ->leftJoin ('m.Distribution', 'c')
                 ->addSelect('c');
             if (!empty($sId)) {
                 $query = $query->Where('m.relation = :val')
@@ -147,8 +159,8 @@
             
             //->orderBy('m.id', 'ASC')
             //->setMaxResults(10)
-            
-            return $query->getQuery()->getResult();
+
+            return $query->getQuery ()->getArrayResult ();
         }
         
         /*

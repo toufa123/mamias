@@ -183,30 +183,32 @@
          */
         public function Import(Request $request)
         {
-            
-            $session = $request->getSession();
-            $destination = $this->getParameter('kernel.project_dir') . '/public/';
-            $uploadfile = $destination . basename($_FILES['field']['name']);
-            $arr_file = explode('.', $_FILES['field']['name']);
-            $extension = end($arr_file);
-            
+
+            $session = $request->getSession ();
+            $tmp_name = $_FILES['file']['tmp_name'];
+            $destination = $this->getParameter ('kernel.project_dir') . '/public/upload/import/';
+            $uploadfile = $destination . basename ($_FILES['file']['name']);
+            $arr_file = explode ('.', $_FILES['file']['name']);
+            $extension = end ($arr_file);
+
             if ('xls' == $extension) {
                 $reader = new Xls();
             } elseif ('xlsx' == $extension) {
                 $reader = new XlsxReader();
             } else {
-                return $this->redirect($this->generateUrl('import'));
-                
+                return $this->redirect ($this->generateUrl ('import'));
+
             }
-            if (move_uploaded_file($_FILES['field']['tmp_name'], $uploadfile)) {
-                
-                $spreadsheet = $reader->load($_FILES['field']['name']);
-                $sheetData = $spreadsheet->getActiveSheet()->toArray();
+            if (move_uploaded_file ($tmp_name, $uploadfile)) {
+
+                $spreadsheet = $reader->load ($uploadfile);
+                $sheetData = $spreadsheet->getActiveSheet ()->toArray ();
                 //dump($sheetData);die;
-                $request->getSession()
-                    ->getFlashBag()
-                    ->add('success', 'File is valid, and was successfully uploaded.!');
-                return $this->redirect($this->generateUrl('declaration'));
+
+                $request->getSession ()
+                    ->getFlashBag ()
+                    ->add ('success', 'File is valid, and was successfully uploaded.!');
+                return $this->redirect ($this->generateUrl ('declaration'));
                 
             } else {
                 $request->getSession()
@@ -238,25 +240,28 @@
             $sheet1 = $spreadsheet->getActiveSheet();
             //$sheet1->setCellValue('A1', 'ID');
             //$sheet1->getColumnDimension('A');
-            $sheet1->setCellValue('A1', 'Country');
-            $sheet1->getColumnDimension('A')
-                ->setAutoSize(false)->setWidth(30);
-            $sheet1->setCellValue('B1', 'NIS');
-            $sheet1->getColumnDimension('B')
-                ->setAutoSize(false);
+            $sheet1->setCellValue ('A1', 'Country');
+            $sheet1->getColumnDimension ('A')
+                ->setAutoSize (false)->setWidth (30);
+            $sheet1->setCellValue ('B1', 'NIS');
+            $sheet1->getColumnDimension ('B')
+                ->setAutoSize (false);
             //->setWidth(30);
-            $sheet1->setCellValue('C1', 'Reporting Date');
-            $sheet1->getColumnDimension('C')
-                ->setAutoSize(true);
-            $sheet1->setCellValue('D1', 'Latitude');
-            $sheet1->getColumnDimension('D')
-                ->setAutoSize(true);
-            $sheet1->getStyle('D:D')
-                ->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
-            $sheet1->setCellValue('E1', 'Longitude');
-            $sheet1->getColumnDimension('E')
-                ->setAutoSize(true);
-            $sheet1->getStyle('E:E')
+            $sheet1->setCellValue ('C1', 'Reporting Date');
+            $sheet1->getColumnDimension ('C')
+                ->setAutoSize (true);
+            $sheet1->getStyle ('C:C')
+                ->getNumberFormat ()->setFormatCode (\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY);
+
+            $sheet1->setCellValue ('D1', 'Latitude');
+            $sheet1->getColumnDimension ('D')
+                ->setAutoSize (true);
+            $sheet1->getStyle ('D:D')
+                ->getNumberFormat ()->setFormatCode (\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
+            $sheet1->setCellValue ('E1', 'Longitude');
+            $sheet1->getColumnDimension ('E')
+                ->setAutoSize (true);
+            $sheet1->getStyle ('E:E')
                 ->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
             $sheet1->setCellValue('G1', 'Type of Observation');
             $sheet1->getColumnDimension('G')->setAutoSize(true);

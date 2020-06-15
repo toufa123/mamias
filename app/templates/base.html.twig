@@ -62,7 +62,7 @@
             <div class="topbar-left">
                 <a href="{{ path('home') }}" class="logo">
                      <img src="{{ asset('resources/logo/logo.png') }}" alt="MAMIAS 3.0" height="60">
-                    <span class="logo-lg-text-light text-custom"><strong>MArine Mediterranean Non-Indigenous and InvAsive Species Database</strong></span>
+                    <!--<span class="logo-lg-text-light text-custom">MArine Mediterranean Non-Indigenous and InvAsive Species Database</span>-->
                 </a>
             </div>
             <!-- End Logo container-->
@@ -150,16 +150,16 @@
                         </ul>
                     </li>-->
 
-                    <li class="dropdown navbar-c-items">
-                        {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_S') %}
-                    <li class="dropdown navbar-c-items">
-                        <a href="{{ path('sonata_admin_dashboard') }}" target="_blank"
-                           class="right-menu-item btn-custom waves-effect waves-light m-b-5"
-                           data-toggle="tooltip" data-placement="bottom" title=""
-                           data-original-title="Go to Admin Area">
-                            <i id="tooltip-hover" class="mdi mdi-monitor-dashboard tooltipstered"></i>
-                        </a>
-                    </li>
+
+                    {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_S') %}
+                        <li class="dropdown navbar-c-items">
+                            <a href="{{ path('sonata_admin_dashboard') }}" target="_blank"
+                               class="right-menu-item btn-custom waves-effect waves-light m-b-5"
+                               data-toggle="tooltip" data-placement="bottom" title=""
+                               data-original-title="Go to Admin Area">
+                                <i id="tooltip-hover" class="mdi mdi-monitor-dashboard tooltipstered"></i>
+                            </a>
+                        </li>
 
                     {% endif %}
                     {% if is_granted('ROLE_REGSITREDUSER') %}
@@ -576,6 +576,7 @@
 <!-- App js -->
 <script src="{{ asset('assets/js/jquery.core.js') }}"></script>
 <script src="{{ asset('assets/js/jquery.app.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.cookie.js') }}"></script>
 
 <script>
     $(document).ready(function () {
