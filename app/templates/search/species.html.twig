@@ -36,45 +36,46 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="row">
-                <div class="col-lg-3 col-md-4">
-
+                <div class="col-lg-4 col-md-4">
                     <div class="text-center property-card bg-white">
                         <div class="property-image"
-
                              style="background: url('{{ asset('/resources/images/no-image.jpg')}}') center center / cover no-repeat;">
                             <!--<span class="property-label label label-warning">Validated</span>-->
                         </div>
-
                         <div class="listingInfo">
                             <div class="">
                                 <h4 class="m-b-5"><i>{{ entity.relation }}</i></h4>
                                 <p class="text-muted">{{ entity.relation.authority }}</p>
                             </div>
-
                         </div>
-                        <div class>
-
-                            {% if not entity.relation.WormsUrl %}
+                        <ul class="list-inline">
+                            <li class="list-inline-item text-centre">
+                                {% if not entity.relation.WormsUrl %}
                                 <p>No WoRMS Link |</p>
-                            {% elseif entity.relation.WormsUrl %}
+                                {% elseif entity.relation.WormsUrl %}
                                 <a href="{{ entity.relation.WormsUrl }}" target="_blank"
-                                   class="text-custom waves-light waves-effect mb-2" role="button">WoRMS Link</a>|
-                            {% endif %}
-                            {% if not entity.relation.itislink %}
+                                   class="text-custom waves-light waves-effect" role="button">WoRMS Link |</a>
+                                {% endif %}
+                            </li>
+
+                            <li class="list-inline-item text-centre ">
+                                {% if not entity.relation.itislink %}
                                 <p>No ITIS Link |</p>
-                            {% elseif entity.relation.itislink %}
+                                {% elseif entity.relation.itislink %}
                                 <a href="{{ entity.relation.itislink }}" target="_blank"
-                                   class="text-custom waves-light waves-effect mb-2" role="button">ITIS Link</a>|
-                            {% endif %}
-                            {% if not entity.relation.GBIFlink %}
-                                <p>No GBIF Link </p>
-                            {% elseif entity.relation.GBIFlink %}
+                                   class="text-custom waves-light waves-effect" role="button">ITIS Link |</a>
+                                {% endif %}
+                            </li>
+                            <li class="list-inline-item text-centre">
+                                {% if not entity.relation.GBIFlink %}
+                                <p>No GBIF Link</p>
+                                {% elseif entity.relation.GBIFlink %}
                                 <a href="{{ entity.relation.GBIFlink }}" target="_blank"
-                                   class="text-custom waves-light waves-effect mb-2" role="button">GBIF Link</a>
-                            {% endif %}
+                                   class="text-custom waves-light waves-effect" role="button">GBIF Link</a>
+                                {% endif %}
 
-                        </div>
-
+                            </li>
+                         </ul>
                         <a href="{{ path('species_declaration') }}"
                            class="btn-xs btn-custom waves-light waves-effect ">Report New Occurence</a>
 
@@ -123,50 +124,50 @@
                                 <hr/>
                                 <div class="text-left">
                                     <h5 class="text-custom m-b-10">Introduction </h5>
-                                    <div class="table table-responsive  table-condensed">
+                                    <div class="table table-responsive nowrap table-sm table-condensed">
                                         <table class="table">
                                             <tbody>
                                             <tr>
-                                                <td><p class="text-custom font-13"><strong>Ecofunctional Group:</strong>
+                                                <td><p class="text-custom font-10">Ecofunctional Group:
                                                     </p></td>
                                                 <td>
-                                                    <span class="text-dark "><b>{{ entity.Ecofunctional }}</b></span>
+                                                    <span class="text-dark font-10 ">{{ entity.Ecofunctional }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><p class="text-custom font-13"><strong>Origin:</strong></td>
-                                                <td><span class=" text-dark "><b>{{ entity.Origin }}</b></span>
+                                                <td><p class="text-custom font-10">Origin:</td>
+                                                <td><span class=" text-dark font-10 ">{{ entity.Origin }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><p class="text-custom font-13"><strong>First Mediterranean
-                                                            Sighting:</strong></td>
-                                                <td><span class="text-dark "><b>{{ entity.firstMedSighting }}</b></span>
+                                                <td><p class="text-custom font-10">First Mediterranean
+                                                            Sighting:</td>
+                                                <td><span class="text-dark font-10 ">{{ entity.firstMedSighting }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><p class="text-custom font-13"><strong>First Mediterranean
-                                                            Ciatation:</strong></p></td>
-                                                <td><span class=" text-dark "><b>#</b></span></td>
+                                                <td><p class="text-custom font-10">First Mediterranean
+                                                            Ciatation:</p></td>
+                                                <td><span class=" text-dark font-10 "><b>#</b></span></td>
                                             </tr>
                                             <tr>
-                                                <td><p class="text-custom font-13">
-                                                        <strong>Establishement/Success:</strong></p></td>
-                                                <td><span class="text-dark "><b>{{ entity.Success }}</b></span>
+                                                <td><p class="text-custom font-10">
+                                                        Establishement/Success:</p></td>
+                                                <td><span class="text-dark font-10 ">{{ entity.Success }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><p class="text-custom font-13"><strong>Impact:</strong></p></td>
-                                                <td><span class=" text-dark "><b>{{ entity.invasive }}</b></span>
+                                                <td><p class="text-custom font-10">Impact:</p></td>
+                                                <td><span class="text-dark ">{{ entity.invasive }}</span>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><p class="text-custom font-13"><strong>Pathway/Vector:</strong></p>
+                                                <td><p class="text-custom font-10">Pathway/Vector:</p>
                                                 </td>
                                                 {% for u in entity.Pathway %}
                                                     <td>
                                                         <span
-                                                            class="text-dark "><b>{{ u.VectorName }} - {{ u.Certainty }}</b></span>
+                                                            class="text-dark font-10">{{ u.VectorName }} - {{ u.Certainty }}</span>
                                                     </td>
                                                 {% endfor %}
                                             </tr>
@@ -197,7 +198,7 @@
 
                 </div> <!-- end col -->
 
-                <div class="col-md-8 col-lg-9">
+                <div class="col-md-8 col-lg-8">
                     <div class="property-card bg-white">
                         <div class="clearfix">
                             <div class="property-content">
@@ -441,14 +442,16 @@
             Highcharts.mapChart('container', {
                 chart: {
                     map: geojson,
-                    color : "#00FF00"
-                },
+
+                },colors: ['#00AEEF', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+                            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'],
                 title: {
                     text: 'Occurences of  <i>{{ entity.relation }} </i> by Country',
                     style: {
                         color: '#00AEEF',
-                        font: "Roboto Light",
+                        font: "Roboto",
                         fontSize: '18px',
+                        fontWeight: 'bold'
 
                     }
                 },
@@ -483,6 +486,7 @@
                     keys: ['NAME', 'value'],
                     joinBy: 'NAME',
                     name: 'Occurences of  {{ entity.relation }}',
+                    color : '#00AEEF',
                     states: {
                         hover: {
                             color: 'rgba(58,201,214,0.7)'

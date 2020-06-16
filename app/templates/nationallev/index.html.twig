@@ -1,39 +1,18 @@
 {% extends 'base.html.twig' %}
-
-
 {% block title %}Dashboard
     {% if name is empty %}
-
     {% else %}
         : {{ name }}
     {% endif %}
-
-
 {% endblock %}
-
 {% block stylesheets %}
     <link href="{{ asset('assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css') }}" rel="stylesheet"/>
     <link href="{{ asset('assets/plugins/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('assets/plugins/select2/css/select2.css') }}" rel="stylesheet"/>
     <link href="{{ asset('assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('assets/plugins/bootstrap-sweetalert/sweet-alert.css') }}" rel="stylesheet"/>
-
-
 {% endblock %}
-
 {% block body %}
-
-    <!--<div class="row">
-        <div class="col-sm-12">
-            <div class="page-title-box">
-                <div class="btn-group pull-right m-b-5">
-                    <button class="btn btn-icon waves-effect waves-light btn-primary m-b-5" data-toggle="modal" data-target="#pdf"><i class=" fa fa-file-pdf-o fa-2x"></i></button>
-
-                </div>
-            </div>
-        </div>
-    </div>-->
-    <!-- Page-Title -->
     <div class="row">
         <div class="col-3">
             {{ form_start(form1, {attr: {novalidate: 'novalidate'}}) }}
@@ -50,7 +29,6 @@
         </div>
 
     </div>
-
     <!-- end page title end breadcrumb -->
     {% if form1.vars.submitted and form1.country.vars.value !='Select A country' %}
         <div class="row">
@@ -184,10 +162,7 @@
     </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
-
 {% endblock %}
-
 {% block javascripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
     <script src="{{ asset('assets/highcharts/highcharts.js') }}"></script>
@@ -210,11 +185,5 @@
         {{ chart(barchart1) }}
         {{ chart(barchart2) }}
     </script>
-    <script>
-        {% if not form1.vars.submitted %}
-        $(window).on('load', function () {
-            swal("You should select a country");
-        });
-        {% endif %}
-    </script>
+
 {% endblock %}

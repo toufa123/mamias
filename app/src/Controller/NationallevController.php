@@ -17,7 +17,7 @@
     class NationallevController extends AbstractController
     {
         /**
-         * @Route("services/dash/nat", name="nat")
+         * @Route("services/dash/nat/", name="nat")
          */
         public function index(Request $request)
         {
@@ -43,7 +43,7 @@
             $em = $this->getDoctrine()->getManager();
             
             if ($form1->isSubmitted() && $form1->isValid()) {
-                $em = $this->getDoctrine()->getManager();
+
                 $data = $form1->getData();
                 $c = $data->getCountry();
                 //dump($c);die;

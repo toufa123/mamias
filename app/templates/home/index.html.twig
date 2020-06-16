@@ -50,8 +50,8 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <div class="property-card">
-                <div class="property-card bg-white">
+            <div class="property-card bg-white ">
+                <div class="card-body">
                     <div id="highcontainer" style="height: 520px;">
                         <div class="loading">
                             <i class="icon-spinner icon-spin icon-large"></i>
@@ -64,8 +64,9 @@
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="property-card">
-                <div class="property-card bg-white">
+
+            <div class="property-card bg-white">
+                <div class="card-body">
                     <div id="container" style="min-width: 310px; height: 520px; margin: 0 auto"></div>
                 </div>
             </div>
@@ -106,7 +107,7 @@
                             <!-- team-member -->
                             <div class="col-sm-4">
                                 <div class="about-team-member">
-                                    <img src="https://web.unep.org/unepmap/sites/unep.org.unepmap/files/webqsr.jpg"
+                                    <img src="{{ asset('resources/images/Mediterranean-quality-status-report-2017-1024x736.png') }}"
                                          alt="UNEP-MAP"
                                          class="img-responsive thumb-xl">
                                     <h4><a class='text-custom' href="https://www.medqsr.org/">Mediterranean 2017 Quality Status Report</a>
@@ -182,9 +183,10 @@
                     }
                 },
                 legend: {
-                    align: 'left',
-                    layout: 'vertical',
-                    verticalAlign: 'top',
+                    enabled: true,
+                    floating: true,
+                    align: 'right',
+                    y: -400,
                     itemMarginTop: 10,
                     bubbleLegend: {
                         enabled: true,
@@ -280,14 +282,13 @@
                     }
 
                 },
-                //subtitle: {
-                //    text: 'Source: Heinz  2003'
-                //},
-                text: 'www.mamias.org',
-                href: 'http://www.mamias.org',
-                position: {
-                    align: 'right',
-                    x: 1
+                credits: {
+                    text: 'www.mamias.org',
+                    href: 'http://www.mamias.org',
+                    position: {
+                        align: 'right',
+                        x: 1
+                    }
                 },
                 lang: {
                     noData: "No Data"
