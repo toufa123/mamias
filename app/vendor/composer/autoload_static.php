@@ -233,6 +233,11 @@ class ComposerStaticInit90ef26209efe7016e2806ec81e31f83c
             'Orbitale\\Bundle\\CmsBundle\\' => 26,
             'Ob\\HighchartsBundle\\' => 20,
         ),
+        'N' => 
+        array (
+            'Nelmio\\CorsBundle\\' => 18,
+            'Negotiation\\' => 12,
+        ),
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
@@ -288,6 +293,7 @@ class ComposerStaticInit90ef26209efe7016e2806ec81e31f83c
         ),
         'F' => 
         array (
+            'Fig\\Link\\' => 9,
             'FOS\\UserBundle\\' => 15,
             'FOS\\CKEditorBundle\\' => 19,
             'FM\\ElfinderBundle\\' => 18,
@@ -331,6 +337,7 @@ class ComposerStaticInit90ef26209efe7016e2806ec81e31f83c
         array (
             'App\\Tests\\' => 10,
             'App\\' => 4,
+            'ApiPlatform\\Core\\' => 17,
         ),
     );
 
@@ -809,6 +816,14 @@ class ComposerStaticInit90ef26209efe7016e2806ec81e31f83c
         array (
             0 => __DIR__ . '/..' . '/ob/highcharts-bundle',
         ),
+        'Nelmio\\CorsBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nelmio/cors-bundle',
+        ),
+        'Negotiation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/willdurand/negotiation/src/Negotiation',
+        ),
         'MyCLabs\\Enum\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
@@ -937,6 +952,10 @@ class ComposerStaticInit90ef26209efe7016e2806ec81e31f83c
         array (
             0 => __DIR__ . '/..' . '/gedmo/doctrine-extensions/lib/Gedmo',
         ),
+        'Fig\\Link\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/fig/link-util/src',
+        ),
         'FOS\\UserBundle\\' => 
         array (
             0 => __DIR__ . '/..' . '/friendsofsymfony/user-bundle',
@@ -1051,6 +1070,10 @@ class ComposerStaticInit90ef26209efe7016e2806ec81e31f83c
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'ApiPlatform\\Core\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/api-platform/core/src',
         ),
     );
 

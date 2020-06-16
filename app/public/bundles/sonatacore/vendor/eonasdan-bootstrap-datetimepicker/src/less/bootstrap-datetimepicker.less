@@ -23,7 +23,7 @@
             border-left: 7px solid transparent;
             border-right: 7px solid transparent;
             border-bottom: 7px solid #ccc;
-            border-bottom-color: rgba(0, 0, 0, .2);
+            border-bottom-color: rgba(0,0,0,.2);
             position: absolute;
             top: -7px;
             left: 7px;
@@ -48,7 +48,7 @@
             border-left: 7px solid transparent;
             border-right: 7px solid transparent;
             border-top: 7px solid #ccc;
-            border-top-color: rgba(0, 0, 0, .2);
+            border-top-color: rgba(0,0,0,.2);
             position: absolute;
             bottom: -7px;
             left: 6px;
@@ -82,15 +82,15 @@
         }
     }
 
-    > ul {
+    >ul {
         list-style-type: none;
         margin: 0;
     }
 
     a[data-action] {
-        padding: 6px 0;
+      padding: 6px 0;
     }
-
+    
     a[data-action]:active {
         box-shadow: none;
     }
@@ -103,7 +103,7 @@
     }
 
     button[data-action] {
-        padding: 6px;
+      padding: 6px;
     }
 
     table[data-hour-format="12"] .separator {
@@ -136,14 +136,16 @@
         line-height: 54px;
         width: 54px;
 
-        &.cw {
+        &.cw
+        {
             font-size: 10px;
             height: 20px;
             line-height: 20px;
             color: @gray-light;
         }
 
-        &.day {
+        &.day
+        {
             height: 20px;
             line-height: 20px;
             width: 20px;
@@ -181,12 +183,12 @@
         &.active:hover {
             background-color: @btn-primary-bg;
             color: @btn-primary-color;
-            text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+            text-shadow: 0 -1px 0 rgba(0,0,0,.25);
         }
 
-        &.active.today:before {
-            border-bottom-color: #fff;
-        }
+            &.active.today:before {
+                border-bottom-color: #fff;
+            }
 
         &.disabled,
         &.disabled:hover {
@@ -211,7 +213,7 @@
             &.active {
                 background-color: @btn-primary-bg;
                 color: @btn-primary-color;
-                text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+                text-shadow: 0 -1px 0 rgba(0,0,0,.25);
             }
 
             &.old {

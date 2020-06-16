@@ -59,32 +59,24 @@
             }
         }
     }
-
     .sonata-ba-show {
         .locale_switcher {
             margin-right: 15px;
         }
     }
-
     @languages: 'fr', 'en', 'it', 'es', 'nl';
     @path: '/bundles/sonatatranslation/img/flags/';
 
     .-(@i: length(@languages)) when (@i > 0) {
-    @language: e(extract(@languages, @i));
-
-    &.locale_@{language} {
-        label.wysiwyg.locale, label.checkbox.locale, input.locale, textarea.locale, select.locale, li.locale a {
-            background-image: url('@{path}@{language}.png');
+        @language: e(extract(@languages, @i));
+        &.locale_@{language} {
+            label.wysiwyg.locale, label.checkbox.locale, input.locale, textarea.locale, select.locale, li.locale a {
+                background-image: url('@{path}@{language}.png');
+            }
+            input[type="checkbox"].locale:before {
+                content: url('@{path}@{language}.png');
+            }
         }
-
-        input[type="checkbox"].locale:before {
-            content: url('@{path}@{language}.png');
-        }
-    }
-
-    .-((@i - 1));
-}
-
-    .-
-;
+        .-((@i - 1));
+    } .-;
 }
