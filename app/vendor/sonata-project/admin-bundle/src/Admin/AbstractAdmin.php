@@ -76,28 +76,28 @@ abstract class AbstractAdmin implements AdminInterface, DomainObjectInterface, A
     /**
      * The list FieldDescription constructed from the configureListField method.
      *
-     * @var array
+     * @var FieldDescriptionInterface[]
      */
     protected $listFieldDescriptions = [];
 
     /**
      * The show FieldDescription constructed from the configureShowFields method.
      *
-     * @var array
+     * @var FieldDescriptionInterface[]
      */
     protected $showFieldDescriptions = [];
 
     /**
      * The list FieldDescription constructed from the configureFormField method.
      *
-     * @var array
+     * @var FieldDescriptionInterface[]
      */
     protected $formFieldDescriptions = [];
 
     /**
      * The filter FieldDescription constructed from the configureFilterField method.
      *
-     * @var array
+     * @var FieldDescriptionInterface[]
      */
     protected $filterFieldDescriptions = [];
 
@@ -495,7 +495,7 @@ abstract class AbstractAdmin implements AdminInterface, DomainObjectInterface, A
     /**
      * The list collection.
      *
-     * @var FieldDescriptionCollection
+     * @var FieldDescriptionCollection|null
      */
     private $list;
 
@@ -1394,13 +1394,17 @@ abstract class AbstractAdmin implements AdminInterface, DomainObjectInterface, A
         $adminCode = $fieldDescription->getOption('admin_code');
 
         if (null !== $adminCode) {
+            if (!$pool->hasAdminByAdminCode($adminCode)) {
+                return;
+            }
+
             $admin = $pool->getAdminByAdminCode($adminCode);
         } else {
-            $admin = $pool->getAdminByClass($fieldDescription->getTargetEntity());
-        }
+            if (!$pool->hasAdminByClass($fieldDescription->getTargetEntity())) {
+                return;
+            }
 
-        if (!$admin) {
-            return;
+            $admin = $pool->getAdminByClass($fieldDescription->getTargetEntity());
         }
 
         if ($this->hasRequest()) {
@@ -1818,7 +1822,26 @@ EOT;
 
     public function getFormFieldDescription($name)
     {
-        return $this->hasFormFieldDescription($name) ? $this->formFieldDescriptions[$name] : null;
+        $this->buildForm();
+
+        if (!$this->hasFormFieldDescription($name)) {
+            @trigger_error(sprintf(
+                'Calling %s() when there is no form field description is deprecated since sonata-project/admin-bundle 3.69 and will throw an exception in 4.0. '.
+                'Use %s::hasFormFieldDescription() to know if there is a form field description.',
+                __METHOD__,
+                __CLASS__
+            ), E_USER_DEPRECATED);
+            // NEXT_MAJOR : remove the previous `trigger_error()` call, the `return null` statement, uncomment the following exception and declare FieldDescriptionInterface as return type
+            // throw new \LogicException(sprintf(
+            //    'Admin "%s" has no form field description for the field %s.',
+            //    static::class,
+            //    $name
+            // ));
+
+            return null;
+        }
+
+        return $this->formFieldDescriptions[$name];
     }
 
     /**
@@ -1830,6 +1853,8 @@ EOT;
      */
     public function hasFormFieldDescription($name)
     {
+        $this->buildForm();
+
         return \array_key_exists($name, $this->formFieldDescriptions) ? true : false;
     }
 
@@ -1851,7 +1876,7 @@ EOT;
     /**
      * build and return the collection of form FieldDescription.
      *
-     * @return array collection of form FieldDescription
+     * @return FieldDescriptionInterface[] collection of form FieldDescription
      */
     public function getShowFieldDescriptions()
     {
@@ -1871,11 +1896,30 @@ EOT;
     {
         $this->buildShow();
 
-        return $this->hasShowFieldDescription($name) ? $this->showFieldDescriptions[$name] : null;
+        if (!$this->hasShowFieldDescription($name)) {
+            @trigger_error(sprintf(
+                'Calling %s() when there is no show field description is deprecated since sonata-project/admin-bundle 3.69 and will throw an exception in 4.0. '.
+                'Use %s::hasFormFieldDescription() to know if there is a show field description.',
+                __METHOD__,
+                __CLASS__
+            ), E_USER_DEPRECATED);
+            // NEXT_MAJOR : remove the previous `trigger_error()` call, the `return null` statement, uncomment the following exception and declare FieldDescriptionInterface as return type
+            // throw new \LogicException(sprintf(
+            //    'Admin "%s" has no show field description for the field %s.',
+            //    static::class,
+            //    $name
+            // ));
+
+            return null;
+        }
+
+        return $this->showFieldDescriptions[$name];
     }
 
     public function hasShowFieldDescription($name)
     {
+        $this->buildShow();
+
         return \array_key_exists($name, $this->showFieldDescriptions);
     }
 
@@ -1898,6 +1942,8 @@ EOT;
 
     public function getListFieldDescription($name)
     {
+        $this->buildList();
+
         if (!$this->hasListFieldDescription($name)) {
             @trigger_error(sprintf(
                 'Calling %s() when there is no list field description is deprecated since sonata-project/admin-bundle 3.66 and will throw an exception in 4.0. '.
@@ -1938,11 +1984,32 @@ EOT;
 
     public function getFilterFieldDescription($name)
     {
-        return $this->hasFilterFieldDescription($name) ? $this->filterFieldDescriptions[$name] : null;
+        $this->buildDatagrid();
+
+        if (!$this->hasFilterFieldDescription($name)) {
+            @trigger_error(sprintf(
+                'Calling %s() when there is no filter field description is deprecated since sonata-project/admin-bundle 3.69 and will throw an exception in 4.0. '.
+                'Use %s::hasFilterFieldDescription() to know if there is a filter field description.',
+                __METHOD__,
+                __CLASS__
+            ), E_USER_DEPRECATED);
+            // NEXT_MAJOR : remove the previous `trigger_error()` call, the `return null` statement, uncomment the following exception and declare FieldDescriptionInterface as return type
+            // throw new \LogicException(sprintf(
+            //    'Admin "%s" has no filter field description for the field %s.',
+            //    static::class,
+            //    $name
+            // ));
+
+            return null;
+        }
+
+        return $this->filterFieldDescriptions[$name];
     }
 
     public function hasFilterFieldDescription($name)
     {
+        $this->buildDatagrid();
+
         return \array_key_exists($name, $this->filterFieldDescriptions) ? true : false;
     }
 
@@ -2009,7 +2076,24 @@ EOT;
 
     public function getChild($code)
     {
-        return $this->hasChild($code) ? $this->children[$code] : null;
+        if (!$this->hasChild($code)) {
+            @trigger_error(sprintf(
+                'Calling %s() when there is no child is deprecated since sonata-project/admin-bundle 3.69'
+                .' and will throw an exception in 4.0. Use %s::hasChild() to know if the child exists.',
+                __METHOD__,
+                __CLASS__
+            ), E_USER_DEPRECATED);
+            // NEXT_MAJOR : remove the previous `trigger_error()` call, the `return null` statement, uncomment the following exception and declare AdminInterface as return type
+            // throw new \LogicException(sprintf(
+            //    'Admin "%s" has no child for the code %s.',
+            //    static::class,
+            //    $code
+            // ));
+
+            return null;
+        }
+
+        return $this->children[$code];
     }
 
     public function setParent(AdminInterface $parent)
@@ -2589,19 +2673,19 @@ EOT;
         return $this->cacheIsGranted[$key];
     }
 
-    public function getUrlSafeIdentifier($entity)
+    public function getUrlSafeIdentifier($model)
     {
-        return $this->getModelManager()->getUrlSafeIdentifier($entity);
+        return $this->getModelManager()->getUrlSafeIdentifier($model);
     }
 
-    public function getNormalizedIdentifier($entity)
+    public function getNormalizedIdentifier($model)
     {
-        return $this->getModelManager()->getNormalizedIdentifier($entity);
+        return $this->getModelManager()->getNormalizedIdentifier($model);
     }
 
-    public function id($entity)
+    public function id($model)
     {
-        return $this->getNormalizedIdentifier($entity);
+        return $this->getNormalizedIdentifier($model);
     }
 
     public function setValidator($validator)
@@ -3175,8 +3259,8 @@ EOT;
             return;
         }
 
-        $this->show = new FieldDescriptionCollection();
-        $mapper = new ShowMapper($this->showBuilder, $this->show, $this);
+        $this->show = $this->getShowBuilder()->getBaseList();
+        $mapper = new ShowMapper($this->getShowBuilder(), $this->show, $this);
 
         $this->configureShowFields($mapper);
 
@@ -3195,7 +3279,6 @@ EOT;
         }
 
         $this->list = $this->getListBuilder()->getBaseList();
-
         $mapper = new ListMapper($this->getListBuilder(), $this->list, $this);
 
         if (\count($this->getBatchActions()) > 0 && $this->hasRequest() && !$this->getRequest()->isXmlHttpRequest()) {
@@ -3215,7 +3298,7 @@ EOT;
             $fieldDescription->setTemplate($this->getTemplate('batch'));
             // $fieldDescription->setTemplate($this->getTemplateRegistry()->getTemplate('batch'));
 
-            $mapper->add($fieldDescription, 'batch');
+            $mapper->add($fieldDescription, ListMapper::TYPE_BATCH);
         }
 
         $this->configureListFields($mapper);
@@ -3241,7 +3324,7 @@ EOT;
             $fieldDescription->setTemplate($this->getTemplate('select'));
             // $fieldDescription->setTemplate($this->getTemplateRegistry()->getTemplate('select'));
 
-            $mapper->add($fieldDescription, 'select');
+            $mapper->add($fieldDescription, ListMapper::TYPE_SELECT);
         }
     }
 

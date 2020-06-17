@@ -44,7 +44,6 @@ function FetchStream(url, options) {
     this.ended = false;
     this.readyToRead = 0;
 }
-
 utillib.inherits(FetchStream, Stream);
 
 FetchStream.prototype._read = function (size) {

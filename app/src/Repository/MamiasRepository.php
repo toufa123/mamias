@@ -73,6 +73,8 @@
                 ->addSelect ('success.successType')
                 ->leftJoin ('z.speciesstatus', 'speciesstatus')
                 ->addSelect ('speciesstatus.status')
+                ->leftJoin ('z.Distribution', 'd')
+                ->addSelect ('d.ecap')
                 ->orderBy ('z.id')
                 ->getQuery ()
                 ->getArrayResult ();

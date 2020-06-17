@@ -106,6 +106,8 @@
                 ]]
             ];
             $r2 = json_encode (array ('data' => $species));
+            dump ($r2);
+            die;
             return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'response' => $r2]);
         }
 

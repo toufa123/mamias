@@ -14,11 +14,12 @@ doctrine:
             json:       Sonata\Doctrine\Types\JsonType
             geometry:   CrEOF\Spatial\DBAL\Types\GeometryType
             point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
+            #point :     CrEOF\Spatial\PHP\Types\Geometry\Point
             polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring: CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
 
         mapping_types:
-            _text: string # see https://groups.google.com/d/msg/doctrine-user/1F6M3NHmwak/bcpJD4DXxzIJ
+            _text: string
 
         url: '%env(resolve:DATABASE_URL)%'
     orm:

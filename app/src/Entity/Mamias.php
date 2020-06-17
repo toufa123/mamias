@@ -12,10 +12,12 @@
     use Gedmo\Mapping\Annotation as Gedmo;
     use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     use Doctrine\ORM\Mapping\Index;
-    
+
     /**
+     *
      * @ORM\Entity(repositoryClass=MamiasRepository::class)
      * @UniqueEntity(fields={"relation"}, message="It looks like your already have this species in MAMIAS!")
+     *
      */
     class Mamias
     {
@@ -23,6 +25,8 @@
          * @ORM\Id()
          * @ORM\GeneratedValue()
          * @ORM\Column(type="integer")
+         *
+         *
          */
         private $id;
         
