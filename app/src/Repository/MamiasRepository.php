@@ -74,6 +74,7 @@
                 ->leftJoin ('z.speciesstatus', 'speciesstatus')
                 ->addSelect ('speciesstatus.status')
                 ->leftJoin ('z.Distribution', 'd')
+                ->leftJoin ('z.Distribution.ecap', 'c')
                 ->addSelect ('d.ecap')
                 ->orderBy ('z.id')
                 ->getQuery ()
