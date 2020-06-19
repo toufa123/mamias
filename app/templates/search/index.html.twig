@@ -254,6 +254,8 @@
                     {"data": "originRegion", "autoWidth": true},
                     {"data": "status", "autoWidth": true},
                     {"data": "successType", "autoWidth": true},
+                    {"data": "ecap", "autoWidth": true},
+                    {"data": "country", "autoWidth": true},
                     {
                         "render": function (data, type, row) {
                             var url = '{{ path('species_fiche', { 'id': 'id'}) }}';
@@ -262,12 +264,11 @@
                             return '<a class="btn-sm btn-custom waves-effect w-xs waves-light text-center" target="_blank" href="' + url + '">View</a>';
                         }
                     }
-
-
                 ], "columnDefs": [
                     {"className": "text-center", "targets": [0, 2, 3, 4, 5, 6, 7]}
                 ], "language": {
-                    "thousands": " "
+                    "thousands": " ",
+                    "emptyTable": "No data available "
                 },
                 "searching": false,
 
@@ -371,6 +372,8 @@
                     {"data": "originRegion", "autoWidth": true},
                     {"data": "status", "autoWidth": true},
                     {"data": "successType", "autoWidth": true},
+                    {"data": "ecap", "autoWidth": true},
+                    {"data": "country", "autoWidth": true},
                     {
                         "render": function (data, type, row) {
                             var url = '{{ path('species_fiche', { 'id': 'id'}) }}';
@@ -385,7 +388,8 @@
                     {"className": "text-center", "targets": [0, 2, 3, 4, 5, 6, 7]}
                 ],
                 "language": {
-                    "thousands": " "
+                    "thousands": " ",
+                    "emptyTable": "No data available "
                 },
                 "lengthChange": true,
                 "searching": false,

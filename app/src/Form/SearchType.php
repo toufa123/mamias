@@ -13,16 +13,18 @@
     use App\Entity\SuccessType;
     use App\Entity\VectorName;
     use App\Entity\Status;
+    use App\Repository\CountryRepository;
+    use App\Repository\OriginRepository;
     use Symfony\Bridge\Doctrine\Form\Type\EntityType;
     use Symfony\Component\Form\AbstractType;
     use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
     use Symfony\Component\Form\Extension\Core\Type\ResetType;
     use Symfony\Component\Form\FormBuilderInterface;
     use Symfony\Component\OptionsResolver\OptionsResolver;
-    
+
     class SearchType extends AbstractType
     {
-        public function buildForm(FormBuilderInterface $builder, array $options)
+        public function buildForm (FormBuilderInterface $builder, array $options)
         {
             $builder
                 ->add(
@@ -52,6 +54,11 @@
                     'origin',
                     EntityType::class,
                     [
+                        'class' => Country::class,
+                        'query_builder' => function (OriginRepository $er) {
+                            return $er->createQueryBuilder ('f')
+                                ->orderBy ('f.originRegion', 'ASC');
+                        },
                         'class' => Origin::class,
                         'placeholder' => 'Select the Orgin',
                         'choice_label' => 'originRegion',
@@ -91,10 +98,14 @@
                     EntityType::class,
                     [
                         'class' => Country::class,
+                        'query_builder' => function (CountryRepository $er) {
+                            return $er->createQueryBuilder ('f')
+                                ->orderBy ('f.country', 'ASC');
+                        },
                         'placeholder' => 'Select A country',
                         'choice_label' => 'country',
                         'choice_value' => 'id',
-                        'attr' => ['class' => 'select2'],
+                        'attr' => ['class' => 'form-control select2'],
                         'required' => false
                     ]
                 )

@@ -74,8 +74,10 @@
                 ->leftJoin ('z.speciesstatus', 'speciesstatus')
                 ->addSelect ('speciesstatus.status')
                 ->leftJoin ('z.Distribution', 'd')
-                ->leftJoin ('z.Distribution.ecap', 'c')
-                ->addSelect ('d.ecap')
+                ->join ('d.country', 'c')
+                ->addSelect ('c.country')
+                ->join ('d.ecap', 'e')
+                ->addSelect ('e.ecap')
                 ->orderBy ('z.id')
                 ->getQuery ()
                 ->getArrayResult ();
@@ -104,10 +106,12 @@
          */
         public function findSpeciesByParametres($sId, $eco, $origin, $su, $year, $country, $reg, $status, $pathway)
         {
+
             $query = $this->createQueryBuilder('m');
             $query = $query
-                ->select ('m.id')
-                ->AddSelect ('m.firstMedSighting')
+                ->select ('m', 'c')
+                ->leftJoin ('m.Distribution', 'c')
+                ->addSelect ('c')
                 ->leftJoin ('m.relation', 'Catalogue')
                 ->addSelect ('Catalogue.Species')
                 ->leftJoin ('m.Ecofunctional', 'Ecofunctional')
@@ -117,10 +121,7 @@
                 ->leftJoin ('m.Success', 'success')
                 ->addSelect ('success.successType')
                 ->leftJoin ('m.speciesstatus', 'speciesstatus')
-                ->addSelect ('speciesstatus.status')
-                ->orderBy ('m.id')
-                ->leftJoin ('m.Distribution', 'c')
-                ->addSelect('c');
+                ->addSelect ('speciesstatus.status');
             if (!empty($sId)) {
                 $query = $query->Where('m.relation = :val')
                     ->setParameter('val', $sId);
@@ -156,13 +157,9 @@
             }
             
             if (!empty($pathway)) {
-                $query = $query->andWhere('c.pathway = :val6')
-                    ->setParameter('val6', $pathway);
+                $query = $query->andWhere ('m.pathway = :val6')
+                    ->setParameter ('val6', $pathway);
             }
-            
-            //->orderBy('m.id', 'ASC')
-            //->setMaxResults(10)
-
             return $query->getQuery ()->getArrayResult ();
         }
         

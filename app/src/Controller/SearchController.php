@@ -22,8 +22,6 @@
     use Symfony\Component\Routing\Annotation\Route;
     use Symfony\Component\HttpFoundation\Response;
     use Symfony\Component\HttpFoundation\JsonResponse;
-
-
     class SearchController extends AbstractController
     {
         /**
@@ -45,7 +43,7 @@
             $form = $this->createForm(SearchType::class, $search);
             
             $form->handleRequest($request);
-            
+
             if ($form->isSubmitted() && $form->isValid()) {
                 //On récupère les données entrées dans le formulaire par l'utilisateur
                 $em = $this->getDoctrine()->getManager();
@@ -86,19 +84,21 @@
                 if ('' != $st) {
                     $status = $em->getRepository(Status::class)->findOneBy(['status' => $st])->getId();
                 }
-                
-                $pat = $data->getvectorName();
+
+                $pat = $data->getvectorName ();
                 if ('' != $pat) {
-                    $pathway = $em->getRepository(VectorName::class)->findOneBy(['vectorName' => $pat])->getId();
+                    $pathway = $em->getRepository (VectorName::class)->findOneBy (['vectorName' => $pat])->getId ();
                 }
                 //dump($st, $pat, $status, $pathway);die;
 
                 $species = $em->getRepository (Mamias::class)->findSpeciesByParametres (
                     $sId, $eco, $origin, $su, $year, $country, $ecapmed, $status, $pathway);
-                //dump ($species);die;
+                dump ($species);
+                die;
             } else {
                 $em = $this->getDoctrine ()->getManager ();
                 $species = $em->getRepository (Mamias::class)->findAllS ();
+                //dump($species);die;
             }
             $data = (object)[
                 'data' => [[
@@ -106,8 +106,7 @@
                 ]]
             ];
             $r2 = json_encode (array ('data' => $species));
-            dump ($r2);
-            die;
+            //dump ($r2);die;
             return $this->render ('search/index.html.twig', ['form' => $form->createView (), 'species' => $species, 'response' => $r2]);
         }
 
