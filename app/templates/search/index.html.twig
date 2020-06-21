@@ -169,8 +169,8 @@
                             <th class="text-center">Origin</th>
                             <th class="text-center">Species Status</th>
                             <th class="text-center">Establishment</th>
-                            <th class="text-center">EcAp/MSFD Sub-region</th>
-                            <th class="text-center">Country</th>
+                            <!--<th class="text-center">EcAp/MSFD Sub-region</th>
+                            <th class="text-center">Country</th>-->
                             <!--<th class="text-center">Impact</th>-->
                             <th class="text-center">Action</th>
 
@@ -254,13 +254,12 @@
                     {"data": "originRegion", "autoWidth": true},
                     {"data": "status", "autoWidth": true},
                     {"data": "successType", "autoWidth": true},
-                    {"data": "ecap", "autoWidth": true},
-                    {"data": "country", "autoWidth": true},
+                    //{"data": "ecap", "autoWidth": true},
+                    //{"data": "country", "autoWidth": true},
                     {
                         "render": function (data, type, row) {
                             var url = '{{ path('species_fiche', { 'id': 'id'}) }}';
                             url = url.replace("id", row.id);
-
                             return '<a class="btn-sm btn-custom waves-effect w-xs waves-light text-center" target="_blank" href="' + url + '">View</a>';
                         }
                     }
@@ -372,8 +371,8 @@
                     {"data": "originRegion", "autoWidth": true},
                     {"data": "status", "autoWidth": true},
                     {"data": "successType", "autoWidth": true},
-                    {"data": "ecap", "autoWidth": true},
-                    {"data": "country", "autoWidth": true},
+                    //{"data": "ecap", "autoWidth": true},
+                    //{"data": "country", "autoWidth": true},
                     {
                         "render": function (data, type, row) {
                             var url = '{{ path('species_fiche', { 'id': 'id'}) }}';

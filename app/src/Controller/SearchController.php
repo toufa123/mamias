@@ -93,8 +93,7 @@
 
                 $species = $em->getRepository (Mamias::class)->findSpeciesByParametres (
                     $sId, $eco, $origin, $su, $year, $country, $ecapmed, $status, $pathway);
-                dump ($species);
-                die;
+                //dump ($species); die;
             } else {
                 $em = $this->getDoctrine ()->getManager ();
                 $species = $em->getRepository (Mamias::class)->findAllS ();
