@@ -190,7 +190,7 @@ h6,
 
 /* General Links */
 a {
-    color: #3c8dbc;
+    color: #00AEEF;
 }
 
 a:hover,
@@ -2684,8 +2684,8 @@ a:focus {
 }
 
 .btn-primary {
-    background-color: #3c8dbc;
-    border-color: #367fa9;
+    background-color: #00AEEF;
+    border-color: #00AEEF;
 }
 
 .btn-primary:hover,

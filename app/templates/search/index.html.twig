@@ -144,13 +144,13 @@
                 <button type="submit" value="Search" class="btn btn-custom waves-effect waves-light"><i
                         class="mdi mdi-magnify m-r-5"></i>Search
                 </button>
-                <!--<button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light"><i
+                <button type="reset" id="reset" value="Reset" class="btn btn-custom waves-effect waves-light"><i
                         class="mdi mdi-refresh m-r-5"></i>Reset
-                </button>-->
+                </button>
             </div>
         </div>
     </div>
-
+    {{ form_end(form) }}
 
     <div class="row">
         <div class="col-sm-12">
@@ -413,19 +413,35 @@
                 .appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
 
             // Select2
-            $(".select2").select2();
+            $(".select2").select2({
 
+                //allowClear: true
+            });
             $("#switch1").click(function () {
                 $("#search").slideToggle();
                 $.cookie('switch1', true);
                 //alert($.cookie('switch1'))
-
             });
-
             if ($.cookie('switch1') === 'true') {
                 $('#switch1').click();
+            } else {
+                $("#search").hide();
             }
 
+            $("#reset").click(function () {
+                $('#speciesName').attr('placeholder');
+                //$("#speciesName").select2("val", "Select your Species");
+                $("#ecofunctional").select2("val", "Select an EcoFunctional Group");
+                $("#status").select2("val", "Select Species Status");
+                $("#med1stSighting").select2("val", "Select Year of First Sighting");
+                $("#origin").select2("val", "Select the Orgin");
+                $("#successType").select2("val", "Select Establishment Type");
+                $("#vectorName").select2("val", "Select A Pathway");
+                $("#Ecap").select2("val", "Select EcAp SubRegion");
+                $("#invasive").select2("val", "Select Impact");
+                $("#country").select2("val", "Select A country");
+
+            });
 
         });
 

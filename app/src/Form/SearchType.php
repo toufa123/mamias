@@ -109,19 +109,19 @@
                         'required' => false
                     ]
                 )
-                ->add(
-                    'regionalSea',
-                    EntityType::class,
-                    [
-                        'class' => RegionalSea::class,
-                        'placeholder' => 'Select a Sea',
-                        'choice_label' => 'regionalSea',
-                        'choice_value' => 'id',
-                        'attr' => ['class' => 'select2'],
-                        'required' => false
-                    ]
-                )
-                ->add(
+                //->add(
+                //    'regionalSea',
+                //    EntityType::class,
+                //    [
+                //        'class' => RegionalSea::class,
+                //        'placeholder' => 'Select a Sea',
+                //        'choice_label' => 'regionalSea',
+                //        'choice_value' => 'id',
+                //        'attr' => ['class' => 'select2'],
+                //        'required' => false
+                //    ]
+                //)
+                ->add (
                     'Ecap',
                     EntityType::class,
                     [
@@ -175,8 +175,8 @@
                         //    'data-placeholder' => 'Select A Vector/Pathway'
                         // ],
                     ]
-                )
-                ->add('reset', ResetType::class);
+                );
+            //->add('reset', ResetType::class);
         }
         
         private function getYears($min, $max = 'current')
