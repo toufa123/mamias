@@ -429,19 +429,18 @@
             }
 
             $("#reset").click(function () {
-                $('#speciesName').attr('placeholder');
-                //$("#speciesName").select2("val", "Select your Species");
-                $("#ecofunctional").select2("val", "Select an EcoFunctional Group");
-                $("#status").select2("val", "Select Species Status");
-                $("#med1stSighting").select2("val", "Select Year of First Sighting");
-                $("#origin").select2("val", "Select the Orgin");
-                $("#successType").select2("val", "Select Establishment Type");
-                $("#vectorName").select2("val", "Select A Pathway");
-                $("#Ecap").select2("val", "Select EcAp SubRegion");
-                $("#invasive").select2("val", "Select Impact");
-                $("#country").select2("val", "Select A country");
+                $('#speciesName').val(null).trigger('change');
+                $('#ecofunctional').val(null).trigger('change');
+                $('#origin').val(null).trigger('change');
+                $('#med1stSighting').val(null).trigger('change');
+                $('#successType').val(null).trigger('change');
+                $('#country').val(null).trigger('change');
+                $('#Ecap').val(null).trigger('change');
+                $('#invasive').val(null).trigger('change');
+                $('#status').val(null).trigger('change');
+                $('#vectorName').val(null).trigger('change');
 
-            });
+            })
 
         });
 
