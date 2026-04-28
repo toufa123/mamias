@@ -1,0 +1,178 @@
+services:
+  app:
+    container_name: "${NAME:-mamias}_app"
+    image: "${APP_IMAGE:-mamias-app:prod}"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env.production
+    environment:
+      PUID: "${PUID:-33}"
+      PGID: "${PGID:-33}"
+
+      # TLS/domain
+      SSL_MODE: "full"
+      SERVER_NAME: "${SERVER_NAME}"
+      CADDY_HTTP_SERVER_ADDRESS: "http://${SERVER_NAME}"
+      CADDY_HTTPS_SERVER_ADDRESS: "https://${SERVER_NAME}"
+      CADDY_AUTO_HTTPS: "on"
+      CADDY_SERVER_ROOT: "/var/www/html/public"
+      CADDY_ADMIN: "off"
+      CADDY_LOG_FORMAT: "json"
+      CADDY_LOG_OUTPUT: "stdout"
+      CADDY_SERVER_LOG_LEVEL: "warn"
+      CADDY_SERVER_EXTRA_DIRECTIVES: |
+        encode zstd gzip
+        header {
+          Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+          X-Content-Type-Options "nosniff"
+          X-Frame-Options "SAMEORIGIN"
+          Referrer-Policy "strict-origin-when-cross-origin"
+          Permissions-Policy "geolocation=(), microphone=(), camera=()"
+          -Server
+        }
+
+      # PHP/Laravel production defaults
+      PHP_DISPLAY_ERRORS: "Off"
+      PHP_DISPLAY_STARTUP_ERRORS: "Off"
+      PHP_ERROR_REPORTING: "22527"
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+      APP_ENV: "production"
+      APP_DEBUG: "false"
+      APP_URL: "${APP_URL}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+
+      # Database
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_DATABASE: "${DB_DATABASE:?DB_DATABASE is required}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      DB_SSLMODE: "${DB_SSLMODE:-require}"
+
+      # Redis
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"
+      CACHE_STORE: "redis"
+      SESSION_DRIVER: "redis"
+      QUEUE_CONNECTION: "redis"
+
+      # Sessions/cookies
+      SESSION_SECURE_COOKIE: "true"
+      SESSION_HTTP_ONLY: "true"
+      SESSION_SAME_SITE: "lax"
+
+      # Do not expose debug tooling in production
+      DEBUGBAR_ENABLED: "false"
+      DEBUGBAR_STORAGE_ENABLED: "false"
+      DEBUGBAR_OPEN_STORAGE: "false"
+
+      # Keep automations explicit
+      AUTORUN_ENABLED: "true"
+      AUTORUN_LARAVEL_STORAGE_LINK: "true"
+      AUTORUN_LARAVEL_MIGRATION: "false"
+      AUTORUN_LARAVEL_CONFIG_CACHE: "true"
+      AUTORUN_LARAVEL_ROUTE_CACHE: "true"
+      AUTORUN_LARAVEL_VIEW_CACHE: "true"
+      AUTORUN_LARAVEL_EVENT_CACHE: "true"
+      AUTORUN_LARAVEL_OPTIMIZE: "true"
+
+      HEALTHCHECK_PATH: "/up"
+
+    ports:
+      - "${APP_HTTPS_PORT:-443}:8443"
+      - "${APP_HTTPS_PORT:-443}:8443/udp"
+
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:8443/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
+  db:
+    image: "${POSTGIS_IMAGE:-kartoza/postgis:17-3.5}"
+    container_name: "${NAME:-mamias}_db"
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_DB: "${DB_DATABASE:?DB_DATABASE is required}"
+      POSTGRES_DBNAME: "${DB_DATABASE:?DB_DATABASE is required}"
+      POSTGRES_USER: "${DB_USERNAME:?DB_USERNAME is required}"
+      POSTGRES_PASS: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      POSTGRES_MULTIPLE_EXTENSIONS: "${POSTGRES_MULTIPLE_EXTENSIONS:-postgis}"
+      DEFAULT_ENCODING: "${DEFAULT_ENCODING:-UTF8}"
+      ALLOW_IP_RANGE: "${ALLOW_IP_RANGE:-172.16.0.0/12}"
+    volumes:
+      - db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U \"$${DB_USERNAME}\" -d \"$${DB_DATABASE}\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
+  redis:
+    image: "${REDIS_IMAGE:-redis:7.4-alpine}"
+    container_name: "${NAME:-mamias}_redis"
+    command: ["sh", "-c", "redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass \"$${REDIS_PASSWORD}\""]
+    env_file:
+      - .env.production
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
+volumes:
+  db_data:
+    name: "${NAME:-mamias}_data_prod"
+
+networks:
+  app_net:
+    name: "${NAME:-mamias}_net_prod"
+
