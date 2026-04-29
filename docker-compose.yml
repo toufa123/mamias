@@ -158,7 +158,7 @@ services :
       AUTORUN_ENABLED : "true"
       
       AUTORUN_LARAVEL_STORAGE_LINK : "true"        # php artisan storage:link
-      AUTORUN_LARAVEL_MIGRATION : "false"            # php artisan migrate --force
+      AUTORUN_LARAVEL_MIGRATION : "true"            # php artisan migrate --force
       AUTORUN_LARAVEL_MIGRATION_ISOLATION : "false"  # DB lock (one migrator at a time)
       
       # Caches enabled even in dev for Filament performance.
