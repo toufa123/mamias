@@ -26,7 +26,16 @@
             $panelUserRole  = Role::firstOrCreate(['name' => 'panel_user',  'guard_name' => 'web']);
             Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
             
-            // ── 2. Developer-login admin account ─────────────────────────────
+            // ── 2. Developer-login accounts (local / staging only) ────────────
+            // These accounts are auto-restored after a DB reset so developers
+            // never need to run manual tinker commands. They are intentionally
+            // excluded from production to keep seeded credentials out of live DBs.
+            if (app()->isProduction()) {
+                $this->command?->warn('[DatabaseSeeder] Skipping developer-login accounts in production.');
+                
+                return;
+            }
+            
             // This account maps to the "Admin" shortcut in FilamentDeveloperLoginsPlugin.
             $adminUser = User::updateOrCreate(
                 ['email' => 'atef.ouerghi@spa-rac.org'],
@@ -41,7 +50,6 @@
             );
             $adminUser->syncRoles([$superAdminRole]);
             
-            // ── 3. Developer-login panel-user account ─────────────────────────
             // This account maps to the "User" shortcut in FilamentDeveloperLoginsPlugin.
             $panelUser = User::updateOrCreate(
                 ['email' => 'atef.ouerghi@gmail.com'],

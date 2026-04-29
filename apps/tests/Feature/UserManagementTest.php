@@ -26,6 +26,27 @@ beforeEach(function () {
 
 // ── Registration ──────────────────────────────────────────────────────────────
 
+it('automatically assigns the user role via the filament registration page', function () {
+    Livewire::test(\App\Filament\Pages\Auth\Register::class)
+        ->fillForm([
+            'title'                 => 'Dr',
+            'first_name'            => 'Jane',
+            'last_name'             => 'Doe',
+            'email'                 => 'jane@example.com',
+            'country'               => 'TN',
+            'password'              => 'password',
+            'password_confirmation' => 'password',
+        ])
+        ->call('register')
+        ->assertHasNoFormErrors();
+
+    $user = User::where('email', 'jane@example.com')->first();
+
+    expect($user)->not->toBeNull()
+        ->and($user->hasRole('user'))->toBeTrue()
+        ->and($user->hasRole('super_admin'))->toBeFalse();
+});
+
 it('assigns the default user role on registration', function () {
     $user = User::factory()->create([
         'first_name' => 'Jane',
