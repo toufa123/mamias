@@ -1,218 +1,311 @@
 <?php
     
-    declare(strict_types=1);
-    
     namespace App\Services;
     
+    use App\Enums\Catalogue_Status;
+    use App\Enums\Worms_Status;
+    use App\Enums\Environment;
+    use App\Models\Taxon;
+    use Illuminate\Http\Client\Response;
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Support\Facades\Http;
     
-    /**
-     * WoRMS (World Register of Marine Species) REST API Client.
-     *
-     * Provides read-only access to the Aphia taxonomy service.
-     * All results are cached in Redis to reduce API load and improve latency.
-     *
-     * @see https://www.marinespecies.org/rest/
-     */
     class WormsService
     {
-        protected string $baseUrl = 'https://www.marinespecies.org/rest';
+        private const KINGDOMS = [
+            2 => 'Animalia',
+            6 => 'Bacteria',
+            7 => 'Chromista',
+            4 => 'Fungi',
+            3 => 'Plantae',
+            5 => 'Protozoa',
+            10 => 'Viruses',
+        ];
+        
+        private string $baseUrl = 'https://www.marinespecies.org/rest';
+        
+        private int $requestTimeoutSeconds = 30;
+        
+        private int $connectTimeoutSeconds = 10;
         
         /**
-         * Get all Phyla from WoRMS grouped by Kingdom.
-         *
-         * Iterates over every Kingdom, fetches its direct children and keeps
-         * only those whose rank is "Phylum". Results are grouped under each
-         * Kingdom name with a phylum count (e.g. "Animalia (35)").
-         *
-         * Cached for 24 hours.
-         *
-         * @return array<string, array<int, string>> [Kingdom (count) => [AphiaID => scientific_name]]
+         * Fetch all marine phyla from WoRMS.
+         * We start from Biota (AphiaID 1) and recursively (or selectively)
+         * find children that are Phyla.
          */
-        public function getPhyla(): array
+        final public function getPhyla(): array
         {
-            return Cache::remember('worms_v2.phyla', 86_400, function (): array {
-                $kingdoms = $this->getKingdoms();
-                $grouped = [];
+            return Cache::remember('worms_phyla_grouped_v2', 86400, function () {
+                $groupedPhyla = [];
                 
-                foreach ($kingdoms as $aphiaId => $name) {
-                    $children = $this->fetchChildren($aphiaId);
+                foreach (self::KINGDOMS as $aphiaId => $name) {
                     $phyla = [];
+                    $this->fetchPhylaRecursive($aphiaId, $phyla);
                     
-                    foreach ($children as $child) {
-                        if (($child[ 'rank' ] ?? '') === 'Phylum') {
-                            $phyla[ $child[ 'AphiaID' ] ] = $child[ 'scientificname' ];
-                        }
-                    }
-                    
-                    if (!empty($phyla)) {
-                        asort($phyla);
-                        $grouped[ "{$name} (".count($phyla).")" ] = $phyla;
+                    if (! empty($phyla)) {
+                        ksort($phyla);
+                        $count = count($phyla);
+                        $groupedPhyla["{$name} ({$count})"] = $phyla;
                     }
                 }
                 
-                return $grouped;
+                ksort($groupedPhyla);
+                
+                return $groupedPhyla;
             });
         }
         
         /**
-         * Get all Kingdoms from WoRMS (children of AphiaID 1 = Biota).
-         *
-         * Cached for 24 hours.
-         *
-         * @return array<int, string> [AphiaID => scientific_name]
+         * Fetch a single AphiaRecord by AphiaID.
          */
-        public function getKingdoms(): array
+        final public function getRecordByAphiaID(int $aphiaId): ?array
         {
-            return Cache::remember('worms_v2.kingdoms', 86_400, function (): array {
-                $children = $this->fetchChildren(1);
-                
-                $kingdoms = [];
-                foreach ($children as $child) {
-                    if (($child[ 'rank' ] ?? '') === 'Kingdom') {
-                        $kingdoms[ $child[ 'AphiaID' ] ] = $child[ 'scientificname' ];
-                    }
-                }
-                
-                asort($kingdoms);
-                
-                return $kingdoms;
-            });
-        }
-        
-        /**
-         * Fetch direct children of a given AphiaID from WoRMS.
-         *
-         * @param  int  $aphiaId  WoRMS AphiaID
-         *
-         * @return array<int, array<string, mixed>>
-         */
-        protected function fetchChildren(int $aphiaId): array
-        {
-            $response = Http::timeout(15)
-                ->get("{$this->baseUrl}/AphiaChildrenByAphiaID/{$aphiaId}", [
-                    'marine_only' => 'true',
-                    'offset' => 1,
-                ]);
+            $response = $this->wormsRequest("{$this->baseUrl}/AphiaRecordByAphiaID/{$aphiaId}");
             
-            if (!$response->successful()) {
+            if (! $response || $response->status() === 204 || $response->failed()) {
+                return null;
+            }
+            
+            return $response->json();
+        }
+        
+        /**
+         * Search for species by name in WoRMS.
+         */
+        public function searchSpecies(string $search, bool $like = true, bool $marineOnly = true): array
+        {
+            if (strlen($search) < 3) {
                 return [];
             }
             
-            $data = $response->json();
+            $response = $this->wormsRequest("{$this->baseUrl}/AphiaRecordsByName/".urlencode($search), [
+                'like' => $like ? 'true' : 'false',
+                'marine_only' => $marineOnly ? 'true' : 'false',
+            ]);
             
-            return is_array($data) ? $data : [];
+            return $this->processResponse($response);
         }
         
         /**
-         * Search taxa by scientific name via the WoRMS REST API.
-         *
-         * Cached for 1 hour.
-         *
-         * @param  string  $name  Scientific name to search for
-         * @param  bool  $like  Use wildcard/like search when true
-         *
-         * @return array<int, array<string, mixed>> List of matching Aphia records
+         * Search for species by name in WoRMS using fuzzy matching (TAXAMATCH).
          */
-        public function searchByName(string $name, bool $like = true): array
+        public function matchTaxa(string $name, bool $marineOnly = true): array
         {
-            if (blank($name)) {
+            $response = $this->wormsRequest("{$this->baseUrl}/AphiaRecordsByMatchNames", [
+                'scientificnames[]' => $name,
+                'marine_only' => $marineOnly ? 'true' : 'false',
+            ]);
+
+            return $this->processResponse($response);
+        }
+
+        /**
+         * Get a single record by scientific name from WoRMS.
+         */
+        public function getRecordByName(string $name): ?array
+        {
+            $records = $this->searchSpecies($name, like: false);
+            
+            return ! empty($records) ? $records[0] : null;
+        }
+        
+        /**
+         * Fetch synonyms by AphiaID from WoRMS.
+         */
+        final public function getSynonyms(int $aphiaId): array
+        {
+            $response = $this->wormsRequest("{$this->baseUrl}/AphiaSynonymsByAphiaID/{$aphiaId}");
+            
+            return $this->processResponse($response);
+        }
+        
+        /**
+         * Process WoRMS API response.
+         */
+        private function processResponse(?Response $response): array
+        {
+            if (! $response || $response->status() === 204 || $response->failed()) {
                 return [];
             }
             
-            $cacheKey = 'worms_v2.search.'.md5($name.($like ? '_like' : '_exact'));
+            $records = $response->json();
             
-            return Cache::remember($cacheKey, 3_600, function () use ($name, $like): array {
-                $response = Http::timeout(15)
-                    ->get("{$this->baseUrl}/AphiaRecordsByName/{$name}", [
-                        'like' => $like ? 'true' : 'false',
-                        'marine_only' => 'true',
-                    ]);
-                
-                if (!$response->successful()) {
-                    return [];
-                }
-                
-                $data = $response->json();
-                
-                return is_array($data) ? $data : [];
-            });
-        }
-        
-        /**
-         * Get the full classification tree for a given AphiaID.
-         *
-         * The WoRMS response is a nested object:
-         *   { AphiaID, scientificname, rank, child: { … } }
-         *
-         * This method flattens it into an ordered array from Kingdom to the target.
-         *
-         * Cached for 24 hours.
-         *
-         * @param  int  $aphiaId  WoRMS AphiaID
-         *
-         * @return array<int, array{aphia_id: int, name: string, rank: string}>
-         */
-        public function getClassificationTree(int $aphiaId): array
-        {
-            $cacheKey = 'worms_v2.classification.'.$aphiaId;
-            
-            return Cache::remember($cacheKey, 86_400, function () use ($aphiaId): array {
-                $response = Http::timeout(15)
-                    ->get("{$this->baseUrl}/AphiaClassificationByAphiaID/{$aphiaId}");
-                
-                if (!$response->successful()) {
-                    return [];
-                }
-                
-                $tree = $response->json();
-                
-                return is_array($tree) ? $this->flattenClassificationTree($tree) : [];
-            });
-        }
-        
-        /**
-         * Recursively flatten the nested WoRMS classification tree.
-         *
-         * @param  array<string, mixed>  $node  Current tree node
-         * @param  array<int, array{aphia_id: int, name: string, rank: string}>  $carry  Accumulator
-         *
-         * @return array<int, array{aphia_id: int, name: string, rank: string}>
-         */
-        protected function flattenClassificationTree(array $node, array $carry = []): array
-        {
-            $carry[] = [
-                'aphia_id' => $node[ 'AphiaID' ],
-                'name' => $node[ 'scientificname' ],
-                'rank' => $node[ 'rank' ],
-            ];
-            
-            if (!empty($node[ 'child' ]) && is_array($node[ 'child' ])) {
-                return $this->flattenClassificationTree($node[ 'child' ], $carry);
+            if (isset($records['AphiaID'])) {
+                return [$records];
             }
             
-            return $carry;
+            return is_array($records) ? $records : [];
         }
         
         /**
-         * Get a single Aphia record by its ID.
-         *
-         * Cached for 24 hours.
-         *
-         * @param  int  $aphiaId  WoRMS AphiaID
-         *
-         * @return array<string, mixed>|null
+         * Recursively fetch phyla starting from a given AphiaID.
+         * Some kingdoms have subkingdoms or other ranks between Kingdom and Phylum.
          */
-        public function getRecord(int $aphiaId): ?array
+        final protected function fetchPhylaRecursive(int $aphiaId, array &$phyla, int $depth = 0): void
         {
-            $cacheKey = 'worms_v2.record.'.$aphiaId;
+            // Limit depth to avoid infinite loops or excessive API calls
+            if ($depth > 3) {
+                return;
+            }
             
-            return Cache::remember($cacheKey, 86_400, function () use ($aphiaId): ?array {
-                $response = Http::timeout(15)
-                    ->get("{$this->baseUrl}/AphiaRecordByAphiaID/{$aphiaId}");
+            $response = $this->wormsRequest("{$this->baseUrl}/AphiaChildrenByAphiaID/{$aphiaId}");
+            
+            if (! $response) {
+                return;
+            }
+            
+            if ($response->failed()) {
+                return;
+            }
+            
+            $children = $response->json();
+            
+            if (! is_array($children)) {
+                return;
+            }
+            
+            foreach ($children as $child) {
+                if ($child['status'] !== 'accepted') {
+                    continue;
+                }
                 
-                return $response->successful() ? $response->json() : null;
-            });
+                if ($child['rank'] === 'Phylum') {
+                    $phyla[$child['scientificname']] = $child['scientificname'];
+                } elseif (in_array($child['rank'], ['Subkingdom', 'Kingdom', 'Infrakingdom', 'Superphylum'])) {
+                    // If it's a higher rank than Phylum, we might need to go deeper
+                    $this->fetchPhylaRecursive($child['AphiaID'], $phyla, $depth + 1);
+                }
+            }
+        }
+        
+        /**
+         * Populate a Taxon model with data from WoRMS.
+         */
+        final public function populateTaxonFromWorms(Taxon $taxon, array $data): void
+        {
+            $data = $this->handleUnacceptedName($taxon, $data);
+
+            $this->mapTaxonFields($taxon, $data);
+
+            // Fetch synonyms automatically without persisting yet.
+            // Persistence is handled by the importer/model save lifecycle.
+            $this->expandSynonyms($taxon, persist: false);
+
+            // Normalize (LSID etc)
+            app(TaxonNormalizer::class)->normalize($taxon);
+
+            $taxon->fetched_at = now();
+        }
+        
+        /**
+         * Fetch and expand synonyms for a given Taxon.
+         */
+        final public function expandSynonyms(Taxon $taxon, bool $persist = true): int
+        {
+            $aphiaId = $taxon->aphia_id;
+            if (! $aphiaId) {
+                return 0;
+            }
+            
+            $synonyms = $this->getSynonyms($aphiaId);
+            
+            if (empty($synonyms)) {
+                $taxon->synonyms_data = [];
+                if ($persist) {
+                    $taxon->saveQuietly();
+                }
+                
+                return 0;
+            }
+            
+            // Filter only the requested fields: AphiaID, scientificname, authority, status, and unacceptreason
+            $filteredSynonyms = array_map(function ($synonym) {
+                return [
+                    'AphiaID' => $synonym['AphiaID'] ?? null,
+                    'scientificname' => $synonym['scientificname'] ?? null,
+                    'authority' => $synonym['authority'] ?? null,
+                    'status' => $synonym['status'] ?? null,
+                    'unacceptreason' => $synonym['unacceptreason'] ?? null,
+                ];
+            }, $synonyms);
+            
+            $taxon->synonyms_data = $filteredSynonyms;
+            if ($persist) {
+                $taxon->saveQuietly();
+            }
+            
+            return count($filteredSynonyms);
+        }
+        
+        /**
+         * Handles unaccepted names by redirecting to the accepted record if available.
+         */
+        private function handleUnacceptedName(Taxon $taxon, array $data): array
+        {
+            if (($data['status'] ?? '') !== 'unaccepted' || empty($data['valid_AphiaID'])) {
+                return $data;
+            }
+            
+            $acceptedData = $this->getRecordByAphiaID((int) $data['valid_AphiaID']);
+            if (! $acceptedData) {
+                return $data;
+            }
+            
+            // Store the current unaccepted name as 'original name provided' in notes
+            $originalName = $data['scientificname'] ?? '';
+            if ($data['authority'] ?? null) {
+                $originalName .= " {$data['authority']}";
+            }
+            
+            $note = "Original name provided: {$originalName} (unaccepted)";
+            if ($taxon->notes) {
+                if (! str_contains($taxon->notes, $note)) {
+                    $taxon->notes .= "\n".$note;
+                }
+            } else {
+                $taxon->notes = $note;
+            }
+            
+            return $acceptedData;
+        }
+        
+        /**
+         * Maps WoRMS data fields to the Taxon model.
+         */
+        private function mapTaxonFields(Taxon $taxon, array $data): void
+        {
+            $taxon->aphia_id = $data['AphiaID'] ?? $taxon->aphia_id;
+            $taxon->scientificname = $data['scientificname'] ?? $taxon->scientificname;
+            $taxon->authority = $data['authority'] ?? $taxon->authority;
+            $taxon->kingdom = $data['kingdom'] ?? $taxon->kingdom;
+            $taxon->phylum = $data['phylum'] ?? $taxon->phylum;
+            $taxon->class = $data['class'] ?? $taxon->class;
+            $taxon->order = $data['order'] ?? $taxon->order;
+            $taxon->family = $data['family'] ?? $taxon->family;
+            $taxon->genus = $data['genus'] ?? $taxon->genus;
+            $taxon->rank = $data['rank'] ?? $taxon->rank;
+            $statusValue = $data['status'] ?? '';
+            if ($statusValue instanceof Worms_Status) {
+                $taxon->worms_status = $statusValue;
+            } else {
+                $taxon->worms_status = Worms_Status::tryFrom((string) $statusValue) ?? $taxon->worms_status;
+            }
+            $taxon->unacceptreason = $data['unacceptreason'] ?? $taxon->unacceptreason;
+            $taxon->is_extinct = ! empty($data['isExtinct']);
+            $taxon->url = $data['url'] ?? $taxon->url;
+            
+            if (isset($data['status'])) {
+                $taxon->catalogue_status = Catalogue_Status::fromWormsData($data['status']);
+            }
+            
+            $taxon->environments = Environment::fromWormsData($data);
+        }
+        
+        final protected function wormsRequest(string $url, array $query = []): ?Response
+        {
+            return Http::connectTimeout($this->connectTimeoutSeconds)
+                ->timeout($this->requestTimeoutSeconds)
+                ->retry(2, 200, throw: false)
+                ->get($url, $query);
         }
     }

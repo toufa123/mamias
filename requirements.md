@@ -65,7 +65,7 @@
 ### 1.5 References
 
 - [README.md](README.md) — Vue d'ensemble technique
-- [DEPLOYMENT.md](DEPLOYMENT.md) — Guide de déploiement production
+- [README.md](README.md) — Guide de déploiement production
 - `composer.json` — Dépendances PHP
 - `package.json` — Dépendances Node.js
 
@@ -127,6 +127,22 @@ MAMIAS est une application monolithique **Laravel 13** servant à la fois :
 | FR-USER-05 | L'avatar doit être généré dynamiquement via UI Avatars API | Should |
 | FR-USER-06 | Le système doit supporter le contrôle d'accès basé sur les rôles (via Spatie Permission / Filament Shield) | Must |
 | FR-USER-07 | Des logins développeur doivent être disponibles en environnement de développement | Could |
+
+The application uses **Filament Shield** for role-based access control (RBAC).
+
+```text
+/admin/login  ──→  Filament Login Page
+                        │
+              ┌─────────┴─────────┐
+              ▼                   ▼
+         Role: admin          Role: user
+              │                   │
+              ▼                   ▼
+       /admin (backend)     / (frontend only)
+    Filament Dashboard     Laravel Blade/Livewire
+    Resources, CRUD        Public-facing pages
+    Shield Permissions     No /admin access
+```
 
 ### 3.2 Taxonomic Data Management (FR-TAXO)
 

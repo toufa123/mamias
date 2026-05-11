@@ -2,13 +2,11 @@
 
 ## Rely on Event Discovery
 
-Laravel auto-discovers listeners by reading `handle(EventType $event)` type-hints. No manual registration needed in
-`AppServiceProvider`.
+Laravel auto-discovers listeners by reading `handle(EventType $event)` type-hints. No manual registration needed in `AppServiceProvider`.
 
 ## Run `event:cache` in Production Deploy
 
-Event discovery scans the filesystem per-request in dev. Cache it in production: `php artisan optimize` or
-`php artisan event:cache`.
+Event discovery scans the filesystem per-request in dev. Cache it in production: `php artisan optimize` or `php artisan event:cache`.
 
 ## Use `ShouldDispatchAfterCommit` Inside Transactions
 
@@ -51,5 +49,4 @@ Notification::route('mail', 'admin@example.com')->notify(new SystemAlert());
 
 ## Implement `HasLocalePreference` on Notifiable Models
 
-Laravel automatically uses the user's preferred locale for all notifications and mailables — no per-call `locale()`
-needed.
+Laravel automatically uses the user's preferred locale for all notifications and mailables — no per-call `locale()` needed.

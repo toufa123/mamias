@@ -14,8 +14,15 @@
     */
     
     pest()->extend(TestCase::class)
-        // ->use(RefreshDatabase::class)
         ->in('Feature');
+
+    beforeEach(function () {
+        $this->seed(Database\Seeders\DeveloperLoginUsersSeeder::class);
+    });
+
+    afterEach(function () {
+        $this->seed(Database\Seeders\DeveloperLoginUsersSeeder::class);
+    });
     
     /*
     |--------------------------------------------------------------------------

@@ -52,76 +52,50 @@ services :
         condition : service_healthy
       redis :
         condition : service_healthy
-    
+
     # ── Build from local Dockerfile ─────────────────────────────────
-    # Uses ./Dockerfile which extends serversideup/php:8.5-frankenphp
-    # to install extra PHP extensions and wire the permission-fix
-    # entrypoint (entrypoint.sh).
     build :
       context : .
       dockerfile : Dockerfile
-    
+
     # ── Run as root ──────────────────────────────────────────────────
-    # Required so entrypoint.sh can:
-    #   • chown storage/ and bootstrap/cache/ on the mounted volume
-    #   • call docker-php-serversideup-set-id to remap www-data UID/GID
-    # The real serversideup entrypoint (called by our wrapper at the end)
-    # handles the privilege drop root → www-data before FrankenPHP starts,
-    # so the PHP process itself never runs as root.
+    # Required so entrypoint.sh can chown storage/ and bootstrap/cache/.
+    # The serversideup entrypoint drops to www-data before FrankenPHP starts.
     user : root
-    
+    init : true
+
     # ── Ports ────────────────────────────────────────────────────────
     ports :
       - "127.0.0.1:443:8443"        # HTTPS — local-only TLS / HTTP 1.1 / HTTP 2
       - "127.0.0.1:443:8443/udp"    # HTTP/3 (QUIC) local-only
-    
+
     # ── Runtime filesystem ───────────────────────────────────────────
-    # The Laravel application is baked into the image at build time.
-    # This avoids host bind-mount visibility issues that can hide
-    # critical files like public/index.php and cause Caddy 404.
-    # 
-    # [NOTE]: If you enable a volume mount, ensure your Docker Desktop
-    # "File Sharing" includes the host path (e.g. Z:\).
-    #
-    # For live local development sync:
-    #   - Rebuild the image after package changes: docker compose up -d --build
-    #   - OR (if filesystem sync works): uncomment the volumes below
-    
     volumes :
         - ./apps:/var/www/html:cached
-    
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./backups:/var/www/backups
+
     env_file :
       - .env
     environment :
-      
-      # ── UID/GID remapping ─────────────────────────────────────────
-      # entrypoint.sh reads PUID/PGID and calls
-      # docker-php-serversideup-set-id so the www-data user inside
-      # the container has the same UID/GID as your host user.
-      # This prevents "root-owned files on the host" after artisan runs.
-      #
-      # Docker Compose expands ${UID}/${GID} from your shell session.
-      # On Linux/macOS they are set automatically (echo $UID → 1000).
-      # Fallback to 1000:1000 when not available (e.g. some CI environments).
+
       PUID : "${UID:-1000}"
       PGID : "${GID:-1000}"
-      
+
       # ── SSL / Domain ───────────────────────────────────────────────
-      SSL_MODE : "full"                              # HTTPS-only
+      SSL_MODE : "full"
       SERVER_NAME : "mamias.local"
       CADDY_HTTP_SERVER_ADDRESS : "http://mamias.local"
       CADDY_HTTPS_SERVER_ADDRESS : "https://mamias.local"
-      CADDY_AUTO_HTTPS : "on"                       # Enable automatic local TLS
-      
+      CADDY_AUTO_HTTPS : "on"
+
       # ── Caddy / FrankenPHP ─────────────────────────────────────────
       CADDY_SERVER_ROOT : "/var/www/html/public"
       CADDY_ADMIN : "off"
       CADDY_LOG_FORMAT : "console"
       CADDY_LOG_OUTPUT : "stdout"
       CADDY_SERVER_LOG_LEVEL : "warn"
-      
-      # Extra directives injected into the Caddy site block:
-      # gzip/zstd compression + a hardened set of security headers.
+
       CADDY_SERVER_EXTRA_DIRECTIVES : |
         encode zstd gzip
         header {
@@ -132,65 +106,53 @@ services :
           Permissions-Policy      "geolocation=(), microphone=(), camera=()"
           -Server
         }
-      
+
       # ── PHP INI ────────────────────────────────────────────────────
       PHP_MEMORY_LIMIT : "-1"
-      PHP_MAX_EXECUTION_TIME : "300"
+      PHP_MAX_EXECUTION_TIME : "900"
       PHP_MAX_INPUT_VARS : "3000"
       PHP_UPLOAD_MAX_FILE_SIZE : "100M"
       PHP_POST_MAX_SIZE : "100M"
       PHP_DATE_TIMEZONE : "UTC"
-      
-      # Show all errors in local development
+
       PHP_DISPLAY_ERRORS : "On"
       PHP_DISPLAY_STARTUP_ERRORS : "On"
       PHP_ERROR_REPORTING : "32767"      # E_ALL
-      
-      # OPcache ON — recommended for production-like performance.
-      # Keep timestamp validation enabled so code changes are still detected.
+
       PHP_OPCACHE_ENABLE : "1"
       PHP_OPCACHE_VALIDATE_TIMESTAMPS : "1"
-      
+
       # ── Laravel automations ───────────────────────────────────────
-      # All AUTORUN_* behaviour is handled by docker-php-serversideup-entrypoint
-      # (our wrapper calls it at the end of entrypoint.sh).
-      # Enabled in dev so caches warm on every container start.
       AUTORUN_ENABLED : "true"
-      
-      AUTORUN_LARAVEL_STORAGE_LINK : "true"        # php artisan storage:link
-      AUTORUN_LARAVEL_MIGRATION : "false"            # php artisan migrate --force
-      AUTORUN_LARAVEL_MIGRATION_ISOLATION : "false"  # DB lock (one migrator at a time)
-      
-      # Caches enabled even in dev for Filament performance.
-      # Run "make dev-clear" after changing config/routes to invalidate.
-      AUTORUN_LARAVEL_CONFIG_CACHE : "false"         # keep false: config changes often in dev
+
+      AUTORUN_LARAVEL_STORAGE_LINK : "true"
+      AUTORUN_LARAVEL_MIGRATION : "false"
+      AUTORUN_LARAVEL_MIGRATION_ISOLATION : "false"
+
+      AUTORUN_LARAVEL_CONFIG_CACHE : "false"
       AUTORUN_LARAVEL_ROUTE_CACHE : "true"
       AUTORUN_LARAVEL_VIEW_CACHE : "true"
       AUTORUN_LARAVEL_EVENT_CACHE : "true"
-      AUTORUN_LARAVEL_OPTIMIZE : "false"             # keep false: includes config:cache
-      
-      # ── Health check path ─────────────────────────────────────────
-      # Laravel 13 ships with GET /up out of the box.
+      AUTORUN_LARAVEL_OPTIMIZE : "false"
+
+      STARTUP_DB_GUARD : "true"
+      STARTUP_DB_GUARD_SEED : "true"
+
       HEALTHCHECK_PATH : "/up"
-      
+
       # ── Laravel application ───────────────────────────────────────
       APP_ENV : "local"
       APP_DEBUG : "true"
       APP_URL : "https://mamias.local"
       APP_KEY : "${APP_KEY:-}"
-      
-      # DB settings for the app container.
-      # Keep these explicit so containerized Laravel always reaches service `db`,
-      # even if host-side apps/.env uses 127.0.0.1 for native artisan usage.
+
       DB_CONNECTION : "pgsql"
       DB_HOST : "db"
       DB_PORT : "5432"
       DB_DATABASE: "${name:-mamias}_db"
       DB_USERNAME: "${DB_USERNAME:-admin_mamias}"
       DB_PASSWORD: "${DB_PASSWORD:-admin_251205}"
-      
-      # Mail settings for the app container.
-      # Containerized Laravel should reach Mailpit via service DNS name `mail`.
+
       MAIL_MAILER : "smtp"
       MAIL_HOST : "mail"
       MAIL_PORT : "1025"
@@ -199,32 +161,26 @@ services :
       MAIL_ENCRYPTION : ""
       MAIL_FROM_ADDRESS : "no-reply@mamias.local"
       MAIL_FROM_NAME: "${name:-mamias}"
-      # PHP_SESSION_COOKIE_SECURE defaults to "1" in the image — correct
-      # for HTTPS-only. No override needed.
-      
-      # ── Redis settings for the app container ───────────────────────
+
       REDIS_HOST : "redis"
       REDIS_PORT : "6379"
       CACHE_STORE : "redis"
       SESSION_DRIVER : "redis"
       QUEUE_CONNECTION : "redis"
-    
-    # ── Docker health check ───────────────────────────────────────────
-    # -k ignores the self-signed cert. start_period gives the AUTORUN
-    # automations (migrate, etc.) time to finish before the first check.
+
+      DOCKER_DB_CONTAINER: "${name:-mamias}_db"
+      DOCKER_BACKUP_CONTAINER: "${name:-mamias}_db_backup"
+
     healthcheck :
       test : [ "CMD", "curl", "-fk", "https://localhost:8443/up" ]
       interval : 30s
       timeout : 10s
       retries : 5
       start_period : 45s
-    
+
     restart : unless-stopped
-  
+
   # ── Queue worker service ───────────────────────────────────────────
-  #  Processes Laravel jobs (emails, notifications, imports) in the
-  #  background using Redis. Required for MustVerifyEmail and any
-  #  queued operations to actually execute.
   queue :
     profiles : ["dev"]
     container_name : "${name:-mamias}_queue"
@@ -233,35 +189,36 @@ services :
         condition : service_healthy
       redis :
         condition : service_healthy
-    
+
     build :
       context : .
       dockerfile : Dockerfile
-    
+
     user : root
-    
+    init : true
+
     volumes :
         - ./apps:/var/www/html:cached
-    
+        - /var/run/docker.sock:/var/run/docker.sock
+
     env_file :
       - .env
     environment :
       PUID : "${UID:-1000}"
       PGID : "${GID:-1000}"
-      
-      # Same app-level env as the web container
+
       APP_ENV : "local"
       APP_DEBUG : "true"
       APP_URL : "https://mamias.local"
       APP_KEY : "${APP_KEY:-}"
-      
+
       DB_CONNECTION : "pgsql"
       DB_HOST : "db"
       DB_PORT : "5432"
       DB_DATABASE: "${name:-mamias}_db"
       DB_USERNAME: "${DB_USERNAME:-admin_mamias}"
       DB_PASSWORD: "${DB_PASSWORD:-admin_251205}"
-      
+
       MAIL_MAILER : "smtp"
       MAIL_HOST : "mail"
       MAIL_PORT : "1025"
@@ -270,24 +227,21 @@ services :
       MAIL_ENCRYPTION : ""
       MAIL_FROM_ADDRESS : "no-reply@mamias.local"
       MAIL_FROM_NAME: "${name:-mamias}"
-      
+
       REDIS_HOST : "redis"
       REDIS_PORT : "6379"
       CACHE_STORE : "redis"
       SESSION_DRIVER : "redis"
       QUEUE_CONNECTION : "redis"
-    
-    # Override CMD to run queue worker instead of FrankenPHP.
-    # entrypoint.sh detects queue:work/queue:listen and skips the
-    # FrankenPHP/Caddy handoff, running artisan directly as www-data.
+
+      STARTUP_DB_GUARD : "false"
+      STARTUP_DB_GUARD_SEED : "false"
+
     command : [ "php", "artisan", "queue:work", "--sleep=3", "--tries=3" ]
-    
+
     restart : unless-stopped
-  
+
   # ── PostGIS database service ───────────────────────────────────────
-  # - Reads defaults from root .env (name, extensions, encoding, IP range)
-  # - Persists data in named volume ${name}_data
-  # - Exposes health via pg_isready for app depends_on
   db :
     profiles : ["dev"]
     image : kartoza/postgis:latest
@@ -302,13 +256,13 @@ services :
       POSTGRES_USER: "${DB_USERNAME:-admin_mamias}"
       POSTGRES_PASS: "${DB_PASSWORD:-admin_251205}"
       POSTGRES_PASSWORD: "${DB_PASSWORD:-admin_251205}"
-      # Optional DB behavior defaults sourced from root .env
       POSTGRES_MULTIPLE_EXTENSIONS : "${POSTGRES_MULTIPLE_EXTENSIONS:-postgis}"
       DEFAULT_ENCODING : "${DEFAULT_ENCODING:-UTF8}"
       ALLOW_IP_RANGE : "${ALLOW_IP_RANGE:-all}"
     volumes :
       - db_data:/var/lib/postgresql
-      - ./backup:/docker-entrypoint-initdb.d
+      - ./backups:/backups:ro
+      #- ./backup:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -U ${DB_USERNAME:-admin_mamias} -d ${name:-mamias}_db || exit 1"]
       interval : 10s
@@ -316,10 +270,25 @@ services :
       retries : 5
       start_period : 30s
     restart : unless-stopped
-  
+
+  db-backup:
+    profiles: ["dev"]
+    image: kartoza/pg-backup:latest
+    container_name: "${name:-mamias}_db_backup"
+    volumes:
+      - ./backups:/backups
+    environment:
+      - POSTGRES_DB=${name:-mamias}_db
+      - POSTGRES_USER=${DB_USERNAME:-admin_mamias}
+      - POSTGRES_PASS=${DB_PASSWORD:-admin_251205}
+      - POSTGRES_HOST=db
+      - DUMPPREFIX=mamias_db
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
   # ── Redis service ────────────────────────────────────────────────
-  # - Persistence enabled (appendonly yes)
-  # - Host port 6379 exposed for RedisInsight / redis-cli
   redis :
     profiles : ["dev"]
     image : redis:alpine
@@ -333,19 +302,15 @@ services :
       timeout : 5s
       retries : 5
     restart : unless-stopped
-  
+
   # ── Mailpit service (SMTP catcher + web UI) ───────────────────────
-  # - SMTP endpoint for Laravel mailer: `mail:1025` (inside Docker network)
-  # - Web UI for viewing captured emails: http://localhost:${MAIL_WEB_PORT:-8026} (host)
-  # - Ports are configurable via .env to avoid Windows/WSL conflicts.
-  #   Avoid 1025 (often grabbed by wslrelay.exe or Windows ephemeral ports).
   mail :
     profiles : ["dev"]
     image : axllent/mailpit:latest
     container_name: "${name:-mamias}_mail"
     ports :
-      - "127.0.0.1:${MAIL_SMTP_PORT:-11025}:1025"  # SMTP local-only
-      - "127.0.0.1:${MAIL_WEB_PORT:-8026}:8025"     # Web UI local-only
+      - "127.0.0.1:${MAIL_SMTP_PORT:-11025}:1025"
+      - "127.0.0.1:${MAIL_WEB_PORT:-8026}:8025"
     healthcheck :
       test : [ "CMD", "wget", "-q", "-O", "-", "http://localhost:8025/livez" ]
       interval : 10s
@@ -355,6 +320,5 @@ services :
     restart : unless-stopped
 
 volumes :
-  # Persistent PostGIS volume named from root .env variable `name`
   db_data:
     name: "${name:-mamias}_data"

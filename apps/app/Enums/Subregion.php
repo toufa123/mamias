@@ -1,37 +1,40 @@
 <?php
     
-    declare(strict_types=1);
-    
     namespace App\Enums;
     
+    use Filament\Support\Contracts\HasColor;
+    use Filament\Support\Contracts\HasIcon;
     use Filament\Support\Contracts\HasLabel;
     
-    /**
-     * EcAp Mediterranean sub-regions.
-     *
-     * @see https://www.rac-spa.org/fr/ecap
-     */
-    enum Subregion: string implements HasLabel
+    enum Subregion: string implements HasLabel, HasColor, HasIcon
     {
-        /** Western Mediterranean */
-        case WMED = 'wmed';
-        
-        /** Central Mediterranean */
-        case CMED = 'cmed';
-        
-        /** Adriatic Sea */
-        case ADRIA = 'adria';
-        
-        /** Eastern Mediterranean */
-        case EMED = 'emed';
+        case WMED = 'WMED';
+        case CMED = 'CMED';
+        case ADRIA = 'ADRIA';
+        case EMED = 'EMED';
         
         public function getLabel(): ?string
         {
             return match ($this) {
-                self::WMED => 'Western Mediterranean (WMED)',
-                self::CMED => 'Central Mediterranean (CMED)',
-                self::ADRIA => 'Adriatic Sea (ADRIA)',
-                self::EMED => 'Eastern Mediterranean (EMED)',
+                self::WMED => 'Western Mediterranean',
+                self::CMED => 'Central Mediterranean',
+                self::ADRIA => 'Adriatic Sea',
+                self::EMED => 'Eastern Mediterranean',
             };
+        }
+        
+        public function getColor(): string|array|null
+        {
+            return 'primary';
+        }
+        
+        public function getIcon(): ?string
+        {
+            return 'tabler-map-pin';
+        }
+        
+        public function label(): string
+        {
+            return $this->getLabel();
         }
     }

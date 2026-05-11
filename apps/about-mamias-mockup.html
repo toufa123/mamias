@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>About — MAMIAS · Marine Mediterranean Invasive Alien Species</title>
+<meta name="description" content="MAMIAS is the regional information platform on marine invasive alien species in the Mediterranean Sea, coordinated by SPA/RAC under the Barcelona Convention." />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          abyss:   '#0A1B2A',
+          deep:    '#0E3559',
+          sea:     '#1F6FA8',
+          cyan2:   '#4FB6C9',
+          foam:    '#E8F1F2',
+          sand:    '#F4E9D8',
+          coral:   '#E26A53',
+          alert:   '#C9472F',
+          algae:   '#3E8C6D',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+          sans:    ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono:    ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root {
+    --grain: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  html { scroll-behavior: smooth; }
+  body { font-feature-settings: "ss01","cv11"; }
+  .font-display { font-optical-sizing: auto; letter-spacing: -0.02em; }
+  .display-xl { font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.035em; line-height: 0.95; font-variation-settings: "opsz" 144, "SOFT" 50; }
+  .grain::before {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image: var(--grain); opacity:.4; mix-blend-mode: overlay;
+  }
+  .ring-marine { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 1px 0 rgba(255,255,255,.05); }
+  .chip {
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding: .25rem .65rem; border-radius: 999px;
+    font-size: .72rem; letter-spacing:.08em; text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.78);
+    background: rgba(255,255,255,.04);
+    backdrop-filter: blur(6px);
+  }
+  .chip.light { color:#0E3559; border-color:rgba(14,53,89,.18); background:rgba(14,53,89,.04); }
+  .marquee { mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .wave-divider { background-image: linear-gradient(180deg, transparent, rgba(79,182,201,.08)); }
+  .num {
+    font-family: 'Fraunces', serif;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "ss01";
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .underline-marker {
+    background-image: linear-gradient(transparent 62%, rgba(226,106,83,.35) 62%);
+    background-size: 100% 100%;
+    padding: 0 .15em;
+  }
+  details > summary { list-style: none; cursor:pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.is-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
+
+  /* Mediterranean map dots */
+  .pulse-dot { animation: pulse 2.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  @keyframes pulse {
+    0%, 100% { opacity: .85; transform: scale(1); }
+    50%      { opacity: .35; transform: scale(1.6); }
+  }
+</style>
+</head>
+
+<body class="bg-foam text-abyss font-sans antialiased selection:bg-coral selection:text-white">
+
+<!-- ============== TOP BAR ============== -->
+<header class="sticky top-0 z-40 backdrop-blur-md bg-foam/70 border-b border-abyss/10">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-3">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="15" stroke="#0E3559" stroke-width="1.5"/>
+        <path d="M3 18 C 8 14, 12 22, 16 18 S 24 14, 29 18" stroke="#1F6FA8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="22" cy="11" r="1.6" fill="#E26A53"/>
+      </svg>
+      <span class="font-display text-lg tracking-tight">MAMIAS</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-7 text-sm text-abyss/70">
+      <a href="#about" class="hover:text-abyss">About</a>
+      <a href="#mission" class="hover:text-abyss">Mission</a>
+      <a href="#pathways" class="hover:text-abyss">Pathways</a>
+      <a href="#platform" class="hover:text-abyss">Platform</a>
+      <a href="#network" class="hover:text-abyss">Network</a>
+      <a href="#timeline" class="hover:text-abyss">Timeline</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <a href="#contribute" class="hidden sm:inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full bg-abyss text-foam hover:bg-deep transition">
+        Contribute data
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section id="about" class="relative overflow-hidden bg-abyss text-foam">
+  <div class="absolute inset-0 grain opacity-90"></div>
+  <!-- Soft caustics gradient -->
+  <div class="absolute inset-0 opacity-60"
+       style="background:
+         radial-gradient(60% 50% at 20% 10%, rgba(79,182,201,.35), transparent 60%),
+         radial-gradient(50% 40% at 80% 80%, rgba(31,111,168,.45), transparent 65%),
+         radial-gradient(40% 30% at 60% 30%, rgba(226,106,83,.18), transparent 70%);"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-28">
+    <div class="flex flex-wrap gap-2 mb-10">
+      <span class="chip">Since 2016</span>
+      <span class="chip">UNEP/MAP · Barcelona Convention</span>
+      <span class="chip">SPA/RAC coordinated</span>
+    </div>
+
+    <h1 class="display-xl text-[clamp(3rem,9vw,9rem)] max-w-5xl">
+      A shared <em class="not-italic underline-marker">memory</em>
+      of the Mediterranean's<br/>
+      <span class="text-cyan2/90">unwelcome arrivals.</span>
+    </h1>
+
+    <p class="mt-10 max-w-2xl text-foam/75 text-lg leading-relaxed">
+      MAMIAS — <span class="text-foam">Marine Mediterranean Invasive Alien Species</span> — is the
+      regional information platform that gathers, harmonises and shares what we know
+      about non-indigenous and invasive marine life in the Mediterranean Sea.
+      It serves science, policy and the public, under the mandate of the Barcelona
+      Convention.
+    </p>
+
+    <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6 max-w-5xl">
+      <div>
+        <div class="num text-5xl md:text-6xl text-cyan2">~1,000</div>
+        <div class="mt-2 text-xs uppercase tracking-[0.18em] text-foam/55">marine alien species reported</div>
+      </div>
+      <div>
+        <div class="num text-5xl md:text-6xl">22</div>
+        <div class="mt-2 text-xs uppercase tracking-[0.18em] text-foam/55">contracting parties (21 + EU)</div>
+      </div>
+      <div>
+        <div class="num text-5xl md:text-6xl text-coral">&gt; 50%</div>
+        <div class="mt-2 text-xs uppercase tracking-[0.18em] text-foam/55">considered established</div>
+      </div>
+      <div>
+        <div class="num text-5xl md:text-6xl">7</div>
+        <div class="mt-2 text-xs uppercase tracking-[0.18em] text-foam/55">main introduction pathways</div>
+      </div>
+    </div>
+
+    <!-- subtle scroll cue -->
+    <div class="mt-20 flex items-center gap-3 text-foam/50 text-xs uppercase tracking-[0.25em]">
+      <span class="inline-block w-10 h-px bg-foam/30"></span>
+      Scroll to read
+    </div>
+  </div>
+
+  <!-- bottom wave -->
+  <svg class="absolute bottom-0 left-0 right-0 w-full" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#E8F1F2"/>
+  </svg>
+</section>
+
+<!-- ============== MARQUEE OF SPECIES ============== -->
+<section class="border-y border-abyss/10 bg-foam">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-6 marquee overflow-hidden">
+    <div class="flex gap-10 whitespace-nowrap text-abyss/55 text-sm tracking-wider uppercase">
+      <span>Caulerpa cylindracea</span><span>·</span>
+      <span>Siganus luridus</span><span>·</span>
+      <span>Rhopilema nomadica</span><span>·</span>
+      <span>Pterois miles</span><span>·</span>
+      <span>Fistularia commersonii</span><span>·</span>
+      <span>Callinectes sapidus</span><span>·</span>
+      <span>Caulerpa taxifolia</span><span>·</span>
+      <span>Lagocephalus sceleratus</span><span>·</span>
+      <span>Percnon gibbesi</span><span>·</span>
+      <span>Brachidontes pharaonis</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== WHAT IS MAMIAS — BENTO ============== -->
+<section id="mission" class="relative bg-foam">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
+
+    <div class="grid lg:grid-cols-12 gap-10 mb-16">
+      <div class="lg:col-span-5">
+        <span class="chip light">01 — What is MAMIAS</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl">
+          A regional brain<br/>for a shared sea.
+        </h2>
+      </div>
+      <div class="lg:col-span-7 lg:pt-8">
+        <p class="text-lg text-abyss/75 leading-relaxed">
+          The Mediterranean is one of the most biologically invaded seas on Earth.
+          Information about its newcomers — when they arrived, how, where they spread
+          and what they affect — has long been scattered across journals, institutional
+          databases and field notebooks. MAMIAS exists to bring that knowledge together
+          into a single, continuously updated, openly accessible reference.
+        </p>
+        <p class="mt-5 text-lg text-abyss/75 leading-relaxed">
+          It is operated by <strong class="text-abyss">SPA/RAC</strong> — the Specially Protected Areas Regional
+          Activity Centre of the UN Environment Programme / Mediterranean Action Plan —
+          and supports the obligations of the <strong class="text-abyss">Barcelona Convention</strong>'s
+          SPA/BD Protocol on non-indigenous species.
+        </p>
+      </div>
+    </div>
+
+    <!-- Bento grid -->
+    <div class="grid grid-cols-12 gap-5">
+
+      <!-- Card 1: Database -->
+      <article class="col-span-12 md:col-span-7 rounded-3xl bg-abyss text-foam p-8 lg:p-10 relative overflow-hidden ring-marine">
+        <div class="absolute inset-0 grain opacity-70 pointer-events-none"></div>
+        <div class="relative">
+          <span class="chip">Database</span>
+          <h3 class="font-display text-3xl md:text-4xl mt-6 leading-tight">
+            A basin-wide registry of alien species with taxonomy, biology, distribution and impact.
+          </h3>
+          <p class="mt-5 text-foam/70 max-w-xl">
+            Each species record carries year of first introduction, first record per country,
+            primary and secondary pathways, establishment status, and documented impacts on
+            biodiversity, human health and ecosystem services.
+          </p>
+        </div>
+        <!-- mini "schema" -->
+        <div class="relative mt-8 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono text-foam/70">
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">taxon_id</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">first_record</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">pathway</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">impact_score</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">established</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">geo_record</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">country</div>
+          <div class="px-3 py-2 rounded-md bg-foam/5 border border-foam/10">source_ref</div>
+        </div>
+      </article>
+
+      <!-- Card 2: Early warning -->
+      <article class="col-span-12 md:col-span-5 rounded-3xl bg-coral text-abyss p-8 lg:p-10 relative overflow-hidden">
+        <span class="chip light">Early warning</span>
+        <h3 class="font-display text-3xl md:text-4xl mt-6 leading-tight">
+          Alerts when a new invader is recorded.
+        </h3>
+        <p class="mt-5 text-abyss/80">
+          A notification system flags first detections of high-impact species to National
+          Focal Points so that rapid response can begin while eradication is still feasible.
+        </p>
+        <svg class="mt-6" width="56" height="56" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v3M12 21v-3M3 12h3M21 12h-3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" stroke="#0A1B2A" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="3.5" fill="#0A1B2A"/>
+        </svg>
+      </article>
+
+      <!-- Card 3: Mapping -->
+      <article class="col-span-12 md:col-span-5 rounded-3xl bg-sand p-8 lg:p-10 relative overflow-hidden">
+        <span class="chip light">Spatial</span>
+        <h3 class="font-display text-3xl md:text-4xl mt-6 leading-tight">
+          Distribution maps for every species in the basin.
+        </h3>
+        <p class="mt-5 text-abyss/70">
+          Interactive cartography with extractable spatial data — built to feed the EcAp
+          Integrated Monitoring and Assessment Programme's Common Indicator 6.
+        </p>
+      </article>
+
+      <!-- Card 4: Factsheets -->
+      <article class="col-span-12 md:col-span-7 rounded-3xl bg-white p-8 lg:p-10 relative overflow-hidden border border-abyss/10">
+        <span class="chip light">Factsheets</span>
+        <h3 class="font-display text-3xl md:text-4xl mt-6 leading-tight">
+          Field-ready dossiers for high-impact species.
+        </h3>
+        <p class="mt-5 text-abyss/70 max-w-xl">
+          Diagnostic characters, native range, Mediterranean distribution, history of
+          introduction, population trends, impacts and existing management measures —
+          synthesised in a consistent, citable format.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-2 text-xs">
+          <span class="px-3 py-1 rounded-full bg-foam border border-abyss/10">Identification</span>
+          <span class="px-3 py-1 rounded-full bg-foam border border-abyss/10">Native range</span>
+          <span class="px-3 py-1 rounded-full bg-foam border border-abyss/10">Introduction history</span>
+          <span class="px-3 py-1 rounded-full bg-foam border border-abyss/10">Impacts</span>
+          <span class="px-3 py-1 rounded-full bg-foam border border-abyss/10">Management</span>
+          <span class="px-3 py-1 rounded-full bg-foam border border-abyss/10">References</span>
+        </div>
+      </article>
+
+      <!-- Card 5: Indicators -->
+      <article class="col-span-12 md:col-span-4 rounded-3xl bg-deep text-foam p-8 lg:p-10 relative overflow-hidden">
+        <span class="chip">Indicators</span>
+        <h3 class="font-display text-3xl mt-6 leading-tight">
+          Statistics that turn records into evidence.
+        </h3>
+        <p class="mt-5 text-foam/70 text-sm">
+          Trends in new introductions per pathway, per country, per decade —
+          built to support EcAp reporting and EU MSFD descriptors.
+        </p>
+      </article>
+
+      <!-- Card 6: API -->
+      <article class="col-span-12 md:col-span-4 rounded-3xl bg-cyan2/30 p-8 lg:p-10 relative overflow-hidden border border-cyan2/40">
+        <span class="chip light">Web services</span>
+        <h3 class="font-display text-3xl mt-6 leading-tight">
+          Open tools and services for searching and extracting data.
+        </h3>
+        <p class="mt-5 text-abyss/70 text-sm">
+          Designed for researchers, environmental agencies and downstream platforms such as
+          EASIN to consume Mediterranean alien-species data programmatically.
+        </p>
+      </article>
+
+      <!-- Card 7: Network -->
+      <article class="col-span-12 md:col-span-4 rounded-3xl bg-algae/15 p-8 lg:p-10 relative overflow-hidden border border-algae/30">
+        <span class="chip light">Network</span>
+        <h3 class="font-display text-3xl mt-6 leading-tight">
+          An active community of National Focal Points and specialists.
+        </h3>
+        <p class="mt-5 text-abyss/70 text-sm">
+          Continuous updating, harmonised reporting, and a directory of regional experts —
+          built and curated together with the 22 Contracting Parties.
+        </p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============== PATHWAYS ============== -->
+<section id="pathways" class="relative bg-abyss text-foam overflow-hidden">
+  <div class="absolute inset-0 grain opacity-50"></div>
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
+
+    <div class="grid lg:grid-cols-12 gap-10 mb-14">
+      <div class="lg:col-span-5">
+        <span class="chip">02 — Pathways of introduction</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl">
+          How they<br/>get in.
+        </h2>
+      </div>
+      <div class="lg:col-span-7 lg:pt-8">
+        <p class="text-lg text-foam/75 leading-relaxed">
+          New alien species reach the Mediterranean through a handful of well-identified
+          routes. Knowing the pathway is the first step toward prevention — it tells us
+          which sector, which corridor, which behaviour to address. MAMIAS records the
+          pathway for every species, together with a confidence level.
+        </p>
+      </div>
+    </div>
+
+    <!-- pathway grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- pathway cards -->
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">01</div>
+        <h4 class="mt-4 font-display text-xl">Shipping</h4>
+        <p class="mt-2 text-sm text-foam/65">Ballast waters and hull fouling — the historic and still dominant vector.</p>
+      </div>
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">02</div>
+        <h4 class="mt-4 font-display text-xl">Corridors</h4>
+        <p class="mt-2 text-sm text-foam/65">Lessepsian migration via the Suez Canal — a continuous influx of Indo-Pacific species.</p>
+      </div>
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">03</div>
+        <h4 class="mt-4 font-display text-xl">Maritime transport &amp; waterways</h4>
+        <p class="mt-2 text-sm text-foam/65">Channels, ports and inland connections that reshape natural barriers.</p>
+      </div>
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">04</div>
+        <h4 class="mt-4 font-display text-xl">Aquaculture</h4>
+        <p class="mt-2 text-sm text-foam/65">Intentional or accidental release of farmed species and their associated organisms.</p>
+      </div>
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">05</div>
+        <h4 class="mt-4 font-display text-xl">Live trade</h4>
+        <p class="mt-2 text-sm text-foam/65">Aquarium trade and fishing bait — small flows that have outsized consequences.</p>
+      </div>
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">06</div>
+        <h4 class="mt-4 font-display text-xl">Fishing &amp; exhibits</h4>
+        <p class="mt-2 text-sm text-foam/65">Bycatch transfers, escapes from public aquariums and similar incidental routes.</p>
+      </div>
+      <div class="rounded-2xl border border-foam/10 bg-foam/[0.03] p-6 hover:bg-foam/[0.07] transition">
+        <div class="text-cyan2 text-3xl font-display">07</div>
+        <h4 class="mt-4 font-display text-xl">Climate change</h4>
+        <p class="mt-2 text-sm text-foam/65">A warming basin lowers the threshold for tropical species to settle and spread.</p>
+      </div>
+      <div class="rounded-2xl border border-coral/40 bg-coral/10 p-6">
+        <div class="text-coral text-3xl font-display">∞</div>
+        <h4 class="mt-4 font-display text-xl">Secondary spread</h4>
+        <p class="mt-2 text-sm text-foam/65">Once established, species move along Mediterranean currents and human activity — the loop continues.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MEDITERRANEAN MAP ============== -->
+<section id="platform" class="relative bg-foam">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
+    <div class="grid lg:grid-cols-12 gap-10 items-start">
+      <div class="lg:col-span-5 lg:sticky lg:top-24">
+        <span class="chip light">03 — A basin, twenty-two parties</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl">A network that mirrors the sea.</h2>
+        <p class="mt-6 text-abyss/70 text-lg">
+          Twenty-one Mediterranean countries and the European Union are Contracting
+          Parties to the Barcelona Convention. Each one contributes national reports,
+          baseline studies and annual updates — turning local fieldwork into a regional
+          picture.
+        </p>
+        <ul class="mt-8 space-y-3 text-sm text-abyss/75">
+          <li class="flex gap-3"><span class="text-coral">●</span> Each Party operates through a National Focal Point for SPAs.</li>
+          <li class="flex gap-3"><span class="text-coral">●</span> SPA/RAC coordinates reporting and harmonises the data model.</li>
+          <li class="flex gap-3"><span class="text-coral">●</span> MAMIAS is linked to EASIN and other international networks.</li>
+        </ul>
+      </div>
+
+      <div class="lg:col-span-7">
+        <div class="rounded-3xl bg-white border border-abyss/10 p-6 shadow-sm">
+          <!-- Stylised Mediterranean map -->
+          <svg viewBox="0 0 800 420" class="w-full h-auto" role="img" aria-label="Stylised map of the Mediterranean basin with sample alien species records">
+            <defs>
+              <linearGradient id="seaGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%"  stop-color="#4FB6C9" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#1F6FA8" stop-opacity="0.35"/>
+              </linearGradient>
+              <pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse">
+                <circle cx="1" cy="1" r="0.6" fill="#0E3559" opacity="0.18"/>
+              </pattern>
+            </defs>
+
+            <!-- Sea -->
+            <path d="
+              M30,180 C90,90 180,80 280,110
+              C360,80 460,90 540,110
+              C620,90 700,100 760,140
+              L770,250
+              C720,290 640,310 560,300
+              C480,330 360,320 280,300
+              C200,330 110,310 60,280 Z
+            " fill="url(#seaGrad)" stroke="#1F6FA8" stroke-opacity=".35" stroke-width="1"/>
+
+            <!-- Land masks (decorative, simplified) -->
+            <path d="M30,180 C90,90 180,80 280,110 L290,30 L20,30 Z" fill="url(#dots)"/>
+            <path d="M280,110 C360,80 460,90 540,110 L540,30 L280,30 Z" fill="url(#dots)"/>
+            <path d="M540,110 C620,90 700,100 760,140 L770,30 L540,30 Z" fill="url(#dots)"/>
+            <path d="M60,280 C110,310 200,330 280,300 C360,320 480,330 560,300 C640,310 720,290 770,250 L770,400 L20,400 Z" fill="url(#dots)"/>
+
+            <!-- Suez canal hint -->
+            <line x1="755" y1="200" x2="780" y2="240" stroke="#E26A53" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="700" y="195" font-family="Fraunces, serif" font-size="11" fill="#E26A53" font-style="italic">Suez corridor</text>
+
+            <!-- Gibraltar hint -->
+            <circle cx="55" cy="220" r="3" fill="#1F6FA8"/>
+            <text x="40" y="245" font-family="Inter, sans-serif" font-size="10" fill="#0E3559" opacity=".6">Strait of Gibraltar</text>
+
+            <!-- Sample records -->
+            <g>
+              <circle class="pulse-dot" cx="180" cy="200" r="4" fill="#E26A53"/>
+              <circle cx="180" cy="200" r="2" fill="#0A1B2A"/>
+            </g>
+            <g>
+              <circle class="pulse-dot" cx="320" cy="220" r="4" fill="#E26A53"/>
+              <circle cx="320" cy="220" r="2" fill="#0A1B2A"/>
+            </g>
+            <g>
+              <circle class="pulse-dot" cx="450" cy="180" r="4" fill="#E26A53"/>
+              <circle cx="450" cy="180" r="2" fill="#0A1B2A"/>
+            </g>
+            <g>
+              <circle class="pulse-dot" cx="560" cy="230" r="4" fill="#E26A53"/>
+              <circle cx="560" cy="230" r="2" fill="#0A1B2A"/>
+            </g>
+            <g>
+              <circle class="pulse-dot" cx="680" cy="200" r="4" fill="#E26A53"/>
+              <circle cx="680" cy="200" r="2" fill="#0A1B2A"/>
+            </g>
+            <g>
+              <circle class="pulse-dot" cx="720" cy="240" r="4" fill="#E26A53"/>
+              <circle cx="720" cy="240" r="2" fill="#0A1B2A"/>
+            </g>
+
+            <!-- Caption -->
+            <text x="30" y="395" font-family="Inter, sans-serif" font-size="11" fill="#0E3559" opacity=".5">
+              Illustrative — pulsing points represent indicative record clusters, not real-time data.
+            </text>
+          </svg>
+
+          <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div class="num text-3xl text-deep">22</div>
+              <div class="text-[11px] uppercase tracking-widest text-abyss/55 mt-1">Parties</div>
+            </div>
+            <div>
+              <div class="num text-3xl text-deep">2.5M km²</div>
+              <div class="text-[11px] uppercase tracking-widest text-abyss/55 mt-1">Basin area</div>
+            </div>
+            <div>
+              <div class="num text-3xl text-coral">~1,000</div>
+              <div class="text-[11px] uppercase tracking-widest text-abyss/55 mt-1">Alien records</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MANDATE / LEGAL FRAMEWORK ============== -->
+<section class="bg-sand">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
+    <div class="grid lg:grid-cols-12 gap-10">
+      <div class="lg:col-span-5">
+        <span class="chip light">04 — Mandate</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl">The frame<br/>that holds us.</h2>
+        <p class="mt-6 text-abyss/75 text-lg leading-relaxed">
+          MAMIAS is not a stand-alone initiative. It sits inside a layered legal and
+          scientific architecture that gives it both purpose and obligation.
+        </p>
+      </div>
+
+      <div class="lg:col-span-7 space-y-3">
+        <details class="group rounded-2xl bg-white border border-abyss/10 p-6" open>
+          <summary class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-abyss/55">1976 / 1995</div>
+              <div class="font-display text-2xl mt-1">Barcelona Convention &amp; SPA/BD Protocol</div>
+            </div>
+            <span class="text-2xl text-abyss/40 transition group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-4 text-abyss/70">
+            Article 13 of the SPA/BD Protocol invites Parties to regulate intentional and
+            non-intentional introduction of non-indigenous species, prohibit those with
+            harmful impacts, and endeavour to eradicate established invasive species.
+          </p>
+        </details>
+
+        <details class="group rounded-2xl bg-white border border-abyss/10 p-6">
+          <summary class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-abyss/55">1992 — Rio</div>
+              <div class="font-display text-2xl mt-1">Convention on Biological Diversity, Art. 8(h)</div>
+            </div>
+            <span class="text-2xl text-abyss/40 transition group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-4 text-abyss/70">
+            Each Party is to prevent the introduction of, control or eradicate those alien
+            species which threaten ecosystems, habitats or species. Operationalised by
+            Aichi Target 9.
+          </p>
+        </details>
+
+        <details class="group rounded-2xl bg-white border border-abyss/10 p-6">
+          <summary class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-abyss/55">2014 — EU</div>
+              <div class="font-display text-2xl mt-1">Regulation (EU) 1143/2014 on Invasive Alien Species</div>
+            </div>
+            <span class="text-2xl text-abyss/40 transition group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-4 text-abyss/70">
+            Establishes prevention, early warning, rapid response and management obligations
+            for species of EU concern — complemented by the Marine Strategy Framework
+            Directive (2008/56/EC) and the EASIN network.
+          </p>
+        </details>
+
+        <details class="group rounded-2xl bg-white border border-abyss/10 p-6">
+          <summary class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-abyss/55">EcAp</div>
+              <div class="font-display text-2xl mt-1">Ecosystem Approach &amp; Common Indicator 6</div>
+            </div>
+            <span class="text-2xl text-abyss/40 transition group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-4 text-abyss/70">
+            MAMIAS feeds the Integrated Monitoring and Assessment Programme of the
+            Barcelona Convention — particularly the trends-in-non-indigenous-species
+            indicator used to assess Good Environmental Status.
+          </p>
+        </details>
+
+        <details class="group rounded-2xl bg-white border border-abyss/10 p-6">
+          <summary class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs uppercase tracking-widest text-abyss/55">IMO</div>
+              <div class="font-display text-2xl mt-1">Ballast Water Management Convention</div>
+            </div>
+            <span class="text-2xl text-abyss/40 transition group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-4 text-abyss/70">
+            National legislation across the basin is encouraged to mirror the IMO Convention
+            on ballast water, together with codes of practice from ICES, IUCN and FAO.
+          </p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TIMELINE ============== -->
+<section id="timeline" class="relative bg-abyss text-foam overflow-hidden">
+  <div class="absolute inset-0 grain opacity-50"></div>
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
+
+    <div class="flex flex-wrap items-end justify-between gap-6 mb-12">
+      <div>
+        <span class="chip">05 — Implementation timetable</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl">A five-year<br/>rolling plan.</h2>
+      </div>
+      <p class="max-w-md text-foam/70">
+        Drawn from the Annex of the Action Plan on Species Introductions and Invasive
+        Species — the steps that brought MAMIAS into being and now keep it alive.
+      </p>
+    </div>
+
+    <ol class="relative border-l border-foam/15 ml-3 space-y-10">
+      <li class="pl-8">
+        <span class="absolute -left-[7px] mt-1 w-3.5 h-3.5 rounded-full bg-cyan2 ring-4 ring-abyss"></span>
+        <div class="text-foam/55 text-xs uppercase tracking-widest">2016</div>
+        <h4 class="font-display text-2xl mt-1">Launch of MAMIAS</h4>
+        <p class="mt-2 text-foam/70 max-w-2xl">SPA/RAC initiates the platform; Contracting Parties prepare national reports and set up coordination mechanisms.</p>
+      </li>
+      <li class="pl-8">
+        <span class="absolute -left-[7px] mt-1 w-3.5 h-3.5 rounded-full bg-cyan2 ring-4 ring-abyss"></span>
+        <div class="text-foam/55 text-xs uppercase tracking-widest">2017</div>
+        <h4 class="font-display text-2xl mt-1">Baseline studies &amp; monitoring</h4>
+        <p class="mt-2 text-foam/70 max-w-2xl">Reporting forms, online search tools, directories of specialists, and the first national legislation programmes go live.</p>
+      </li>
+      <li class="pl-8">
+        <span class="absolute -left-[7px] mt-1 w-3.5 h-3.5 rounded-full bg-cyan2 ring-4 ring-abyss"></span>
+        <div class="text-foam/55 text-xs uppercase tracking-widest">2018</div>
+        <h4 class="font-display text-2xl mt-1">Mapping &amp; risk assessment</h4>
+        <p class="mt-2 text-foam/70 max-w-2xl">Online mapping is released; regional training sessions are organised; risk-assessment techniques are deployed nationally.</p>
+      </li>
+      <li class="pl-8">
+        <span class="absolute -left-[7px] mt-1 w-3.5 h-3.5 rounded-full bg-coral ring-4 ring-abyss"></span>
+        <div class="text-foam/55 text-xs uppercase tracking-widest">2019</div>
+        <h4 class="font-display text-2xl mt-1">Early warning &amp; National Plans</h4>
+        <p class="mt-2 text-foam/70 max-w-2xl">The notification system is integrated; Parties adopt National Plans; MAMIAS connects with EASIN and other international systems.</p>
+      </li>
+      <li class="pl-8">
+        <span class="absolute -left-[7px] mt-1 w-3.5 h-3.5 rounded-full bg-coral ring-4 ring-abyss"></span>
+        <div class="text-foam/55 text-xs uppercase tracking-widest">2020 →</div>
+        <h4 class="font-display text-2xl mt-1">Statistics, indicators &amp; outreach</h4>
+        <p class="mt-2 text-foam/70 max-w-2xl">Statistical tools for EcAp reporting; public education material; a triennial symposium gathering Mediterranean specialists.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============== NETWORK ============== -->
+<section id="network" class="bg-foam">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
+
+    <div class="grid lg:grid-cols-12 gap-10 mb-14">
+      <div class="lg:col-span-5">
+        <span class="chip light">06 — Partners &amp; networks</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl">Built with<br/>many hands.</h2>
+      </div>
+      <div class="lg:col-span-7 lg:pt-8">
+        <p class="text-lg text-abyss/75">
+          MAMIAS draws on, and contributes to, the broader information ecosystem on alien
+          species — from European-scale registries to global maritime and fisheries bodies.
+          Coordination is ensured by the UNEP/MAP Secretariat through SPA/RAC.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">SPA/RAC</div>
+        <p class="text-sm text-abyss/60 mt-1">Specially Protected Areas Regional Activity Centre — host institution.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">UNEP/MAP</div>
+        <p class="text-sm text-abyss/60 mt-1">UN Environment Programme — Mediterranean Action Plan Secretariat.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">EASIN</div>
+        <p class="text-sm text-abyss/60 mt-1">European Alien Species Information Network — JRC, European Commission.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">CBD</div>
+        <p class="text-sm text-abyss/60 mt-1">Convention on Biological Diversity — global biodiversity framework.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">IMO</div>
+        <p class="text-sm text-abyss/60 mt-1">International Maritime Organization — ballast water and shipping vectors.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">FAO / GFCM</div>
+        <p class="text-sm text-abyss/60 mt-1">General Fisheries Commission for the Mediterranean.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">ICES</div>
+        <p class="text-sm text-abyss/60 mt-1">International Council for the Exploration of the Sea — Code of Practice.</p>
+      </div>
+      <div class="rounded-2xl bg-white border border-abyss/10 p-5">
+        <div class="font-display text-xl">IUCN</div>
+        <p class="text-sm text-abyss/60 mt-1">Guidelines on the prevention of biodiversity loss caused by IAS.</p>
+      </div>
+    </div>
+
+    <p class="mt-10 text-sm text-abyss/55 max-w-2xl">
+      The original Action Plan was prepared with the financial support of the MAVA Foundation.
+      Implementation invites any organisation, laboratory or NGO contributing concrete actions to
+      apply for the status of <em>Action Plan Associate</em>.
+    </p>
+  </div>
+</section>
+
+<!-- ============== CONTRIBUTE / CTA ============== -->
+<section id="contribute" class="relative bg-deep text-foam overflow-hidden">
+  <div class="absolute inset-0 opacity-50"
+       style="background:
+         radial-gradient(50% 60% at 80% 20%, rgba(226,106,83,.25), transparent 60%),
+         radial-gradient(50% 60% at 10% 90%, rgba(79,182,201,.25), transparent 60%);"></div>
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-28">
+
+    <div class="grid lg:grid-cols-12 gap-10 items-end">
+      <div class="lg:col-span-7">
+        <span class="chip">07 — Get involved</span>
+        <h2 class="display-xl mt-6 text-5xl md:text-6xl max-w-3xl">
+          Whatever you've seen at sea<br/>
+          <span class="text-cyan2">probably belongs here.</span>
+        </h2>
+        <p class="mt-6 text-foam/75 max-w-2xl text-lg">
+          MAMIAS thrives on the records, expertise and curiosity of the people who work,
+          fish, dive, teach and govern around the Mediterranean. There is a way in for
+          every audience.
+        </p>
+      </div>
+      <div class="lg:col-span-5 grid gap-3">
+        <a href="#" class="group rounded-2xl bg-foam text-abyss p-6 flex items-start justify-between gap-4 hover:bg-cyan2 transition">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-abyss/55">For National Focal Points</div>
+            <div class="font-display text-xl mt-1">Submit national reports &amp; updates</div>
+          </div>
+          <span class="text-2xl">→</span>
+        </a>
+        <a href="#" class="group rounded-2xl bg-foam/10 border border-foam/20 p-6 flex items-start justify-between gap-4 hover:bg-foam/15 transition">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-foam/55">For researchers</div>
+            <div class="font-display text-xl mt-1">Access data &amp; web services</div>
+          </div>
+          <span class="text-2xl">→</span>
+        </a>
+        <a href="#" class="group rounded-2xl bg-foam/10 border border-foam/20 p-6 flex items-start justify-between gap-4 hover:bg-foam/15 transition">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-foam/55">For citizens &amp; divers</div>
+            <div class="font-display text-xl mt-1">Report a sighting</div>
+          </div>
+          <span class="text-2xl">→</span>
+        </a>
+        <a href="#" class="group rounded-2xl bg-foam/10 border border-foam/20 p-6 flex items-start justify-between gap-4 hover:bg-foam/15 transition">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-foam/55">For institutions</div>
+            <div class="font-display text-xl mt-1">Become an Action Plan Associate</div>
+          </div>
+          <span class="text-2xl">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="bg-abyss text-foam/70">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-14">
+    <div class="grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-5">
+        <div class="flex items-center gap-3">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="15" stroke="#E8F1F2" stroke-width="1.5"/>
+            <path d="M3 18 C 8 14, 12 22, 16 18 S 24 14, 29 18" stroke="#4FB6C9" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <circle cx="22" cy="11" r="1.6" fill="#E26A53"/>
+          </svg>
+          <span class="font-display text-lg text-foam">MAMIAS</span>
+        </div>
+        <p class="mt-5 text-sm max-w-md">
+          Marine Mediterranean Invasive Alien Species — the regional information platform
+          on marine biological invasions, operated by SPA/RAC under the Barcelona Convention.
+        </p>
+      </div>
+      <div class="md:col-span-3 text-sm">
+        <div class="text-foam/45 uppercase tracking-widest text-[11px]">Operator</div>
+        <p class="mt-3">SPA/RAC<br/>Boulevard du Leader Yasser Arafat<br/>B.P. 337 — 1080 Tunis Cedex, Tunisia</p>
+      </div>
+      <div class="md:col-span-4 text-sm">
+        <div class="text-foam/45 uppercase tracking-widest text-[11px]">Reference</div>
+        <p class="mt-3 italic">
+          UNEP/MAP – SPA/RAC, 2016. Action Plan concerning Species Introductions and
+          Invasive Species in the Mediterranean Sea. SPA/RAC, Tunis.
+        </p>
+      </div>
+    </div>
+    <div class="border-t border-foam/10 mt-12 pt-6 text-xs flex flex-wrap items-center justify-between gap-4">
+      <div>© <span id="y"></span> SPA/RAC — UNEP/MAP. All rights reserved.</div>
+      <div class="font-mono text-foam/50">v2026 · about/mamias</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+  // Reveal on scroll
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('section h2, .bento, article, details, ol li').forEach(el => {
+    el.classList.add('reveal'); io.observe(el);
+  });
+</script>
+
+</body>
+</html>

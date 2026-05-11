@@ -7,12 +7,9 @@
 #    1. Wait for the filesystem (WSL2 / Docker Desktop mount sync)
 #    2. Create Laravel writable directory scaffold (idempotent)
 #    3. Fix ownership & permissions on storage/ and bootstrap/cache/
-#    4. Cache Filament components for faster back-office boot
-#    5. (Optional) Remap www-data UID/GID to match the host user  ← PUID/PGID
-#    6. Detect queue worker mode and run artisan directly (skip FrankenPHP)
-#    7. Delegate to docker-php-serversideup-entrypoint  ← real serversideup init
-#       which handles: Caddyfile generation, PHP ini, all AUTORUN_LARAVEL_* tasks,
-#       privilege drop, and FrankenPHP startup.
+#    4. (Optional) Remap www-data UID/GID to match the host user  ← PUID/PGID
+#    5. Detect queue worker mode and run artisan directly (skip FrankenPHP)
+#    6. Delegate to docker-php-serversideup-entrypoint  ← real serversideup init
 # =============================================================================
 set -euo pipefail
 
@@ -21,15 +18,7 @@ APP_DIR="${APP_BASE_DIR:-/var/www/html}"
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  STEP 1 — Wait for the filesystem (WSL2 / Docker Desktop mount sync)
-#
-#  If you use a bind-mount (e.g. ./apps:/var/www/html) in compose.yml,
-#  Docker Desktop + WSL2 can sometimes take several seconds to correctly
-#  surface the files inside the container after a restart.
-#
-#  If FrankenPHP starts before index.php is visible, Caddy will
-#  serve a 404 or close the connection.
 # ─────────────────────────────────────────────────────────────────────────────
-# Default fallback to /var/www/html/public if CADDY_SERVER_ROOT is not set
 CHECK_DIR="${CADDY_SERVER_ROOT:-${APP_DIR}/public}"
 CHECK_FILE="${CHECK_DIR}/index.php"
 
@@ -54,9 +43,6 @@ echo "[entrypoint] Filesystem is ready (${CHECK_FILE} found)."
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  STEP 2 — Scaffold Laravel writable directories
-#  mkdir -p is idempotent: safe to run even when directories exist.
-#  This guarantees the paths are present even on a fresh `git clone` that has
-#  only .gitkeep files or no storage/ scaffold at all.
 # ─────────────────────────────────────────────────────────────────────────────
 echo "[entrypoint] Scaffolding Laravel directories..."
 mkdir -p \
@@ -70,12 +56,6 @@ mkdir -p \
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  STEP 3 — Fix ownership and permissions
-#
-#  • storage/ and bootstrap/cache/ must be writable by www-data at runtime.
-#  • We do NOT touch the rest of the codebase to avoid obscuring bad
-#    permissions that would matter in production.
-#  • chmod 775 = owner (rwx) + group (rwx) + others (r-x).
-#    This lets both www-data and any user in the www-data group write freely.
 # ─────────────────────────────────────────────────────────────────────────────
 echo "[entrypoint] Fixing ownership and permissions on writable directories..."
 
@@ -87,13 +67,11 @@ chmod -R 775 \
     "${APP_DIR}/storage" \
     "${APP_DIR}/bootstrap/cache"
 
-# Also use the official serversideup helper to align web-server config
-# file permissions with the expected owner (harmless if already correct).
 docker-php-serversideup-set-file-permissions --owner www-data:www-data
 
 echo "[entrypoint] Permissions OK."
 
-# ── STEP 3b — Ensure vendor/ is writable for Composer ─────────────
+# ── STEP 3b — Ensure vendor/ is writable ──────────────────────────────
 if [ -d "${APP_DIR}/vendor" ]; then
     chown -R "${PUID:-33}:${PGID:-33}" "${APP_DIR}/vendor"
 fi
@@ -101,34 +79,13 @@ if [ -f "${APP_DIR}/composer.lock" ]; then
     chown "${PUID:-33}:${PGID:-33}" "${APP_DIR}/composer.lock"
 fi
 
-# ── STEP 3c — Cache Filament components ───────────────────────────
-#  This dramatically speeds up Filament back-office boot time by
-#  pre-compiling the component registry into bootstrap/cache/filament.
-#  It is safe to run on every container start; the command is idempotent.
-# ─────────────────────────────────────────────────────────────────────────────
-echo "[entrypoint] Caching Filament components..."
-su -s /bin/bash www-data -c "cd ${APP_DIR} && php artisan filament:cache-components --ansi" \
-    || echo "[entrypoint] Filament component cache skipped (may need composer install first)."
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  STEP 4 — (Optional) UID/GID remapping
-#
-#  Set PUID and PGID in compose.yml to your host user's UID/GID so that
-#  files created inside the container are owned by your host user.
-#  This eliminates the classic "root-owned files on the host" problem.
-#
-#  Typically:
-#    PUID: "${UID}"   (Linux/macOS: echo $UID → usually 1000)
-#    PGID: "${GID}"   (Linux/macOS: echo $GID → usually 1000)
-#
-#  Skip this block entirely if PUID/PGID are not set.
 # ─────────────────────────────────────────────────────────────────────────────
 if [ -n "${PUID:-}" ] && [ -n "${PGID:-}" ]; then
     echo "[entrypoint] Remapping www-data → UID=${PUID} GID=${PGID}..."
     docker-php-serversideup-set-id www-data "${PUID}:${PGID}"
 
-    # Re-apply ownership using the new numeric IDs so mounted files are
-    # readable/writable by the remapped user immediately.
     chown -R "${PUID}:${PGID}" \
         "${APP_DIR}/storage" \
         "${APP_DIR}/bootstrap/cache"
@@ -136,28 +93,58 @@ if [ -n "${PUID:-}" ] && [ -n "${PGID:-}" ]; then
     echo "[entrypoint] UID/GID remapped."
 fi
 
-# ── STEP 5 — Detect queue worker mode ─────────────────────────────────────
-#  If the container is started with queue:work / queue:listen, skip the
-#  FrankenPHP/Caddy handoff and run the worker directly as www-data.
-# ─────────────────────────────────────────────────────────────────────────────
-if [ "$1" = "php" ] && [ "$2" = "artisan" ] && { [ "$3" = "queue:work" ] || [ "$3" = "queue:listen" ]; }; then
-    echo "[entrypoint] Queue worker detected — running artisan directly..."
-    exec su -s /bin/bash www-data -c "cd ${APP_DIR} && $*"
+# ── STEP 4b — Docker socket permissions ───────────────────────────────
+if [ -S /var/run/docker.sock ]; then
+    echo "[entrypoint] Adjusting docker socket permissions..."
+    DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)
+
+    if [ "$DOCKER_GID" -eq 0 ]; then
+        DOCKER_GROUP="root"
+    elif ! getent group "$DOCKER_GID" > /dev/null; then
+        groupadd -g "$DOCKER_GID" docker-socket
+        DOCKER_GROUP="docker-socket"
+    else
+        DOCKER_GROUP=$(getent group "$DOCKER_GID" | cut -d: -f1)
+    fi
+
+    usermod -aG "$DOCKER_GROUP" www-data
+    echo "[entrypoint] Added www-data to group ${DOCKER_GROUP} (${DOCKER_GID})"
 fi
 
+# ── STEP 5 — Ensure vendor/ is present before any artisan call ───────
+if [ ! -f "${APP_DIR}/vendor/autoload.php" ]; then
+    echo "[entrypoint] WARNING: ${APP_DIR}/vendor/autoload.php not found."
+    if [ -f "${APP_DIR}/composer.json" ]; then
+        echo "[entrypoint] Attempting to install dependencies..."
+        if [ -d "${APP_DIR}/vendor" ]; then
+            chown -R www-data:www-data "${APP_DIR}/vendor"
+        fi
+        su -s /bin/bash www-data -c "cd ${APP_DIR} && composer install --no-interaction --optimize-autoloader" || \
+        echo "[entrypoint] ERROR: composer install failed."
+    else
+        echo "[entrypoint] ERROR: composer.json not found in ${APP_DIR}. Cannot install dependencies."
+    fi
+fi
+
+if [ "${STARTUP_DB_GUARD:-false}" = "true" ]; then
+    echo "[entrypoint] Running startup database self-heal guard..."
+    if [ -d "${APP_DIR}/vendor" ]; then
+        su -s /bin/bash www-data -c "cd ${APP_DIR} && php artisan app:dev-db-self-heal --no-interaction" || \
+        echo "[entrypoint] WARNING: startup database self-heal failed; continuing startup."
+    else
+        echo "[entrypoint] WARNING: startup database self-heal skipped due to missing vendor; continuing startup."
+    fi
+fi
+
+# ── STEP 6 — Detect queue worker mode ─────────────────────────────────
+#  Use ${N:-} to avoid "unbound variable" errors with set -u when
+#  the container CMD has fewer than 3 arguments.
 # ─────────────────────────────────────────────────────────────────────────────
-#  STEP 6 — Delegate to the official serversideup entrypoint
-#
-#  docker-php-serversideup-entrypoint is the real init script for all
-#  serversideup/php images. Delegating here preserves:
-#    • Caddyfile template rendering (SSL_MODE, CADDY_* env vars)
-#    • PHP ini injection (PHP_MEMORY_LIMIT, PHP_OPCACHE_*, …)
-#    • All AUTORUN_LARAVEL_* automations (migrate, storage:link, …)
-#    • Privilege drop from root → www-data for the FrankenPHP process
-#    • The FrankenPHP / Caddy startup itself
-#
-#  "$@" forwards the CMD arguments inherited from the base image,
-#  which is the "frankenphp run --config …" command.
-# ─────────────────────────────────────────────────────────────────────────────
+if [ "${1:-}" = "php" ] && [ "${2:-}" = "artisan" ] && { [ "${3:-}" = "queue:work" ] || [ "${3:-}" = "queue:listen" ]; }; then
+    echo "[entrypoint] Queue worker detected — running artisan directly..."
+    exec su -s /bin/bash www-data -c "cd ${APP_DIR} && exec $*"
+fi
+
+# ── STEP 7 — Delegate to the official serversideup entrypoint ─────────
 echo "[entrypoint] Handing off to docker-php-serversideup-entrypoint..."
 exec docker-php-serversideup-entrypoint "$@"

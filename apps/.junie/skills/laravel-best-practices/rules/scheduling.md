@@ -2,8 +2,7 @@
 
 ## Use `withoutOverlapping()` on Variable-Duration Tasks
 
-Without it, a long-running task spawns a second instance on the next tick, causing double-processing or resource
-exhaustion.
+Without it, a long-running task spawns a second instance on the next tick, causing double-processing or resource exhaustion.
 
 ## Use `onOneServer()` on Multi-Server Deployments
 
@@ -11,8 +10,7 @@ Without it, every server runs the same task simultaneously. Requires a shared ca
 
 ## Use `runInBackground()` for Concurrent Long Tasks
 
-By default, tasks at the same tick run sequentially. A slow first task delays all subsequent ones. `runInBackground()`
-runs them as separate processes.
+By default, tasks at the same tick run sequentially. A slow first task delays all subsequent ones. `runInBackground()` runs them as separate processes.
 
 ## Use `environments()` to Restrict Tasks
 

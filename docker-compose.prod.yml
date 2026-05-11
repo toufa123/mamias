@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        APP_BUILD: prod
     user: root
     init: true
     depends_on:
@@ -88,7 +90,13 @@ services:
       AUTORUN_LARAVEL_EVENT_CACHE: "true"
       AUTORUN_LARAVEL_OPTIMIZE: "true"
 
+      STARTUP_DB_GUARD: "false"
+      STARTUP_DB_GUARD_SEED: "false"
+
       HEALTHCHECK_PATH: "/up"
+
+      DOCKER_DB_CONTAINER: "${NAME:-mamias}_db"
+      DOCKER_BACKUP_CONTAINER: "${NAME:-mamias}_db_backup"
 
     ports:
       - "${APP_HTTPS_PORT:-443}:8443"
@@ -100,6 +108,66 @@ services:
       timeout: 10s
       retries: 5
       start_period: 45s
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - backups:/var/www/backups
+
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
+  # ── Queue worker — processes background jobs (emails, imports) ─────
+  queue:
+    container_name: "${NAME:-mamias}_queue"
+    image: "${APP_IMAGE:-mamias-app:prod}"
+    user: root
+    init: true
+    depends_on:
+      app:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env.production
+    environment:
+      PUID: "${PUID:-33}"
+      PGID: "${PGID:-33}"
+
+      APP_ENV: "production"
+      APP_DEBUG: "false"
+      APP_URL: "${APP_URL}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_DATABASE: "${DB_DATABASE:?DB_DATABASE is required}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      DB_SSLMODE: "${DB_SSLMODE:-require}"
+
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"
+      CACHE_STORE: "redis"
+      SESSION_DRIVER: "redis"
+      QUEUE_CONNECTION: "redis"
+
+      DEBUGBAR_ENABLED: "false"
+
+      STARTUP_DB_GUARD: "false"
+      STARTUP_DB_GUARD_SEED: "false"
+
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-jobs=1000", "--max-time=3600"]
 
     security_opt:
       - no-new-privileges:true
@@ -129,6 +197,7 @@ services:
       ALLOW_IP_RANGE: "${ALLOW_IP_RANGE:-172.16.0.0/12}"
     volumes:
       - db_data:/var/lib/postgresql
+      - backups:/backups:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -U \"$${DB_USERNAME}\" -d \"$${DB_DATABASE}\" || exit 1"]
       interval: 10s
@@ -146,12 +215,41 @@ services:
     networks:
       - app_net
 
+  db-backup:
+    image: "${PG_BACKUP_IMAGE:-kartoza/pg-backup:latest}"
+    container_name: "${NAME:-mamias}_db_backup"
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_DB: "${DB_DATABASE:?DB_DATABASE is required}"
+      POSTGRES_USER: "${DB_USERNAME:?DB_USERNAME is required}"
+      POSTGRES_PASS: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      POSTGRES_HOST: db
+      DUMPPREFIX: mamias_db
+    volumes:
+      - backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
   redis:
     image: "${REDIS_IMAGE:-redis:7.4-alpine}"
     container_name: "${NAME:-mamias}_redis"
     command: ["sh", "-c", "redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass \"$${REDIS_PASSWORD}\""]
     env_file:
       - .env.production
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
       interval: 5s
@@ -171,8 +269,11 @@ services:
 volumes:
   db_data:
     name: "${NAME:-mamias}_data_prod"
+  redis_data:
+    name: "${NAME:-mamias}_redis_prod"
+  backups:
+    name: "${NAME:-mamias}_backups_prod"
 
 networks:
   app_net:
     name: "${NAME:-mamias}_net_prod"
-

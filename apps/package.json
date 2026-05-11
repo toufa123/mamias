@@ -1,5 +1,5 @@
 {
-  "$"$schema": "https://www.schemastore.org/package.json",
+  "$schema": "https://www.schemastore.org/package.json",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.4",
     "concurrently": "^9.0.1",
+    "daisyui": "^5.5.1-beta.2",
     "laravel-vite-plugin": "^3.0.0",
     "tailwindcss": "^4.2.4",
     "vite": "^8.0.0"

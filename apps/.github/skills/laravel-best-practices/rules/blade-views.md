@@ -12,13 +12,11 @@ Hardcoding classes prevents consumers from adding their own. `merge()` combines 
 
 ## Use `@pushOnce` for Per-Component Scripts
 
-If a component renders inside a `@foreach`, `@push` inserts the script N times. `@pushOnce` guarantees it's included
-exactly once.
+If a component renders inside a `@foreach`, `@push` inserts the script N times. `@pushOnce` guarantees it's included exactly once.
 
 ## Prefer Blade Components Over `@include`
 
-`@include` shares all parent variables implicitly (hidden coupling). Components have explicit props, attribute bags, and
-slots.
+`@include` shares all parent variables implicitly (hidden coupling). Components have explicit props, attribute bags, and slots.
 
 ## Use View Composers for Shared View Data
 

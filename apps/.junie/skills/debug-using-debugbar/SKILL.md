@@ -54,9 +54,7 @@ php artisan debugbar:find --issues --min-queries=10 --min-duration=500
 php artisan debugbar:find --min-queries=20
 ```
 
-`--issues` flags: exceptions, non-2xx status, high query count, slow queries, duplicate query groups, slow request
-duration, and failed queries. Issue filtering applies on top of the fetched result set — increase `--max` to scan
-further back.
+`--issues` flags: exceptions, non-2xx status, high query count, slow queries, duplicate query groups, slow request duration, and failed queries. Issue filtering applies on top of the fetched result set — increase `--max` to scan further back.
 
 ## Inspecting a request
 
@@ -73,7 +71,6 @@ php artisan debugbar:get {id} --collector=exceptions
 ```
 
 Pick the collector by issue type:
-
 - **Error/500** → `exceptions` · **Slow page** → `queries`, `time` · **Auth** → `auth`, `gate` · **Cache** → `cache`
 
 ## Analyzing queries
@@ -98,11 +95,8 @@ Duplicate queries are a strong N+1 signal. Use `--statement=N` to get the backtr
 
 ## Gotchas
 
-- Always start with `debugbar:find --issues` rather than `debugbar:find` — the issue flags surface the most actionable
-  requests immediately.
+- Always start with `debugbar:find --issues` rather than `debugbar:find` — the issue flags surface the most actionable requests immediately.
 - The `{id}` is the request ID from the `debugbar:find` output, or use `latest` to inspect the most recent request.
-- Collector availability depends on the app's debugbar config — the summary from `debugbar:get` shows which collectors
-  have data.
-- `--explain` and `--result` only work on SELECT queries. They re-execute against the current database, so results may
-  differ from the original request.
+- Collector availability depends on the app's debugbar config — the summary from `debugbar:get` shows which collectors have data.
+- `--explain` and `--result` only work on SELECT queries. They re-execute against the current database, so results may differ from the original request.
 - `debugbar:clear` removes all stored data — use it to reset between debugging sessions, not mid-investigation.

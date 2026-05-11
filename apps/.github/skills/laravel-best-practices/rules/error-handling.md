@@ -45,13 +45,11 @@ A single failing integration can flood error tracking. Use `throttle()` to rate-
 
 ## Enable `dontReportDuplicates()`
 
-Prevents the same exception instance from being logged multiple times when `report($e)` is called in multiple catch
-blocks.
+Prevents the same exception instance from being logged multiple times when `report($e)` is called in multiple catch blocks.
 
 ## Force JSON Error Rendering for API Routes
 
-Laravel auto-detects `Accept: application/json` but API clients may not set it. Explicitly declare JSON rendering for
-API routes.
+Laravel auto-detects `Accept: application/json` but API clients may not set it. Explicitly declare JSON rendering for API routes.
 
 ```php
 $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
@@ -61,8 +59,7 @@ $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
 
 ## Add Context to Exception Classes
 
-Attach structured data to exceptions at the source via a `context()` method — Laravel includes it automatically in the
-log entry.
+Attach structured data to exceptions at the source via a `context()` method — Laravel includes it automatically in the log entry.
 
 ```php
 class InvalidOrderException extends Exception

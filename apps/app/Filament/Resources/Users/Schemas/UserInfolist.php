@@ -33,16 +33,6 @@
                                         ->hiddenLabel()
                                         ->circular()
                                         ->size(40)
-                                        ->getStateUsing(function ($record) {
-                                            $firstName = trim((string) ($record->first_name ?? ''));
-                                            $lastName = trim((string) ($record->last_name ?? ''));
-                                            if ($firstName === '' && $lastName === '') {
-                                                $firstName = 'John';
-                                                $lastName = 'Doe';
-                                            }
-                                            
-                                            return 'https://ui-avatars.com/api/?name='.urlencode(trim($firstName.' '.$lastName)).'&background=01B3ED&color=FFFFFF&bold=true&size=128';
-                                        })
                                         ->columnSpan(1),
                                     TextEntry::make('title')
                                         ->label('Title')

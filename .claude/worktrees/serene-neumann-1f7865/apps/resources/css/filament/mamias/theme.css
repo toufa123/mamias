@@ -1,0 +1,118 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../vendor/devonab/filament-easy-footer/resources/views/**/*';
+@source '../../../../vendor/diogogpinto/filament-auth-ui-enhancer/resources/**/*.blade.php';
+
+
+.dark {
+    --info-500: #3b82f6;
+    --primary-500: #00a8bd; /* Teal plus lumineux en dark mode */
+    --primary-600: #00899d;
+}
+
+:root {
+    --mamias-border-dark: theme(colors.slate.700);
+    --mamias-border-light: theme(colors.slate.300);
+    --mamias-primary-300: #5eeaff;
+    --mamias-primary-700: #006b7a;
+    --mamias-primary-900: #004d59;
+    --mamias-primary-950: #00353d;
+}
+
+
+/* ── No rounded corners ───────────────────────────────────────── */
+.fi-card,
+.fi-section,
+.fi-section-content,
+.fi-section-header,
+.fi-badge,
+.fi-btn,
+.fi-btn-color-primary,
+.fi-btn-color-gray,
+.fi-input,
+.fi-input-wrp,
+.fi-select-input,
+.fi-textarea,
+.fi-dropdown-panel,
+.fi-modal-window,
+.fi-ta-table,
+.fi-ta-row,
+.fi-ta-cell,
+.fi-pagination-item,
+.fi-tabs,
+.fi-tabs-item,
+.fi-fo-field-wrp,
+.fi-wi-stats-overview-stat {
+    border-radius: 0 !important;
+}
+
+/* ── No borders ───────────────────────────────────────── */
+.fi-card,
+.fi-section,
+.fi-section-content,
+.fi-section-header,
+.fi-badge,
+.fi-btn,
+.fi-btn-color-primary,
+.fi-btn-color-gray,
+.fi-input,
+.fi-input-wrp,
+.fi-select-input,
+.fi-textarea,
+.fi-dropdown-panel,
+.fi-modal-window,
+.fi-ta-table,
+.fi-ta-row,
+.fi-ta-cell,
+.fi-pagination-item,
+.fi-tabs,
+.fi-tabs-item,
+.fi-fo-field-wrp,
+.fi-wi-stats-overview-stat {
+    border: none !important;
+}
+
+.fi-ta-ctn {
+    @apply bg-white dark:bg-gray-800 border border-primary-700 dark:border-gray-700 rounded-none;
+}
+
+.fi-ta-ctn .py-4 {
+    padding-bottom: 0.75rem !important;
+    padding-top: 0.75rem !important;
+}
+
+.fi-avatar:not(.fi-circular) {
+    @apply rounded-none;
+}
+
+
+.fi-ta-table {
+    border-collapse: collapse;
+}
+
+.fi-ta-cell {
+    border-bottom: none !important;
+}
+
+.fi-ta-table > tbody {
+    @apply divide-none
+}
+
+
+.fi-ta-table > tbody {
+    @apply divide-none
+}
+
+.fi-ta-text {
+    @apply py-0.5
+}
+
+.fi-ta-table > .whitespace-nowrap {
+    @apply py-0.5
+}
+
+.fi-ta-cell > div:has(.flex) {
+    @apply py-0.5
+}

@@ -3,7 +3,7 @@
 ## Scope and precedence
 - This root guide covers the whole repo; Laravel app code lives in `apps/`.
 - For code changes inside `apps/`, follow `apps/AGENTS.md` first (it contains Boost/Filament-specific rules).
-- Do not use `docker-compose.yml` for production; use `docker-compose.prod.yml` + `.env.production` (`DEPLOYMENT.md`).
+- Do not use `docker-compose.yml` for production; use `docker-compose.prod.yml` + `.env.production` (`README.md`).
 
 ## Big picture architecture
 - Runtime is Docker-first: FrankenPHP app + dedicated queue worker + PostGIS + Redis + Mailpit (`docker-compose.yml`).

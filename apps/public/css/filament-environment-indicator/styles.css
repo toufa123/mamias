@@ -7,9 +7,9 @@
     }
 
     code {
-        font-size: var(--text-xs);
         margin-block-start: 1px;
         margin-inline-start: 0.25rem;
+        font-size: var(--text-xs);
     }
 }
 
