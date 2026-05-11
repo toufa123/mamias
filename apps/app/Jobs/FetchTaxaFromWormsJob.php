@@ -39,14 +39,14 @@ class FetchTaxaFromWormsJob implements ShouldQueue
         try {
             Taxon::whereIn('id', $this->taxonIds)
                 ->chunkById(50, function (\Illuminate\Database\Eloquent\Collection $chunk) use ($taxonService, &$totals, &$processed, $total, $startTime): void {
-                    $result = $taxonService->refreshFromWorms($chunk);
+                    $result = $taxonService->refreshFromWorms($chunk, function () use (&$processed, $total, $startTime) {
+                        $processed++;
+                        $this->updateProgress($processed, $total, $startTime);
+                    });
 
                     $totals['updated'] += $result['updated'];
                     $totals['missing_aphia_id'] += $result['missing_aphia_id'];
                     $totals['not_found'] += $result['not_found'];
-
-                    $processed += $chunk->count();
-                    $this->updateProgress($processed, $total, $startTime);
                 });
         } catch (\Throwable $e) {
             Log::error("FetchTaxaFromWormsJob failed: {$e->getMessage()}");

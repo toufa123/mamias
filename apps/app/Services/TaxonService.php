@@ -23,7 +23,7 @@ class TaxonService
     /**
      * @return array{updated:int, missing_aphia_id:int, not_found:int}
      */
-    final public function refreshFromWorms(Collection $records): array
+    final public function refreshFromWorms(Collection $records, ?callable $onProgress = null): array
     {
         $updated = 0;
         $missingAphiaId = 0;
@@ -45,6 +45,10 @@ class TaxonService
                 $taxon->catalogue_status = Catalogue_Status::no_data_from_worms;
                 $taxon->save();
 
+                if ($onProgress) {
+                    $onProgress();
+                }
+
                 continue;
             }
 
@@ -57,11 +61,19 @@ class TaxonService
             if (! $this->hasMeaningfulChanges($taxon)) {
                 $taxon->save();
 
+                if ($onProgress) {
+                    $onProgress();
+                }
+
                 continue;
             }
 
             $taxon->save();
             $updated++;
+
+            if ($onProgress) {
+                $onProgress();
+            }
         }
 
         return [

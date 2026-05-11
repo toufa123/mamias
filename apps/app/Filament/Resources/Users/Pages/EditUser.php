@@ -10,6 +10,11 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    public function getMaxContentWidth(): string
+    {
+        return '9xl';
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->previousUrl ?? $this->getResource()::getUrl('index');

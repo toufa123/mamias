@@ -271,7 +271,7 @@
         </x-slot>
 
         @if($hasImportResult)
-        <div wire:poll.5s class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3">
             <div class="rounded-lg bg-success-50 p-3 text-center dark:bg-success-950/30">
                 <p class="text-2xl font-bold text-success-600 dark:text-success-400">{{ number_format($importResult['successful_rows'] ?? 0) }}</p>
                 <p class="text-xs text-success-600/70 dark:text-success-400/70">{{ Str::plural('Row', $importResult['successful_rows'] ?? 0) }} imported</p>
@@ -291,7 +291,8 @@
     </x-filament::modal>
 
     <div
-        x-data="{ hasSynced: false, hasImported: false, hasEasinSynced: false }"
+        wire:poll.5s
+        x-data="{ hasSynced: false, hasEasinSynced: false }"
         x-init="
             @if($isSyncing)
                 if (! hasSynced) { $dispatch('open-modal', { id: 'worms-sync-progress' }); hasSynced = true; }
@@ -303,12 +304,6 @@
                 if (! hasEasinSynced) { $dispatch('open-modal', { id: 'easin-sync-progress' }); hasEasinSynced = true; }
             @else
                 if (hasEasinSynced) { $dispatch('close-modal', { id: 'easin-sync-progress' }); hasEasinSynced = false; }
-            @endif
-
-            @if($hasImportResult)
-                if (! hasImported) { $dispatch('open-modal', { id: 'import-result' }); hasImported = true; }
-            @else
-                if (hasImported) { $dispatch('close-modal', { id: 'import-result' }); hasImported = false; }
             @endif
         "
     ></div>

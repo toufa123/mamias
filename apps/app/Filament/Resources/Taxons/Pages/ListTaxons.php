@@ -33,10 +33,11 @@ class ListTaxons extends ListRecords
         return [
             'worms-fetch-completed' => '$refresh',
             'easin-fetch-completed' => '$refresh',
+            'import-completed' => '$refresh',
             'databaseNotificationsUpdated' => '$refresh',
         ];
     }
-    
+
     public function getDefaultTab(): string|int|null
     {
         return 'checked_accepted';

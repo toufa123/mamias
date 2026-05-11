@@ -93,7 +93,7 @@ class UsersTable
                     ->modalHeading(fn ($record,
                     ) => trim(($record->first_name ?? '').' '.($record->last_name ?? '')) ?: 'User'),
                     EditAction::make()
-                    ->modalWidth('3xl'),
+                    ->modalWidth('7xl'),
                     DeleteAction::make()
                     ->modalWidth('3xl'),
                 ])

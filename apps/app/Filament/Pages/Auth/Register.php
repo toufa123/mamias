@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Model;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Spatie\Permission\Models\Role;
@@ -86,6 +87,8 @@ class Register extends BaseRegister
 
         Role::findOrCreate('user', 'web');
         $user->assignRole('user');
+
+        event(new Registered($user));
 
         return $user;
     }

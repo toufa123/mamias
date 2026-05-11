@@ -16,6 +16,8 @@ class WormsFetchProgressWidget extends Widget
 
     public bool $isEasinSyncing = false;
 
+    public bool $importRefreshTriggered = false;
+
     protected string $view = 'filament.widgets.worms-fetch-progress-widget';
 
     protected int | string | array $columnSpan = 'full';
@@ -58,7 +60,19 @@ class WormsFetchProgressWidget extends Widget
 
     public function getImportResult(): ?array
     {
-        return Cache::get('taxon-import-completed-' . (auth()->id() ?? $this->userId));
+        $result = Cache::get('taxon-import-completed-' . (auth()->id() ?? $this->userId));
+
+        if ($result && ! $this->importRefreshTriggered) {
+            $this->importRefreshTriggered = true;
+            $this->dispatch('import-completed');
+            $this->dispatch('open-modal', id: 'import-result');
+        }
+
+        if (! $result) {
+            $this->importRefreshTriggered = false;
+        }
+
+        return $result;
     }
 
     public function dismiss(): void
@@ -80,6 +94,7 @@ class WormsFetchProgressWidget extends Widget
     public function dismissImport(): void
     {
         Cache::forget('taxon-import-completed-' . (auth()->id() ?? $this->userId));
+        $this->importRefreshTriggered = false;
         $this->dispatch('close-modal', id: 'import-result');
         $this->dispatch('worms-fetch-completed');
     }

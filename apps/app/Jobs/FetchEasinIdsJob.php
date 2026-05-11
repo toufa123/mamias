@@ -43,6 +43,7 @@ class FetchEasinIdsJob implements ShouldQueue
                         if (! $taxon->scientificname) {
                             $totals['skipped']++;
                             $processed++;
+                            $this->updateProgress($processed, $total, $startTime);
 
                             continue;
                         }
@@ -56,9 +57,8 @@ class FetchEasinIdsJob implements ShouldQueue
                         }
 
                         $processed++;
+                        $this->updateProgress($processed, $total, $startTime);
                     }
-
-                    $this->updateProgress($processed, $total, $startTime);
                 });
         } catch (\Throwable $e) {
             Log::error("FetchEasinIdsJob failed: {$e->getMessage()}");
