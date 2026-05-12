@@ -18,3 +18,9 @@
         $trail->parent('home');
         $trail->push('About', route('about'));
     });
+
+// My profile
+Breadcrumbs::for('profile', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Profile', route('profile'));
+});

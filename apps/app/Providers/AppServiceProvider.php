@@ -10,6 +10,8 @@ use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContrac
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse as RegistrationResponseContract;
 use App\Listeners\TaxonImportCompletedListener;
 use Filament\Actions\Imports\Events\ImportCompleted;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentColor;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -44,6 +46,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        FilamentColor::register([
+            'primary' => [
+                50 => '#f0f9fb',
+                100 => '#d9f0f4',
+                200 => '#b7e2ea',
+                300 => '#85ccd9',
+                400 => '#4cafbf',
+                500 => '#00899d',
+                600 => '#007a8c',
+                700 => '#006b7a',
+                800 => '#005f6b',
+                900 => '#004e59',
+                950 => '#00353d',
+            ],
+        ]);
+
         Livewire::component('filament-import-wizard', \App\Livewire\ImportWizard::class);
 
         Event::listen(ImportCompleted::class, TaxonImportCompletedListener::class);

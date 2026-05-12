@@ -54,12 +54,13 @@
 
     {{-- Key Features --}}
     <section id="features" class="py-20 bg-white">
+        <div class="kt-container-fixed">
             {{-- Section header --}}
             <div class="flex flex-col items-center text-center gap-3 mb-14">
                 <a href="#features" class="text-sm font-medium text-primary hover:text-primary/80 border-b border-primary pb-0.5">Key Features</a>
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900">MAMIAS Key Features</h2>
                 <p class="text-base text-gray-500 max-w-2xl">
-                    Our platform provides all the tools and features you need to build, scale, and optimize your business operations efficiently.
+                    Our platform provides all the tools you need to monitor, report, and analyse Non-Indigenous Species data across the Mediterranean.
                 </p>
             </div>
 
@@ -98,11 +99,11 @@
                     <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
 
-                {{-- Card 3 — Smart Team Sync --}}
-                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
+                {{-- Card 3 — Smart Team Sync (featured/active) --}}
+                <div class="group relative overflow-hidden rounded-2xl border-2 border-[#4cafbf] bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-lg">
                     <div class="flex items-start justify-between mb-6">
-                        <div class="size-12 rounded-full flex items-center justify-center bg-green-50">
-                            <i class="ki-filled ki-people text-xl text-green-500"></i>
+                        <div class="size-12 rounded-full flex items-center justify-center bg-[#4cafbf]/10">
+                            <i class="ki-filled ki-people text-xl text-[#018d9a]"></i>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900">10k+</div>
@@ -111,7 +112,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 mb-2">Smart Team Sync</h3>
                     <p class="text-sm text-gray-500 leading-relaxed">Let AI handle the chaos of calendars and meetings — Smart Team Sync coordinates, schedules, and adapts to your team's needs, so you can focus on what matters most.</p>
-                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98]"></div>
                 </div>
 
                 {{-- Card 4 — Predictive Insights --}}
@@ -130,8 +131,8 @@
                     <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
 
-
-
+            </div>
+        </div>
     </section>
 
     {{-- CTA Section --}}

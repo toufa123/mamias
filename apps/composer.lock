@@ -1017,16 +1017,16 @@
     },
     {
       "name": "clickbar/laravel-magellan",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "source": {
         "type": "git",
         "url": "https://github.com/clickbar/laravel-magellan.git",
-        "reference": "cc16837c97bd6ddce3a85b2d7a4abe801c0f1360"
+        "reference": "263a07726952fef2b374ae5dcdab1d1b05a5bedd"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/clickbar/laravel-magellan/zipball/cc16837c97bd6ddce3a85b2d7a4abe801c0f1360",
-        "reference": "cc16837c97bd6ddce3a85b2d7a4abe801c0f1360",
+        "url": "https://api.github.com/repos/clickbar/laravel-magellan/zipball/263a07726952fef2b374ae5dcdab1d1b05a5bedd",
+        "reference": "263a07726952fef2b374ae5dcdab1d1b05a5bedd",
         "shasum": ""
       },
       "require": {
@@ -1096,9 +1096,9 @@
       ],
       "support": {
         "issues": "https://github.com/clickbar/laravel-magellan/issues",
-        "source": "https://github.com/clickbar/laravel-magellan/tree/2.1.0"
+        "source": "https://github.com/clickbar/laravel-magellan/tree/2.2.0"
       },
-      "time": "2026-03-17T08:29:27+00:00"
+      "time": "2026-05-11T12:10:35+00:00"
     },
     {
       "name": "cms-multi/filament-clear-cache",
@@ -1336,16 +1336,16 @@
     },
     {
       "name": "daljo25/filament-tabler-icons",
-      "version": "v3.41.3",
+      "version": "v3.44.0",
       "source": {
         "type": "git",
         "url": "https://github.com/daljo25/filament-tabler-icons.git",
-        "reference": "accd48ee6a108e8fea181d15081fe941e4badf01"
+        "reference": "c4a80f1c03310d9a7e217151d02b0c2efafafbf2"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/daljo25/filament-tabler-icons/zipball/accd48ee6a108e8fea181d15081fe941e4badf01",
-        "reference": "accd48ee6a108e8fea181d15081fe941e4badf01",
+        "url": "https://api.github.com/repos/daljo25/filament-tabler-icons/zipball/c4a80f1c03310d9a7e217151d02b0c2efafafbf2",
+        "reference": "c4a80f1c03310d9a7e217151d02b0c2efafafbf2",
         "shasum": ""
       },
       "require": {
@@ -1392,7 +1392,7 @@
         "issues": "https://github.com/daljo25/filament-tabler-icons/issues",
         "source": "https://github.com/daljo25/filament-tabler-icons"
       },
-      "time": "2026-05-08T09:14:35+00:00"
+      "time": "2026-05-11T20:47:25+00:00"
     },
     {
       "name": "danharrin/date-format-converter",
@@ -5671,16 +5671,16 @@
     },
     {
       "name": "nette/utils",
-      "version": "v4.1.3",
+      "version": "v4.1.4",
       "source": {
         "type": "git",
         "url": "https://github.com/nette/utils.git",
-        "reference": "bb3ea637e3d131d72acc033cfc2746ee893349fe"
+        "reference": "7da6c396d7ebe142bc857c20479d5e70a5e1aac7"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/nette/utils/zipball/bb3ea637e3d131d72acc033cfc2746ee893349fe",
-        "reference": "bb3ea637e3d131d72acc033cfc2746ee893349fe",
+        "url": "https://api.github.com/repos/nette/utils/zipball/7da6c396d7ebe142bc857c20479d5e70a5e1aac7",
+        "reference": "7da6c396d7ebe142bc857c20479d5e70a5e1aac7",
         "shasum": ""
       },
       "require": {
@@ -5756,9 +5756,9 @@
       ],
       "support": {
         "issues": "https://github.com/nette/utils/issues",
-        "source": "https://github.com/nette/utils/tree/v4.1.3"
+        "source": "https://github.com/nette/utils/tree/v4.1.4"
       },
-      "time": "2026-02-13T03:05:33+00:00"
+      "time": "2026-05-11T20:49:54+00:00"
     },
     {
       "name": "nikic/php-parser",
@@ -7332,16 +7332,16 @@
     },
     {
       "name": "rector/rector",
-      "version": "2.4.2",
+      "version": "2.4.3",
       "source": {
         "type": "git",
         "url": "https://github.com/rectorphp/rector.git",
-        "reference": "e645b6463c6a88ea5b44b17d3387d35a912c7946"
+        "reference": "891824c6c59f02a56a5dd58ea8edc44e6c0ece29"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/rectorphp/rector/zipball/e645b6463c6a88ea5b44b17d3387d35a912c7946",
-        "reference": "e645b6463c6a88ea5b44b17d3387d35a912c7946",
+        "url": "https://api.github.com/repos/rectorphp/rector/zipball/891824c6c59f02a56a5dd58ea8edc44e6c0ece29",
+        "reference": "891824c6c59f02a56a5dd58ea8edc44e6c0ece29",
         "shasum": ""
       },
       "require": {
@@ -7380,7 +7380,7 @@
       ],
       "support": {
         "issues": "https://github.com/rectorphp/rector/issues",
-        "source": "https://github.com/rectorphp/rector/tree/2.4.2"
+        "source": "https://github.com/rectorphp/rector/tree/2.4.3"
       },
       "funding": [
         {
@@ -7388,7 +7388,7 @@
           "type": "github"
         }
       ],
-      "time": "2026-04-16T13:07:34+00:00"
+      "time": "2026-05-12T11:17:24+00:00"
     },
     {
       "name": "ryangjchandler/blade-capture-directive",
@@ -7548,16 +7548,16 @@
     },
     {
       "name": "secondnetwork/blade-tabler-icons",
-      "version": "v3.41.0",
+      "version": "v3.44.0",
       "source": {
         "type": "git",
         "url": "https://github.com/secondnetwork/blade-tabler-icons.git",
-        "reference": "cd1f24b5680b74ca6a10451377f6b331b5e953bd"
+        "reference": "856ad75e2c0704096bf4a708b6464620e41d1a34"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/secondnetwork/blade-tabler-icons/zipball/cd1f24b5680b74ca6a10451377f6b331b5e953bd",
-        "reference": "cd1f24b5680b74ca6a10451377f6b331b5e953bd",
+        "url": "https://api.github.com/repos/secondnetwork/blade-tabler-icons/zipball/856ad75e2c0704096bf4a708b6464620e41d1a34",
+        "reference": "856ad75e2c0704096bf4a708b6464620e41d1a34",
         "shasum": ""
       },
       "require": {
@@ -7600,9 +7600,9 @@
       ],
       "support": {
         "issues": "https://github.com/secondnetwork/blade-tabler-icons/issues",
-        "source": "https://github.com/secondnetwork/blade-tabler-icons/tree/v3.41.0"
+        "source": "https://github.com/secondnetwork/blade-tabler-icons/tree/v3.44.0"
       },
-      "time": "2026-03-30T10:09:04+00:00"
+      "time": "2026-05-11T14:36:11+00:00"
     },
     {
       "name": "shuvroroy/filament-spatie-laravel-backup",
