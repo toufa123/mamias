@@ -64,8 +64,7 @@
 
 ### 1.5 References
 
-- [README.md](README.md) — Vue d'ensemble technique
-- [README.md](README.md) — Guide de déploiement production
+- [README.md](README.md) — Vue d'ensemble technique/Guide de déploiement production
 - `composer.json` — Dépendances PHP
 - `package.json` — Dépendances Node.js
 
