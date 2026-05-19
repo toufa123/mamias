@@ -32,6 +32,7 @@ class PublicProfile extends Component implements HasActions, HasForms
     use InteractsWithForms;
 
     public ?array $data = [];
+
     public bool $isEditing = false;
 
     public function mount(): void
@@ -44,7 +45,7 @@ class PublicProfile extends Component implements HasActions, HasForms
         return $schema
             ->statePath('data')
             ->model(auth()->user())
-            ->disabled(fn () => !$this->isEditing)
+            ->disabled(fn () => ! $this->isEditing)
             ->components([
                 Section::make('Personal Details')
                     ->description('Identity and contact information.')
@@ -159,6 +160,15 @@ class PublicProfile extends Component implements HasActions, HasForms
                                     ->maxLength(255)
                                     ->unique(ignoreRecord: true)
                                     ->placeholder('name@example.com'),
+                                TextInput::make('current_password')
+                                    ->label('Current Password')
+                                    ->password()
+                                    ->revealable()
+                                    ->prefixIcon('tabler-lock-open')
+                                    ->placeholder('Required when changing password.')
+                                    ->dehydrated(false)
+                                    ->maxLength(255)
+                                    ->visible(fn ($state) => true),
                                 TextInput::make('password')
                                     ->label('New Password')
                                     ->password()
@@ -166,7 +176,8 @@ class PublicProfile extends Component implements HasActions, HasForms
                                     ->prefixIcon('tabler-lock')
                                     ->placeholder('Leave blank to keep current password.')
                                     ->dehydrated(fn ($state) => filled($state))
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->rule('required_with:current_password'),
                             ]),
                     ]),
                 Section::make('Professional Focus')
@@ -226,7 +237,15 @@ class PublicProfile extends Component implements HasActions, HasForms
 
     public function save(): void
     {
-        $data = $this->form->getState();
+        $state = $this->form->getState();
+
+        if (filled($state['password'] ?? null)) {
+            $this->form->validate([
+                'current_password' => ['required', 'current_password'],
+            ]);
+        }
+
+        $data = array_filter($state, fn ($key) => $key !== 'current_password', ARRAY_FILTER_USE_KEY);
 
         auth()->user()->update($data);
 
@@ -243,7 +262,7 @@ class PublicProfile extends Component implements HasActions, HasForms
         if ($this->isEditing) {
             $this->form->fill(auth()->user()->attributesToArray());
         }
-        $this->isEditing = !$this->isEditing;
+        $this->isEditing = ! $this->isEditing;
     }
 
     public function render(): View

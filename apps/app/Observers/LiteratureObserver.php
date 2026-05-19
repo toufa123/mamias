@@ -3,7 +3,9 @@
 namespace App\Observers;
 
 use App\Models\Literature;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Notifications\NewLiteratureReferenceNotification;
+use Illuminate\Support\Facades\Notification;
 
 class LiteratureObserver
 {
@@ -16,6 +18,12 @@ class LiteratureObserver
 
     public function created(Literature $literature): void
     {
-        Log::info("New literature created with code: {$literature->code}");
+        $adminsAndScientists = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', ['super_admin', 'scientist']);
+        })->get();
+
+        if ($adminsAndScientists->isNotEmpty()) {
+            Notification::send($adminsAndScientists, new NewLiteratureReferenceNotification($literature));
+        }
     }
 }

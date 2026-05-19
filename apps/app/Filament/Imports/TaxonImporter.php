@@ -5,9 +5,11 @@ namespace App\Filament\Imports;
 use App\Enums\Catalogue_Status;
 use App\Models\Taxon;
 use App\Services\TaxonNormalizer;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
 
 class TaxonImporter extends Importer
@@ -22,52 +24,6 @@ class TaxonImporter extends Importer
                 ->requiredMapping()
                 ->rules(['required', 'max:255'])
                 ->castStateUsing(fn (?string $state): ?string => self::sanitize($state)),
-
-//            ImportColumn::make('aphia_id')
-//                ->label('Aphia ID')
-//                ->numeric()
-//                ->rules(['nullable', 'integer']),
-//
-//            ImportColumn::make('authority')
-//                ->label('Authority')
-//                ->rules(['nullable', 'max:255'])
-//                ->castStateUsing(fn (?string $state): ?string => self::sanitize($state)),
-//
-//            ImportColumn::make('rank')
-//                ->label('Rank')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('kingdom')
-//                ->label('Kingdom')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('phylum')
-//                ->label('Phylum')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('class')
-//                ->label('Class')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('order')
-//                ->label('Order')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('family')
-//                ->label('Family')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('genus')
-//                ->label('Genus')
-//                ->rules(['nullable', 'max:100']),
-//
-//            ImportColumn::make('Easin_id')
-//                ->label('EASIN ID')
-//                ->rules(['nullable', 'max:255']),
-//
-//            ImportColumn::make('notes')
-//                ->label('Notes')
-//                ->rules(['nullable']),
         ];
     }
 
@@ -79,11 +35,19 @@ class TaxonImporter extends Importer
             $existing = Taxon::where('scientificname', $scientificname)->first();
 
             if ($existing) {
-                return $existing;
+                $importId = $this->import->getKey();
+                $duplicates = Cache::get("taxon-import-duplicates-{$importId}", []);
+                $duplicates[] = [
+                    'scientificname' => $scientificname,
+                    'id' => $existing->getKey(),
+                ];
+                Cache::put("taxon-import-duplicates-{$importId}", $duplicates, now()->addHour());
+
+                throw new RowImportFailedException("Duplicate taxon: {$scientificname} (ID: {$existing->getKey()})");
             }
         }
 
-        return (new Taxon())->fill([
+        return (new Taxon)->fill([
             'catalogue_status' => Catalogue_Status::not_checked,
         ]);
     }
@@ -97,12 +61,12 @@ class TaxonImporter extends Importer
     public static function getCompletedNotificationBody(Import $import): string
     {
         $body = 'Your taxon import has completed and '
-            . Number::format($import->successful_rows) . ' '
-            . str('row')->plural($import->successful_rows) . ' imported.';
+            .Number::format($import->successful_rows).' '
+            .str('row')->plural($import->successful_rows).' imported.';
 
         if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' '
-                . str('row')->plural($failedRowsCount) . ' failed to import.';
+            $body .= ' '.Number::format($failedRowsCount).' '
+                .str('row')->plural($failedRowsCount).' failed to import.';
         }
 
         return $body;

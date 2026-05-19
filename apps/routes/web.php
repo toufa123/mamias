@@ -1,19 +1,33 @@
 <?php
 
-    use App\Livewire\PublicProfile;
-    use Illuminate\Support\Facades\Route;
-    use Lubusin\Decomposer\Controllers\DecomposerController;
+use App\Livewire\MyReferences;
+use App\Livewire\PublicProfile;
+use Illuminate\Support\Facades\Route;
+use Lubusin\Decomposer\Controllers\DecomposerController;
 
-    Route::get('/', function () {
-        return view('mamias.home');
-    })->name('home');
+Route::get('/login', function () {
+    return redirect()->route('filament.mamias.auth.login');
+})->name('login');
+Route::get('/email-verification/prompt', function () {
+    return redirect()->route('filament.mamias.auth.email-verification.prompt');
+})->name('verification.notice');
 
-    Route::get('/about', function () {
-        return view('mamias.about');
-    })->name('about');
+Route::get('/', function () {
+    return view('mamias.home');
+})->name('home');
 
-    Route::get('/profile', PublicProfile::class)
-        ->middleware(['auth', 'verified'])
-        ->name('profile');
+Route::get('/about', function () {
+    return view('mamias.about');
+})->name('about');
 
-    Route::get('mamias/decompose', [DecomposerController::class, 'index'])->name('decompose');
+Route::get('/profile', PublicProfile::class)
+    ->middleware(['auth', 'verified'])
+    ->name('profile');
+
+Route::get('/references', MyReferences::class)
+    ->middleware(['auth', 'verified'])
+    ->name('references');
+
+Route::get('mamias/decompose', [DecomposerController::class, 'index'])
+    ->middleware(['auth', 'role:super_admin'])
+    ->name('decompose');

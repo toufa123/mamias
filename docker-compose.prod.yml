@@ -39,6 +39,7 @@ services:
           X-Frame-Options "SAMEORIGIN"
           Referrer-Policy "strict-origin-when-cross-origin"
           Permissions-Policy "geolocation=(), microphone=(), camera=()"
+          Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'self'"
           -Server
         }
 
@@ -110,7 +111,6 @@ services:
       start_period: 45s
 
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - backups:/var/www/backups
 
     security_opt:

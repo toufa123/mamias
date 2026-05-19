@@ -6,7 +6,7 @@
             </x-slot>
 
             <x-slot name="description">
-                Trigger an immediate database backup or restore from an existing snapshot.
+                Backups are managed by the kartoza/pg-backup container. Dumps are stored inside the backup container.
             </x-slot>
 
             <div class="flex flex-wrap gap-4">
@@ -26,26 +26,34 @@
                     <thead>
                         <tr>
                             <th class="px-4 py-2">Filename</th>
+                            <th class="px-4 py-2">Size</th>
+                            <th class="px-4 py-2">Date</th>
                             <th class="px-4 py-2 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-white/5">
-                        @forelse($this->getBackupFiles() as $file)
+                        @forelse($this->getBackupFilesWithSize() as $backup)
                             <tr>
                                 <td class="px-4 py-2 font-mono text-sm">
-                                    {{ $file }}
+                                    {{ $backup['name'] }}
+                                </td>
+                                <td class="px-4 py-2 text-sm text-gray-500">
+                                    {{ $backup['size'] }}
+                                </td>
+                                <td class="px-4 py-2 text-sm text-gray-500">
+                                    {{ $backup['date'] }}
                                 </td>
                                 <td class="px-4 py-2 text-right">
                                     <div class="flex justify-end gap-2">
-                                        {{ ($this->downloadAction)(['file' => $file]) }}
-                                        {{ ($this->deleteAction)(['file' => $file]) }}
+                                        {{ ($this->downloadAction)(['file' => $backup['path']]) }}
+                                        {{ ($this->deleteAction)(['file' => $backup['path']]) }}
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="px-4 py-2 text-center text-gray-500">
-                                    No backups found.
+                                <td colspan="4" class="px-4 py-2 text-center text-gray-500">
+                                    No backups found. Click "Backup Now" to create one.
                                 </td>
                             </tr>
                         @endforelse

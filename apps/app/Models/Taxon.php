@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Enums\Catalogue_Status;
 use App\Enums\Worms_Status;
 use App\Services\TaxonNormalizer;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Mattiverse\Userstamps\Traits\Userstamps;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Mattiverse\Userstamps\Traits\Userstamps;
+use Promethys\Revive\Concerns\Recyclable;
 
 /**
  * Class Taxon
@@ -37,10 +38,10 @@ use Illuminate\Database\Eloquent\Attributes\Table;
  * @property array|null $environments
  * @property array|null $synonyms_data
  * @property string|null $Easin_id
- * @property \Illuminate\Support\Carbon|null $fetched_at
+ * @property Carbon|null $fetched_at
  * @property string|null $notes
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $created_by
  * @property int|null $updated_by
  */
@@ -71,7 +72,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 #[Table('taxas')]
 class Taxon extends Model
 {
-    use HasFactory, SoftDeletes, Userstamps;
+    use HasFactory, Recyclable, SoftDeletes,  Userstamps;
 
     protected static function booted(): void
     {

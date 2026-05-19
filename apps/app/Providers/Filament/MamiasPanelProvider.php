@@ -2,15 +2,18 @@
 
 namespace App\Providers\Filament;
 
+use Agencetwogether\AlertBox\AlertBoxPlugin;
 use App\Filament\Pages\Auth\EmailVerificationPrompt;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Widgets\MamiasInfoWidget;
 use App\Http\Middleware\RedirectIfNotPanelUser;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
+use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use Daljo25\FilamentDependencyManager\FilamentDependencyManagerPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
@@ -24,7 +27,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use App\Filament\Pages\Dashboard;
 use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -38,13 +40,12 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use lockscreen\FilamentLockscreen\Lockscreen;
-use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
-use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
-use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
-use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
+use lockscreen\FilamentLockscreen\Lockscreen;
 use Promethys\Revive\RevivePlugin;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
+use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
 class MamiasPanelProvider extends PanelProvider
 {
@@ -57,7 +58,7 @@ class MamiasPanelProvider extends PanelProvider
             ->path('mamias')
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
-            ->brandName('Filament Demo')
+            ->brandName('MAMIAS')
             ->brandLogo(asset('images/mamias.png'))
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/favicon.png'))
@@ -67,8 +68,6 @@ class MamiasPanelProvider extends PanelProvider
                 url('/mamias'),
                 url('/'),
             ])
-            ->maxContentWidth(Width::Full)
-            ->unsavedChangesAlerts()
             ->sidebarWidth('15rem')
             ->globalSearch(false)
             ->unsavedChangesAlerts()
@@ -81,21 +80,27 @@ class MamiasPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
+                AlertBoxPlugin::make()
+                    ->navigationLabel('Alerts')
+                    ->navigationIcon('heroicon-o-bell-alert')
+                    ->navigationGroup('System')
+                    ->navigationSort(5)
+                    ->title('Alert Management'),
                 RevivePlugin::make()
-                    //->authorize(auth()->user()->isAdmin()) // Accepts a boolean or Closure to control access
+                    // ->authorize(auth()->user()->isAdmin()) // Accepts a boolean or Closure to control access
                     ->navigationGroup('Settings') // Group the page under a custom sidebar section
                     ->navigationIcon('heroicon-o-archive-box-arrow-down')
                     ->activeNavigationIcon('heroicon-o-archive-box-arrow-down')
                     ->navigationSort(1)
-                    ->navigationLabel('Custom Label')
-                    ->title('Custom Title')
-                    ->slug('custom-slug'),
+                    ->navigationLabel('Recycle Bin')
+                    ->title('Recycle Bin')
+                    ->slug('recycle'),
                 RefreshSidebarPlugin::make(),
-//                FilamentSpatieLaravelBackupPlugin::make()
-//                    ->navigationIcon('heroicon-o-cpu-chip')
-//                    ->navigationLabel('Backups')
-//                    ->navigationGroup('system')
-//                    ->navigationSort(3),
+                //                FilamentSpatieLaravelBackupPlugin::make()
+                //                    ->navigationIcon('heroicon-o-cpu-chip')
+                //                    ->navigationLabel('Backups')
+                //                    ->navigationGroup('System')
+                //                    ->navigationSort(3),
                 ResourceLockPlugin::make(),
                 CommandRunnerPlugin::make()
                     ->navigationGroup('System')
@@ -121,11 +126,14 @@ class MamiasPanelProvider extends PanelProvider
                     ->icon('tabler-file-text') // Customize the icon of the lockscreen.
                     ->enablePlugin(), // Enable the lockscreen plugin.
                 FilamentDeveloperLoginsPlugin::make()
-                    ->enabled(app()->environment('local'))
+                    ->enabled(
+                        app()->environment('local')
+                        && in_array(request()->ip(), array_filter(explode(',', env('DEV_LOGINS_ALLOWED_IPS', '127.0.0.1')))),
+                    )
                     ->users([
-                        'Admin' => 'atef.ouerghi@spa-rac.org',
-                        'Scientist' => 'scientist@mamias.local',
-                        'Public User' => 'atef.ouerghi@gmail.com',
+                        'Admin' => env('DEV_LOGIN_ADMIN_EMAIL', 'admin@example.local'),
+                        'Scientist' => env('DEV_LOGIN_SCIENTIST_EMAIL', 'scientist@example.local'),
+                        'Public User' => env('DEV_LOGIN_PUBLIC_EMAIL', 'user@example.local'),
                     ]),
                 AuthUIEnhancerPlugin::make()
                     ->showEmptyPanelOnMobile(true)
@@ -218,8 +226,8 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('Dashboard'),
                 NavigationGroup::make('Use management'),
                 NavigationGroup::make('MAMIAS database'),
-                NavigationGroup::make('system'),
-                NavigationGroup::make('settings'),
+                NavigationGroup::make('System'),
+                NavigationGroup::make('Settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -246,6 +254,10 @@ class MamiasPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook(
+                'panels::page.start',
+                fn () => view('filament.hooks.pending-references-alert'),
+            );
     }
 }

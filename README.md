@@ -6,188 +6,260 @@
   <a href="#"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version: 1.0.0"></a>
 </p>
 
-<p align="center"><em>Marine Alien Species Database (MAMIAS) — propulsée par Laravel 13, Filament 5 &amp; PostGIS.</em></p>
+<p align="center"><em>Marine Mediterranean Alien Species Database — Laravel 13, Filament 5 &amp; PostGIS.</em></p>
 
 ---
 
-**MAMIAS** (Marine Alien Species Database) est une application web complète dédiée à la gestion, au catalogage et à la diffusion d'informations sur les espèces marines exotiques et envahissantes (*Non-Indigenous Species — NIS*) en région méditerranéenne.
+**MAMIAS** (Marine Mediterranean Alien Species Database) is a scientific web application for managing, cataloguing, and disseminating data on Non-Indigenous Species (NIS) in the Mediterranean Sea.
 
-Le système sert de base de données scientifique pour les chercheurs, taxonomistes et biologistes marins afin de suivre la taxonomie, la distribution géographique et les événements d'introduction des espèces non indigènes.
+It serves researchers, taxonomists, and marine biologists tracking NIS taxonomy, geographic distribution, introduction events, invasion pathways, and associated scientific literature.
 
-## Fonctionnalités clés
+## Key Features
 
-- **Gestion taxonomique** : CRUD des espèces marines avec synchronisation automatique via l'API **WoRMS** (World Register of Marine Species).
-- **Suivi des introductions** : Enregistrement des événements d'introduction avec classification selon les **CBD pathways**.
-- **Monitoring régional** : Suivi par sous-régions **EcAp** (WMED, CMED, ADRIA, EMED) et succès d'établissement.
-- **Visualisation & analytics** : Tableaux de bord statistiques et cartographie des distributions NIS.
-- **Gestion bibliographique** : Intégration **Crossref DOI** pour la récupération automatique des métadonnées de littérature.
-- **Export & reporting** : Rapports conformes CBD et partage de données au format **Darwin Core**.
+- **Taxonomic Catalogue** — CRUD for marine species with automatic **WoRMS** (World Register of Marine Species) synchronization, bulk fetch, and data normalization.
+- **Introduction Event Tracking** — Record NIS introduction events with year, country, establishment success, and **CBD pathway** classification.
+- **Mediterranean Subregion Monitoring** — Track species arrival and establishment per **EcAp** subregion (WMED, CMED, ADRIA, EMED).
+- **Pathway Analysis** — Classify introduction pathways by CBD category/subcategory and pathway type.
+- **Literature Management** — Bibliographic reference management with **Crossref DOI** metadata auto-retrieval and auto-generated reference codes.
+- **Dashboard Analytics** — Statistical widgets (species counts, kingdom/phylum/environment distribution charts) via Filament ECharts.
+- **Import/Export** — Bulk data operations via Excel/CSV with session-based import tracking and error reporting.
+- **User Management** — Multi-role RBAC (super_admin, panel_user, user) via Spatie Permission & Filament Shield.
+- **System Health** — Real-time health checks, backup management, and command runner from the admin panel.
 
-Pour plus de détails fonctionnels, consultez la **[Spécification des Besoins (SRS)](requirements.md)**.
+For the full Software Requirements Specification, see **[requirements.md](requirements.md)**.
 
-## Stack technique
+## Tech Stack
 
-| Couche           | Technologie            | Badge |
+| Layer            | Technology             | Badge |
 |------------------|------------------------|-------|
-| **Backend**      | PHP 8.5 + Laravel 13   | [![PHP: 8.5](https://img.shields.io/badge/PHP-8.5-777BB4.svg?logo=php)](https://www.php.net) [![Laravel: 13.0](https://img.shields.io/badge/Laravel-13.0-FF2D20.svg?logo=laravel)](https://laravel.com) |
-| **Panel admin**  | Filament 5.0           | [![Filament: 5.0](https://img.shields.io/badge/Filament-5.0-F1B024.svg?logo=filament)](https://filamentphp.com) |
-| **Base de données** | PostgreSQL + PostGIS | [![PostGIS: ^3.0](https://img.shields.io/badge/PostGIS-^3.0-336791.svg?logo=postgresql)](https://postgis.net) |
-| **Cache / Files**| Redis                  | [![Redis: ^7.0](https://img.shields.io/badge/Redis-^7.0-DC382D.svg?logo=redis)](https://redis.io) |
-| **Frontend**     | Vite 8 + Tailwind CSS 4.2 | [![Vite: 8.0](https://img.shields.io/badge/Vite-8.0-646CFF.svg?logo=vite)](https://vitejs.dev) [![Tailwind CSS: 4.2.2](https://img.shields.io/badge/Tailwind_CSS-4.2.2-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com) |
-| **Runtime**      | Docker + FrankenPHP    | — |
+| **Backend**      | PHP 8.3+ / Laravel 13  | [![PHP: 8.3+](https://img.shields.io/badge/PHP-8.3+-777BB4.svg?logo=php)](https://www.php.net) [![Laravel: 13.0](https://img.shields.io/badge/Laravel-13.0-FF2D20.svg?logo=laravel)](https://laravel.com) |
+| **Admin Panel**  | Filament 5.0           | [![Filament: 5.0](https://img.shields.io/badge/Filament-5.0-F1B024.svg?logo=filament)](https://filamentphp.com) |
+| **Database**     | PostgreSQL + PostGIS   | [![PostGIS](https://img.shields.io/badge/PostGIS-336791.svg?logo=postgresql)](https://postgis.net) |
+| **Cache/Queue**  | Redis 7+               | [![Redis: 7+](https://img.shields.io/badge/Redis-7+-DC382D.svg?logo=redis)](https://redis.io) |
+| **Frontend**     | Vite 8 + Tailwind CSS 4.2 + DaisyUI 5 | [![Vite: 8.0](https://img.shields.io/badge/Vite-8.0-646CFF.svg?logo=vite)](https://vitejs.dev) [![Tailwind CSS: 4.2](https://img.shields.io/badge/Tailwind_CSS-4.2-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com) |
+| **Runtime**      | Docker + FrankenPHP    | [![Docker](https://img.shields.io/badge/Docker-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com) |
 
-## Architecture du projet
+## Architecture
 
-Le point d'entrée principal de l'application est le **panel Filament** situé à l'adresse **`/mamias`**.
+The primary interface is the **Filament admin panel** at **`/mamias`**. There is no traditional REST API — `routes/web.php` only serves a welcome view.
+
+### Domain Model
+
+```
+Taxon (taxas)
+├── IntroEventRecord ──→ Literature
+│   ├── SubregionRecord (EcAp subregion data)
+│   └── PathwayRecord   (CBD pathway classification)
+└── WoRMS sync (WormsService → TaxonNormalizer)
+
+User (users)
+└── Profile fields (title, phone, WhatsApp, country, taxonomic area, subregions, bio)
+└── Roles: super_admin | panel_user | user (Spatie)
+```
+
+### Filament Resources
+
+| Resource | Model | Description |
+|----------|-------|-------------|
+| **TaxonResource** | Taxon | MAMIAS Catalogue — species with WoRMS sync, soft deletes |
+| **IntroEventRecordResource** | IntroEventRecord | Introduction events with subregion & pathway records |
+| **LiteratureResource** | Literature | Scientific references with DOI auto-fetch |
+| **UserResource** | User | User management with role assignment |
+
+### Backend Services
+
+| Service | Purpose |
+|---------|---------|
+| `WormsService` | WoRMS REST API integration (taxonomy lookup, bulk phyla fetch) |
+| `TaxonService` | Core taxon operations, WoRMS refresh orchestration |
+| `TaxonNormalizer` | Data normalization for taxon records |
+| `TaxonStateHelper` | Taxon state management utilities |
+| `EasinService` | EASIN (European Alien Species Information Network) integration |
+| `DoiMetadataService` | Crossref DOI metadata resolution for literature |
+| `WhatsAppService` | GreenAPI WhatsApp phone validation with E.164 fallback |
+
+### Project Structure
 
 ```
 mamias/
-├── apps/                       # Code source Laravel
-│   ├── app/                    # Models, Services (Worms, WhatsApp), Filament...
-│   ├── bootstrap/              # Configuration du boot (routes web/console/up)
-│   ├── config/                 # Configurations (services, backup...)
-│   ├── database/               # Migrations PostGIS, seeders
-│   ├── public/                 # Assets (Vite)
-│   ├── resources/              # Vues Blade & thèmes Filament
-│   └── tests/                  # Tests (in-memory SQLite)
-├── backup/                     # Dumps SQL pour l'initialisation de la DB
-├── docker-compose.yml          # Stack de développement
-├── docker-compose.prod.yml     # Stack de production
-├── Dockerfile                  # Image FrankenPHP optimisée
-└── entrypoint.sh               # Gestion des permissions & cache Filament
+├── apps/                        # Laravel application
+│   ├── app/
+│   │   ├── Enums/               # 11 enums (NisStatus, Subregion, CbdPathway*, etc.)
+│   │   ├── Filament/
+│   │   │   ├── Resources/       # 4 resources (Taxon, IntroEvent, Literature, User)
+│   │   │   ├── Widgets/         # 7 dashboard widgets (stats, charts, WoRMS progress)
+│   │   │   └── Pages/           # Dashboard, HealthCheck, BackupManager, Auth/*
+│   │   ├── Models/              # 6 models (User, Taxon, Literature, IntroEventRecord, SubregionRecord, PathwayRecord)
+│   │   └── Services/            # 7 services (Worms, Taxon*, Easin, DOI, WhatsApp)
+│   ├── database/migrations/     # 23 migrations (PostGIS, taxas, literatures, intro events, imports/exports, RBAC, health)
+│   ├── resources/               # Blade views & Filament theme
+│   └── tests/                   # 13 test files (Pest PHP — unit + feature)
+├── backups/                     # DB backup dumps
+├── docker-compose.yml           # Development stack (6 services)
+├── docker-compose.prod.yml      # Production stack
+├── Dockerfile                   # FrankenPHP optimized image
+├── Makefile                     # Dev/prod lifecycle commands
+└── entrypoint.sh                # Container permissions & Filament cache
 ```
 
 ---
 
-## Démarrage rapide (Développement local)
+## Quick Start (Local Development)
 
-### 0. Prérequis
+### Prerequisites
 
 - Docker & Docker Compose
-- `make` disponible sur votre machine
-- Accès en local aux ports `443` (HTTPS), `54321` (PostGIS dev), `8026` (Mailpit web)
+- `make` available on your system
+- Ports available: `443` (HTTPS), `54321` (PostGIS), `8026` (Mailpit), `6379` (Redis)
 
-### 1. Installation
+### Installation
 
-1. **Cloner le dépôt** :
+1. **Clone the repository:**
    ```bash
-   git clone <url-du-depot> mamias
+   git clone <repo-url> mamias
    cd mamias
    ```
 
-2. **Préparer l'environnement** :
+2. **Prepare environment:**
    ```bash
    cp apps/.env.example apps/.env
    ```
 
-3. **Lancer la stack** :
+3. **Start the stack:**
    ```bash
    make dev-up
    ```
 
-4. **Configurer le domaine local** :
-   Ajoutez `mamias.local` à votre fichier hosts :
-   - **Windows (PowerShell admin)** : `Add-Content C:\Windows\System32\drivers\etc\hosts "127.0.0.1 mamias.local"`
-   - **Linux/macOS** : `echo "127.0.0.1 mamias.local" | sudo tee -a /etc/hosts`
+4. **Configure local domain:**
+   Add `mamias.local` to your hosts file:
+   - **Windows (PowerShell admin):** `Add-Content C:\Windows\System32\drivers\etc\hosts "127.0.0.1 mamias.local"`
+   - **Linux/macOS:** `echo "127.0.0.1 mamias.local" | sudo tee -a /etc/hosts`
 
-### 2. Accès aux services
+### Access
 
-| Service                | URL                             |
-|------------------------|---------------------------------|
-| Application (panel)    | [https://mamias.local/mamias](https://mamias.local/mamias) |
-| Healthcheck applicatif | [https://mamias.local/up](https://mamias.local/up)         |
-| Mailpit (web UI)       | [http://localhost:8026](http://localhost:8026)           |
+| Service             | URL                                                         |
+|---------------------|-------------------------------------------------------------|
+| Admin Panel         | [https://mamias.local/mamias](https://mamias.local/mamias)  |
+| Health Check        | [https://mamias.local/up](https://mamias.local/up)          |
+| Mailpit (email UI)  | [http://localhost:8026](http://localhost:8026)               |
 
-*Note : Lors de la première visite, acceptez le certificat auto-signé.*
+*Note: Accept the self-signed certificate on first visit.*
 
-### 3. Commandes utiles
+### Make Commands
 
-| Action                        | Commande |
-|-------------------------------|----------|
-| Arrêter la stack              | `make dev-down` |
-| Nettoyage complet             | `make dev-clean` |
-| Logs applicatifs              | `docker compose --profile dev logs -f app` |
-| Exécuter les tests            | `docker compose --profile dev exec app php artisan test` |
-| Reconstruire les caches       | `make dev-cache` |
-| Vider tous les caches         | `make dev-clear` |
-| Démarrer un worker de queue   | `make dev-queue` |
+| Command | Description |
+|---------|-------------|
+| `make dev-up` | Start dev stack (build + run) |
+| `make dev-down` | Stop dev stack |
+| `make dev-clean` | Hard reset (containers + volumes) |
+| `make dev-cache` | Rebuild route/view/event/Filament caches |
+| `make dev-clear` | Clear all caches |
+| `make dev-queue` | Start manual queue worker |
+| `make dev-ports` | Diagnose port conflicts |
+| `make dev-db-heal` | Run DB self-heal guard (migrate + seed) |
+| `make dev-db-backup` | Snapshot dev DB (keeps latest 5) |
+| `make dev-db-restore` | Restore from latest snapshot |
+| `make dev-test` | Run tests with automatic DB backup/restore |
+| `make prod-up` | Start production stack |
 
----
-
-## Déploiement (Production)
-
-### 1. Configuration
-
-En production, utilisez exclusivement `docker-compose.prod.yml` et un fichier `.env.production`.
-
-1. **Fichiers d'environnement** :
-   - À la racine : `.env` (pour les variables Docker).
-   - Dans `apps/` : `.env.production` (pour Laravel).
-
-2. **Secrets indispensables** :
-   Assurez-vous de modifier :
-   - `APP_KEY` (générez-le via `php artisan key:generate --show`)
-   - Identifiants **DB** (`DB_PASSWORD`, `DB_USERNAME`)
-   - Mot de passe **Redis**
-   - Paramètres **SMTP** et **Worms API keys** (le cas échéant).
-
-### 2. Lancement
+### Running Tests
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d
+# Via Make (with automatic DB backup/restore)
+make dev-test
+make dev-test FILTER=TaxonServiceTest
+
+# Via Docker directly
+docker compose --profile dev exec app php artisan test --compact
+docker compose --profile dev exec app php artisan test --compact --filter=TestName
+
+# Lint PHP
+docker compose --profile dev exec app vendor/bin/pint --dirty --format agent
 ```
 
-### 3. Maintenance & Sécurité
+---
 
-- **Mise à jour** : `docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d`
-- **Backups** : Les backups sont gérés via le service `db-backup` (consultez `docker-compose.prod.yml`).
-- **Sécurité** : Gardez `APP_DEBUG=false` et assurez-vous que les ports sensibles ne sont pas exposés publiquement sans pare-feu.
+## Production Deployment
+
+### Configuration
+
+Use `docker-compose.prod.yml` exclusively in production (never `docker-compose.yml`).
+
+1. **Environment files:**
+   - Root: `.env` (Docker variables)
+   - `apps/`: `.env.production` (Laravel config)
+
+2. **Required secrets:**
+   - `APP_KEY` — generate via `php artisan key:generate --show`
+   - `DB_PASSWORD`, `DB_USERNAME` — PostgreSQL credentials
+   - Redis password (if exposed)
+   - SMTP and WoRMS API keys as needed
+
+### Launch
+
+```bash
+make prod-up
+# or manually:
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+```
+
+### Maintenance
+
+- **Update:** `docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d`
+- **Backups:** Automated via `db-backup` service (see `docker-compose.prod.yml`)
+- **Security:** Keep `APP_DEBUG=false`, do not expose internal ports publicly
 
 ---
 
-## Captures d'écran (Aperçu)
+## Docker Services
 
-> *Cette section est indicative : ajoutez vos propres captures une fois disponibles.*
-
-- **Dashboard Filament** : Vue d’ensemble des indicateurs clés.
-- **Fiche espèce NIS** : Détails taxonomiques et distribution.
-- **Carte PostGIS** : Visualisation spatiale des introductions.
+| Service | Image | Ports | Purpose |
+|---------|-------|-------|---------|
+| **app** | Custom FrankenPHP | 443 (HTTPS + HTTP/3) | Laravel application server |
+| **queue** | Same as app | Internal | Background job processing |
+| **db** | kartoza/postgis | 54321 (dev only) | PostgreSQL + PostGIS |
+| **db-backup** | kartoza/pg-backup | — | Automated database backups |
+| **redis** | redis:alpine | 6379 (dev only) | Cache, sessions, queue broker |
+| **mail** | axllent/mailpit | 8026 (dev only) | SMTP catcher + web UI |
 
 ---
 
-## Contribution
+## Contributing
 
-Les contributions sont les bienvenues ! Pour contribuer :
+1. **Fork** the project.
+2. Create a **feature branch** (`git checkout -b feature/my-feature`).
+3. Run tests and linting before submitting.
+4. Submit a detailed **Pull Request**.
 
-1. **Forkez** le projet.
-2. Créez une **branche** pour votre fonctionnalité (`git checkout -b feature/ma-feature`).
-3. Vérifiez la conformité du code (`make dev-cache` et tests).
-4. Soumettez une **Pull Request** détaillée.
-
-**Bonnes pratiques :**
-- Suivez les standards PSR et utilisez Laravel Pint pour le formatage.
-- Ajoutez des tests pour toute nouvelle logique complexe.
-- Documentez vos changements dans le code (PHPDoc).
+**Guidelines:**
+- Follow PSR standards; use Laravel Pint for formatting.
+- Add Pest tests for new logic.
+- Use the static configurator pattern for new Filament resources.
 
 ---
 
 ## Roadmap
 
-- **v1.x (En cours)** :
-  - Stabilisation du noyau NIS et synchronisation WoRMS.
-  - Cartographie de base via PostGIS.
-  - Export Darwin Core.
-- **v2.x (Prévu)** :
-  - API publique documentée (OpenAPI).
-  - Tableaux de bord analytiques avancés.
-  - Module de reporting automatique pour les autorités.
+- **v1.x (Current):**
+  - NIS catalogue with WoRMS synchronization
+  - Introduction event tracking with CBD pathways and EcAp subregions
+  - Literature management with DOI integration
+  - PostGIS-based geographic data storage
+  - Import/Export infrastructure
+  - Dashboard analytics with ECharts
+- **v2.x (Planned):**
+  - Public REST API (OpenAPI documented)
+  - Advanced spatial visualization and mapping
+  - Automated CBD compliance reporting
+  - Darwin Core archive export
+  - Machine learning for invasion risk prediction
 
 ---
 
-## Licence
+## License
 
-Ce projet est distribué sous licence **MIT**. Voir le fichier [LICENSE](https://opensource.org/licenses/MIT) pour plus de détails.
+This project is licensed under the **MIT License**. See [LICENSE](https://opensource.org/licenses/MIT) for details.
 
 ---
 
-<p align="center"><em>Propulsé par Laravel 13 &amp; FrankenPHP — conçu pour la science des espèces marines non indigènes.</em></p>
+<p align="center"><em>Built with Laravel 13 &amp; FrankenPHP — for Mediterranean marine biodiversity science.</em></p>

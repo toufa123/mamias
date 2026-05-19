@@ -104,6 +104,7 @@ services :
           X-XSS-Protection        "1; mode=block"
           Referrer-Policy         "strict-origin-when-cross-origin"
           Permissions-Policy      "geolocation=(), microphone=(), camera=()"
+          Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'self'"
           -Server
         }
 
@@ -150,8 +151,8 @@ services :
       DB_HOST : "db"
       DB_PORT : "5432"
       DB_DATABASE: "${name:-mamias}_db"
-      DB_USERNAME: "${DB_USERNAME:-admin_mamias}"
-      DB_PASSWORD: "${DB_PASSWORD:-admin_251205}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
 
       MAIL_MAILER : "smtp"
       MAIL_HOST : "mail"
@@ -199,7 +200,6 @@ services :
 
     volumes :
         - ./apps:/var/www/html:cached
-        - /var/run/docker.sock:/var/run/docker.sock
 
     env_file :
       - .env
@@ -216,8 +216,8 @@ services :
       DB_HOST : "db"
       DB_PORT : "5432"
       DB_DATABASE: "${name:-mamias}_db"
-      DB_USERNAME: "${DB_USERNAME:-admin_mamias}"
-      DB_PASSWORD: "${DB_PASSWORD:-admin_251205}"
+      DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
+      DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
 
       MAIL_MAILER : "smtp"
       MAIL_HOST : "mail"
@@ -253,9 +253,9 @@ services :
     environment :
       POSTGRES_DB: "${name:-mamias}_db"
       POSTGRES_DBNAME: "${name:-mamias}_db"
-      POSTGRES_USER: "${DB_USERNAME:-admin_mamias}"
-      POSTGRES_PASS: "${DB_PASSWORD:-admin_251205}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD:-admin_251205}"
+      POSTGRES_USER: "${DB_USERNAME:?DB_USERNAME is required}"
+      POSTGRES_PASS: "${DB_PASSWORD:?DB_PASSWORD is required}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
       POSTGRES_MULTIPLE_EXTENSIONS : "${POSTGRES_MULTIPLE_EXTENSIONS:-postgis}"
       DEFAULT_ENCODING : "${DEFAULT_ENCODING:-UTF8}"
       ALLOW_IP_RANGE : "${ALLOW_IP_RANGE:-all}"
@@ -264,7 +264,7 @@ services :
       - ./backups:/backups:ro
       #- ./backup:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -U ${DB_USERNAME:-admin_mamias} -d ${name:-mamias}_db || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U ${DB_USERNAME:?DB_USERNAME is required} -d ${name:-mamias}_db || exit 1"]
       interval : 10s
       timeout : 5s
       retries : 5
@@ -279,8 +279,8 @@ services :
       - ./backups:/backups
     environment:
       - POSTGRES_DB=${name:-mamias}_db
-      - POSTGRES_USER=${DB_USERNAME:-admin_mamias}
-      - POSTGRES_PASS=${DB_PASSWORD:-admin_251205}
+      - POSTGRES_USER=${DB_USERNAME:?DB_USERNAME is required}
+      - POSTGRES_PASS=${DB_PASSWORD:?DB_PASSWORD is required}
       - POSTGRES_HOST=db
       - DUMPPREFIX=mamias_db
     depends_on:

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Enums\LiteratureStatus;
 use App\Enums\LiteratureType;
 use App\Observers\LiteratureObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Mattiverse\Userstamps\Traits\Userstamps;
@@ -23,8 +26,9 @@ use Mattiverse\Userstamps\Traits\Userstamps;
  * @property string $short_ref
  * @property string $full_ref
  * @property string|null $link
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property LiteratureStatus $status
  * @property int|null $created_by
  * @property int|null $updated_by
  */
@@ -32,11 +36,11 @@ use Mattiverse\Userstamps\Traits\Userstamps;
     'code',
     'doi',
     'type',
+    'status',
     'short_ref',
     'full_ref',
     'link',
-    'created_at',
-    'updated_at',
+    'file_path',
 ])]
 #[ObservedBy([LiteratureObserver::class])]
 class Literature extends Model
@@ -57,25 +61,13 @@ class Literature extends Model
     final public static function generateNextCode(): string
     {
         try {
-            $driver = DB::getDriverName();
             $column = 'code';
             $start = 7;
 
-            if ($driver === 'mysql' || $driver === 'mariadb') {
-                $query = self::where($column, 'regexp', '^mamias[0-9]{6}$');
-            } else {
-                $query = self::where($column, 'like', 'mamias%');
-            }
-
-            if ($driver === 'pgsql') {
-                $query->orderByRaw("CAST(SUBSTRING($column, $start) AS INTEGER) DESC");
-            } elseif ($driver === 'sqlite') {
-                $query->orderByRaw("CAST(SUBSTR($column, $start) AS INTEGER) DESC");
-            } else {
-                $query->orderByRaw("CAST(SUBSTRING($column, $start) AS UNSIGNED) DESC");
-            }
-
-            $lastRecord = $query->lockForUpdate()->first();
+            $lastRecord = self::where($column, 'like', 'mamias%')
+                ->orderByRaw("CAST(SUBSTRING($column, $start) AS INTEGER) DESC")
+                ->lockForUpdate()
+                ->first();
 
             if (! $lastRecord || ! preg_match('/^mamias(\d{6})$/', $lastRecord->code, $matches)) {
                 return 'mamias000001';
@@ -96,13 +88,29 @@ class Literature extends Model
     {
         return [
             'type' => LiteratureType::class,
+            'status' => LiteratureStatus::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
     }
 
-    // public function introEvents(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(IntroEvent::class, 'intro_event_literature');
-    // }
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function scopeForUser(Builder $query, User $user): Builder
+    {
+        return $query->where('created_by', $user->id);
+    }
+
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('status', LiteratureStatus::APPROVED);
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', LiteratureStatus::PENDING);
+    }
 }

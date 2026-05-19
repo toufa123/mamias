@@ -1,0 +1,14 @@
+{
+  "tags": [
+    "laravel",
+    "node",
+    "php"
+  ],
+  "sentinels": [
+    "artisan",
+    "composer.json",
+    "package.json"
+  ],
+  "detectedAt": "2026-05-15T17:24:16.382Z",
+  "rootPath": "/home/toufa/dev/2026/apps/mamias/apps"
+}

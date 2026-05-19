@@ -1,17 +1,21 @@
 <?php
-    
-    namespace App\Filament\Resources\Literatures\Tables;
-    
-    use Filament\Actions\BulkActionGroup;
-    use Filament\Actions\DeleteBulkAction;
-    use Filament\Actions\EditAction;
-    use Filament\Tables\Columns\TextColumn;
-    use Filament\Tables\Table;
-    use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
-    use App\Enums\LiteratureType;
-    
-    class LiteraturesTable
-    {
+
+namespace App\Filament\Resources\Literatures\Tables;
+
+use App\Enums\LiteratureStatus;
+use App\Models\Literature;
+use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+
+class LiteraturesTable
+{
     public static function configure(Table $table): Table
     {
         return $table
@@ -20,15 +24,33 @@
                 self::getShortRefColumn(),
                 self::getDoiColumn(),
                 self::getTypeColumn(),
+                self::getStatusColumn(),
+                self::getCreatorColumn(),
                 self::getFullRefColumn(),
                 self::getLinkColumn(),
+                self::getFileColumn(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options(LiteratureStatus::class),
             ])
             ->actions([
+                Action::make('approve')
+                    ->icon('tabler-check')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (Literature $record) => $record->status === LiteratureStatus::PENDING)
+                    ->action(fn (Literature $record) => $record->update(['status' => LiteratureStatus::APPROVED])),
+                Action::make('reject')
+                    ->icon('tabler-x')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn (Literature $record) => $record->status === LiteratureStatus::PENDING)
+                    ->action(fn (Literature $record) => $record->update(['status' => LiteratureStatus::REJECTED])),
+                ViewAction::make(),
                 EditAction::make(),
             ])
+            ->recordAction(ViewAction::class)
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
@@ -61,7 +83,7 @@
             ->searchable()
             ->icon(TablerIcon::Link)
             ->iconPosition('before')
-            ->url(fn ($state) => $state ? "https://doi.org/".$state : null)
+            ->url(fn ($state) => $state ? 'https://doi.org/'.$state : null)
             ->openUrlInNewTab()
             ->toggleable();
     }
@@ -92,5 +114,32 @@
             ->openUrlInNewTab()
             ->limit(50)
             ->toggleable(isToggledHiddenByDefault: true);
+    }
+
+    public static function getFileColumn(): TextColumn
+    {
+        return TextColumn::make('file_path')
+            ->label('PDF')
+            ->icon(fn ($state) => $state ? TablerIcon::FileTypePdf : null)
+            ->formatStateUsing(fn ($state) => $state ? 'Download' : null)
+            ->url(fn ($record) => $record->file_path ? asset('storage/'.$record->file_path) : null)
+            ->openUrlInNewTab()
+            ->toggleable();
+    }
+
+    public static function getStatusColumn(): TextColumn
+    {
+        return TextColumn::make('status')
+            ->label('Status')
+            ->badge()
+            ->sortable();
+    }
+
+    public static function getCreatorColumn(): TextColumn
+    {
+        return TextColumn::make('creator.name')
+            ->label('Submitted By')
+            ->sortable()
+            ->toggleable();
     }
 }

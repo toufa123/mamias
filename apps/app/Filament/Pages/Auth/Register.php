@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Auth;
 
+use App\Filament\Forms\Components\Honeypot;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Select;
@@ -11,11 +12,22 @@ use Filament\Schemas\Schema;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Model;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
+use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
+use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
 use Spatie\Permission\Models\Role;
 
 class Register extends BaseRegister
 {
-    use HasCustomLayout;
+    use HasCustomLayout, UsesSpamProtection;
+
+    public HoneypotData $honeypotData;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->honeypotData = new HoneypotData;
+    }
 
     public function form(Schema $schema): Schema
     {
@@ -32,6 +44,8 @@ class Register extends BaseRegister
                             ->autocomplete(false)
                             ->columnSpan(3),
                         $this->getPasswordConfirmationFormComponent()->columnSpan(3),
+                        Honeypot::make('honeypotData')
+                            ->hidden(),
                     ]),
             ]);
     }
@@ -83,6 +97,8 @@ class Register extends BaseRegister
      */
     protected function handleRegistration(array $data): Model
     {
+        $this->protectAgainstSpam();
+
         $user = parent::handleRegistration($data);
 
         Role::findOrCreate('user', 'web');

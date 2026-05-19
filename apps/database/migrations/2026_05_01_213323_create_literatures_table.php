@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('short_ref')->nullable();
             $table->text('full_ref')->nullable();
             $table->text('link')->nullable();
-            $table->string('doi')->unique()->nullable()->after('code');
-            $table->string('type')->nullable()->after('doi');
+            $table->string('doi')->unique()->nullable();
+            $table->string('type')->nullable();
+            $table->string('status')->default('pending');
+            $table->string('file_path')->nullable();
             $table->timestamps();
             $table->userstamps();
         });

@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <ul class="kt-dropdown-menu-sub">
-                            @if(auth()->user()->hasAnyRole(['super_admin', 'admin', 'scientific']))
+                            @if(auth()->user()->hasAnyRole(['super_admin', 'admin', 'scientist']))
                                 <li>
                                     <div class="kt-dropdown-menu-separator"></div>
                                 </li>
@@ -65,11 +65,11 @@
                                             <path d="M10 14h4" />
                                             <path d="M12 12v4" />
                                         </svg>
-                                        Report Species
+                                        My Species Report
                                     </a>
                             </li>
                             <li>
-                                    <a class="kt-dropdown-menu-link" href="#">
+                                    <a class="kt-dropdown-menu-link" href="{{ route('references') }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-cylinder-plus">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                             <path d="M5 6a7 3 0 1 0 14 0a7 3 0 1 0 -14 0" />
@@ -77,7 +77,7 @@
                                             <path d="M16 19h6" />
                                             <path d="M19 16v6" />
                                         </svg>
-                                        Add Bibliographic reference
+                                        My Bibliographic references
                                     </a>
                             </li>
                             <li>
@@ -87,7 +87,7 @@
                                             <path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" />
                                             <path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" />
                                         </svg>
-                                        Suggestions
+                                        My Species Suggestionss
                                     </a>
                             </li>
 

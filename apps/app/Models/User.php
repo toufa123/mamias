@@ -43,13 +43,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable([
     'title',
-    'name',
     'email',
     'password',
     'first_name',
@@ -73,7 +73,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
      *
      * Automatically synchronizes the `name` attribute by concatenating first_name and last_name.
      * This observer runs whenever the user is being saved, ensuring the full name is always kept in sync.
-     * Falls back to 'John Doe' if both first and last names are empty.
+     * Falls back to email local-part if both first and last names are empty.
      */
     protected static function booted(): void
     {
@@ -86,7 +86,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
 
     protected function getComputedFullName(): string
     {
-        return trim("{$this->first_name} {$this->last_name}") ?: 'John Doe';
+        $fullName = trim("{$this->first_name} {$this->last_name}");
+
+        if ($fullName !== '') {
+            return $fullName;
+        }
+
+        return str($this->email)->before('@')->toString();
     }
 
     /**
@@ -113,7 +119,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
      * Get the display name for Filament admin panel.
      *
      * Returns the user's full name (first_name + last_name) as displayed in the Filament UI.
-     * Falls back to 'John Doe' if both first and last names are empty.
+     * Falls back to email local-part if both first and last names are empty.
      *
      * This implements the HasName contract required by Filament.
      *
@@ -141,7 +147,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'mamias';
+        return $panel->getId() === 'mamias' && $this->hasAnyRole(['super_admin', 'scientist']);
     }
 
     /**
@@ -162,5 +168,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
             'subregions' => 'array',
             'countries' => 'array',
         ];
+    }
+
+    public function literatures(): HasMany
+    {
+        return $this->hasMany(Literature::class, 'created_by');
     }
 }
