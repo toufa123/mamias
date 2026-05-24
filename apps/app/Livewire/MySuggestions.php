@@ -29,6 +29,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Icetalker\FilamentStepper\Forms\Components\Stepper;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -77,12 +78,12 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 Tabs::make()
                     ->columnSpanFull()
                     ->tabs([
-                        Tab::make('Bibliography')
-                            ->icon('tabler-book')
-                            ->schema($this->getDetailFields()),
                         Tab::make('Location')
                             ->icon('tabler-map-pin')
                             ->schema($this->getLocationAndMediaFields()),
+                        Tab::make('Bibliography')
+                            ->icon('tabler-book')
+                            ->schema($this->getDetailFields()),
                     ]),
             ])
             ->action(fn (array $data) => $this->handleSuggestionCreation($data));
@@ -97,31 +98,28 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 ->label('Scientific Name (search WoRMS)')
                 ->searchable()
                 ->required()
+                ->columnSpan(2)
                 ->getSearchResultsUsing(fn (string $search) => $this->searchWoRMS($search, $wormsService))
                 ->getOptionLabelUsing(fn (mixed $value) => $this->getWormsLabel($value, $wormsService))
                 ->live()
                 ->afterStateUpdated(fn (Set $set, mixed $state) => $this->populateTaxonData($set, $state, $wormsService))
                 ->hintIcon('tabler-info-circle', tooltip: 'Type at least 4 characters to search the WoRMS database'),
-            TextInput::make('suggested_scientific_name')
-                ->label('Scientific Name (confirmed)')
-                ->readOnly()
+            Hidden::make('suggested_scientific_name')
                 ->dehydrated(true)
                 ->rules([Rule::unique('taxas', 'scientificname')])
                 ->validationMessages(['unique' => 'This species already exists in the MAMIAS catalogue. Please contribute to the existing record instead.']),
             TextInput::make('authority')->label('Authority')->readOnly()->dehydrated(true),
-            TextInput::make('suggested_common_name')->label('Common Name (optional)')->maxLength(255),
+            Stepper::make('depth')
+                ->label('Depth (m)')
+                ->minValue(0)
+                ->maxValue(11000)
+                ->step(1),
         ];
     }
 
     private function getDetailFields(): array
     {
         return [
-            TextInput::make('depth')
-                ->label('Depth (optional)')
-                ->numeric()
-                ->minValue(0)
-                ->maxValue(11000)
-                ->suffix('m'),
             Textarea::make('bibliography')
                 ->label('Bibliography (optional)')
                 ->maxLength(1000)
@@ -133,6 +131,15 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 ->regex('/^10\.\d{4,9}\/[-._;()\/: A-Z0-9]+$/i')
                 ->validationMessages(['regex' => 'Enter a valid DOI (e.g. 10.1000/182).'])
                 ->columnSpanFull(),
+            FileUpload::make('document_paths')
+                ->label('Supporting Documents (optional)')
+                ->multiple()
+                ->acceptedFileTypes(['application/pdf', 'text/plain'])
+                ->disk('local')
+                ->directory('suggestions/documents')
+                ->visibility('private')
+                ->maxSize(10240)
+                ->columnSpanFull(),
         ];
     }
 
@@ -141,9 +148,10 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
         return [
             MapPicker::make('location')
                 ->label('Location (optional — click the map to set coordinates)')
-                ->height(320)
+                ->height(400)
                 ->center(36, 14)
                 ->zoom(5)
+                ->extraAttributes(['style' => 'min-height:400px'])
                 ->columnSpanFull(),
             FileUpload::make('photo_paths')
                 ->label('Photos (optional)')
@@ -153,15 +161,6 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 ->directory('suggestions/photos')
                 ->visibility('public')
                 ->maxSize(5120)
-                ->columnSpanFull(),
-            FileUpload::make('document_paths')
-                ->label('Supporting Documents (optional)')
-                ->multiple()
-                ->acceptedFileTypes(['application/pdf', 'text/plain'])
-                ->disk('local')
-                ->directory('suggestions/documents')
-                ->visibility('private')
-                ->maxSize(10240)
                 ->columnSpanFull(),
         ];
     }
