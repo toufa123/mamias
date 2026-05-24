@@ -5,11 +5,9 @@ namespace App\Filament\Imports;
 use App\Enums\Catalogue_Status;
 use App\Models\Taxon;
 use App\Services\TaxonNormalizer;
-use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
 
 class TaxonImporter extends Importer
@@ -35,15 +33,7 @@ class TaxonImporter extends Importer
             $existing = Taxon::where('scientificname', $scientificname)->first();
 
             if ($existing) {
-                $importId = $this->import->getKey();
-                $duplicates = Cache::get("taxon-import-duplicates-{$importId}", []);
-                $duplicates[] = [
-                    'scientificname' => $scientificname,
-                    'id' => $existing->getKey(),
-                ];
-                Cache::put("taxon-import-duplicates-{$importId}", $duplicates, now()->addHour());
-
-                throw new RowImportFailedException("Duplicate taxon: {$scientificname} (ID: {$existing->getKey()})");
+                return $existing;
             }
         }
 

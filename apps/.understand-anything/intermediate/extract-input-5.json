@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "app/Models/User.php",
+      "language": "php",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Notifications/NewLiteratureReferenceNotification.php",
+      "language": "php",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Observers/LiteratureObserver.php",
+      "language": "php",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/CommandRunPolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/IntroEventRecordPolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/LiteraturePolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/ResourceLockAuditPolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/ResourceLockPolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/RolePolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/TaxonPolicy.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Policies/UserPolicy.php",
+      "language": "php",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Providers/AppServiceProvider.php",
+      "language": "php",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Providers/Filament/MamiasPanelProvider.php",
+      "language": "php",
+      "sizeLines": 263,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/DoiMetadataService.php",
+      "language": "php",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/EasinService.php",
+      "language": "php",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/TaxonNormalizer.php",
+      "language": "php",
+      "sizeLines": 329,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/TaxonService.php",
+      "language": "php",
+      "sizeLines": 486,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/TaxonStateHelper.php",
+      "language": "php",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/WhatsAppService.php",
+      "language": "php",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Services/WormsService.php",
+      "language": "php",
+      "sizeLines": 311,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Support/FilamentAuthRedirect.php",
+      "language": "php",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "artisan",
+      "language": "unknown",
+      "sizeLines": 18,
+      "fileCategory": "config"
+    },
+    {
+      "path": "boost.json",
+      "language": "json",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "bootstrap/app.php",
+      "language": "php",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "bootstrap/providers.php",
+      "language": "php",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    }
+  ]
+}

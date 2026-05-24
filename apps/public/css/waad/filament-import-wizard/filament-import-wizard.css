@@ -375,7 +375,1734 @@
   color: var(--color-gray-400, #9ca3af);
 }
 
-/* Mapping Grid */
+/* ============================================
+   Reversed Mapping UI (Model-Field-First)
+   ============================================ */
+
+.fiwa-mapping-section-card {
+  background: var(--color-white, #ffffff);
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+:where(.dark) .fiwa-mapping-section-card {
+  background: var(--color-gray-800, #1f2937);
+  border-color: var(--color-gray-700, #374151);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+}
+
+.fiwa-section-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  background: var(--color-gray-50, #f9fafb);
+}
+
+:where(.dark) .fiwa-section-card-header {
+  background: var(--color-gray-750, #2a3444);
+  border-bottom-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-section-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-900, #111827);
+}
+
+:where(.dark) .fiwa-section-card-title {
+  color: var(--color-gray-100, #f3f4f6);
+}
+
+.fiwa-section-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-primary-500, #3b82f6);
+  flex-shrink: 0;
+}
+
+:where(.dark) .fiwa-section-icon {
+  color: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-section-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-primary-100, #dbeafe);
+  color: var(--color-primary-700, #1d4ed8);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+:where(.dark) .fiwa-section-badge {
+  background: var(--color-primary-900, #1e3a8a);
+  color: var(--color-primary-300, #93c5fd);
+}
+
+.fiwa-section-badge-purple {
+  background: var(--color-purple-100, #f3e8ff);
+  color: var(--color-purple-700, #7e22ce);
+}
+
+:where(.dark) .fiwa-section-badge-purple {
+  background: var(--color-purple-900, #581c87);
+  color: var(--color-purple-300, #d8b4fe);
+}
+
+.fiwa-section-badge-gray {
+  background: var(--color-gray-200, #e5e7eb);
+  color: var(--color-gray-600, #4b5563);
+}
+
+:where(.dark) .fiwa-section-badge-gray {
+  background: var(--color-gray-700, #374151);
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-section-card-subtitle {
+  font-size: 12px;
+  color: var(--color-gray-500, #6b7280);
+  margin-top: 4px;
+}
+
+:where(.dark) .fiwa-section-card-subtitle {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-reverse-mapping-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.fiwa-reverse-mapping-row {
+  display: grid;
+  grid-template-columns: 2fr 40px 4fr;
+  align-items: center;
+  gap: 0;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  transition: all 0.15s ease;
+}
+
+.fiwa-reverse-mapping-row:last-child {
+  border-bottom: none;
+}
+
+.fiwa-reverse-mapping-row:hover {
+  background: var(--color-gray-50, #f9fafb);
+}
+
+:where(.dark) .fiwa-reverse-mapping-row {
+  border-bottom-color: var(--color-gray-750, #2a3444);
+}
+
+:where(.dark) .fiwa-reverse-mapping-row:hover {
+  background: var(--color-gray-750, #2a3444);
+}
+
+.fiwa-row-mapped {
+  background: var(--color-success-50, #f0fdf4);
+}
+
+:where(.dark) .fiwa-row-mapped {
+  background: color-mix(in srgb, var(--color-success-900, #14532d) 15%, transparent);
+}
+
+.fiwa-row-mapped:hover {
+  background: var(--color-success-50, #dcfce7);
+}
+
+:where(.dark) .fiwa-row-mapped:hover {
+  background: color-mix(in srgb, var(--color-success-900, #14532d) 25%, transparent);
+}
+
+.fiwa-row-translatable {
+  border-left: 3px solid var(--color-primary-400, #60a5fa);
+}
+
+:where(.dark) .fiwa-row-translatable {
+  border-left-color: var(--color-primary-500, #3b82f6);
+}
+
+.fiwa-reverse-field-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fiwa-reverse-field-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fiwa-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-900, #111827);
+}
+
+:where(.dark) .fiwa-field-label {
+  color: var(--color-gray-100, #f3f4f6);
+}
+
+.fiwa-field-code {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-gray-500, #6b7280);
+  background: var(--color-gray-100, #f3f4f6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+:where(.dark) .fiwa-field-code {
+  color: var(--color-gray-400, #9ca3af);
+  background: var(--color-gray-700, #374151);
+}
+
+.fiwa-field-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-gray-500, #6b7280);
+  padding: 2px 8px;
+  background: var(--color-gray-100, #f3f4f6);
+  border-radius: 4px;
+  width: fit-content;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:where(.dark) .fiwa-field-preview {
+  background: var(--color-gray-700, #374151);
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-translatable-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: var(--color-primary-100, #dbeafe);
+  color: var(--color-primary-700, #1d4ed8);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+:where(.dark) .fiwa-translatable-badge {
+  background: var(--color-primary-900, #1e3a8a);
+  color: var(--color-primary-300, #93c5fd);
+}
+
+.fiwa-reverse-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fiwa-arrow-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-gray-300, #d1d5db);
+  transition: all 0.3s ease;
+}
+
+.fiwa-arrow-active {
+  color: var(--color-success-500, #22c55e);
+  transform: translateX(2px);
+}
+
+:where(.dark) .fiwa-arrow-icon {
+  color: var(--color-gray-600, #4b5563);
+}
+
+:where(.dark) .fiwa-arrow-active {
+  color: var(--color-success-400, #4ade80);
+}
+
+.fiwa-reverse-mapping-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fiwa-reverse-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fiwa-reverse-select {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1.5px solid var(--color-gray-300, #d1d5db);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--color-white, #ffffff);
+  color: var(--color-gray-700, #374151);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+.fiwa-reverse-select:hover {
+  border-color: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-reverse-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500, #3b82f6) 10%, transparent);
+}
+
+:where(.dark) .fiwa-reverse-select {
+  background-color: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-200, #e5e7eb);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+:where(.dark) .fiwa-reverse-select:hover {
+  border-color: var(--color-primary-400, #60a5fa);
+}
+
+:where(.dark) .fiwa-reverse-select:focus {
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-400, #60a5fa) 15%, transparent);
+}
+
+.fiwa-select-mapped {
+  border-color: var(--color-success-400, #4ade80) !important;
+  background-color: var(--color-success-50, #f0fdf4) !important;
+}
+
+:where(.dark) .fiwa-select-mapped {
+  border-color: var(--color-success-500, #22c55e) !important;
+  background-color: color-mix(in srgb, var(--color-success-900, #14532d) 30%, transparent) !important;
+}
+
+.fiwa-option-used {
+  color: var(--color-gray-400, #9ca3af);
+  font-style: italic;
+}
+
+.fiwa-locale-merge-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.fiwa-locale-merge-field {
+  padding: 6px 10px;
+  background: var(--color-gray-50, #f9fafb);
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 8px;
+  margin-top: 2px;
+}
+
+:where(.dark) .fiwa-locale-merge-field {
+  background: var(--color-gray-750, #2a3444);
+  border-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-merge-label-short {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-gray-500, #6b7280);
+  white-space: nowrap;
+}
+
+:where(.dark) .fiwa-merge-label-short {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-locale-input-compact {
+  width: 60px;
+  padding: 3px 6px;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--color-white, #ffffff);
+  color: var(--color-gray-700, #374151);
+  transition: all 0.15s ease;
+  text-transform: lowercase;
+}
+
+.fiwa-locale-input-compact:hover {
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-locale-input-compact:focus {
+  outline: none;
+  border-color: var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-500, #3b82f6) 10%, transparent);
+}
+
+:where(.dark) .fiwa-locale-input-compact {
+  background: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-200, #e5e7eb);
+}
+
+:where(.dark) .fiwa-locale-input-compact:focus {
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-400, #60a5fa) 15%, transparent);
+}
+
+/* Relations Grid */
+.fiwa-relations-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.fiwa-relation-row {
+  display: grid;
+  grid-template-columns: 2fr 40px 4fr;
+  align-items: start;
+  gap: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  transition: all 0.15s ease;
+}
+
+.fiwa-relation-row:last-child {
+  border-bottom: none;
+}
+
+.fiwa-relation-row:hover {
+  background: var(--color-gray-50, #f9fafb);
+}
+
+:where(.dark) .fiwa-relation-row {
+  border-bottom-color: var(--color-gray-750, #2a3444);
+}
+
+:where(.dark) .fiwa-relation-row:hover {
+  background: var(--color-gray-750, #2a3444);
+}
+
+.fiwa-rel-mapped {
+  background: color-mix(in srgb, var(--color-purple-50, #faf5ff) 50%, transparent);
+}
+
+:where(.dark) .fiwa-rel-mapped {
+  background: color-mix(in srgb, var(--color-purple-900, #581c87) 15%, transparent);
+}
+
+.fiwa-rel-mapped:hover {
+  background: var(--color-purple-50, #faf5ff);
+}
+
+:where(.dark) .fiwa-rel-mapped:hover {
+  background: color-mix(in srgb, var(--color-purple-900, #581c87) 25%, transparent);
+}
+
+.fiwa-relation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fiwa-relation-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fiwa-rel-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--color-purple-100, #f3e8ff);
+  color: var(--color-purple-700, #7e22ce);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+:where(.dark) .fiwa-rel-badge {
+  background: var(--color-purple-900, #581c87);
+  color: var(--color-purple-300, #d8b4fe);
+}
+
+.fiwa-rel-model {
+  font-size: 12px;
+  color: var(--color-gray-500, #6b7280);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:where(.dark) .fiwa-rel-model {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-rel-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fiwa-rel-detail-label {
+  font-size: 11px;
+  color: var(--color-gray-500, #6b7280);
+}
+
+:where(.dark) .fiwa-rel-detail-label {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-rel-detail-value {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-gray-600, #4b5563);
+  background: var(--color-gray-100, #f3f4f6);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+:where(.dark) .fiwa-rel-detail-value {
+  color: var(--color-gray-300, #d1d5db);
+  background: var(--color-gray-700, #374151);
+}
+
+.fiwa-rel-sub-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--color-gray-50, #f9fafb);
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+:where(.dark) .fiwa-rel-sub-controls {
+  background: var(--color-gray-750, #2a3444);
+  border-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-rel-sub-select {
+  padding: 6px 28px 6px 10px;
+  font-size: 12px;
+}
+
+.fiwa-rel-keys {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fiwa-rel-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: help;
+}
+
+.fiwa-rel-key-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  background: var(--color-warning-100, #fef3c7);
+  color: var(--color-warning-700, #b45309);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+:where(.dark) .fiwa-rel-key-badge {
+  background: var(--color-warning-900, #78350f);
+  color: var(--color-warning-300, #fbbf24);
+}
+
+.fiwa-rel-key-badge-pk {
+  background: var(--color-info-100, #dbeafe);
+  color: var(--color-info-700, #1d4ed8);
+}
+
+:where(.dark) .fiwa-rel-key-badge-pk {
+  background: var(--color-info-900, #1e3a8a);
+  color: var(--color-info-300, #93c5fd);
+}
+
+.fiwa-rel-key-value {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-gray-600, #4b5563);
+}
+
+:where(.dark) .fiwa-rel-key-value {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+/* Unmapped Section */
+.fiwa-unmapped-card {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.fiwa-unmapped-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 20px;
+}
+
+.fiwa-unmapped-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--color-gray-100, #f3f4f6);
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600, #4b5563);
+  transition: all 0.15s ease;
+}
+
+.fiwa-unmapped-chip:hover {
+  background: var(--color-gray-200, #e5e7eb);
+  border-color: var(--color-gray-300, #d1d5db);
+}
+
+:where(.dark) .fiwa-unmapped-chip {
+  background: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-300, #d1d5db);
+}
+
+:where(.dark) .fiwa-unmapped-chip:hover {
+  background: var(--color-gray-600, #4b5563);
+  border-color: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-empty-mapping {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  background: var(--color-gray-50, #f9fafb);
+  border: 1px dashed var(--color-gray-300, #d1d5db);
+  border-radius: 12px;
+}
+
+:where(.dark) .fiwa-empty-mapping {
+  background: var(--color-gray-800, #1f2937);
+  border-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-empty-mapping p {
+  color: var(--color-gray-700, #374151);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
+:where(.dark) .fiwa-empty-mapping p {
+  color: var(--color-gray-300, #d1d5db);
+}
+
+.fiwa-empty-mapping span {
+  color: var(--color-gray-500, #6b7280);
+  font-size: 12px;
+}
+
+:where(.dark) .fiwa-empty-mapping span {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-stat-fields .fiwa-stat-number {
+  color: var(--color-primary-600, #2563eb);
+}
+
+:where(.dark) .fiwa-stat-fields .fiwa-stat-number {
+  color: var(--color-primary-400, #60a5fa);
+}
+
+/* ============================================
+   Locale Merge First UI
+   ============================================ */
+
+.fiwa-merge-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 8px;
+  border-bottom: 1px dashed var(--color-gray-200, #e5e7eb);
+  margin-bottom: 8px;
+}
+
+:where(.dark) .fiwa-merge-toggle-row {
+  border-bottom-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-merge-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-primary-100, #dbeafe);
+  color: var(--color-primary-700, #1d4ed8);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+:where(.dark) .fiwa-merge-badge {
+  background: var(--color-primary-900, #1e3a8a);
+  color: var(--color-primary-300, #93c5fd);
+}
+
+.fiwa-locale-merge-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fiwa-locale-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fiwa-locale-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fiwa-locale-input-code {
+  width: 52px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+
+.fiwa-locale-sep {
+  font-size: 12px;
+  color: var(--color-gray-400, #9ca3af);
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+:where(.dark) .fiwa-locale-sep {
+  color: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-locale-header-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.fiwa-locale-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--color-gray-500, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.fiwa-locale-remove-btn:hover {
+  background: var(--color-danger-100, #fef2f2);
+  color: var(--color-danger-500, #ef4444);
+}
+
+:where(.dark) .fiwa-locale-remove-btn {
+  background: var(--color-gray-700, #374151);
+  color: var(--color-gray-400, #9ca3af);
+}
+
+:where(.dark) .fiwa-locale-remove-btn:hover {
+  background: color-mix(in srgb, var(--color-danger-900, #7f1d1d) 60%, transparent);
+  color: var(--color-danger-400, #f87171);
+}
+
+.fiwa-locale-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px dashed var(--color-gray-300, #d1d5db);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary-600, #2563eb);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: fit-content;
+}
+
+.fiwa-locale-add-btn:hover {
+  border-color: var(--color-primary-400, #60a5fa);
+  background: var(--color-primary-50, #eff6ff);
+}
+
+:where(.dark) .fiwa-locale-add-btn {
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-primary-400, #60a5fa);
+}
+
+:where(.dark) .fiwa-locale-add-btn:hover {
+  border-color: var(--color-primary-500, #3b82f6);
+  background: color-mix(in srgb, var(--color-primary-900, #1e3a8a) 40%, transparent);
+}
+
+/* Relation Field Search */
+.fiwa-rel-field-search {
+  position: relative;
+}
+
+.fiwa-rel-search-input {
+  width: 100%;
+  padding: 6px 12px 6px 32px;
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 8px;
+  font-size: 12px;
+  background: var(--color-white, #ffffff);
+  color: var(--color-gray-700, #374151);
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.fiwa-rel-search-input::placeholder {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-rel-search-input:hover {
+  border-color: var(--color-gray-300, #d1d5db);
+}
+
+.fiwa-rel-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-400, #60a5fa) 12%, transparent);
+}
+
+:where(.dark) .fiwa-rel-search-input {
+  background: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-200, #e5e7eb);
+}
+
+:where(.dark) .fiwa-rel-search-input::placeholder {
+  color: var(--color-gray-500, #6b7280);
+}
+
+:where(.dark) .fiwa-rel-search-input:focus {
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-400, #60a5fa) 18%, transparent);
+}
+
+.fiwa-rel-field-search::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%239ca3af'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z'/%3e%3c/svg%3e");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+:where(.dark) .fiwa-rel-field-search::before {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%236b7280'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z'/%3e%3c/svg%3e");
+}
+
+.fiwa-rel-merge-sub {
+  margin-top: 0;
+  margin-left: 58px;
+}
+
+/* Responsive for reversed mapping */
+@media (max-width: 768px) {
+  .fiwa-reverse-mapping-row,
+  .fiwa-relation-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .fiwa-reverse-arrow {
+    display: none;
+  }
+
+  .fiwa-reverse-field-info {
+    order: 0;
+  }
+
+  .fiwa-reverse-mapping-controls {
+    order: 1;
+  }
+
+  .fiwa-rel-sub-controls {
+    flex-direction: column;
+  }
+}
+
+/* ============================================
+   Modern Mapping UI (Legacy - kept for reference)
+   ============================================ */
+
+.fiwa-mapping-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.fiwa-mapping-header-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-gray-900, #111827);
+  margin: 0 0 4px;
+  letter-spacing: -0.025em;
+}
+
+:where(.dark) .fiwa-mapping-header-content h3 {
+  color: var(--color-gray-100, #f3f4f6);
+}
+
+.fiwa-mapping-header-content p {
+  font-size: 13px;
+  color: var(--color-gray-500, #6b7280);
+  margin: 0;
+}
+
+:where(.dark) .fiwa-mapping-header-content p {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-mapping-model-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--color-primary-50, #eff6ff);
+  border: 1px solid var(--color-primary-200, #bfdbfe);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+:where(.dark) .fiwa-mapping-model-chip {
+  background: var(--color-primary-900, #1e3a8a);
+  border-color: var(--color-primary-700, #1d4ed8);
+}
+
+.fiwa-chip-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary-600, #2563eb);
+}
+
+:where(.dark) .fiwa-chip-icon {
+  color: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-chip-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary-700, #1d4ed8);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:where(.dark) .fiwa-chip-text {
+  color: var(--color-primary-300, #93c5fd);
+}
+
+.fiwa-mapping-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--color-gray-50, #f9fafb);
+  border-radius: 10px;
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+:where(.dark) .fiwa-mapping-stats {
+  background: var(--color-gray-800, #1f2937);
+  border-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-mapping-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+}
+
+.fiwa-stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-gray-700, #374151);
+  line-height: 1.2;
+}
+
+:where(.dark) .fiwa-stat-number {
+  color: var(--color-gray-200, #e5e7eb);
+}
+
+.fiwa-stat-mapped .fiwa-stat-number {
+  color: var(--color-success-600, #16a34a);
+}
+
+:where(.dark) .fiwa-stat-mapped .fiwa-stat-number {
+  color: var(--color-success-400, #4ade80);
+}
+
+.fiwa-stat-skipped .fiwa-stat-number {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+:where(.dark) .fiwa-stat-skipped .fiwa-stat-number {
+  color: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-gray-500, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+:where(.dark) .fiwa-stat-label {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-mapping-table {
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 12px;
+  overflow: visible;
+  background: var(--color-white, #ffffff);
+}
+
+:where(.dark) .fiwa-mapping-table {
+  border-color: var(--color-gray-700, #374151);
+  background: var(--color-gray-800, #1f2937);
+}
+
+.fiwa-mapping-table-header {
+  display: grid;
+  grid-template-columns: 200px 120px 1fr;
+  background: var(--color-gray-50, #f9fafb);
+  border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+:where(.dark) .fiwa-mapping-table-header {
+  background: var(--color-gray-750, #2a3444);
+  border-bottom-color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-th {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gray-500, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+:where(.dark) .fiwa-th {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-th-source {
+  border-right: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+:where(.dark) .fiwa-th-source {
+  border-right-color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-th-type {
+  border-right: 1px solid var(--color-gray-200, #e5e7eb);
+  text-align: center;
+}
+
+:where(.dark) .fiwa-th-type {
+  border-right-color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-th-target {
+  border-right: none;
+}
+
+.fiwa-td-target {
+  border-right: none;
+}
+
+.fiwa-target-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.fiwa-locale-merge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.fiwa-locale-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 2px;
+}
+
+.fiwa-locale-toggle-input {
+  display: none;
+}
+
+.fiwa-locale-toggle-track {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--color-gray-300, #d1d5db);
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:where(.dark) .fiwa-locale-toggle-track {
+  background: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-locale-active .fiwa-locale-toggle-track {
+  background: var(--color-primary-500, #3b82f6);
+}
+
+:where(.dark) .fiwa-locale-active .fiwa-locale-toggle-track {
+  background: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-locale-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fiwa-locale-active .fiwa-locale-toggle-thumb {
+  transform: translateX(18px);
+}
+
+.fiwa-locale-toggle:hover .fiwa-locale-toggle-track {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500, #3b82f6) 15%, transparent);
+}
+
+.fiwa-locale-input {
+  width: 70px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--color-white, #ffffff);
+  color: var(--color-gray-700, #374151);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.fiwa-locale-input:hover {
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-locale-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-500, #3b82f6) 10%, transparent);
+}
+
+:where(.dark) .fiwa-locale-input {
+  background: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-200, #e5e7eb);
+}
+
+:where(.dark) .fiwa-locale-input:hover {
+  border-color: var(--color-gray-500, #6b7280);
+}
+
+:where(.dark) .fiwa-locale-input:focus {
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-400, #60a5fa) 15%, transparent);
+}
+
+.fiwa-merge-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600, #4b5563);
+  white-space: nowrap;
+  transition: color 0.15s ease;
+  position: relative;
+}
+
+:where(.dark) .fiwa-merge-label {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-locale-active ~ .fiwa-merge-label {
+  color: var(--color-primary-600, #2563eb);
+}
+
+:where(.dark) .fiwa-locale-active ~ .fiwa-merge-label {
+  color: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  vertical-align: middle;
+  color: var(--color-gray-400, #9ca3af);
+  cursor: help;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+.fiwa-help-icon:hover {
+  color: var(--color-primary-500, #3b82f6);
+}
+
+:where(.dark) .fiwa-help-icon {
+  color: var(--color-gray-500, #6b7280);
+}
+
+:where(.dark) .fiwa-help-icon:hover {
+  color: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-help-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.fiwa-help-icon::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  transform: translateY(4px);
+  padding: 8px 12px;
+  background: var(--color-gray-900, #111827);
+  color: white;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+  width: max-content;
+  max-width: 240px;
+  border-radius: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.fiwa-help-icon::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 8px;
+  transform: translateY(4px);
+  border: 5px solid transparent;
+  border-top-color: var(--color-gray-900, #111827);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.fiwa-help-icon:hover::after,
+.fiwa-help-icon:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.fiwa-target-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.fiwa-locale-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  padding: 2px;
+}
+
+.fiwa-locale-toggle-input {
+  display: none;
+}
+
+.fiwa-locale-toggle-track {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--color-gray-200, #e5e7eb);
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:where(.dark) .fiwa-locale-toggle-track {
+  background: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-locale-toggle-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.08);
+}
+
+:where(.dark) .fiwa-locale-toggle-track::before {
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.2);
+}
+
+.fiwa-locale-active .fiwa-locale-toggle-track {
+  background: var(--color-primary-500, #3b82f6);
+}
+
+:where(.dark) .fiwa-locale-active .fiwa-locale-toggle-track {
+  background: var(--color-primary-400, #60a5fa);
+}
+
+.fiwa-locale-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15), 0 1px 2px rgb(0 0 0 / 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fiwa-locale-active .fiwa-locale-toggle-thumb {
+  transform: translateX(16px);
+}
+
+.fiwa-locale-toggle:hover .fiwa-locale-toggle-track {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500, #3b82f6) 12%, transparent);
+}
+
+:where(.dark) .fiwa-locale-toggle:hover .fiwa-locale-toggle-track {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-400, #60a5fa) 15%, transparent);
+}
+
+.fiwa-mapping-table-row {
+  display: grid;
+  grid-template-columns: 200px 120px 1fr;
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  transition: all 0.15s ease;
+}
+
+.fiwa-mapping-table-row:last-child {
+  border-bottom: none;
+}
+
+.fiwa-mapping-table-row:hover {
+  background: var(--color-gray-50, #f9fafb);
+}
+
+:where(.dark) .fiwa-mapping-table-row {
+  border-bottom-color: var(--color-gray-700, #374151);
+}
+
+:where(.dark) .fiwa-mapping-table-row:hover {
+  background: var(--color-gray-750, #2a3444);
+}
+
+.fiwa-row-mapped {
+  background: var(--color-success-50, #f0fdf4);
+}
+
+:where(.dark) .fiwa-row-mapped {
+  background: color-mix(in srgb, var(--color-success-900, #14532d) 30%, transparent);
+}
+
+.fiwa-row-mapped:hover {
+  background: var(--color-success-50, #dcfce7);
+}
+
+:where(.dark) .fiwa-row-mapped:hover {
+  background: color-mix(in srgb, var(--color-success-900, #14532d) 40%, transparent);
+}
+
+.fiwa-row-relation {
+  background: var(--color-purple-50, #faf5ff);
+}
+
+:where(.dark) .fiwa-row-relation {
+  background: color-mix(in srgb, var(--color-purple-900, #581c87) 20%, transparent);
+}
+
+.fiwa-row-relation:hover {
+  background: var(--color-purple-50, #f3e8ff);
+}
+
+:where(.dark) .fiwa-row-relation:hover {
+  background: color-mix(in srgb, var(--color-purple-900, #581c87) 30%, transparent);
+}
+
+.fiwa-td {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.fiwa-td-source {
+  border-right: 1px solid var(--color-gray-100, #f3f4f6);
+}
+
+:where(.dark) .fiwa-td-source {
+  border-right-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-td-type {
+  border-right: 1px solid var(--color-gray-100, #f3f4f6);
+  justify-content: center;
+}
+
+:where(.dark) .fiwa-td-type {
+  border-right-color: var(--color-gray-700, #374151);
+}
+
+.fiwa-td-locale {
+  border-right: none !important;
+  justify-content: center;
+}
+
+.fiwa-locale-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fiwa-locale-cell .fiwa-locale-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-primary-600, #2563eb);
+  cursor: pointer;
+}
+
+.fiwa-locale-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-locale-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+:where(.dark) .fiwa-locale-icon {
+  color: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-source-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fiwa-source-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--color-gray-400, #9ca3af);
+  transition: all 0.15s ease;
+}
+
+.fiwa-source-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+:where(.dark) .fiwa-source-icon {
+  background: var(--color-gray-700, #374151);
+  color: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-icon-mapped {
+  background: var(--color-success-100, #dcfce7);
+  color: var(--color-success-600, #16a34a);
+}
+
+:where(.dark) .fiwa-icon-mapped {
+  background: var(--color-success-900, #14532d);
+  color: var(--color-success-400, #4ade80);
+}
+
+.fiwa-source-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-700, #374151);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(.dark) .fiwa-source-name {
+  color: var(--color-gray-200, #e5e7eb);
+}
+
+.fiwa-type-select {
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--color-white, #ffffff);
+  color: var(--color-gray-700, #374151);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 6px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+.fiwa-type-select:hover {
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-type-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500, #3b82f6) 10%, transparent);
+}
+
+:where(.dark) .fiwa-type-select {
+  background-color: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-200, #e5e7eb);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+:where(.dark) .fiwa-type-select:hover {
+  border-color: var(--color-gray-500, #6b7280);
+}
+
+:where(.dark) .fiwa-type-select:focus {
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-400, #60a5fa) 15%, transparent);
+}
+
+.fiwa-target-select {
+  width: 100%;
+  padding: 7px 28px 7px 12px;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--color-white, #ffffff);
+  color: var(--color-gray-700, #374151);
+  transition: all 0.15s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+.fiwa-target-select:hover {
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+.fiwa-target-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500, #3b82f6) 10%, transparent);
+}
+
+:where(.dark) .fiwa-target-select {
+  background-color: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+  color: var(--color-gray-200, #e5e7eb);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+:where(.dark) .fiwa-target-select:hover {
+  border-color: var(--color-gray-500, #6b7280);
+}
+
+:where(.dark) .fiwa-target-select:focus {
+  border-color: var(--color-primary-400, #60a5fa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-400, #60a5fa) 15%, transparent);
+}
+
+.fiwa-relation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.fiwa-relation-details {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fiwa-relation-locale-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--color-gray-50, #f9fafb);
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+:where(.dark) .fiwa-relation-locale-row {
+  background: var(--color-gray-700, #374151);
+  border-color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-detail-select {
+  flex: 1;
+  min-width: 120px;
+  max-width: 180px;
+  padding: 6px 24px 6px 10px;
+  font-size: 12px;
+  border-color: var(--color-gray-200, #e5e7eb);
+  background-color: var(--color-gray-50, #f9fafb);
+}
+
+:where(.dark) .fiwa-detail-select {
+  background-color: var(--color-gray-600, #4b5563);
+  border-color: var(--color-gray-500, #6b7280);
+}
+
+.fiwa-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.fiwa-empty-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-gray-300, #d1d5db);
+  margin-bottom: 12px;
+}
+
+:where(.dark) .fiwa-empty-icon {
+  color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-empty-state p {
+  color: var(--color-gray-500, #6b7280);
+  font-size: 14px;
+  margin: 0;
+}
+
+:where(.dark) .fiwa-empty-state p {
+  color: var(--color-gray-400, #9ca3af);
+}
+
+/* Mapping Grid (legacy) */
+.fiwa-mapping-section {
+  margin-bottom: 24px;
+}
+
+.fiwa-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-700, #374151);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+:where(.dark) .fiwa-section-title {
+  color: var(--color-gray-300, #d1d5db);
+  border-bottom-color: var(--color-gray-700, #374151);
+}
+
 .fiwa-mapping-grid {
   display: flex;
   flex-direction: column;
@@ -407,6 +2134,51 @@
 :where(.dark) .fiwa-mapping-row:hover {
   background: var(--color-gray-750, #2a3444);
   border-color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-target-field {
+  min-width: 140px;
+  max-width: 200px;
+  font-weight: 500;
+  color: var(--color-gray-900, #111827);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+:where(.dark) .fiwa-target-field {
+  color: var(--color-gray-100, #f3f4f6);
+}
+
+.fiwa-field-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--color-success-100, #dcfce7);
+  color: var(--color-success-700, #15803d);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(.dark) .fiwa-field-badge {
+  background: var(--color-success-900, #14532d);
+  color: var(--color-success-300, #86efac);
+}
+
+.fiwa-relation-badge {
+  background: var(--color-purple-100, #f3e8ff);
+  color: var(--color-purple-700, #7e22ce);
+}
+
+:where(.dark) .fiwa-relation-badge {
+  background: var(--color-purple-900, #581c87);
+  color: var(--color-purple-300, #d8b4fe);
 }
 
 .fiwa-source-column {
@@ -759,14 +2531,14 @@
 .fiwa-completed {
   text-align: center;
   padding: 32px;
+  animation: fiwaCardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .fiwa-completed-icon {
   width: 64px;
   height: 64px;
-  margin: 0 auto 16px;
-  color: var(--color-success-500, #22c55e);
-  animation: successPulse 0.6s ease;
+  margin: 0 auto 12px;
+  animation: fiwaIconPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both 0.15s;
 }
 
 .fiwa-completed-icon svg {
@@ -774,15 +2546,111 @@
   height: 100%;
 }
 
-.fiwa-completed h4 {
+/* Animated SVG result icon */
+.fiwa-result-svg {
+  display: block;
+}
+
+.fiwa-result-svg--success {
+  color: var(--color-success-500, #22c55e);
+}
+
+:where(.dark) .fiwa-result-svg--success {
+  color: var(--color-success-400, #4ade80);
+}
+
+.fiwa-result-svg--warn {
+  color: var(--color-warning-500, #f59e0b);
+}
+
+:where(.dark) .fiwa-result-svg--warn {
+  color: var(--color-warning-400, #fbbf24);
+}
+
+.fiwa-result-circle {
+  opacity: 0;
+  transform: scale(0);
+  transform-origin: center;
+  animation: fiwaCircleGrow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.1s;
+}
+
+.fiwa-result-mark {
+  animation: fiwaMarkDraw 0.35s ease-out forwards 0.35s;
+}
+
+.fiwa-result-svg--success .fiwa-result-mark {
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+}
+
+.fiwa-result-svg--warn .fiwa-result-mark {
+  stroke-dasharray: 7;
+  stroke-dashoffset: 7;
+}
+
+@keyframes fiwaCardEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fiwaIconPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fiwaCircleGrow {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fiwaMarkDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fiwaStatSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fiwa-completed-heading {
   font-size: 20px;
   font-weight: 600;
   color: var(--color-gray-900, #111827);
   margin: 0 0 24px;
   letter-spacing: -0.025em;
+  animation: fiwaStatSlideUp 0.4s ease both 0.45s;
 }
 
-:where(.dark) .fiwa-completed h4 {
+:where(.dark) .fiwa-completed-heading {
   color: var(--color-gray-100, #f3f4f6);
 }
 
@@ -794,6 +2662,14 @@
 
 .fiwa-stat {
   text-align: center;
+}
+
+.fiwa-stat-animated {
+  animation: fiwaStatSlideUp 0.4s ease both 0.6s;
+}
+
+.fiwa-stat-delay-1 {
+  animation-delay: 0.7s;
 }
 
 .fiwa-stat-value {
@@ -816,6 +2692,25 @@
 
 .fiwa-stat-error .fiwa-stat-value {
   color: var(--color-danger-500, #ef4444);
+}
+
+/* Completed with errors - subtle difference for the warning icon */
+.fiwa-completed-with-errors .fiwa-result-circle {
+  animation-name: fiwaCircleGrowWarn;
+}
+
+@keyframes fiwaCircleGrowWarn {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-30deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 /* Failed State */
@@ -1029,6 +2924,38 @@
   color: var(--color-gray-400, #9ca3af);
 }
 
+.fiwa-unmapped-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--color-gray-300, #d1d5db);
+}
+
+:where(.dark) .fiwa-unmapped-section {
+  border-top-color: var(--color-gray-600, #4b5563);
+}
+
+.fiwa-unmapped-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fiwa-unmapped-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: var(--color-gray-200, #e5e7eb);
+  color: var(--color-gray-600, #4b5563);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+:where(.dark) .fiwa-unmapped-badge {
+  background: var(--color-gray-700, #374151);
+  color: var(--color-gray-400, #9ca3af);
+}
+
 /* No Headers Message */
 .fiwa-no-headers {
   text-align: center;
@@ -1102,6 +3029,58 @@
   .fiwa-actions .fiwa-btn-primary,
   .fiwa-actions .fiwa-btn-secondary {
     width: 100%;
+  }
+
+  .fiwa-mapping-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fiwa-mapping-stats {
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .fiwa-mapping-table-header,
+  .fiwa-mapping-table-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .fiwa-mapping-table-header {
+    display: none;
+  }
+
+  .fiwa-td {
+    border-right: none !important;
+    padding: 8px 12px;
+  }
+
+  .fiwa-td-source {
+    background: var(--color-gray-50, #f9fafb);
+    border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  }
+
+  :where(.dark) .fiwa-td-source {
+    background: var(--color-gray-750, #2a3444);
+    border-bottom-color: var(--color-gray-700, #374151);
+  }
+
+  .fiwa-td-type {
+    justify-content: flex-start;
+    border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  }
+
+  :where(.dark) .fiwa-td-type {
+    border-bottom-color: var(--color-gray-700, #374151);
+  }
+
+  .fiwa-relation-details {
+    flex-direction: column;
+  }
+
+  .fiwa-detail-select {
+    max-width: 100%;
   }
 
   .fiwa-mapping-row {

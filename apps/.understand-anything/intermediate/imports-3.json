@@ -1,0 +1,120 @@
+{
+  "app/Filament/Pages/Auth/Register.php": [
+    "app/Filament/Forms/Components/Honeypot.php"
+  ],
+  "app/Filament/Pages/BackupManager.php": [],
+  "app/Filament/Pages/Dashboard.php": [
+    "app/Filament/Widgets/CatalogueEnvironmentChart.php",
+    "app/Filament/Widgets/CatalogueStatsWidget.php",
+    "app/Filament/Widgets/PhylumByKingdomChart.php",
+    "app/Filament/Widgets/SpeciesByKingdomChart.php",
+    "app/Filament/Widgets/SpeciesByPhylumChart.php"
+  ],
+  "app/Filament/Pages/HealthCheckResults.php": [],
+  "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php": [
+    "app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php",
+    "app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php",
+    "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+    "app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php",
+    "app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php",
+    "app/Models/IntroEventRecord.php"
+  ],
+  "app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php": [
+    "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php"
+  ],
+  "app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php": [
+    "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php"
+  ],
+  "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php": [
+    "app/Filament/Imports/IntroEventRecordImporter.php",
+    "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php"
+  ],
+  "app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php": [
+    "app/Enums/CbdPathwayCategory.php",
+    "app/Enums/CbdPathwaySubcategory.php",
+    "app/Enums/DataQuality.php",
+    "app/Enums/EstablishmentStatus.php",
+    "app/Enums/NisStatus.php",
+    "app/Enums/PathwayType.php",
+    "app/Enums/Subregion.php"
+  ],
+  "app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php": [
+    "app/Models/IntroEventRecord.php"
+  ],
+  "app/Filament/Resources/Literatures/LiteratureResource.php": [
+    "app/Filament/Resources/Literatures/Pages/CreateLiterature.php",
+    "app/Filament/Resources/Literatures/Pages/EditLiterature.php",
+    "app/Filament/Resources/Literatures/Pages/ListLiteratures.php",
+    "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+    "app/Filament/Resources/Literatures/Tables/LiteraturesTable.php",
+    "app/Models/Literature.php"
+  ],
+  "app/Filament/Resources/Literatures/Pages/CreateLiterature.php": [
+    "app/Filament/Resources/Literatures/LiteratureResource.php"
+  ],
+  "app/Filament/Resources/Literatures/Pages/EditLiterature.php": [
+    "app/Filament/Resources/Literatures/LiteratureResource.php"
+  ],
+  "app/Filament/Resources/Literatures/Pages/ListLiteratures.php": [
+    "app/Filament/Resources/Literatures/LiteratureResource.php",
+    "app/Models/Literature.php"
+  ],
+  "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php": [
+    "app/Enums/LiteratureType.php",
+    "app/Models/Literature.php",
+    "app/Services/DoiMetadataService.php"
+  ],
+  "app/Filament/Resources/Literatures/Tables/LiteraturesTable.php": [
+    "app/Enums/LiteratureStatus.php",
+    "app/Models/Literature.php"
+  ],
+  "app/Filament/Resources/Taxons/Pages/CreateTaxon.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Filament/Resources/Taxons/TaxonResource.php"
+  ],
+  "app/Filament/Resources/Taxons/Pages/EditTaxon.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Filament/Resources/Taxons/TaxonResource.php"
+  ],
+  "app/Filament/Resources/Taxons/Pages/ListTaxons.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Filament/Imports/TaxonImporter.php",
+    "app/Filament/Resources/Taxons/TaxonResource.php",
+    "app/Filament/Widgets/WormsFetchProgressWidget.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Resources/Taxons/Schemas/TaxonForm.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Environment.php",
+    "app/Enums/Worms_Status.php",
+    "app/Services/EasinService.php",
+    "app/Services/TaxonService.php",
+    "app/Services/WormsService.php"
+  ],
+  "app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php": [
+    "app/Enums/Catalogue_Status.php"
+  ],
+  "app/Filament/Resources/Taxons/Tables/TaxonTable.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Environment.php",
+    "app/Jobs/FetchEasinIdsJob.php",
+    "app/Jobs/FetchTaxaFromWormsJob.php",
+    "app/Models/Taxon.php",
+    "app/Models/User.php"
+  ],
+  "app/Filament/Resources/Taxons/TaxonResource.php": [
+    "app/Filament/Resources/Taxons/Pages/CreateTaxon.php",
+    "app/Filament/Resources/Taxons/Pages/EditTaxon.php",
+    "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+    "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+    "app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php",
+    "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Resources/Users/Pages/CreateUser.php": [
+    "app/Filament/Resources/Users/UserResource.php"
+  ],
+  "app/Filament/Resources/Users/Pages/EditUser.php": [
+    "app/Filament/Resources/Users/UserResource.php"
+  ]
+}

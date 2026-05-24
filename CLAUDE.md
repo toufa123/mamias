@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Tech Stack
+
+- Laravel + Filament v5 (use v5 API: check class namespaces like `Filament\Resources\Pages\Concerns\Tab`, avoid deprecated methods like `TextColumn::italic`, `Action::columns`, `minCharactersToSearch`)
+- Livewire (do NOT use HtmlString for JS formatters - it cannot be serialized)
+- Tailwind + daisyUI with Vite (ensure `@vite` directive is in layouts; be cautious with Vite 8/Rolldown + daisyUI purging)
+- Docker-based dev environment (Pint, psql, and other tools run inside containers)
+
+## Working Style
+
+- Prefer direct action on the specified file over broad codebase exploration via the Agent tool unless I explicitly ask for an audit.
+- When I name a file or feature, edit it directly; don't spawn exploratory sub-agents first.
+- Skip planning phases for small, well-scoped changes — just implement.
+
+## Environment
+
+- DB_HOST should match the Docker service name (not 127.0.0.1) when running inside containers — fix root config issues before falling back to reseeding.
+- Pint, psql, artisan all run via Docker — if Docker is unavailable, surface that immediately rather than retrying.
+- After `composer require` restarts containers, volume mounts may need to be re-verified.
+
 ## Repository layout
 
 - `apps/` — Laravel application (all backend/frontend code lives here)

@@ -5,9 +5,9 @@
 
 @section('content')
     {{-- Carousel --}}
-    <div class="mamias-carousel-wrap">
+    <div class="mamias-carousel-wrap pt-0 pb-4">
 
-        <div class="mamias-carousel rounded-xl overflow-hidden" id="mamiasCarousel">
+        <div class="mamias-carousel overflow-hidden" id="mamiasCarousel">
             <div class="mamias-carousel-track" id="mamiasTrack">
                 <div class="mamias-slide" style="background: linear-gradient(135deg, #003d61 0%, #005f98 100%);">
                     <div class="mamias-slide-inner">
@@ -100,7 +100,7 @@
                 </div>
 
                 {{-- Card 3 — Smart Team Sync (featured/active) --}}
-                <div class="group relative overflow-hidden rounded-2xl border-2 border-[#4cafbf] bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-lg">
+                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                     <div class="flex items-start justify-between mb-6">
                         <div class="size-12 rounded-full flex items-center justify-center bg-[#4cafbf]/10">
                             <i class="ki-filled ki-people text-xl text-[#018d9a]"></i>
@@ -112,7 +112,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 mb-2">Smart Team Sync</h3>
                     <p class="text-sm text-gray-500 leading-relaxed">Let AI handle the chaos of calendars and meetings — Smart Team Sync coordinates, schedules, and adapts to your team's needs, so you can focus on what matters most.</p>
-                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98]"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
 
                 {{-- Card 4 — Predictive Insights --}}
@@ -148,10 +148,17 @@
                     </p>
                     <div class="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
                         @auth
-                            <a href="{{ route('filament.mamias.pages.dashboard') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg" style="background: linear-gradient(135deg, #018d9a, #005f98);">
-                                <i class="ki-filled ki-element-11 text-base"></i>
-                                Go to Dashboard
-                            </a>
+                            @if(auth()->user()->hasAnyRole(['super_admin', 'scientist', 'admin']))
+                                <a href="{{ route('filament.mamias.pages.dashboard') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg" style="background: linear-gradient(135deg, #018d9a, #005f98);">
+                                    <i class="ki-filled ki-element-11 text-base"></i>
+                                    Go to Admin Area
+                                </a>
+                            @else
+                                <a href="{{ route('filament.mamias.pages.dashboard') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg" style="background: linear-gradient(135deg, #018d9a, #005f98);">
+                                    <i class="ki-filled ki-element-11 text-base"></i>
+                                    Make a species report
+                                </a>
+                            @endif
                         @else
                             <a href="{{ route('filament.mamias.auth.register') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg" style="background: linear-gradient(135deg, #018d9a, #005f98);">
                                 <i class="ki-filled ki-user-plus text-base"></i>

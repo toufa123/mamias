@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
 use App\Enums\Worms_Status;
-use App\Models\Taxon;
 
 class TaxonStateHelper
 {

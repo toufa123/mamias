@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 409,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "composer.json",
+      "language": "json",
+      "sizeLines": 136,
+      "fileCategory": "config"
+    },
+    {
+      "path": "config/action-overflow.php",
+      "language": "php",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/app.php",
+      "language": "php",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/auth.php",
+      "language": "php",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/backup.php",
+      "language": "php",
+      "sizeLines": 383,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/breadcrumbs.php",
+      "language": "php",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/cache.php",
+      "language": "php",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/database.php",
+      "language": "php",
+      "sizeLines": 184,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/debugbar.php",
+      "language": "php",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/dependency-manager.php",
+      "language": "php",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament-alert-box.php",
+      "language": "php",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament-clear-cache.php",
+      "language": "php",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament-countries.php",
+      "language": "php",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament-easy-footer.php",
+      "language": "php",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament-import-wizard.php",
+      "language": "php",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament-shield.php",
+      "language": "php",
+      "sizeLines": 268,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filament.php",
+      "language": "php",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/filesystems.php",
+      "language": "php",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/laravel-cookie-consent.php",
+      "language": "php",
+      "sizeLines": 265,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/logging.php",
+      "language": "php",
+      "sizeLines": 132,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/magellan.php",
+      "language": "php",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/mail.php",
+      "language": "php",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/permission.php",
+      "language": "php",
+      "sizeLines": 202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/queue.php",
+      "language": "php",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    }
+  ]
+}

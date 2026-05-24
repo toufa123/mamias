@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "config/schema-sentinel.php",
+      "language": "php",
+      "sizeLines": 136,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/services.php",
+      "language": "php",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "config/session.php",
+      "language": "php",
+      "sizeLines": 233,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/factories/LiteratureFactory.php",
+      "language": "php",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/factories/TaxonFactory.php",
+      "language": "php",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/factories/UserFactory.php",
+      "language": "php",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/0001_01_01_000000_create_users_table.php",
+      "language": "php",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/0001_01_01_000001_create_cache_table.php",
+      "language": "php",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/0001_01_01_000002_create_jobs_table.php",
+      "language": "php",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2022_12_14_083707_create_settings_table.php",
+      "language": "php",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_04_24_000000_add_profile_fields_to_users_table.php",
+      "language": "php",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_04_24_190713_create_notifications_table.php",
+      "language": "php",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_04_24_212314_create_permission_tables.php",
+      "language": "php",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_04_24_221444_create_health_tables.php",
+      "language": "php",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_04_24_222509_create_command_runs_table.php",
+      "language": "php",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_01_103946_enable_postgis_extension.php",
+      "language": "php",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_01_181808_create_taxas_table.php",
+      "language": "php",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_01_211656_1_create_import_sessions_table.php",
+      "language": "php",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_01_213323_create_literatures_table.php",
+      "language": "php",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_07_154253_create_resource_lock_table.php",
+      "language": "php",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_07_154254_create_resource_lock_audit_table.php",
+      "language": "php",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_07_155946_add_proposed_accepted_name_to_taxas_table.php",
+      "language": "php",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_08_144619_create_imports_table.php",
+      "language": "php",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_08_144620_create_exports_table.php",
+      "language": "php",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_08_144621_create_failed_import_rows_table.php",
+      "language": "php",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    }
+  ]
+}

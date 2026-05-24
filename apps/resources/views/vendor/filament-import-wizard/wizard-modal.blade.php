@@ -1,5 +1,5 @@
 <div>
-    @livewire(\Waad\FilamentImportWizard\Livewire\ImportWizard::class, [
+    @livewire(\App\Livewire\ImportWizard::class, [
         'modelClass' => $modelClass ?? '',
         'chunkSize' => $chunkSize ?? 1000,
         'enableUpsert' => $enableUpsert ?? true,

@@ -32,36 +32,45 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
     {
         return $table
             ->query(Literature::forUser(auth()->user()))
-            ->columns([
-                LiteraturesTable::getCodeColumn(),
-                LiteraturesTable::getShortRefColumn(),
-                LiteraturesTable::getDoiColumn(),
-                LiteraturesTable::getTypeColumn(),
-                LiteraturesTable::getStatusColumn(),
-                LiteraturesTable::getFileColumn(),
-                TextColumn::make('created_at')
-                    ->label('Submitted')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                SelectFilter::make('status')
-                    ->options(LiteratureStatus::class),
-                SelectFilter::make('type')
-                    ->options(LiteratureType::class),
-            ])
+            ->columns($this->getTableColumns())
+            ->filters($this->getTableFilters())
+            ->persistFiltersInSession(false)
+            ->persistColumnSearchesInSession(false)
+            ->persistSortInSession(false)
             ->actions([
-                ViewAction::make()
-                    ->form([
-                        LiteratureForm::getBibliographicReferenceSection(),
-                    ]),
+                ViewAction::make('view')
+                    ->form([LiteratureForm::getBibliographicReferenceSection()]),
             ])
-            ->recordAction(ViewAction::class)
+            ->recordAction('view')
             ->headerActions([
                 $this->createAction(),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    private function getTableColumns(): array
+    {
+        return [
+            LiteraturesTable::getCodeColumn(),
+            LiteraturesTable::getShortRefColumn(),
+            LiteraturesTable::getDoiColumn(),
+            LiteraturesTable::getTypeColumn(),
+            LiteraturesTable::getStatusColumn(),
+            LiteraturesTable::getFileColumn(),
+            TextColumn::make('created_at')
+                ->label('Submitted')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+        ];
+    }
+
+    private function getTableFilters(): array
+    {
+        return [
+            SelectFilter::make('status')->options(LiteratureStatus::class),
+            SelectFilter::make('type')->options(LiteratureType::class),
+        ];
     }
 
     public function createAction(): Action
@@ -74,13 +83,12 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
             ->button()
             ->color('primary')
             ->size('lg')
-            ->form([
-                LiteratureForm::getBibliographicReferenceSection(),
-            ])
+            ->form([LiteratureForm::getBibliographicReferenceSection()])
             ->action(function (array $data) {
-                $data['status'] = LiteratureStatus::PENDING;
-
-                Literature::create($data);
+                Literature::create([
+                    ...$data,
+                    'status' => LiteratureStatus::PENDING,
+                ]);
 
                 Notification::make()
                     ->title('Reference submitted')
@@ -92,8 +100,6 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
 
     public function render(): View
     {
-        return view('livewire.my-references')
-            ->extends('app')
-            ->section('content');
+        return view('livewire.my-references')->extends('app')->section('content');
     }
 }

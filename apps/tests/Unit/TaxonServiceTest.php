@@ -3,19 +3,21 @@
 declare(strict_types=1);
 
 use App\Enums\Catalogue_Status;
-use App\Enums\Worms_Status;
 use App\Enums\Environment;
+use App\Enums\Worms_Status;
 use App\Models\Taxon;
 use App\Services\TaxonNormalizer;
 use App\Services\TaxonService;
+use App\Services\TaxonStateHelper;
 use App\Services\WormsService;
+use Illuminate\Database\Eloquent\Collection;
 use Tests\TestCase;
 
 uses(TestCase::class);
 
 beforeEach(function () {
-    $this->normalizer = new TaxonNormalizer();
-    $this->stateHelper = new \App\Services\TaxonStateHelper($this->normalizer);
+    $this->normalizer = new TaxonNormalizer;
+    $this->stateHelper = new TaxonStateHelper($this->normalizer);
     $this->service = new TaxonService(
         $this->createMock(WormsService::class),
         $this->normalizer,
@@ -162,7 +164,7 @@ it('removes the proposed accepted name line from notes', function () {
 });
 
 it('returns null if notes only contained the proposed name line', function () {
-    $notes = "Proposed accepted name from WoRMS: Caulerpa cylindracea Sonder";
+    $notes = 'Proposed accepted name from WoRMS: Caulerpa cylindracea Sonder';
     expect($this->service->removeOldProposedAcceptedNameLine($notes))->toBeNull();
 });
 
@@ -358,7 +360,10 @@ it('sets catalogue_status to no_data_from_worms when syncWithWorms fails to find
         $setCalls[$key] = $value;
     };
     $get = function ($key) {
-        if ($key === 'scientificname') return 'NonExistentName';
+        if ($key === 'scientificname') {
+            return 'NonExistentName';
+        }
+
         return null;
     };
 
@@ -452,7 +457,7 @@ it('maps new WoRMS statuses to checked_not_accepted catalogue_status', function 
 ]);
 
 it('sets catalogue_status to no_data_from_worms in refreshFromWorms when record not found', function () {
-    $scientificName = 'NonExistent' . uniqid('', true);
+    $scientificName = 'NonExistent'.uniqid('', true);
     $taxon = $this->createPartialMock(Taxon::class, ['save']);
     $taxon->scientificname = $scientificName;
 
@@ -467,7 +472,7 @@ it('sets catalogue_status to no_data_from_worms in refreshFromWorms when record 
 
     $wormsService->method('getRecordByName')->willReturn([]);
 
-    $result = $this->service->refreshFromWorms(new \Illuminate\Database\Eloquent\Collection([$taxon]));
+    $result = $this->service->refreshFromWorms(new Collection([$taxon]));
 
     expect($result['not_found'])->toBe(1)
         ->and($taxon->catalogue_status)->toBe(Catalogue_Status::no_data_from_worms);
@@ -479,8 +484,13 @@ it('applies a matched taxon name and updates form state', function () {
         $setCalls[$key] = $value;
     };
     $get = function ($key) {
-        if ($key === 'scientificname') return 'Aricidea bulboza';
-        if ($key === 'notes') return 'Existing note';
+        if ($key === 'scientificname') {
+            return 'Aricidea bulboza';
+        }
+        if ($key === 'notes') {
+            return 'Existing note';
+        }
+
         return null;
     };
 
@@ -492,18 +502,18 @@ it('applies a matched taxon name and updates form state', function () {
 
     $wormsService->method('matchTaxa')->willReturn([
         [
-            ['scientificname' => 'Aricidea bulbosa', 'match_type' => 'phonetic']
-        ]
+            ['scientificname' => 'Aricidea bulbosa', 'match_type' => 'phonetic'],
+        ],
     ]);
 
     // We can't easily test the Notification::send() part without mocking the facade,
     // but we can verify the state update logic if we refactor it or just trust the manual check.
     // Given the current implementation, tryTaxonMatch executes the notification which contains an action.
     // In unit tests, we don't trigger notification actions.
-    
+
     // However, we can test that tryTaxonMatch at least calls matchTaxa.
     $this->service->tryTaxonMatch($get, $set);
-    
+
     // If it found a match, it sends a notification.
     // To thoroughly test the APPLY logic, we'd need to expose the closure or move it to a method.
     expect(true)->toBeTrue();
@@ -512,7 +522,7 @@ it('applies a matched taxon name and updates form state', function () {
 // sanitizeEncodingArtifacts
 
 it('replaces ÿ with space in scientific names', function () {
-    $result = $this->normalizer->sanitizeEncodingArtifacts("Caulerpaÿcylindracea");
+    $result = $this->normalizer->sanitizeEncodingArtifacts('Caulerpaÿcylindracea');
     expect($result)->toBe('Caulerpa cylindracea');
 });
 
@@ -527,7 +537,7 @@ it('replaces non-breaking spaces with regular spaces', function () {
 });
 
 it('collapses multiple spaces from artifact replacement', function () {
-    $result = $this->normalizer->sanitizeEncodingArtifacts("Caulerpa ÿ  cylindracea");
+    $result = $this->normalizer->sanitizeEncodingArtifacts('Caulerpa ÿ  cylindracea');
     expect($result)->toBe('Caulerpa cylindracea');
 });
 

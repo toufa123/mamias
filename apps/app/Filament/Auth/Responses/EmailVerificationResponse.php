@@ -12,9 +12,8 @@ use Livewire\Features\SupportRedirects\Redirector;
 
 class EmailVerificationResponse implements EmailVerificationResponseContract
 {
-    public function toResponse(mixed $request): RedirectResponse | Redirector
+    public function toResponse(mixed $request): RedirectResponse|Redirector
     {
         return redirect()->to(FilamentAuthRedirect::for($request->user(Filament::getAuthGuard())));
     }
 }
-

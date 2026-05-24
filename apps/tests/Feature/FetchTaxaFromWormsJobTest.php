@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Catalogue_Status;
 use App\Jobs\FetchTaxaFromWormsJob;
 use App\Models\Taxon;
 use App\Models\User;
@@ -57,7 +58,7 @@ it('updates taxon catalogue status to no_data when worms returns nothing', funct
     app()->call([$job, 'handle']);
 
     $taxon->refresh();
-    expect($taxon->catalogue_status)->toBe(\App\Enums\Catalogue_Status::no_data_from_worms);
+    expect($taxon->catalogue_status)->toBe(Catalogue_Status::no_data_from_worms);
 });
 
 it('skips cache update when user id is null', function () {

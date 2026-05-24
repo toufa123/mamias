@@ -1,0 +1,93 @@
+{
+  "app/Filament/Resources/Users/Pages/ListUsers.php": [
+    "app/Filament/Resources/Users/UserResource.php"
+  ],
+  "app/Filament/Resources/Users/Schemas/UserForm.php": [
+    "app/Enums/Subregion.php",
+    "app/Services/WhatsAppService.php",
+    "app/Services/WormsService.php"
+  ],
+  "app/Filament/Resources/Users/Schemas/UserInfolist.php": [
+    "app/Services/WhatsAppService.php"
+  ],
+  "app/Filament/Resources/Users/Tables/UsersTable.php": [],
+  "app/Filament/Resources/Users/UserResource.php": [
+    "app/Filament/Resources/Users/Pages/CreateUser.php",
+    "app/Filament/Resources/Users/Pages/EditUser.php",
+    "app/Filament/Resources/Users/Pages/ListUsers.php",
+    "app/Filament/Resources/Users/Schemas/UserForm.php",
+    "app/Filament/Resources/Users/Schemas/UserInfolist.php",
+    "app/Filament/Resources/Users/Tables/UsersTable.php",
+    "app/Models/User.php"
+  ],
+  "app/Filament/Widgets/CatalogueEnvironmentChart.php": [
+    "app/Enums/Environment.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Widgets/CatalogueStatsWidget.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Widgets/MamiasInfoWidget.php": [],
+  "app/Filament/Widgets/PhylumByKingdomChart.php": [
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Widgets/SpeciesByKingdomChart.php": [
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Widgets/SpeciesByPhylumChart.php": [
+    "app/Models/Taxon.php"
+  ],
+  "app/Filament/Widgets/WormsFetchProgressWidget.php": [],
+  "app/Http/Controllers/Controller.php": [],
+  "app/Http/Middleware/RedirectIfNotPanelUser.php": [],
+  "app/Jobs/FetchEasinIdsJob.php": [
+    "app/Models/Taxon.php",
+    "app/Services/EasinService.php"
+  ],
+  "app/Jobs/FetchTaxaFromWormsJob.php": [
+    "app/Models/Taxon.php",
+    "app/Services/TaxonService.php"
+  ],
+  "app/Listeners/TaxonImportCompletedListener.php": [
+    "app/Filament/Imports/TaxonImporter.php",
+    "app/Models/User.php"
+  ],
+  "app/Livewire/ImportWizard.php": [],
+  "app/Livewire/MyReferences.php": [
+    "app/Enums/LiteratureStatus.php",
+    "app/Enums/LiteratureType.php",
+    "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+    "app/Filament/Resources/Literatures/Tables/LiteraturesTable.php",
+    "app/Models/Literature.php"
+  ],
+  "app/Livewire/PublicProfile.php": [
+    "app/Enums/Subregion.php",
+    "app/Services/WhatsAppService.php",
+    "app/Services/WormsService.php"
+  ],
+  "app/Models/IntroEventRecord.php": [
+    "app/Enums/EstablishmentStatus.php",
+    "app/Enums/NisStatus.php"
+  ],
+  "app/Models/Literature.php": [
+    "app/Enums/LiteratureStatus.php",
+    "app/Enums/LiteratureType.php",
+    "app/Observers/LiteratureObserver.php"
+  ],
+  "app/Models/PathwayRecord.php": [
+    "app/Enums/CbdPathwayCategory.php",
+    "app/Enums/CbdPathwaySubcategory.php",
+    "app/Enums/DataQuality.php",
+    "app/Enums/PathwayType.php"
+  ],
+  "app/Models/SubregionRecord.php": [
+    "app/Enums/NisStatus.php",
+    "app/Enums/Subregion.php"
+  ],
+  "app/Models/Taxon.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Worms_Status.php",
+    "app/Services/TaxonNormalizer.php"
+  ]
+}

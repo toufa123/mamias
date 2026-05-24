@@ -1,1 +1,1 @@
-//
+import 'cap-widget';

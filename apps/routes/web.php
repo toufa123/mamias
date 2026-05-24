@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\MyReferences;
+use App\Livewire\MySuggestions;
 use App\Livewire\PublicProfile;
 use Illuminate\Support\Facades\Route;
 use Lubusin\Decomposer\Controllers\DecomposerController;
@@ -27,6 +28,10 @@ Route::get('/profile', PublicProfile::class)
 Route::get('/references', MyReferences::class)
     ->middleware(['auth', 'verified'])
     ->name('references');
+
+Route::get('/my-suggestions', MySuggestions::class)
+    ->middleware(['auth', 'verified'])
+    ->name('suggestions');
 
 Route::get('mamias/decompose', [DecomposerController::class, 'index'])
     ->middleware(['auth', 'role:super_admin'])

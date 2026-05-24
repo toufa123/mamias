@@ -1,0 +1,40 @@
+{
+  "tests/Feature/UserManagementTest.php": [
+    "app/Filament/Pages/Auth/Login.php",
+    "app/Filament/Pages/Auth/Register.php",
+    "app/Models/User.php",
+    "app/Support/FilamentAuthRedirect.php"
+  ],
+  "tests/Pest.php": [
+    "tests/TestCase.php"
+  ],
+  "tests/TestCase.php": [],
+  "tests/Unit/DoiMetadataServiceTest.php": [
+    "app/Enums/LiteratureType.php",
+    "app/Services/DoiMetadataService.php",
+    "tests/TestCase.php"
+  ],
+  "tests/Unit/ExampleTest.php": [],
+  "tests/Unit/LiteratureTest.php": [
+    "app/Enums/LiteratureType.php",
+    "app/Models/Literature.php",
+    "tests/TestCase.php"
+  ],
+  "tests/Unit/TaxonServiceTest.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Environment.php",
+    "app/Enums/Worms_Status.php",
+    "app/Models/Taxon.php",
+    "app/Services/TaxonNormalizer.php",
+    "app/Services/TaxonService.php",
+    "app/Services/WormsService.php",
+    "tests/TestCase.php"
+  ],
+  "tests/Unit/TaxonTest.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Worms_Status.php",
+    "app/Models/Taxon.php",
+    "tests/TestCase.php"
+  ],
+  "vite.config.js": []
+}

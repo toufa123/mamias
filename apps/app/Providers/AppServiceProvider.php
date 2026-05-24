@@ -6,7 +6,6 @@ use App\Filament\Auth\Responses\EmailVerificationResponse;
 use App\Filament\Auth\Responses\LoginResponse;
 use App\Filament\Auth\Responses\RegistrationResponse;
 use App\Listeners\TaxonImportCompletedListener;
-use App\Livewire\ImportWizard;
 use Filament\Actions\Imports\Events\ImportCompleted;
 use Filament\Auth\Http\Responses\Contracts\EmailVerificationResponse as EmailVerificationResponseContract;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
@@ -62,7 +61,8 @@ class AppServiceProvider extends ServiceProvider
             ],
         ]);
 
-        Livewire::component('filament-import-wizard', ImportWizard::class);
+        // ImportWizard Livewire component disabled — use native ImportAction instead
+        // Livewire::component('filament-import-wizard', ImportWizard::class);
 
         Event::listen(ImportCompleted::class, TaxonImportCompletedListener::class);
 

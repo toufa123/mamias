@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "resources/views/filament/forms/components/honeypot.blade.php",
+      "language": "blade",
+      "sizeLines": 31,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/filament/hooks/pending-references-alert.blade.php",
+      "language": "blade",
+      "sizeLines": 15,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/filament/pages/backup-manager.blade.php",
+      "language": "blade",
+      "sizeLines": 65,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/filament/widgets/mamias-info-widget.blade.php",
+      "language": "blade",
+      "sizeLines": 87,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/filament/widgets/worms-fetch-progress-widget.blade.php",
+      "language": "blade",
+      "sizeLines": 311,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/livewire/my-references.blade.php",
+      "language": "blade",
+      "sizeLines": 13,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/livewire/public-profile.blade.php",
+      "language": "blade",
+      "sizeLines": 33,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/mamias/about.blade.php",
+      "language": "blade",
+      "sizeLines": 14,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/mamias/home.blade.php",
+      "language": "blade",
+      "sizeLines": 239,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/partials/navbar.blade.php",
+      "language": "blade",
+      "sizeLines": 98,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/partials/usermenu.blade.php",
+      "language": "blade",
+      "sizeLines": 142,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "routes/breadcrumbs.php",
+      "language": "php",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "routes/console.php",
+      "language": "php",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "routes/web.php",
+      "language": "php",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/ExampleTest.php",
+      "language": "php",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/FetchTaxaFromWormsJobTest.php",
+      "language": "php",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/IntroEventRecordImporterTest.php",
+      "language": "php",
+      "sizeLines": 315,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/LiteratureAlertBoxTest.php",
+      "language": "php",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/LiteratureApprovalTest.php",
+      "language": "php",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/LiteratureNotificationTest.php",
+      "language": "php",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/LoginRouteTest.php",
+      "language": "php",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/MyReferencesTest.php",
+      "language": "php",
+      "sizeLines": 136,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/TaxonFormTest.php",
+      "language": "php",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/TaxonSoftDeleteTest.php",
+      "language": "php",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/Feature/UserManagementExtendedTest.php",
+      "language": "php",
+      "sizeLines": 210,
+      "fileCategory": "code"
+    }
+  ]
+}

@@ -2,15 +2,17 @@
 
 namespace App\Filament\Pages\Auth;
 
-use App\Filament\Forms\Components\Honeypot;
+use App\Filament\Forms\Components\CapField;
+use App\Filament\Forms\Components\HoneypotField;
+use App\Services\CapService;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
@@ -22,11 +24,15 @@ class Register extends BaseRegister
 
     public HoneypotData $honeypotData;
 
+    public ?string $cap_token = null;
+
     public function mount(): void
     {
         parent::mount();
 
-        $this->honeypotData = new HoneypotData;
+        if (! isset($this->honeypotData)) {
+            $this->honeypotData = new HoneypotData;
+        }
     }
 
     public function form(Schema $schema): Schema
@@ -44,8 +50,10 @@ class Register extends BaseRegister
                             ->autocomplete(false)
                             ->columnSpan(3),
                         $this->getPasswordConfirmationFormComponent()->columnSpan(3),
-                        Honeypot::make('honeypotData')
+                        HoneypotField::make('honeypotData')
                             ->hidden(),
+                        CapField::make('cap_token')
+                            ->columnSpanFull(),
                     ]),
             ]);
     }
@@ -97,15 +105,30 @@ class Register extends BaseRegister
      */
     protected function handleRegistration(array $data): Model
     {
+        if (! isset($this->honeypotData)) {
+            $this->honeypotData = new HoneypotData;
+        }
+
         $this->protectAgainstSpam();
 
-        $user = parent::handleRegistration($data);
+        $this->validateCapToken($data['cap_token'] ?? null);
+
+        unset($data['cap_token'], $data['honeypotData']);
+
+        $user = $this->getUserModel()::create($data);
 
         Role::findOrCreate('user', 'web');
         $user->assignRole('user');
 
-        event(new Registered($user));
-
         return $user;
+    }
+
+    protected function validateCapToken(?string $token): void
+    {
+        if (! app(CapService::class)->verifyToken($token)) {
+            throw ValidationException::withMessages([
+                'cap_token' => __('CAPTCHA verification failed. Please try again.'),
+            ]);
+        }
     }
 }

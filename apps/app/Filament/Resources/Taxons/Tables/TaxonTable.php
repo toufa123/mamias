@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Taxons\Tables;
 
-use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
+use App\Jobs\FetchEasinIdsJob;
 use App\Jobs\FetchTaxaFromWormsJob;
 use App\Models\Taxon;
 use App\Models\User;
@@ -30,11 +30,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
-use App\Jobs\FetchEasinIdsJob;
-
 
 class TaxonTable
 {
@@ -128,7 +126,7 @@ class TaxonTable
 
                             Notification::make()
                                 ->title('WoRMS Sync Started')
-                                ->body('The taxonomy update for ' . $records->count() . ' species is now running in the background.')
+                                ->body('The taxonomy update for '.$records->count().' species is now running in the background.')
                                 ->success()
                                 ->send();
                         }),
@@ -149,7 +147,7 @@ class TaxonTable
 
                             Notification::make()
                                 ->title('EASIN Fetch Started')
-                                ->body('The EASIN ID lookup for ' . $records->count() . ' species is now running in the background.')
+                                ->body('The EASIN ID lookup for '.$records->count().' species is now running in the background.')
                                 ->success()
                                 ->send();
                         }),
@@ -159,13 +157,14 @@ class TaxonTable
                 ]),
             ]);
     }
+
     protected static function getIdColumn(): TextColumn
     {
         return TextColumn::make('id')
             ->label('ID')
             ->sortable();
     }
-    
+
     protected static function getAphiaIdColumn(): TextColumn
     {
         return TextColumn::make('aphia_id')
@@ -185,7 +184,7 @@ class TaxonTable
             ->url(fn ($record) => $record->Easin_id ? "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/{$record->Easin_id}" : null)
             ->openUrlInNewTab();
     }
-    
+
     protected static function getScientificNameColumn(): TextColumn
     {
         return TextColumn::make('scientificname')
@@ -195,7 +194,7 @@ class TaxonTable
             ->formatStateUsing(fn ($state, $record) => self::formatScientificName($state, $record->rank))
             ->tooltip(fn ($record) => self::getScientificNameTooltip($record));
     }
-    
+
     protected static function getWormsStatusColumn(): TextColumn
     {
         return TextColumn::make('worms_status')
@@ -204,7 +203,7 @@ class TaxonTable
             ->sortable()
             ->searchable();
     }
-    
+
     protected static function getCatalogueStatusColumn(): TextColumn
     {
         return TextColumn::make('catalogue_status')
@@ -212,22 +211,22 @@ class TaxonTable
             ->badge()
             ->sortable();
     }
-    
+
     protected static function getRankColumn(): TextColumn
     {
         return TextColumn::make('rank')->label('Rank')->sortable();
     }
-    
+
     protected static function getKingdomColumn(): TextColumn
     {
         return TextColumn::make('kingdom')->label('Kingdom')->sortable();
     }
-    
+
     protected static function getPhylumColumn(): TextColumn
     {
         return TextColumn::make('phylum')->label('Phylum')->sortable();
     }
-    
+
     protected static function getLsidColumn(): TextColumn
     {
         return TextColumn::make('lsid')
@@ -235,7 +234,7 @@ class TaxonTable
             ->sortable()
             ->toggleable(isToggledHiddenByDefault: true);
     }
-    
+
     protected static function getEnvironmentsColumn(): TextColumn
     {
         return TextColumn::make('environments')
@@ -254,7 +253,7 @@ class TaxonTable
                 if (is_string($color) && str_starts_with($color, '#')) {
                     return Color::hex($color);
                 }
-                
+
                 return $color ?? 'gray';
             })
             ->formatStateUsing(function (mixed $state): string {
@@ -265,12 +264,12 @@ class TaxonTable
                 } else {
                     $environment = null;
                 }
-                
+
                 return $environment?->getLabel() ?? (string) $state;
             })
             ->sortable();
     }
-    
+
     protected static function getFetchedAtColumn(): TextColumn
     {
         return TextColumn::make('fetched_at')
@@ -279,7 +278,7 @@ class TaxonTable
             ->sortable()
             ->toggleable(isToggledHiddenByDefault: true);
     }
-    
+
     protected static function getCreatedAtColumn(): TextColumn
     {
         return TextColumn::make('created_at')
@@ -288,7 +287,7 @@ class TaxonTable
             ->sortable()
             ->toggleable(isToggledHiddenByDefault: true);
     }
-    
+
     protected static function getUpdatedAtColumn(): TextColumn
     {
         return TextColumn::make('updated_at')
@@ -297,7 +296,7 @@ class TaxonTable
             ->sortable()
             ->toggleable(isToggledHiddenByDefault: true);
     }
-    
+
     protected static function getCreatedByColumn(): TextColumn
     {
         return TextColumn::make('creator.first_name')
@@ -309,7 +308,7 @@ class TaxonTable
             ->searchable(['users.first_name', 'users.last_name'])
             ->toggleable(isToggledHiddenByDefault: true);
     }
-    
+
     protected static function getUpdatedByColumn(): TextColumn
     {
         return TextColumn::make('editor.first_name')
@@ -321,6 +320,7 @@ class TaxonTable
             ->searchable(['users.first_name', 'users.last_name'])
             ->toggleable(isToggledHiddenByDefault: true);
     }
+
     protected static function formatUserWithRole(?User $user): ?string
     {
         if (! $user) {
@@ -330,58 +330,58 @@ class TaxonTable
         if ($name === '') {
             return null;
         }
-        
+
         $roles = method_exists($user, 'getRoleNames') ? $user->getRoleNames()->all() : [];
         if (! empty($roles)) {
             $name .= ' ('.implode(', ', $roles).')';
         }
-        
+
         return $name;
     }
-    
+
     protected static function formatScientificName(?string $state, ?string $rank): ?string
     {
         if (! $state) {
             return $state;
         }
-        
+
         $isItalic = in_array(strtolower((string) $rank), ['genus', 'species', 'subspecies', 'variety', 'form'], true);
         if (! $isItalic) {
             return $state;
         }
-        
+
         $formatted = preg_replace_callback('/(\'[^\']+\')/', function ($matches) {
             return '<span class="not-italic">'.$matches[1].'</span>';
         }, $state);
-        
+
         return "<span class='italic font-serif'>{$formatted}</span>";
     }
-    
+
     protected static function getScientificNameTooltip(Taxon $record): ?HtmlString
     {
         $name = $record->scientificname ?? '';
         $authority = $record->authority ?? '';
         $isItalic = in_array(strtolower((string) $record->rank), ['genus', 'species', 'subspecies', 'variety', 'form'], true);
-        
+
         $fullName = trim("{$name} {$authority}");
         if ($fullName === '') {
             return null;
         }
-        
+
         if ($isItalic) {
             $formattedName = preg_replace_callback('/(\'[^\']+\')/', function ($matches) {
                 return '<span class="not-italic">'.$matches[1].'</span>';
             }, $name);
-            
+
             return new HtmlString(
                 "<span class='italic font-serif'>{$formattedName}</span>".
                 ($authority !== '' ? " <span class='not-italic'> {$authority}</span>" : '')
             );
         }
-        
+
         return new HtmlString($fullName);
     }
-    
+
     protected static function getScientificNameFilter(): SelectFilter
     {
         return SelectFilter::make('scientificname')
@@ -389,7 +389,7 @@ class TaxonTable
             ->searchable()
             ->options(fn () => self::getDistinctFilterOptions('scientificname'));
     }
-    
+
     protected static function getKingdomFilter(): SelectFilter
     {
         return SelectFilter::make('kingdom')
@@ -398,7 +398,7 @@ class TaxonTable
             ->modifyFormFieldUsing(fn (FormSelect $field) => $field->live())
             ->options(fn () => self::getDistinctFilterOptions('kingdom'));
     }
-    
+
     protected static function getPhylumFilter(): SelectFilter
     {
         return SelectFilter::make('phylum')
@@ -406,11 +406,11 @@ class TaxonTable
             ->searchable()
             ->options(function ($livewire): array {
                 $selectedKingdom = data_get($livewire->getTableFilterFormState('kingdom'), 'value');
-                
+
                 return self::getDistinctFilterOptions('phylum', filled($selectedKingdom) ? $selectedKingdom : null);
             });
     }
-    
+
     protected static function getRankFilter(): SelectFilter
     {
         return SelectFilter::make('rank')
@@ -418,12 +418,12 @@ class TaxonTable
             ->searchable()
             ->options(fn () => self::getDistinctFilterOptions('rank'));
     }
-    
+
     protected static function getDistinctFilterOptions(string $column, ?string $kingdom = null): array
     {
         static $options = [];
         $cacheKey = $column.'|'.($kingdom ?? '*');
-        
+
         if (! array_key_exists($cacheKey, $options)) {
             $options[$cacheKey] = Taxon::query()
                 ->whereNotNull($column)
@@ -435,10 +435,10 @@ class TaxonTable
                 ->pluck($column, $column)
                 ->all();
         }
-        
+
         return $options[$cacheKey];
     }
-    
+
     protected static function getEnvironmentsFilter(): SelectFilter
     {
         return SelectFilter::make('environments')
@@ -453,7 +453,7 @@ class TaxonTable
                 if ($values === []) {
                     return $query;
                 }
-                
+
                 return $query->where(function (Builder $subQuery) use ($values) {
                     foreach ($values as $value) {
                         $subQuery->orWhereJsonContains('environments', $value);

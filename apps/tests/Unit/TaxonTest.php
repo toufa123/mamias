@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Models\Taxon;
-use App\Enums\Worms_Status;
 use App\Enums\Catalogue_Status;
+use App\Enums\Worms_Status;
+use App\Models\Taxon;
+use App\Models\User;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -46,7 +47,7 @@ it('handles synonyms_data as an array', function () {
 
 it('applies userstamps on creation', function () {
     // Assuming a user is authenticated or using a mock
-    $user = \App\Models\User::factory()->create();
+    $user = User::factory()->create();
     $this->actingAs($user);
 
     $taxon = Taxon::factory()->create();

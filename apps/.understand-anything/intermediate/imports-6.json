@@ -1,0 +1,29 @@
+{
+  "CLAUDE.md": [],
+  "composer.json": [],
+  "config/action-overflow.php": [],
+  "config/app.php": [],
+  "config/auth.php": [
+    "app/Models/User.php"
+  ],
+  "config/backup.php": [],
+  "config/breadcrumbs.php": [],
+  "config/cache.php": [],
+  "config/database.php": [],
+  "config/debugbar.php": [],
+  "config/dependency-manager.php": [],
+  "config/filament-alert-box.php": [],
+  "config/filament-clear-cache.php": [],
+  "config/filament-countries.php": [],
+  "config/filament-easy-footer.php": [],
+  "config/filament-import-wizard.php": [],
+  "config/filament-shield.php": [],
+  "config/filament.php": [],
+  "config/filesystems.php": [],
+  "config/laravel-cookie-consent.php": [],
+  "config/logging.php": [],
+  "config/magellan.php": [],
+  "config/mail.php": [],
+  "config/permission.php": [],
+  "config/queue.php": []
+}

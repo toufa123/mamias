@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "app/Filament/Resources/Users/Pages/ListUsers.php",
+      "language": "php",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Users/Schemas/UserForm.php",
+      "language": "php",
+      "sizeLines": 225,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Users/Schemas/UserInfolist.php",
+      "language": "php",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Users/Tables/UsersTable.php",
+      "language": "php",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Users/UserResource.php",
+      "language": "php",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/CatalogueEnvironmentChart.php",
+      "language": "php",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/CatalogueStatsWidget.php",
+      "language": "php",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/MamiasInfoWidget.php",
+      "language": "php",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/PhylumByKingdomChart.php",
+      "language": "php",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/SpeciesByKingdomChart.php",
+      "language": "php",
+      "sizeLines": 113,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/SpeciesByPhylumChart.php",
+      "language": "php",
+      "sizeLines": 141,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Widgets/WormsFetchProgressWidget.php",
+      "language": "php",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Http/Controllers/Controller.php",
+      "language": "php",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Http/Middleware/RedirectIfNotPanelUser.php",
+      "language": "php",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Jobs/FetchEasinIdsJob.php",
+      "language": "php",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Jobs/FetchTaxaFromWormsJob.php",
+      "language": "php",
+      "sizeLines": 124,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Listeners/TaxonImportCompletedListener.php",
+      "language": "php",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Livewire/ImportWizard.php",
+      "language": "php",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Livewire/MyReferences.php",
+      "language": "php",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Livewire/PublicProfile.php",
+      "language": "php",
+      "sizeLines": 274,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Models/IntroEventRecord.php",
+      "language": "php",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Models/Literature.php",
+      "language": "php",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Models/PathwayRecord.php",
+      "language": "php",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Models/SubregionRecord.php",
+      "language": "php",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Models/Taxon.php",
+      "language": "php",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    }
+  ]
+}

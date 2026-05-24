@@ -1,0 +1,76 @@
+{
+  "app/Models/User.php": [
+    "database/factories/UserFactory.php"
+  ],
+  "app/Notifications/NewLiteratureReferenceNotification.php": [
+    "app/Models/Literature.php"
+  ],
+  "app/Observers/LiteratureObserver.php": [
+    "app/Models/Literature.php",
+    "app/Models/User.php",
+    "app/Notifications/NewLiteratureReferenceNotification.php"
+  ],
+  "app/Policies/CommandRunPolicy.php": [],
+  "app/Policies/IntroEventRecordPolicy.php": [
+    "app/Models/IntroEventRecord.php"
+  ],
+  "app/Policies/LiteraturePolicy.php": [
+    "app/Models/Literature.php"
+  ],
+  "app/Policies/ResourceLockAuditPolicy.php": [],
+  "app/Policies/ResourceLockPolicy.php": [],
+  "app/Policies/RolePolicy.php": [],
+  "app/Policies/TaxonPolicy.php": [
+    "app/Models/Taxon.php"
+  ],
+  "app/Policies/UserPolicy.php": [],
+  "app/Providers/AppServiceProvider.php": [
+    "app/Filament/Auth/Responses/EmailVerificationResponse.php",
+    "app/Filament/Auth/Responses/LoginResponse.php",
+    "app/Filament/Auth/Responses/RegistrationResponse.php",
+    "app/Listeners/TaxonImportCompletedListener.php",
+    "app/Livewire/ImportWizard.php"
+  ],
+  "app/Providers/Filament/MamiasPanelProvider.php": [
+    "app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+    "app/Filament/Pages/Auth/Login.php",
+    "app/Filament/Pages/Auth/Register.php",
+    "app/Filament/Pages/Dashboard.php",
+    "app/Filament/Pages/HealthCheckResults.php",
+    "app/Filament/Widgets/MamiasInfoWidget.php",
+    "app/Http/Middleware/RedirectIfNotPanelUser.php"
+  ],
+  "app/Services/DoiMetadataService.php": [
+    "app/Enums/LiteratureType.php"
+  ],
+  "app/Services/EasinService.php": [],
+  "app/Services/TaxonNormalizer.php": [
+    "app/Models/Taxon.php"
+  ],
+  "app/Services/TaxonService.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Environment.php",
+    "app/Enums/Worms_Status.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Services/TaxonStateHelper.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Environment.php",
+    "app/Enums/Worms_Status.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Services/WhatsAppService.php": [],
+  "app/Services/WormsService.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Environment.php",
+    "app/Enums/Worms_Status.php",
+    "app/Models/Taxon.php"
+  ],
+  "app/Support/FilamentAuthRedirect.php": [
+    "app/Models/User.php"
+  ],
+  "artisan": [],
+  "boost.json": [],
+  "bootstrap/app.php": [],
+  "bootstrap/providers.php": []
+}

@@ -13,15 +13,13 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Slider;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
+use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 
 class IntroEventRecordForm
 {
@@ -51,7 +49,7 @@ class IntroEventRecordForm
                                     ->maxValue(now()->year)
                                     ->default(now()->year)
                                     ->columnSpan(2),
-                              
+
                                 CountrySelect::make('first_country')
                                     ->displayFlags(true)
                                     ->imageFlags()
@@ -73,7 +71,6 @@ class IntroEventRecordForm
 
                                 Select::make('literature_id')
                                     ->relationship('literature', 'short_ref')
-                                    ->multiple()
                                     ->preload()
                                     ->label('Citations/Literature')
                                     ->columnSpan(3),
@@ -112,13 +109,11 @@ class IntroEventRecordForm
                                             ->label('Establishment Success')
                                             ->options(NisStatus::class),
                                         Stepper::make('first_arrival_year')
-                                            ->maxValue('Please input Year of first Introduction')
                                             ->minValue(1800)
                                             ->step(1)
                                             ->maxValue(now()->year)
                                             ->default(now()->year)
                                             ->columnSpan(2),
-                                        
 
                                     ])
                                     ->columns(4),

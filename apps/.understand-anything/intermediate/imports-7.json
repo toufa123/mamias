@@ -1,0 +1,37 @@
+{
+  "config/schema-sentinel.php": [],
+  "config/services.php": [],
+  "config/session.php": [],
+  "database/factories/LiteratureFactory.php": [
+    "app/Enums/LiteratureStatus.php",
+    "app/Enums/LiteratureType.php",
+    "app/Models/Literature.php"
+  ],
+  "database/factories/TaxonFactory.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Enums/Worms_Status.php",
+    "app/Models/Taxon.php"
+  ],
+  "database/factories/UserFactory.php": [
+    "app/Models/User.php"
+  ],
+  "database/migrations/0001_01_01_000000_create_users_table.php": [],
+  "database/migrations/0001_01_01_000001_create_cache_table.php": [],
+  "database/migrations/0001_01_01_000002_create_jobs_table.php": [],
+  "database/migrations/2022_12_14_083707_create_settings_table.php": [],
+  "database/migrations/2026_04_24_000000_add_profile_fields_to_users_table.php": [],
+  "database/migrations/2026_04_24_190713_create_notifications_table.php": [],
+  "database/migrations/2026_04_24_212314_create_permission_tables.php": [],
+  "database/migrations/2026_04_24_221444_create_health_tables.php": [],
+  "database/migrations/2026_04_24_222509_create_command_runs_table.php": [],
+  "database/migrations/2026_05_01_103946_enable_postgis_extension.php": [],
+  "database/migrations/2026_05_01_181808_create_taxas_table.php": [],
+  "database/migrations/2026_05_01_211656_1_create_import_sessions_table.php": [],
+  "database/migrations/2026_05_01_213323_create_literatures_table.php": [],
+  "database/migrations/2026_05_07_154253_create_resource_lock_table.php": [],
+  "database/migrations/2026_05_07_154254_create_resource_lock_audit_table.php": [],
+  "database/migrations/2026_05_07_155946_add_proposed_accepted_name_to_taxas_table.php": [],
+  "database/migrations/2026_05_08_144619_create_imports_table.php": [],
+  "database/migrations/2026_05_08_144620_create_exports_table.php": [],
+  "database/migrations/2026_05_08_144621_create_failed_import_rows_table.php": []
+}

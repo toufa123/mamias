@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.3s="pollSessionStatus">
     <div class="fiwa-container">
         <div class="fiwa-header">
             <h2>{{ __('filament-import-wizard::filament-import-wizard.steps.import.title') }}</h2>

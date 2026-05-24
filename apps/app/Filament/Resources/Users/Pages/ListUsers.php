@@ -1,20 +1,20 @@
 <?php
 
-    namespace App\Filament\Resources\Users\Pages;
+namespace App\Filament\Resources\Users\Pages;
 
-    use App\Filament\Resources\Users\UserResource;
-    use Filament\Actions\CreateAction;
-    use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 
-    class ListUsers extends ListRecords
+class ListUsers extends ListRecords
+{
+    protected static string $resource = UserResource::class;
+
+    protected function getHeaderActions(): array
     {
-        protected static string $resource = UserResource::class;
-
-        protected function getHeaderActions(): array
-        {
-            return [
-                CreateAction::make()
-                    ->modalWidth('7xl'),
-            ];
-        }
+        return [
+            CreateAction::make()
+                ->modalWidth('7xl'),
+        ];
     }
+}

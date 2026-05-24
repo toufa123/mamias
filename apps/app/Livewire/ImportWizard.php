@@ -2,14 +2,15 @@
 
 namespace App\Livewire;
 
+use Filament\Notifications\Notification;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Waad\FilamentImportWizard\Livewire\ImportWizard as BaseImportWizard;
 
 class ImportWizard extends BaseImportWizard
 {
-    public $uploadedFile = null;
+    public ?UploadedFile $uploadedFile = null;
 
     protected function parseExcel(string $path): array
     {
@@ -29,7 +30,7 @@ class ImportWizard extends BaseImportWizard
             if ($rowIndex === 1) {
                 foreach ($cells as $i => $h) {
                     $headerName = $h ? Str::of($h)->trim()->studly()->toString() : '';
-                    $headers[] = $headerName ?: 'Column' . ($i + 1);
+                    $headers[] = $headerName ?: 'Column'.($i + 1);
                 }
 
                 continue;
@@ -43,7 +44,7 @@ class ImportWizard extends BaseImportWizard
         return ['headers' => $headers, 'rows' => $rows];
     }
 
-    public function updatedUploadedFile($file): void
+    public function updatedUploadedFile(?UploadedFile $file): void
     {
         if (! $file) {
             return;
@@ -52,5 +53,59 @@ class ImportWizard extends BaseImportWizard
         $this->validate();
 
         $this->processUploadedFile($file);
+    }
+
+    protected function sendCompletionNotification(): void
+    {
+        if ($this->status === 'failed') {
+            Notification::make()
+                ->title('Import failed')
+                ->body($this->errorMessage ?? 'An error occurred during import.')
+                ->danger()
+                ->persistent()
+                ->send();
+        } elseif ($this->failedRows > 0) {
+            Notification::make()
+                ->title('Import completed with errors')
+                ->body(number_format($this->successRows).' rows imported, '.number_format($this->failedRows).' rows failed.')
+                ->warning()
+                ->persistent()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Import completed')
+                ->body(number_format($this->successRows).' rows imported successfully.')
+                ->success()
+                ->send();
+        }
+    }
+
+    public function startImport()
+    {
+        parent::startImport();
+
+        if ($this->status !== 'processing') {
+            $this->sendCompletionNotification();
+        }
+    }
+
+    public function pollSessionStatus(): void
+    {
+        if ($this->status !== 'processing' || ! $this->session) {
+            return;
+        }
+
+        $previousStatus = $this->status;
+
+        $this->session->refresh();
+
+        $this->processedRows = $this->session->processed_rows ?? 0;
+        $this->successRows = $this->session->success_rows ?? 0;
+        $this->failedRows = $this->session->failed_rows ?? 0;
+        $this->status = $this->session->status;
+
+        if ($previousStatus !== $this->status && in_array($this->status, ['completed', 'completed_with_errors', 'failed'])) {
+            $this->sendCompletionNotification();
+        }
     }
 }

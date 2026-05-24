@@ -9,6 +9,7 @@ use App\Filament\Widgets\SpeciesByKingdomChart;
 use App\Filament\Widgets\SpeciesByPhylumChart;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -30,18 +31,14 @@ class Dashboard extends BaseDashboard
                                         CatalogueStatsWidget::class,
                                     ])
                                 ),
-                                Grid::make(2)->schema(
-                                    $this->getWidgetsSchemaComponents([
-                                        SpeciesByKingdomChart::class,
-                                        SpeciesByPhylumChart::class,
-                                    ])
-                                ),
-                                Grid::make(2)->schema(
-                                    $this->getWidgetsSchemaComponents([
-                                        PhylumByKingdomChart::class,
-                                        CatalogueEnvironmentChart::class,
-                                    ])
-                                ),
+                                Grid::make(2)->schema([
+                                    Livewire::make(SpeciesByKingdomChart::class),
+                                    Livewire::make(SpeciesByPhylumChart::class),
+                                ]),
+                                Grid::make(2)->schema([
+                                    Livewire::make(PhylumByKingdomChart::class),
+                                    Livewire::make(CatalogueEnvironmentChart::class),
+                                ]),
                             ]),
                         Tab::make('MAMIAS Data')
                             ->icon('tabler-database')

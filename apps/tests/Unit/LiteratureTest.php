@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Models\Literature;
 use App\Enums\LiteratureType;
-use Illuminate\Support\Facades\DB;
+use App\Models\Literature;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -16,7 +15,7 @@ it('generates the first code when no records exist', function () {
 it('generates sequential codes', function () {
     Literature::factory()->create(['code' => 'mamias000001']);
     expect(Literature::generateNextCode())->toBe('mamias000002');
-    
+
     Literature::factory()->create(['code' => 'mamias000042']);
     expect(Literature::generateNextCode())->toBe('mamias000043');
 });
@@ -33,7 +32,7 @@ it('automatically assigns code on creation via observer', function () {
         'full_ref' => 'Smith, J. (2024). Test. Journal.',
         'type' => LiteratureType::ARTICLE,
     ]);
-    
+
     expect($literature->code)->toBe('mamias000001');
 });
 
@@ -44,6 +43,6 @@ it('does not overwrite existing code on creation', function () {
         'full_ref' => 'Smith, J. (2024). Test. Journal.',
         'type' => LiteratureType::ARTICLE,
     ]);
-    
+
     expect($literature->code)->toBe('custom-code');
 });

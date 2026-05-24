@@ -8,13 +8,10 @@ use App\Models\Literature;
 use App\Models\User;
 use App\Notifications\NewLiteratureReferenceNotification;
 use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Role;
 
 use function Pest\Livewire\livewire;
-
-uses(RefreshDatabase::class);
 
 beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('mamias'));

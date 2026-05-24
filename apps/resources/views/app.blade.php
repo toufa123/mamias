@@ -29,7 +29,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
-
+    <!-- Add Laravel Notify CSS -->
+    @notifyCss
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
     @filamentStyles
     @livewireStyles
@@ -112,6 +113,7 @@
     <!-- Wrapper Container -->
     <div class="container-fixed w-full flex grow px-0">
         <!-- Content -->
+        <x-notify::notify />
         <main class="flex flex-col grow" id="content" role="content">
             <!-- Toolbar -->
             <div class="mb-5 lg:mb-7.5">
@@ -178,6 +180,9 @@
 <!-- End of Main -->
 
 <!-- Scripts -->
+@filamentScripts
+@livewireScripts
+@notifyJs
 {!! CookieConsent::scripts() !!}
 @stack('scripts')
 <script src="{{ asset('assets/js/core.bundle.js') }}"></script>
@@ -185,9 +190,6 @@
 <script src="{{ asset('assets/js/widgets/general.js') }}"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-@filamentScripts
-@livewireScripts
 <!-- End of Scripts -->
 </body>
 </html>

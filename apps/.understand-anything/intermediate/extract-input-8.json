@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "database/migrations/2026_05_09_105305_add_soft_deletes_to_taxas_table.php",
+      "language": "php",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_10_230455_create_recycle_bin_items_table.php",
+      "language": "php",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_10_240537_create_intro_event_records_table.php",
+      "language": "php",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_10_250340_create_subregion_records_table.php",
+      "language": "php",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_10_250405_create_pathway_records_table.php",
+      "language": "php",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_14_132606_add_file_path_to_literatures_table.php~",
+      "language": "php~",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_14_141918_create_alert_box_settings.php",
+      "language": "php",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_16_115201_add_user_and_tenant_to_recycle_bin_items_table.php",
+      "language": "php",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_16_130000_update_intro_event_records_for_import_review.php",
+      "language": "php",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_16_131000_make_taxon_id_not_nullable_on_intro_event_records.php",
+      "language": "php",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/migrations/2026_05_16_140000_make_literature_id_nullable_on_intro_event_records.php",
+      "language": "php",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/seeders/DatabaseSeeder.php",
+      "language": "php",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "database/seeders/RolesSeeder.php",
+      "language": "php",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": "phpunit.xml",
+      "language": "xml",
+      "sizeLines": 40,
+      "fileCategory": "config"
+    },
+    {
+      "path": "public/.htaccess",
+      "language": "unknown",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "public/index.php",
+      "language": "php",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "public/robots.txt",
+      "language": "txt",
+      "sizeLines": 2,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 69,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "rector.php",
+      "language": "php",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "resources/css/app.css",
+      "language": "css",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "resources/css/filament/mamias/theme.css",
+      "language": "css",
+      "sizeLines": 121,
+      "fileCategory": "code"
+    },
+    {
+      "path": "resources/js/app.js",
+      "language": "javascript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "resources/views/app.blade.php",
+      "language": "blade",
+      "sizeLines": 193,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "resources/views/auth/empty-panel.blade.php",
+      "language": "blade",
+      "sizeLines": 114,
+      "fileCategory": "markup"
+    }
+  ]
+}

@@ -12,9 +12,9 @@ return [
     |
     */
     'shadow_connection' => [
-        'driver'   => 'sqlite',
+        'driver' => 'sqlite',
         'database' => ':memory:',
-        'prefix'   => '',
+        'prefix' => '',
         'foreign_key_constraints' => false,
     ],
 

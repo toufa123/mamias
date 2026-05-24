@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": ".mcp.json",
+      "language": "json",
+      "sizeLines": 12,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".npmrc",
+      "language": "unknown",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 409,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "app/Console/Commands/CreateFilamentUsersCommand.php",
+      "language": "php",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Console/Commands/DevDbSelfHealCommand.php",
+      "language": "php",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/Catalogue_Status.php",
+      "language": "php",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/CbdPathwayCategory.php",
+      "language": "php",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/CbdPathwaySubcategory.php",
+      "language": "php",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/DataQuality.php",
+      "language": "php",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/Environment.php",
+      "language": "php",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/EstablishmentStatus.php",
+      "language": "php",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/LiteratureStatus.php",
+      "language": "php",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/LiteratureType.php",
+      "language": "php",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/NisStatus.php",
+      "language": "php",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/PathwayType.php",
+      "language": "php",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/Subregion.php",
+      "language": "php",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Enums/Worms_Status.php",
+      "language": "php",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "language": "php",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Auth/Responses/LoginResponse.php",
+      "language": "php",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Auth/Responses/RegistrationResponse.php",
+      "language": "php",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Forms/Components/Honeypot.php",
+      "language": "php",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "language": "php",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Imports/TaxonImporter.php",
+      "language": "php",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "language": "php",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Pages/Auth/Login.php",
+      "language": "php",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    }
+  ]
+}

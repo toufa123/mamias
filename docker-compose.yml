@@ -104,7 +104,7 @@ services :
           X-XSS-Protection        "1; mode=block"
           Referrer-Policy         "strict-origin-when-cross-origin"
           Permissions-Policy      "geolocation=(), microphone=(), camera=()"
-          Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'self'"
+          Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:3000; frame-ancestors 'self'"
           -Server
         }
 
@@ -246,7 +246,7 @@ services :
     profiles : ["dev"]
     image : kartoza/postgis:latest
     container_name: "${name:-mamias}_db"
-    ports:
+    ports :
       - "127.0.0.1:${DB_FORWARD_PORT:-54321}:5432"
     env_file :
       - .env
@@ -319,6 +319,37 @@ services :
       start_period : 15s
     restart : unless-stopped
 
+  # ── Cap Standalone (proof-of-work CAPTCHA) ──────────────────────────
+  cap :
+    profiles : ["dev"]
+    image : tiago2/cap:latest
+    container_name: "${name:-mamias}_cap"
+    ports :
+      - "127.0.0.1:3000:3000"
+    environment :
+      ADMIN_KEY : "${CAP_ADMIN_KEY}"
+      REDIS_URL : "redis://cap-valkey:6379"
+    depends_on :
+      cap-valkey :
+        condition : service_healthy
+    restart : unless-stopped
+
+  cap-valkey :
+    profiles : ["dev"]
+    image : valkey/valkey:9-alpine
+    container_name: "${name:-mamias}_cap_valkey"
+    volumes :
+      - cap-valkey-data:/data
+    command : valkey-server --save 60 1 --loglevel warning --maxmemory-policy noeviction
+    healthcheck :
+      test : [ "CMD", "valkey-cli", "ping" ]
+      interval : 5s
+      timeout : 3s
+      retries : 5
+    restart : unless-stopped
+
 volumes :
   db_data:
     name: "${name:-mamias}_data"
+  cap-valkey-data:
+    name: "${name:-mamias}_cap_valkey_data"

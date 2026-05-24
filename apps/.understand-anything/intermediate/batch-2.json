@@ -1,0 +1,915 @@
+{
+  "nodes": [
+    {
+      "id": "config:.mcp.json",
+      "type": "config",
+      "name": ".mcp.json",
+      "filePath": ".mcp.json",
+      "summary": "MCP (Model Context Protocol) server configuration declaring external servers available to AI agents working in this repo.",
+      "tags": ["configuration", "mcp", "ai-tooling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.npmrc",
+      "type": "config",
+      "name": ".npmrc",
+      "filePath": ".npmrc",
+      "summary": "npm package manager configuration controlling install behavior and registry settings for the frontend toolchain.",
+      "tags": ["configuration", "npm", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Laravel Boost guidelines and architectural rules for AI agents covering Filament v5, Pest, Pint, PHP patterns, and safe-change boundaries for the MAMIAS codebase.",
+      "tags": ["documentation", "guidelines", "ai-tooling", "architecture"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:app/Console/Commands/CreateFilamentUsersCommand.php",
+      "type": "file",
+      "name": "CreateFilamentUsersCommand.php",
+      "filePath": "app/Console/Commands/CreateFilamentUsersCommand.php",
+      "summary": "Artisan command that bootstraps initial Filament panel users with Spatie role assignment, idempotent against existing emails.",
+      "tags": ["artisan-command", "bootstrap", "user-management", "rbac"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Console/Commands/CreateFilamentUsersCommand.php:CreateFilamentUsersCommand",
+      "type": "class",
+      "name": "CreateFilamentUsersCommand",
+      "filePath": "app/Console/Commands/CreateFilamentUsersCommand.php",
+      "lineRange": [12, 81],
+      "summary": "Artisan command class that iterates a hardcoded user list, creating each with a Spatie role and hashed password unless already present.",
+      "tags": ["artisan-command", "seeder", "user-bootstrap"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Console/Commands/CreateFilamentUsersCommand.php:createUser",
+      "type": "function",
+      "name": "createUser",
+      "filePath": "app/Console/Commands/CreateFilamentUsersCommand.php",
+      "lineRange": [56, 80],
+      "summary": "Creates a single user with hashed password, verified email timestamp, and assigns the configured Spatie role.",
+      "tags": ["user-creation", "rbac", "factory"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Console/Commands/DevDbSelfHealCommand.php",
+      "type": "file",
+      "name": "DevDbSelfHealCommand.php",
+      "filePath": "app/Console/Commands/DevDbSelfHealCommand.php",
+      "summary": "Development-only Artisan command that resyncs the PostgreSQL users_id_seq sequence to MAX(id), repairing duplicate-key errors after raw inserts or restores.",
+      "tags": ["artisan-command", "database", "postgresql", "dev-tooling"],
+      "complexity": "simple",
+      "languageNotes": "Targets PostgreSQL driver only via DB::getDriverName() guard — no-op on SQLite test runs."
+    },
+    {
+      "id": "class:app/Console/Commands/DevDbSelfHealCommand.php:DevDbSelfHealCommand",
+      "type": "class",
+      "name": "DevDbSelfHealCommand",
+      "filePath": "app/Console/Commands/DevDbSelfHealCommand.php",
+      "lineRange": [11, 42],
+      "summary": "Artisan command that aligns PostgreSQL sequences for the users table to prevent primary-key collisions after data imports.",
+      "tags": ["artisan-command", "database", "postgresql"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/Catalogue_Status.php",
+      "type": "file",
+      "name": "Catalogue_Status.php",
+      "filePath": "app/Enums/Catalogue_Status.php",
+      "summary": "PHP enum modeling taxonomic catalogue review states with WoRMS-derived label resolution.",
+      "tags": ["enum", "taxonomy", "domain-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Enums/Catalogue_Status.php:Catalogue_Status",
+      "type": "class",
+      "name": "Catalogue_Status",
+      "filePath": "app/Enums/Catalogue_Status.php",
+      "lineRange": [1, 73],
+      "summary": "Backed enum representing the catalogue acceptance status for a taxon with helpers to map raw WoRMS API data onto enum cases.",
+      "tags": ["enum", "taxonomy", "worms"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Enums/CbdPathwayCategory.php",
+      "type": "file",
+      "name": "CbdPathwayCategory.php",
+      "filePath": "app/Enums/CbdPathwayCategory.php",
+      "summary": "PHP enum enumerating Convention on Biological Diversity (CBD) high-level introduction pathway categories.",
+      "tags": ["enum", "pathway", "cbd", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/CbdPathwayCategory.php:CbdPathwayCategory",
+      "type": "class",
+      "name": "CbdPathwayCategory",
+      "filePath": "app/Enums/CbdPathwayCategory.php",
+      "lineRange": [1, 27],
+      "summary": "Backed enum of top-level CBD pathway categories (e.g. release, escape, contaminant, stowaway) used to classify species introduction vectors.",
+      "tags": ["enum", "pathway", "cbd"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/CbdPathwaySubcategory.php",
+      "type": "file",
+      "name": "CbdPathwaySubcategory.php",
+      "filePath": "app/Enums/CbdPathwaySubcategory.php",
+      "summary": "PHP enum listing fine-grained CBD pathway subcategories nested under each top-level pathway category.",
+      "tags": ["enum", "pathway", "cbd", "domain-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Enums/CbdPathwaySubcategory.php:CbdPathwaySubcategory",
+      "type": "class",
+      "name": "CbdPathwaySubcategory",
+      "filePath": "app/Enums/CbdPathwaySubcategory.php",
+      "lineRange": [1, 64],
+      "summary": "Backed enum of detailed CBD pathway subcategories providing the second-level taxonomy of species introduction vectors.",
+      "tags": ["enum", "pathway", "cbd"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Enums/DataQuality.php",
+      "type": "file",
+      "name": "DataQuality.php",
+      "filePath": "app/Enums/DataQuality.php",
+      "summary": "PHP enum representing data quality tiers (e.g. high, medium, low) for taxonomic and occurrence records.",
+      "tags": ["enum", "data-quality", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/DataQuality.php:DataQuality",
+      "type": "class",
+      "name": "DataQuality",
+      "filePath": "app/Enums/DataQuality.php",
+      "lineRange": [1, 40],
+      "summary": "Backed enum that classifies record reliability with a getLabel helper returning the ucfirst'd display string.",
+      "tags": ["enum", "data-quality"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/Environment.php",
+      "type": "file",
+      "name": "Environment.php",
+      "filePath": "app/Enums/Environment.php",
+      "summary": "PHP enum modeling marine habitats (marine, brackish, freshwater, terrestrial) with WoRMS data mapping and fuzzy label-or-value lookup helpers.",
+      "tags": ["enum", "habitat", "worms", "domain-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Enums/Environment.php:Environment",
+      "type": "class",
+      "name": "Environment",
+      "filePath": "app/Enums/Environment.php",
+      "lineRange": [1, 91],
+      "summary": "Backed enum of habitat environments with helpers to resolve cases from arbitrary string labels and from WoRMS API boolean flags.",
+      "tags": ["enum", "habitat", "worms"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Enums/EstablishmentStatus.php",
+      "type": "file",
+      "name": "EstablishmentStatus.php",
+      "filePath": "app/Enums/EstablishmentStatus.php",
+      "summary": "PHP enum representing species establishment status (e.g. established, casual, cryptogenic) within Mediterranean subregions.",
+      "tags": ["enum", "nis", "establishment", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/EstablishmentStatus.php:EstablishmentStatus",
+      "type": "class",
+      "name": "EstablishmentStatus",
+      "filePath": "app/Enums/EstablishmentStatus.php",
+      "lineRange": [1, 56],
+      "summary": "Backed enum classifying how firmly a non-indigenous species has established in a given marine area.",
+      "tags": ["enum", "nis", "establishment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/LiteratureStatus.php",
+      "type": "file",
+      "name": "LiteratureStatus.php",
+      "filePath": "app/Enums/LiteratureStatus.php",
+      "summary": "PHP enum enumerating the editorial review status of literature references attached to species records.",
+      "tags": ["enum", "literature", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/LiteratureStatus.php:LiteratureStatus",
+      "type": "class",
+      "name": "LiteratureStatus",
+      "filePath": "app/Enums/LiteratureStatus.php",
+      "lineRange": [1, 41],
+      "summary": "Backed enum tracking lifecycle states (e.g. draft, reviewed, published) for literature citations in the catalogue.",
+      "tags": ["enum", "literature"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/LiteratureType.php",
+      "type": "file",
+      "name": "LiteratureType.php",
+      "filePath": "app/Enums/LiteratureType.php",
+      "summary": "PHP enum classifying types of literature references (e.g. journal article, book, report).",
+      "tags": ["enum", "literature", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/LiteratureType.php:LiteratureType",
+      "type": "class",
+      "name": "LiteratureType",
+      "filePath": "app/Enums/LiteratureType.php",
+      "lineRange": [1, 37],
+      "summary": "Backed enum identifying the publication form of a literature reference.",
+      "tags": ["enum", "literature"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/NisStatus.php",
+      "type": "file",
+      "name": "NisStatus.php",
+      "filePath": "app/Enums/NisStatus.php",
+      "summary": "PHP enum modeling Non-Indigenous Species status classifications (e.g. alien, native, cryptogenic, questionable).",
+      "tags": ["enum", "nis", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/NisStatus.php:NisStatus",
+      "type": "class",
+      "name": "NisStatus",
+      "filePath": "app/Enums/NisStatus.php",
+      "lineRange": [1, 47],
+      "summary": "Backed enum of NIS status values applied per-subregion to flag a taxon's origin classification in the Mediterranean.",
+      "tags": ["enum", "nis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/PathwayType.php",
+      "type": "file",
+      "name": "PathwayType.php",
+      "filePath": "app/Enums/PathwayType.php",
+      "summary": "Small PHP enum distinguishing pathway types used to qualify the manner of species introduction.",
+      "tags": ["enum", "pathway", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/PathwayType.php:PathwayType",
+      "type": "class",
+      "name": "PathwayType",
+      "filePath": "app/Enums/PathwayType.php",
+      "lineRange": [1, 19],
+      "summary": "Backed enum providing a coarse-grained type label for introduction pathways.",
+      "tags": ["enum", "pathway"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/Subregion.php",
+      "type": "file",
+      "name": "Subregion.php",
+      "filePath": "app/Enums/Subregion.php",
+      "summary": "PHP enum enumerating the four Mediterranean subregions (WMED, CMED, ADRIA, EMED) used to scope species records.",
+      "tags": ["enum", "subregion", "geography", "domain-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Enums/Subregion.php:Subregion",
+      "type": "class",
+      "name": "Subregion",
+      "filePath": "app/Enums/Subregion.php",
+      "lineRange": [1, 40],
+      "summary": "Backed enum of Mediterranean subregions with a label helper, central to how the application partitions occurrence data geographically.",
+      "tags": ["enum", "subregion", "geography"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Enums/Worms_Status.php",
+      "type": "file",
+      "name": "Worms_Status.php",
+      "filePath": "app/Enums/Worms_Status.php",
+      "summary": "PHP enum mapping the full set of WoRMS taxonomic status values (accepted, unaccepted, alternate representation, etc.) used when syncing taxa from WoRMS.",
+      "tags": ["enum", "worms", "taxonomy", "domain-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Enums/Worms_Status.php:Worms_Status",
+      "type": "class",
+      "name": "Worms_Status",
+      "filePath": "app/Enums/Worms_Status.php",
+      "lineRange": [1, 93],
+      "summary": "Backed enum reproducing WoRMS' authoritative taxonomic status vocabulary so imported records preserve upstream semantics.",
+      "tags": ["enum", "worms", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "type": "file",
+      "name": "EmailVerificationResponse.php",
+      "filePath": "app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "summary": "Custom Filament email-verification response that delegates post-verification redirect to FilamentAuthRedirect for role-aware routing.",
+      "tags": ["auth", "filament", "email-verification", "http-response"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Auth/Responses/EmailVerificationResponse.php:EmailVerificationResponse",
+      "type": "class",
+      "name": "EmailVerificationResponse",
+      "filePath": "app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "lineRange": [13, 19],
+      "summary": "Implements Filament's EmailVerificationResponse contract, redirecting verified users via the role-aware FilamentAuthRedirect helper.",
+      "tags": ["auth", "email-verification"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Auth/Responses/LoginResponse.php",
+      "type": "file",
+      "name": "LoginResponse.php",
+      "filePath": "app/Filament/Auth/Responses/LoginResponse.php",
+      "summary": "Custom Filament login response that routes super_admin/panel_user to the Mamias panel and other users to the public site via FilamentAuthRedirect.",
+      "tags": ["auth", "filament", "login", "http-response", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Auth/Responses/LoginResponse.php:LoginResponse",
+      "type": "class",
+      "name": "LoginResponse",
+      "filePath": "app/Filament/Auth/Responses/LoginResponse.php",
+      "lineRange": [13, 19],
+      "summary": "Implements Filament's LoginResponse contract to delegate post-login redirect to the role-aware FilamentAuthRedirect helper.",
+      "tags": ["auth", "login"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Auth/Responses/RegistrationResponse.php",
+      "type": "file",
+      "name": "RegistrationResponse.php",
+      "filePath": "app/Filament/Auth/Responses/RegistrationResponse.php",
+      "summary": "Custom Filament registration response that uses FilamentAuthRedirect to send newly registered users to the appropriate landing page.",
+      "tags": ["auth", "filament", "registration", "http-response"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Auth/Responses/RegistrationResponse.php:RegistrationResponse",
+      "type": "class",
+      "name": "RegistrationResponse",
+      "filePath": "app/Filament/Auth/Responses/RegistrationResponse.php",
+      "lineRange": [13, 19],
+      "summary": "Implements Filament's RegistrationResponse contract to delegate post-registration redirect to the role-aware FilamentAuthRedirect helper.",
+      "tags": ["auth", "registration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Forms/Components/Honeypot.php",
+      "type": "file",
+      "name": "Honeypot.php",
+      "filePath": "app/Filament/Forms/Components/Honeypot.php",
+      "summary": "Custom Filament form component wrapping the spatie/laravel-honeypot package to add anti-bot honeypot fields to public auth forms.",
+      "tags": ["filament", "form-component", "security", "anti-spam"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Forms/Components/Honeypot.php:Honeypot",
+      "type": "class",
+      "name": "Honeypot",
+      "filePath": "app/Filament/Forms/Components/Honeypot.php",
+      "lineRange": [8, 36],
+      "summary": "Filament Field subclass that exposes the configured honeypot field names and valid-from timestamp to a Blade view for bot protection.",
+      "tags": ["filament", "form-component", "honeypot"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "type": "file",
+      "name": "IntroEventRecordImporter.php",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "summary": "Filament CSV importer for IntroEventRecord rows that resolves taxa, casts subregion-specific NIS statuses and arrival years, and writes denormalized SubregionRecord rows after save.",
+      "tags": ["filament", "importer", "csv", "data-pipeline", "nis"],
+      "complexity": "complex",
+      "languageNotes": "Heavy use of Filament v4 ImportColumn castStateUsing/fillRecordUsing closures with a shared resolveEnum helper that does case-insensitive matching against enum getLabel values."
+    },
+    {
+      "id": "class:app/Filament/Imports/IntroEventRecordImporter.php:IntroEventRecordImporter",
+      "type": "class",
+      "name": "IntroEventRecordImporter",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "lineRange": [18, 249],
+      "summary": "Importer class with 25+ mapped columns covering global and per-subregion (WMED/CMED/ADRIA/EMED) NIS data, deduplicating by taxon and writing both the parent IntroEventRecord and child SubregionRecord rows.",
+      "tags": ["filament", "importer", "nis", "subregion"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Imports/IntroEventRecordImporter.php:getColumns",
+      "type": "function",
+      "name": "getColumns",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "lineRange": [22, 114],
+      "summary": "Declares the full CSV column mapping including taxon lookup by scientific name, per-subregion NIS status casting, and arrival-year fields.",
+      "tags": ["filament", "import-mapping", "schema"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Imports/IntroEventRecordImporter.php:resolveRecord",
+      "type": "function",
+      "name": "resolveRecord",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "lineRange": [116, 129],
+      "summary": "Finds an existing IntroEventRecord by taxon_id or instantiates a new one, enabling idempotent re-imports.",
+      "tags": ["importer", "upsert"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Filament/Imports/IntroEventRecordImporter.php:afterFill",
+      "type": "function",
+      "name": "afterFill",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "lineRange": [131, 162],
+      "summary": "Hook running after the importer fills the record, applying cross-field defaults and clearing blank denormalized values.",
+      "tags": ["importer", "hook"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Imports/IntroEventRecordImporter.php:afterSave",
+      "type": "function",
+      "name": "afterSave",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "lineRange": [164, 192],
+      "summary": "Writes one SubregionRecord per Mediterranean subregion (WMED/CMED/ADRIA/EMED) carrying that subregion's NIS status and arrival year.",
+      "tags": ["importer", "hook", "subregion", "denormalization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Imports/IntroEventRecordImporter.php:resolveEnum",
+      "type": "function",
+      "name": "resolveEnum",
+      "filePath": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "lineRange": [208, 248],
+      "summary": "Shared enum-resolution helper that matches a raw CSV string against enum values, getLabel outputs, and StudlyCase variations to tolerate inconsistent source data.",
+      "tags": ["importer", "enum-resolution", "fuzzy-match"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Imports/TaxonImporter.php",
+      "type": "file",
+      "name": "TaxonImporter.php",
+      "filePath": "app/Filament/Imports/TaxonImporter.php",
+      "summary": "Filament CSV importer for Taxon records that deduplicates by scientific name across the import batch using a per-import cache and normalizes names via TaxonNormalizer.",
+      "tags": ["filament", "importer", "csv", "taxonomy", "data-pipeline"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Filament/Imports/TaxonImporter.php:TaxonImporter",
+      "type": "class",
+      "name": "TaxonImporter",
+      "filePath": "app/Filament/Imports/TaxonImporter.php",
+      "lineRange": [15, 83],
+      "summary": "Importer that sanitizes scientific names, caches resolved Taxon IDs per-import to avoid duplicate inserts within one batch, and delegates final cleanup to TaxonNormalizer in beforeSave.",
+      "tags": ["filament", "importer", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Imports/TaxonImporter.php:resolveRecord",
+      "type": "function",
+      "name": "resolveRecord",
+      "filePath": "app/Filament/Imports/TaxonImporter.php",
+      "lineRange": [30, 53],
+      "summary": "Finds or creates a Taxon by scientific name, using a per-import cache to dedupe within the same CSV batch.",
+      "tags": ["importer", "upsert", "cache"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "type": "file",
+      "name": "EmailVerificationPrompt.php",
+      "filePath": "app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "summary": "Filament email verification prompt page customized to hide the topbar for a cleaner unauthenticated-user experience.",
+      "tags": ["filament", "auth", "email-verification", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Pages/Auth/EmailVerificationPrompt.php:EmailVerificationPrompt",
+      "type": "class",
+      "name": "EmailVerificationPrompt",
+      "filePath": "app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "lineRange": [8, 13],
+      "summary": "Extends Filament's default EmailVerificationPrompt page, suppressing the topbar via hasTopbar = false.",
+      "tags": ["filament", "auth"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Pages/Auth/Login.php",
+      "type": "file",
+      "name": "Login.php",
+      "filePath": "app/Filament/Pages/Auth/Login.php",
+      "summary": "Custom Filament login page that short-circuits to the role-aware redirect target when an already-authenticated user revisits /mamias/login.",
+      "tags": ["filament", "auth", "login", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Pages/Auth/Login.php:Login",
+      "type": "class",
+      "name": "Login",
+      "filePath": "app/Filament/Pages/Auth/Login.php",
+      "lineRange": [9, 28],
+      "summary": "Extends Filament's base Login page; on mount it redirects already-authenticated users via FilamentAuthRedirect instead of rendering the form.",
+      "tags": ["filament", "auth", "login"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:app/Console/Commands/CreateFilamentUsersCommand.php",
+      "target": "class:app/Console/Commands/CreateFilamentUsersCommand.php:CreateFilamentUsersCommand",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Console/Commands/CreateFilamentUsersCommand.php",
+      "target": "class:app/Console/Commands/CreateFilamentUsersCommand.php:CreateFilamentUsersCommand",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Console/Commands/CreateFilamentUsersCommand.php",
+      "target": "function:app/Console/Commands/CreateFilamentUsersCommand.php:createUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Console/Commands/CreateFilamentUsersCommand.php",
+      "target": "file:app/Models/User.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Console/Commands/DevDbSelfHealCommand.php",
+      "target": "class:app/Console/Commands/DevDbSelfHealCommand.php:DevDbSelfHealCommand",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Console/Commands/DevDbSelfHealCommand.php",
+      "target": "class:app/Console/Commands/DevDbSelfHealCommand.php:DevDbSelfHealCommand",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Console/Commands/DevDbSelfHealCommand.php",
+      "target": "file:app/Models/User.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Enums/Catalogue_Status.php",
+      "target": "class:app/Enums/Catalogue_Status.php:Catalogue_Status",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/CbdPathwayCategory.php",
+      "target": "class:app/Enums/CbdPathwayCategory.php:CbdPathwayCategory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/CbdPathwaySubcategory.php",
+      "target": "class:app/Enums/CbdPathwaySubcategory.php:CbdPathwaySubcategory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/DataQuality.php",
+      "target": "class:app/Enums/DataQuality.php:DataQuality",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/Environment.php",
+      "target": "class:app/Enums/Environment.php:Environment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/EstablishmentStatus.php",
+      "target": "class:app/Enums/EstablishmentStatus.php:EstablishmentStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/LiteratureStatus.php",
+      "target": "class:app/Enums/LiteratureStatus.php:LiteratureStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/LiteratureType.php",
+      "target": "class:app/Enums/LiteratureType.php:LiteratureType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/NisStatus.php",
+      "target": "class:app/Enums/NisStatus.php:NisStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/PathwayType.php",
+      "target": "class:app/Enums/PathwayType.php:PathwayType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/Subregion.php",
+      "target": "class:app/Enums/Subregion.php:Subregion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Enums/Worms_Status.php",
+      "target": "class:app/Enums/Worms_Status.php:Worms_Status",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "target": "class:app/Filament/Auth/Responses/EmailVerificationResponse.php:EmailVerificationResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "target": "class:app/Filament/Auth/Responses/EmailVerificationResponse.php:EmailVerificationResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "target": "file:app/Support/FilamentAuthRedirect.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/LoginResponse.php",
+      "target": "class:app/Filament/Auth/Responses/LoginResponse.php:LoginResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/LoginResponse.php",
+      "target": "class:app/Filament/Auth/Responses/LoginResponse.php:LoginResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/LoginResponse.php",
+      "target": "file:app/Support/FilamentAuthRedirect.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/RegistrationResponse.php",
+      "target": "class:app/Filament/Auth/Responses/RegistrationResponse.php:RegistrationResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/RegistrationResponse.php",
+      "target": "class:app/Filament/Auth/Responses/RegistrationResponse.php:RegistrationResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Auth/Responses/RegistrationResponse.php",
+      "target": "file:app/Support/FilamentAuthRedirect.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Forms/Components/Honeypot.php",
+      "target": "class:app/Filament/Forms/Components/Honeypot.php:Honeypot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Forms/Components/Honeypot.php",
+      "target": "class:app/Filament/Forms/Components/Honeypot.php:Honeypot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "class:app/Filament/Imports/IntroEventRecordImporter.php:IntroEventRecordImporter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "class:app/Filament/Imports/IntroEventRecordImporter.php:IntroEventRecordImporter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "function:app/Filament/Imports/IntroEventRecordImporter.php:getColumns",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "function:app/Filament/Imports/IntroEventRecordImporter.php:resolveRecord",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "function:app/Filament/Imports/IntroEventRecordImporter.php:afterFill",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "function:app/Filament/Imports/IntroEventRecordImporter.php:afterSave",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "function:app/Filament/Imports/IntroEventRecordImporter.php:resolveEnum",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Enums/EstablishmentStatus.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Enums/NisStatus.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Enums/Subregion.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Models/IntroEventRecord.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Models/SubregionRecord.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Models/Taxon.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/IntroEventRecordImporter.php",
+      "target": "file:app/Services/TaxonNormalizer.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/TaxonImporter.php",
+      "target": "class:app/Filament/Imports/TaxonImporter.php:TaxonImporter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/TaxonImporter.php",
+      "target": "class:app/Filament/Imports/TaxonImporter.php:TaxonImporter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Imports/TaxonImporter.php",
+      "target": "function:app/Filament/Imports/TaxonImporter.php:resolveRecord",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Imports/TaxonImporter.php",
+      "target": "file:app/Enums/Catalogue_Status.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/TaxonImporter.php",
+      "target": "file:app/Models/Taxon.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Imports/TaxonImporter.php",
+      "target": "file:app/Services/TaxonNormalizer.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "target": "class:app/Filament/Pages/Auth/EmailVerificationPrompt.php:EmailVerificationPrompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "target": "class:app/Filament/Pages/Auth/EmailVerificationPrompt.php:EmailVerificationPrompt",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Pages/Auth/Login.php",
+      "target": "class:app/Filament/Pages/Auth/Login.php:Login",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/Filament/Pages/Auth/Login.php",
+      "target": "class:app/Filament/Pages/Auth/Login.php:Login",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/Filament/Pages/Auth/Login.php",
+      "target": "file:app/Support/FilamentAuthRedirect.php",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "config:.mcp.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

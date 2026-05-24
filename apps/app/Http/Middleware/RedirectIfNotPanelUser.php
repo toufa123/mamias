@@ -19,9 +19,6 @@ class RedirectIfNotPanelUser
 
         if ($request->routeIs([
             'filament.*.auth.*',
-            'verification.notice',
-            'verification.verify',
-            'verification.send',
             'filament-developer-logins.login-as',
         ])) {
             return $next($request);

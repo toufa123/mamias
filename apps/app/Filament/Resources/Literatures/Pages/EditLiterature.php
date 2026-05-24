@@ -9,12 +9,12 @@ use Filament\Resources\Pages\EditRecord;
 class EditLiterature extends EditRecord
 {
     protected static string $resource = LiteratureResource::class;
-    
+
     protected function getRedirectUrl(): string
     {
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
-    
+
     protected function getHeaderActions(): array
     {
         return [

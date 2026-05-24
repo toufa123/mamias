@@ -22,6 +22,7 @@ It serves researchers, taxonomists, and marine biologists tracking NIS taxonomy,
 - **Pathway Analysis** — Classify introduction pathways by CBD category/subcategory and pathway type.
 - **Literature Management** — Bibliographic reference management with **Crossref DOI** metadata auto-retrieval and auto-generated reference codes.
 - **Dashboard Analytics** — Statistical widgets (species counts, kingdom/phylum/environment distribution charts) via Filament ECharts.
+- **Bot Protection** — Proof-of-work CAPTCHA on login and registration via self-hosted Cap Standalone, alongside honeypot spam protection.
 - **Import/Export** — Bulk data operations via Excel/CSV with session-based import tracking and error reporting.
 - **User Management** — Multi-role RBAC (super_admin, panel_user, user) via Spatie Permission & Filament Shield.
 - **System Health** — Real-time health checks, backup management, and command runner from the admin panel.
@@ -77,6 +78,7 @@ User (users)
 | `EasinService` | EASIN (European Alien Species Information Network) integration |
 | `DoiMetadataService` | Crossref DOI metadata resolution for literature |
 | `WhatsAppService` | GreenAPI WhatsApp phone validation with E.164 fallback |
+| `CapService` | Proof-of-work CAPTCHA token verification via Cap Standalone |
 
 ### Project Structure
 
@@ -95,7 +97,7 @@ mamias/
 │   ├── resources/               # Blade views & Filament theme
 │   └── tests/                   # 13 test files (Pest PHP — unit + feature)
 ├── backups/                     # DB backup dumps
-├── docker-compose.yml           # Development stack (6 services)
+├── docker-compose.yml           # Development stack (8 services)
 ├── docker-compose.prod.yml      # Production stack
 ├── Dockerfile                   # FrankenPHP optimized image
 ├── Makefile                     # Dev/prod lifecycle commands
@@ -129,6 +131,23 @@ mamias/
    ```bash
    make dev-up
    ```
+
+4. **Configure Cap CAPTCHA (first run only):**
+   Cap is a self-hosted proof-of-work CAPTCHA that protects login and registration forms.
+   After starting the stack:
+   ```bash
+   # 1. Open the Cap dashboard
+   open http://localhost:3000
+
+   # 2. Log in with the ADMIN_KEY from your .env file
+   # 3. Create a site key, copy the site key and secret key
+   # 4. Add them to your .env file:
+   #      CAP_SITE_KEY=<from-dashboard>
+   #      CAP_SECRET_KEY=<from-dashboard>
+   # 5. Restart the app:
+   docker compose --profile dev restart app
+   ```
+   Cap is optional — without it configured, authentication falls back to the existing honeypot protection only.
 
 4. **Configure local domain:**
    Add `mamias.local` to your hosts file:
@@ -221,6 +240,8 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d --bui
 | **db-backup** | kartoza/pg-backup | — | Automated database backups |
 | **redis** | redis:alpine | 6379 (dev only) | Cache, sessions, queue broker |
 | **mail** | axllent/mailpit | 8026 (dev only) | SMTP catcher + web UI |
+| **cap** | tiago2/cap | 3000 (dev only) | Proof-of-work CAPTCHA standalone server (`ADMIN_KEY` required) |
+| **cap-valkey** | valkey/valkey:9-alpine | — | Token storage for Cap |
 
 ---
 

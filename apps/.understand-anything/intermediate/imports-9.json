@@ -1,0 +1,84 @@
+{
+  "resources/views/filament/forms/components/honeypot.blade.php": [],
+  "resources/views/filament/hooks/pending-references-alert.blade.php": [],
+  "resources/views/filament/pages/backup-manager.blade.php": [],
+  "resources/views/filament/widgets/mamias-info-widget.blade.php": [],
+  "resources/views/filament/widgets/worms-fetch-progress-widget.blade.php": [],
+  "resources/views/livewire/my-references.blade.php": [],
+  "resources/views/livewire/public-profile.blade.php": [],
+  "resources/views/mamias/about.blade.php": [],
+  "resources/views/mamias/home.blade.php": [],
+  "resources/views/partials/navbar.blade.php": [],
+  "resources/views/partials/usermenu.blade.php": [],
+  "routes/breadcrumbs.php": [],
+  "routes/console.php": [],
+  "routes/web.php": [
+    "app/Livewire/MyReferences.php",
+    "app/Livewire/PublicProfile.php"
+  ],
+  "tests/Feature/ExampleTest.php": [],
+  "tests/Feature/FetchTaxaFromWormsJobTest.php": [
+    "app/Jobs/FetchTaxaFromWormsJob.php",
+    "app/Models/Taxon.php",
+    "app/Models/User.php",
+    "app/Services/WormsService.php"
+  ],
+  "tests/Feature/IntroEventRecordImporterTest.php": [
+    "app/Enums/EstablishmentStatus.php",
+    "app/Enums/NisStatus.php",
+    "app/Enums/Subregion.php",
+    "app/Filament/Imports/IntroEventRecordImporter.php",
+    "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+    "app/Models/IntroEventRecord.php",
+    "app/Models/SubregionRecord.php",
+    "app/Models/Taxon.php",
+    "app/Models/User.php"
+  ],
+  "tests/Feature/LiteratureAlertBoxTest.php": [
+    "app/Enums/LiteratureStatus.php",
+    "app/Models/Literature.php",
+    "app/Models/User.php",
+    "tests/TestCase.php"
+  ],
+  "tests/Feature/LiteratureApprovalTest.php": [
+    "app/Enums/LiteratureStatus.php",
+    "app/Filament/Resources/Literatures/Pages/ListLiteratures.php",
+    "app/Models/Literature.php",
+    "app/Models/User.php"
+  ],
+  "tests/Feature/LiteratureNotificationTest.php": [
+    "app/Enums/LiteratureType.php",
+    "app/Livewire/MyReferences.php",
+    "app/Models/Literature.php",
+    "app/Models/User.php",
+    "app/Notifications/NewLiteratureReferenceNotification.php"
+  ],
+  "tests/Feature/LoginRouteTest.php": [
+    "app/Models/User.php"
+  ],
+  "tests/Feature/MyReferencesTest.php": [
+    "app/Enums/LiteratureType.php",
+    "app/Livewire/MyReferences.php",
+    "app/Models/Literature.php",
+    "app/Models/User.php"
+  ],
+  "tests/Feature/TaxonFormTest.php": [
+    "app/Filament/Resources/Taxons/Pages/CreateTaxon.php",
+    "app/Filament/Resources/Taxons/Pages/EditTaxon.php",
+    "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+    "app/Models/Taxon.php",
+    "app/Models/User.php"
+  ],
+  "tests/Feature/TaxonSoftDeleteTest.php": [
+    "app/Models/Taxon.php",
+    "app/Models/User.php"
+  ],
+  "tests/Feature/UserManagementExtendedTest.php": [
+    "app/Filament/Resources/Users/Pages/CreateUser.php",
+    "app/Filament/Resources/Users/Pages/EditUser.php",
+    "app/Filament/Resources/Users/Pages/ListUsers.php",
+    "app/Models/User.php",
+    "app/Services/WormsService.php",
+    "database/seeders/DatabaseSeeder.php"
+  ]
+}

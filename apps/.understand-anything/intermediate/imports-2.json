@@ -1,0 +1,51 @@
+{
+  ".mcp.json": [],
+  ".npmrc": [],
+  "AGENTS.md": [],
+  "app/Console/Commands/CreateFilamentUsersCommand.php": [
+    "app/Models/User.php"
+  ],
+  "app/Console/Commands/DevDbSelfHealCommand.php": [
+    "app/Models/User.php"
+  ],
+  "app/Enums/Catalogue_Status.php": [],
+  "app/Enums/CbdPathwayCategory.php": [],
+  "app/Enums/CbdPathwaySubcategory.php": [],
+  "app/Enums/DataQuality.php": [],
+  "app/Enums/Environment.php": [],
+  "app/Enums/EstablishmentStatus.php": [],
+  "app/Enums/LiteratureStatus.php": [],
+  "app/Enums/LiteratureType.php": [],
+  "app/Enums/NisStatus.php": [],
+  "app/Enums/PathwayType.php": [],
+  "app/Enums/Subregion.php": [],
+  "app/Enums/Worms_Status.php": [],
+  "app/Filament/Auth/Responses/EmailVerificationResponse.php": [
+    "app/Support/FilamentAuthRedirect.php"
+  ],
+  "app/Filament/Auth/Responses/LoginResponse.php": [
+    "app/Support/FilamentAuthRedirect.php"
+  ],
+  "app/Filament/Auth/Responses/RegistrationResponse.php": [
+    "app/Support/FilamentAuthRedirect.php"
+  ],
+  "app/Filament/Forms/Components/Honeypot.php": [],
+  "app/Filament/Imports/IntroEventRecordImporter.php": [
+    "app/Enums/EstablishmentStatus.php",
+    "app/Enums/NisStatus.php",
+    "app/Enums/Subregion.php",
+    "app/Models/IntroEventRecord.php",
+    "app/Models/SubregionRecord.php",
+    "app/Models/Taxon.php",
+    "app/Services/TaxonNormalizer.php"
+  ],
+  "app/Filament/Imports/TaxonImporter.php": [
+    "app/Enums/Catalogue_Status.php",
+    "app/Models/Taxon.php",
+    "app/Services/TaxonNormalizer.php"
+  ],
+  "app/Filament/Pages/Auth/EmailVerificationPrompt.php": [],
+  "app/Filament/Pages/Auth/Login.php": [
+    "app/Support/FilamentAuthRedirect.php"
+  ]
+}

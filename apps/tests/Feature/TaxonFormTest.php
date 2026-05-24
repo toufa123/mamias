@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Catalogue_Status;
 use App\Filament\Resources\Taxons\Pages\CreateTaxon;
 use App\Filament\Resources\Taxons\Pages\EditTaxon;
 use App\Filament\Resources\Taxons\Pages\ListTaxons;
@@ -12,7 +13,6 @@ use Filament\Facades\Filament;
 use Spatie\Permission\Models\Role;
 
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Livewire\livewire;
 
 beforeEach(function () {
@@ -118,11 +118,11 @@ it('saves updated catalogue_status on edit', function () {
     $taxon = Taxon::factory()->create();
 
     livewire(EditTaxon::class, ['record' => $taxon->id])
-        ->fillForm(['catalogue_status' => \App\Enums\Catalogue_Status::checked_accepted->value])
+        ->fillForm(['catalogue_status' => Catalogue_Status::checked_accepted->value])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($taxon->fresh()->catalogue_status)->toBe(\App\Enums\Catalogue_Status::checked_accepted);
+    expect($taxon->fresh()->catalogue_status)->toBe(Catalogue_Status::checked_accepted);
 });
 
 // Delete action

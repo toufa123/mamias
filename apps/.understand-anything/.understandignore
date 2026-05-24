@@ -1,0 +1,52 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)
+#
+# Built-in defaults (always excluded unless negated):
+#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
+
+# --- Laravel build/runtime artifacts ---
+public/build/
+public/hot
+public/storage/
+public/vendor/
+public/lubusin/
+public/packages/
+public/css/
+public/js/
+public/fonts/
+public/images/
+public/assets/
+storage/
+bootstrap/cache/
+lang/
+_ide_helper.php
+_ide_helper_models.php
+
+# --- IDE/tooling ---
+.codex/
+.cursor/
+.idea/
+.nova/
+.phpunit.cache/
+.zed/
+.junie/
+.deepsec/
+.claude/
+.copilot/
+
+# --- Env/secrets ---
+.env
+.env.*
+auth.json
+Homestead.json
+Homestead.yaml
+.phpactor.json
+.phpunit.result.cache
+
+# --- Test patterns (kept ENABLED — Laravel tests are core knowledge) ---
+# tests/
+
+# --- Misc ---
+*.log
+Thumbs.db
+.DS_Store

@@ -1,0 +1,1903 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": ".mcp.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 12,
+      "nonEmptyLines": 12,
+      "sections": [
+        {
+          "heading": "mcpServers",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": ".npmrc",
+      "language": "unknown",
+      "fileCategory": "config",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {}
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 409,
+      "nonEmptyLines": 284,
+      "sections": [
+        {
+          "heading": "Laravel Boost Guidelines",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "Foundational Context",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Skills Activation",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "Conventions",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "Verification Scripts",
+          "level": 2,
+          "line": 36
+        },
+        {
+          "heading": "Application Structure & Architecture",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "Frontend Bundling",
+          "level": 2,
+          "line": 45
+        },
+        {
+          "heading": "Documentation Files",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "Replies",
+          "level": 2,
+          "line": 53
+        },
+        {
+          "heading": "Laravel Boost",
+          "level": 1,
+          "line": 59
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 61
+        },
+        {
+          "heading": "Searching Documentation (IMPORTANT)",
+          "level": 2,
+          "line": 69
+        },
+        {
+          "heading": "Search Syntax",
+          "level": 3,
+          "line": 76
+        },
+        {
+          "heading": "Artisan",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "Tinker",
+          "level": 2,
+          "line": 89
+        },
+        {
+          "heading": "PHP",
+          "level": 1,
+          "line": 97
+        },
+        {
+          "heading": "Deployment",
+          "level": 1,
+          "line": 108
+        },
+        {
+          "heading": "Test Enforcement",
+          "level": 1,
+          "line": 114
+        },
+        {
+          "heading": "Do Things the Laravel Way",
+          "level": 1,
+          "line": 121
+        },
+        {
+          "heading": "Model Creation",
+          "level": 3,
+          "line": 127
+        },
+        {
+          "heading": "APIs & Eloquent Resources",
+          "level": 2,
+          "line": 131
+        },
+        {
+          "heading": "URL Generation",
+          "level": 2,
+          "line": 135
+        },
+        {
+          "heading": "Testing",
+          "level": 2,
+          "line": 139
+        },
+        {
+          "heading": "Vite Error",
+          "level": 2,
+          "line": 145
+        },
+        {
+          "heading": "Livewire",
+          "level": 1,
+          "line": 151
+        },
+        {
+          "heading": "Laravel Pint Code Formatter",
+          "level": 1,
+          "line": 159
+        },
+        {
+          "heading": "Pest",
+          "level": 2,
+          "line": 166
+        },
+        {
+          "heading": "Filament",
+          "level": 2,
+          "line": 175
+        },
+        {
+          "heading": "Artisan",
+          "level": 3,
+          "line": 180
+        },
+        {
+          "heading": "Patterns",
+          "level": 3,
+          "line": 185
+        },
+        {
+          "heading": "Testing",
+          "level": 3,
+          "line": 306
+        },
+        {
+          "heading": "Correct Namespaces",
+          "level": 3,
+          "line": 386
+        },
+        {
+          "heading": "Common Mistakes",
+          "level": 3,
+          "line": 397
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 33
+      }
+    },
+    {
+      "path": "app/Console/Commands/CreateFilamentUsersCommand.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 81,
+      "nonEmptyLines": 67,
+      "functions": [
+        {
+          "name": "handle",
+          "startLine": 43,
+          "endLine": 54,
+          "params": []
+        },
+        {
+          "name": "createUser",
+          "startLine": 56,
+          "endLine": 80,
+          "params": [
+            "$data"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CreateFilamentUsersCommand",
+          "startLine": 12,
+          "endLine": 81,
+          "methods": [
+            "handle",
+            "createUser"
+          ],
+          "properties": [
+            "users"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CreateFilamentUsersCommand",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "handle",
+          "callee": "$this->info",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handle",
+          "callee": "$this->createUser",
+          "lineNumber": 48
+        },
+        {
+          "caller": "handle",
+          "callee": "$this->info",
+          "lineNumber": 51
+        },
+        {
+          "caller": "createUser",
+          "callee": "User::where('email', $data['email'])->first",
+          "lineNumber": 58
+        },
+        {
+          "caller": "createUser",
+          "callee": "User::where",
+          "lineNumber": 58
+        },
+        {
+          "caller": "createUser",
+          "callee": "$this->warn",
+          "lineNumber": 61
+        },
+        {
+          "caller": "createUser",
+          "callee": "Role::findOrCreate",
+          "lineNumber": 66
+        },
+        {
+          "caller": "createUser",
+          "callee": "User::create",
+          "lineNumber": 68
+        },
+        {
+          "caller": "createUser",
+          "callee": "Hash::make",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createUser",
+          "callee": "now",
+          "lineNumber": 74
+        },
+        {
+          "caller": "createUser",
+          "callee": "$user->assignRole",
+          "lineNumber": 77
+        },
+        {
+          "caller": "createUser",
+          "callee": "$this->info",
+          "lineNumber": 79
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Console/Commands/DevDbSelfHealCommand.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "handle",
+          "startLine": 18,
+          "endLine": 29,
+          "params": []
+        },
+        {
+          "name": "syncUserSequence",
+          "startLine": 31,
+          "endLine": 41,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "DevDbSelfHealCommand",
+          "startLine": 11,
+          "endLine": 42,
+          "methods": [
+            "handle",
+            "syncUserSequence"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "DevDbSelfHealCommand",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "handle",
+          "callee": "$this->info",
+          "lineNumber": 20
+        },
+        {
+          "caller": "handle",
+          "callee": "DB::getDriverName",
+          "lineNumber": 22
+        },
+        {
+          "caller": "handle",
+          "callee": "$this->syncUserSequence",
+          "lineNumber": 23
+        },
+        {
+          "caller": "handle",
+          "callee": "$this->info",
+          "lineNumber": 26
+        },
+        {
+          "caller": "syncUserSequence",
+          "callee": "$this->comment",
+          "lineNumber": 33
+        },
+        {
+          "caller": "syncUserSequence",
+          "callee": "User::max",
+          "lineNumber": 35
+        },
+        {
+          "caller": "syncUserSequence",
+          "callee": "DB::statement",
+          "lineNumber": 38
+        },
+        {
+          "caller": "syncUserSequence",
+          "callee": "$this->info",
+          "lineNumber": 40
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Enums/Catalogue_Status.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 63,
+      "callGraph": [
+        {
+          "caller": "label",
+          "callee": "$this->getLabel",
+          "lineNumber": 55
+        },
+        {
+          "caller": "fromWormsData",
+          "callee": "in_array",
+          "lineNumber": 66
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/CbdPathwayCategory.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 23,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/CbdPathwaySubcategory.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 55,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/DataQuality.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 34,
+      "callGraph": [
+        {
+          "caller": "getLabel",
+          "callee": "ucfirst",
+          "lineNumber": 18
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/Environment.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 91,
+      "nonEmptyLines": 74,
+      "callGraph": [
+        {
+          "caller": "label",
+          "callee": "$this->getLabel",
+          "lineNumber": 48
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "strtolower",
+          "lineNumber": 57
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "trim",
+          "lineNumber": 57
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "self::tryFrom",
+          "lineNumber": 63
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "collect(self::cases())->first",
+          "lineNumber": 64
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "collect",
+          "lineNumber": 64
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "self::cases",
+          "lineNumber": 64
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "strtolower",
+          "lineNumber": 65
+        },
+        {
+          "caller": "fromLabelOrValue",
+          "callee": "$case->getLabel",
+          "lineNumber": 65
+        },
+        {
+          "caller": "fromWormsData",
+          "callee": "empty",
+          "lineNumber": 73
+        },
+        {
+          "caller": "fromWormsData",
+          "callee": "empty",
+          "lineNumber": 77
+        },
+        {
+          "caller": "fromWormsData",
+          "callee": "empty",
+          "lineNumber": 81
+        },
+        {
+          "caller": "fromWormsData",
+          "callee": "empty",
+          "lineNumber": 85
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/EstablishmentStatus.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 56,
+      "nonEmptyLines": 49,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/LiteratureStatus.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 35,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/LiteratureType.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 32,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/NisStatus.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 47,
+      "nonEmptyLines": 40,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/PathwayType.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 15,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/Subregion.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 33,
+      "callGraph": [
+        {
+          "caller": "label",
+          "callee": "$this->getLabel",
+          "lineNumber": 38
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Enums/Worms_Status.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 93,
+      "nonEmptyLines": 87,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "app/Filament/Auth/Responses/EmailVerificationResponse.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "toResponse",
+          "startLine": 15,
+          "endLine": 18,
+          "params": [
+            "$request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "EmailVerificationResponse",
+          "startLine": 13,
+          "endLine": 19,
+          "methods": [
+            "toResponse"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "EmailVerificationResponse",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toResponse",
+          "callee": "redirect()->to",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "redirect",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "FilamentAuthRedirect::for",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "$request->user",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "Filament::getAuthGuard",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Auth/Responses/LoginResponse.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "toResponse",
+          "startLine": 15,
+          "endLine": 18,
+          "params": [
+            "$request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LoginResponse",
+          "startLine": 13,
+          "endLine": 19,
+          "methods": [
+            "toResponse"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "LoginResponse",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toResponse",
+          "callee": "redirect()->to",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "redirect",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "FilamentAuthRedirect::for",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "$request->user",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "Filament::getAuthGuard",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Auth/Responses/RegistrationResponse.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "toResponse",
+          "startLine": 15,
+          "endLine": 18,
+          "params": [
+            "$request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "RegistrationResponse",
+          "startLine": 13,
+          "endLine": 19,
+          "methods": [
+            "toResponse"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RegistrationResponse",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toResponse",
+          "callee": "redirect()->to",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "redirect",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "FilamentAuthRedirect::for",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "$request->user",
+          "lineNumber": 17
+        },
+        {
+          "caller": "toResponse",
+          "callee": "Filament::getAuthGuard",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Forms/Components/Honeypot.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "getHoneypotName",
+          "startLine": 12,
+          "endLine": 15,
+          "params": []
+        },
+        {
+          "name": "getUnrandomizedName",
+          "startLine": 17,
+          "endLine": 20,
+          "params": []
+        },
+        {
+          "name": "getValidFromFieldName",
+          "startLine": 22,
+          "endLine": 25,
+          "params": []
+        },
+        {
+          "name": "getValidFromTimestamp",
+          "startLine": 27,
+          "endLine": 30,
+          "params": []
+        },
+        {
+          "name": "isEnabled",
+          "startLine": 32,
+          "endLine": 35,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Honeypot",
+          "startLine": 8,
+          "endLine": 36,
+          "methods": [
+            "getHoneypotName",
+            "getUnrandomizedName",
+            "getValidFromFieldName",
+            "getValidFromTimestamp",
+            "isEnabled"
+          ],
+          "properties": [
+            "view"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Honeypot",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getHoneypotName",
+          "callee": "app(Honeypot::class)->nameFieldName",
+          "lineNumber": 14
+        },
+        {
+          "caller": "getHoneypotName",
+          "callee": "app",
+          "lineNumber": 14
+        },
+        {
+          "caller": "getUnrandomizedName",
+          "callee": "app(Honeypot::class)->unrandomizedNameFieldName",
+          "lineNumber": 19
+        },
+        {
+          "caller": "getUnrandomizedName",
+          "callee": "app",
+          "lineNumber": 19
+        },
+        {
+          "caller": "getValidFromFieldName",
+          "callee": "app(Honeypot::class)->validFromFieldName",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getValidFromFieldName",
+          "callee": "app",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getValidFromTimestamp",
+          "callee": "app(Honeypot::class)->encryptedValidFrom",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getValidFromTimestamp",
+          "callee": "app",
+          "lineNumber": 29
+        },
+        {
+          "caller": "isEnabled",
+          "callee": "config",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Imports/IntroEventRecordImporter.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 249,
+      "nonEmptyLines": 201,
+      "functions": [
+        {
+          "name": "getColumns",
+          "startLine": 22,
+          "endLine": 114,
+          "params": []
+        },
+        {
+          "name": "resolveRecord",
+          "startLine": 116,
+          "endLine": 129,
+          "params": []
+        },
+        {
+          "name": "afterFill",
+          "startLine": 131,
+          "endLine": 162,
+          "params": []
+        },
+        {
+          "name": "afterSave",
+          "startLine": 164,
+          "endLine": 192,
+          "params": []
+        },
+        {
+          "name": "getCompletedNotificationBody",
+          "startLine": 194,
+          "endLine": 206,
+          "params": [
+            "$import"
+          ]
+        },
+        {
+          "name": "resolveEnum",
+          "startLine": 208,
+          "endLine": 248,
+          "params": [
+            "$enumClass",
+            "$state"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "IntroEventRecordImporter",
+          "startLine": 18,
+          "endLine": 249,
+          "methods": [
+            "getColumns",
+            "resolveRecord",
+            "afterFill",
+            "afterSave",
+            "getCompletedNotificationBody",
+            "resolveEnum"
+          ],
+          "properties": [
+            "model"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "IntroEventRecordImporter",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('taxon_id')\n                ->label('Scientific Name')\n                ->requiredMapping()\n                ->castStateUsing(function (?string $state): ?int {\n                    if (blank($state)) {\n                        return null;\n                    }\n\n                    $name = app(TaxonNormalizer::class)->sanitizeEncodingArtifacts($state);\n                    $name = preg_replace('/\\s+/', ' ', trim($name));\n\n                    return Taxon::where('scientificname', $name)->value('id');\n                })->rules",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('taxon_id')\n                ->label('Scientific Name')\n                ->requiredMapping()->castStateUsing",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('taxon_id')\n                ->label('Scientific Name')->requiredMapping",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('taxon_id')->label",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getColumns",
+          "callee": "blank",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getColumns",
+          "callee": "app(TaxonNormalizer::class)->sanitizeEncodingArtifacts",
+          "lineNumber": 33
+        },
+        {
+          "caller": "getColumns",
+          "callee": "app",
+          "lineNumber": 33
+        },
+        {
+          "caller": "getColumns",
+          "callee": "preg_replace",
+          "lineNumber": 34
+        },
+        {
+          "caller": "getColumns",
+          "callee": "trim",
+          "lineNumber": 34
+        },
+        {
+          "caller": "getColumns",
+          "callee": "Taxon::where('scientificname', $name)->value",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getColumns",
+          "callee": "Taxon::where",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('first_introduction_year')\n                ->label('First Introduction Year')\n                ->numeric()->rules",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('first_introduction_year')\n                ->label('First Introduction Year')->numeric",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('first_introduction_year')->label",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getColumns",
+          "callee": "now",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('first_country')\n                ->label('Country')\n                ->castStateUsing(function (?string $state): ?array {\n                    if (blank($state)) {\n                        return null;\n                    }\n\n                    return array_values(array_filter(array_map('trim', explode(',', $state))));\n                })->rules",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('first_country')\n                ->label('Country')->castStateUsing",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('first_country')->label",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getColumns",
+          "callee": "blank",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getColumns",
+          "callee": "array_values",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getColumns",
+          "callee": "array_filter",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getColumns",
+          "callee": "array_map",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getColumns",
+          "callee": "explode",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('nis_status')\n                ->label('NIS Status')\n                ->castStateUsing(fn (?string $state): ?NisStatus => self::resolveEnum(NisStatus::class, $state))->rules",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('nis_status')\n                ->label('NIS Status')->castStateUsing",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('nis_status')->label",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::resolveEnum",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('establishment_status')\n                ->label('Establishment Status')\n                ->castStateUsing(fn (?string $state): ?EstablishmentStatus => self::resolveEnum(EstablishmentStatus::class, $state))->rules",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('establishment_status')\n                ->label('Establishment Status')->castStateUsing",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('establishment_status')->label",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::resolveEnum",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('notes')\n                ->label('Notes')->rules",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('notes')->label",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('wmed_nis_status')\n                ->label('WMED – NIS Status')\n                ->castStateUsing(fn (?string $state): ?NisStatus => self::resolveEnum(NisStatus::class, $state))->fillRecordUsing",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('wmed_nis_status')\n                ->label('WMED – NIS Status')->castStateUsing",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('wmed_nis_status')->label",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::resolveEnum",
+          "lineNumber": 76
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('wmed_first_arrival_year')\n                ->label('WMED – First Arrival Year')\n                ->numeric()->fillRecordUsing",
+          "lineNumber": 79
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('wmed_first_arrival_year')\n                ->label('WMED – First Arrival Year')->numeric",
+          "lineNumber": 79
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('wmed_first_arrival_year')->label",
+          "lineNumber": 79
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 79
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('cmed_nis_status')\n                ->label('CMED – NIS Status')\n                ->castStateUsing(fn (?string $state): ?NisStatus => self::resolveEnum(NisStatus::class, $state))->fillRecordUsing",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('cmed_nis_status')\n                ->label('CMED – NIS Status')->castStateUsing",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('cmed_nis_status')->label",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::resolveEnum",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('cmed_first_arrival_year')\n                ->label('CMED – First Arrival Year')\n                ->numeric()->fillRecordUsing",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('cmed_first_arrival_year')\n                ->label('CMED – First Arrival Year')->numeric",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('cmed_first_arrival_year')->label",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('adria_nis_status')\n                ->label('Adriatic – NIS Status')\n                ->castStateUsing(fn (?string $state): ?NisStatus => self::resolveEnum(NisStatus::class, $state))->fillRecordUsing",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('adria_nis_status')\n                ->label('Adriatic – NIS Status')->castStateUsing",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('adria_nis_status')->label",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::resolveEnum",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('adria_first_arrival_year')\n                ->label('Adriatic – First Arrival Year')\n                ->numeric()->fillRecordUsing",
+          "lineNumber": 99
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('adria_first_arrival_year')\n                ->label('Adriatic – First Arrival Year')->numeric",
+          "lineNumber": 99
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('adria_first_arrival_year')->label",
+          "lineNumber": 99
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 99
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('emed_nis_status')\n                ->label('EMED – NIS Status')\n                ->castStateUsing(fn (?string $state): ?NisStatus => self::resolveEnum(NisStatus::class, $state))->fillRecordUsing",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('emed_nis_status')\n                ->label('EMED – NIS Status')->castStateUsing",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('emed_nis_status')->label",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::resolveEnum",
+          "lineNumber": 106
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('emed_first_arrival_year')\n                ->label('EMED – First Arrival Year')\n                ->numeric()->fillRecordUsing",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('emed_first_arrival_year')\n                ->label('EMED – First Arrival Year')->numeric",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('emed_first_arrival_year')->label",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 109
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "IntroEventRecord::where('taxon_id', $taxonId)->first",
+          "lineNumber": 121
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "IntroEventRecord::where",
+          "lineNumber": 121
+        },
+        {
+          "caller": "afterFill",
+          "callee": "blank",
+          "lineNumber": 145
+        },
+        {
+          "caller": "afterFill",
+          "callee": "blank",
+          "lineNumber": 151
+        },
+        {
+          "caller": "afterSave",
+          "callee": "SubregionRecord::updateOrCreate",
+          "lineNumber": 181
+        },
+        {
+          "caller": "afterSave",
+          "callee": "array_filter",
+          "lineNumber": 186
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "Number::format",
+          "lineNumber": 197
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str('row')->plural",
+          "lineNumber": 198
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str",
+          "lineNumber": 198
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "$import->getFailedRowsCount",
+          "lineNumber": 200
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "Number::format",
+          "lineNumber": 201
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str('row')->plural",
+          "lineNumber": 202
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str",
+          "lineNumber": 202
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "blank",
+          "lineNumber": 210
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "trim",
+          "lineNumber": 214
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "strtolower",
+          "lineNumber": 232
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "isset",
+          "lineNumber": 234
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "Str::studly",
+          "lineNumber": 238
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "strtolower",
+          "lineNumber": 238
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "str_replace",
+          "lineNumber": 238
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "$enumClass::cases",
+          "lineNumber": 240
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "strtolower",
+          "lineNumber": 241
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "strtolower",
+          "lineNumber": 241
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "strtolower",
+          "lineNumber": 242
+        },
+        {
+          "caller": "resolveEnum",
+          "callee": "strtolower",
+          "lineNumber": 242
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Imports/TaxonImporter.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 83,
+      "nonEmptyLines": 68,
+      "functions": [
+        {
+          "name": "getColumns",
+          "startLine": 19,
+          "endLine": 28,
+          "params": []
+        },
+        {
+          "name": "resolveRecord",
+          "startLine": 30,
+          "endLine": 53,
+          "params": []
+        },
+        {
+          "name": "beforeSave",
+          "startLine": 55,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "getCompletedNotificationBody",
+          "startLine": 61,
+          "endLine": 73,
+          "params": [
+            "$import"
+          ]
+        },
+        {
+          "name": "sanitize",
+          "startLine": 75,
+          "endLine": 82,
+          "params": [
+            "$value"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "TaxonImporter",
+          "startLine": 15,
+          "endLine": 83,
+          "methods": [
+            "getColumns",
+            "resolveRecord",
+            "beforeSave",
+            "getCompletedNotificationBody",
+            "sanitize"
+          ],
+          "properties": [
+            "model"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TaxonImporter",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('scientificname')\n                ->label('Scientific Name')\n                ->requiredMapping()\n                ->rules(['required', 'max:255'])->castStateUsing",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('scientificname')\n                ->label('Scientific Name')\n                ->requiredMapping()->rules",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('scientificname')\n                ->label('Scientific Name')->requiredMapping",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make('scientificname')->label",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getColumns",
+          "callee": "ImportColumn::make",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getColumns",
+          "callee": "self::sanitize",
+          "lineNumber": 26
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "Taxon::where('scientificname', $scientificname)->first",
+          "lineNumber": 35
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "Taxon::where",
+          "lineNumber": 35
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "$this->import->getKey",
+          "lineNumber": 38
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "Cache::get",
+          "lineNumber": 39
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "$existing->getKey",
+          "lineNumber": 42
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "Cache::put",
+          "lineNumber": 44
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "now()->addHour",
+          "lineNumber": 44
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "now",
+          "lineNumber": 44
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "$existing->getKey",
+          "lineNumber": 46
+        },
+        {
+          "caller": "resolveRecord",
+          "callee": "(new Taxon)->fill",
+          "lineNumber": 50
+        },
+        {
+          "caller": "beforeSave",
+          "callee": "app",
+          "lineNumber": 57
+        },
+        {
+          "caller": "beforeSave",
+          "callee": "$normalizer->normalize",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "Number::format",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str('row')->plural",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "$import->getFailedRowsCount",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "Number::format",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str('row')->plural",
+          "lineNumber": 69
+        },
+        {
+          "caller": "getCompletedNotificationBody",
+          "callee": "str",
+          "lineNumber": 69
+        },
+        {
+          "caller": "sanitize",
+          "callee": "trim",
+          "lineNumber": 77
+        },
+        {
+          "caller": "sanitize",
+          "callee": "app(TaxonNormalizer::class)->sanitizeEncodingArtifacts",
+          "lineNumber": 81
+        },
+        {
+          "caller": "sanitize",
+          "callee": "app",
+          "lineNumber": 81
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Pages/Auth/EmailVerificationPrompt.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 13,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "EmailVerificationPrompt",
+          "startLine": 8,
+          "endLine": 13,
+          "methods": [],
+          "properties": [
+            "hasTopbar"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "EmailVerificationPrompt",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "app/Filament/Pages/Auth/Login.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "mount",
+          "startLine": 13,
+          "endLine": 22,
+          "params": []
+        },
+        {
+          "name": "getRedirectUrl",
+          "startLine": 24,
+          "endLine": 27,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "Login",
+          "startLine": 9,
+          "endLine": 28,
+          "methods": [
+            "mount",
+            "getRedirectUrl"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Login",
+          "line": 9,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "mount",
+          "callee": "auth()->check",
+          "lineNumber": 15
+        },
+        {
+          "caller": "mount",
+          "callee": "auth",
+          "lineNumber": 15
+        },
+        {
+          "caller": "mount",
+          "callee": "$this->redirect",
+          "lineNumber": 16
+        },
+        {
+          "caller": "mount",
+          "callee": "$this->getRedirectUrl",
+          "lineNumber": 16
+        },
+        {
+          "caller": "mount",
+          "callee": "parent::mount",
+          "lineNumber": 21
+        },
+        {
+          "caller": "getRedirectUrl",
+          "callee": "FilamentAuthRedirect::for",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getRedirectUrl",
+          "callee": "auth()->user",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getRedirectUrl",
+          "callee": "auth",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    }
+  ]
+}

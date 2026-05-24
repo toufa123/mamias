@@ -8,7 +8,7 @@ use Elemind\FilamentECharts\Widgets\EChartWidget;
 
 class CatalogueEnvironmentChart extends EChartWidget
 {
-    protected static ?string $heading = 'Distribution by Environment';
+    protected static ?string $heading = 'Number of Species by Environment';
 
     protected static int $contentHeight = 350;
 
@@ -16,7 +16,7 @@ class CatalogueEnvironmentChart extends EChartWidget
 
     protected static bool $isCollapsible = true;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = 1;
 
     protected const ENV_COLORS = [
         'marine' => '#00899d',

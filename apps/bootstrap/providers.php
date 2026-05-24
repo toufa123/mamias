@@ -1,6 +1,9 @@
 <?php
-    
-    return [
-        App\Providers\AppServiceProvider::class,
-        App\Providers\Filament\MamiasPanelProvider::class,
-    ];
+
+use App\Providers\AppServiceProvider;
+use App\Providers\Filament\MamiasPanelProvider;
+
+return [
+    AppServiceProvider::class,
+    MamiasPanelProvider::class,
+];

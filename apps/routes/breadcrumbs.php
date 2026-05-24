@@ -29,5 +29,11 @@ Breadcrumbs::for('profile', function (BreadcrumbTrail $trail) {
 // My Bibliographic References
 Breadcrumbs::for('references', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
-    $trail->push('My References', route('references'));
+    $trail->push('My Bibliographic References', route('references'));
+});
+
+// My Species Suggestions
+Breadcrumbs::for('suggestions', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('My Suggestions', route('suggestions'));
 });

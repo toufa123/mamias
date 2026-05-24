@@ -6,7 +6,6 @@
  * This file contains all the configuration options for the cookie consent system.
  * It allows customization of the cookie banner appearance, behavior, and compliance settings.
  *
- * @package Config
  * @author Muhammad Rabiul
  * @license MIT
  */
@@ -27,10 +26,10 @@ return [
      * Enable or disable the cookie consent banner
      *
      * @default true
+     *
      * @env COOKIE_CONSENT_ENABLED
      */
     'enabled' => env('COOKIE_CONSENT_ENABLED', true),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -51,6 +50,7 @@ return [
      * Defines how long the consent cookie should persist in the user's browser.
      *
      * @default 365
+     *
      * @env COOKIE_CONSENT_LIFETIME
      */
     'cookie_lifetime' => env('COOKIE_CONSENT_LIFETIME', 365),
@@ -61,6 +61,7 @@ return [
      * Specifies how long the rejection cookie should persist when users decline cookies.
      *
      * @default 7
+     *
      * @env COOKIE_REJECT_LIFETIME
      */
     'reject_lifetime' => env('COOKIE_REJECT_LIFETIME', 7),
@@ -71,7 +72,9 @@ return [
      * Determines the visual presentation of the consent modal.
      *
      * @default 'bar-inline'
+     *
      * @env COOKIE_CONSENT_MODAL_LAYOUT
+     *
      * @option box - Small floating box
      * @option box-inline - Small floating box positioned inline
      * @option box-wide - Larger floating box
@@ -88,6 +91,7 @@ return [
      * Determines if users can access detailed cookie preferences.
      *
      * @default false
+     *
      * @env COOKIE_CONSENT_PREFERENCES_ENABLED
      */
     'preferences_modal_enabled' => env('COOKIE_CONSENT_PREFERENCES_ENABLED', true),
@@ -98,7 +102,9 @@ return [
      * Defines the visual presentation of the preferences modal.
      *
      * @default 'bar'
+     *
      * @env COOKIE_CONSENT_PREFERENCES_LAYOUT
+     *
      * @option bar - Bar-style modal
      * @option box - Popup-style box
      */
@@ -110,6 +116,7 @@ return [
      * Adds a flip animation effect to consent buttons.
      *
      * @default true
+     *
      * @env COOKIE_CONSENT_FLIP_BUTTON
      */
     'flip_button' => env('COOKIE_CONSENT_FLIP_BUTTON', true),
@@ -120,6 +127,7 @@ return [
      * When enabled, users must interact with the cookie banner before accessing content.
      *
      * @default true
+     *
      * @env COOKIE_CONSENT_DISABLE_INTERACTION
      */
     'disable_page_interaction' => env('COOKIE_CONSENT_DISABLE_INTERACTION', true),
@@ -128,7 +136,9 @@ return [
      * Color theme for the cookie banner
      *
      * @default 'default'
+     *
      * @env COOKIE_CONSENT_THEME
+     *
      * @option default - Standard theme
      * @option dark - Dark mode theme
      * @option light - Light mode theme
@@ -153,14 +163,14 @@ return [
      *
      * @default "Cookie Disclaimer"
      */
-    'cookie_title' => "Cookie Disclaimer",
+    'cookie_title' => 'Cookie Disclaimer',
 
     /**
      * Cookie banner description text
      *
      * @default "This website uses cookies to enhance your browsing experience, analyze site traffic, and personalize content. By continuing to use this site, you consent to our use of cookies."
      */
-    'cookie_description' => "This website uses cookies to enhance your browsing experience, analyze site traffic, and personalize content. By continuing to use this site, you consent to our use of cookies.",
+    'cookie_description' => 'This website uses cookies to enhance your browsing experience, analyze site traffic, and personalize content. By continuing to use this site, you consent to our use of cookies.',
 
     /**
      * Accept all cookies button text
@@ -254,12 +264,11 @@ return [
     'policy_links' => [
         [
             'text' => 'Privacy Policy',
-            'link' => env('COOKIE_CONSENT_PRIVACY_POLICY_URL', '') ?? url('privacy-policy')
+            'link' => env('COOKIE_CONSENT_PRIVACY_POLICY_URL', '') ?? url('privacy-policy'),
         ],
         [
             'text' => 'Terms and Conditions',
-            'link' => env('COOKIE_CONSENT_TERMS_URL', '') ?? url('terms-and-conditions')
+            'link' => env('COOKIE_CONSENT_TERMS_URL', '') ?? url('terms-and-conditions'),
         ],
     ],
 ];
-

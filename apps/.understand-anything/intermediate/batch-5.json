@@ -1,0 +1,745 @@
+{
+  "nodes": [
+    {
+      "id": "file:app/Models/User.php",
+      "type": "file",
+      "name": "User.php",
+      "filePath": "app/Models/User.php",
+      "summary": "Primary Eloquent authentication model with Filament panel access, Spatie role checks, computed avatar/name attributes, and a literatures hasMany relation.",
+      "tags": ["data-model", "authentication", "filament", "entry-point"],
+      "complexity": "moderate",
+      "languageNotes": "Implements FilamentUser, HasAvatar, HasName, and MustVerifyEmail contracts; first/last_name -> name sync occurs in booted()."
+    },
+    {
+      "id": "class:app/Models/User.php:User",
+      "type": "class",
+      "name": "User",
+      "filePath": "app/Models/User.php",
+      "lineRange": [51, 177],
+      "summary": "Eloquent Authenticatable User model defining Filament panel access rules, avatar URL generation, role checks, and the literatures relationship.",
+      "tags": ["data-model", "authentication", "filament-user"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Models/User.php:booted",
+      "type": "function",
+      "name": "booted",
+      "filePath": "app/Models/User.php",
+      "lineRange": [78, 85],
+      "summary": "Registers a saving hook that recomputes the User's name from first_name and last_name whenever either field changes.",
+      "tags": ["event-handler", "model-lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Models/User.php:canAccessPanel",
+      "type": "function",
+      "name": "canAccessPanel",
+      "filePath": "app/Models/User.php",
+      "lineRange": [148, 151],
+      "summary": "Authorizes Filament panel access by restricting the 'mamias' panel to users holding the super_admin or panel_user role.",
+      "tags": ["authorization", "filament"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Models/User.php:getFilamentAvatarUrl",
+      "type": "function",
+      "name": "getFilamentAvatarUrl",
+      "filePath": "app/Models/User.php",
+      "lineRange": [108, 111],
+      "summary": "Generates a UI-Avatars URL using the user's display name as fallback when no uploaded avatar exists.",
+      "tags": ["utility", "avatar"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Models/User.php:casts",
+      "type": "function",
+      "name": "casts",
+      "filePath": "app/Models/User.php",
+      "lineRange": [161, 171],
+      "summary": "Declares attribute casts including hashed password, datetime email_verified_at, and array casts for subregions and countries collections.",
+      "tags": ["model-config", "casts"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Notifications/NewLiteratureReferenceNotification.php",
+      "type": "file",
+      "name": "NewLiteratureReferenceNotification.php",
+      "filePath": "app/Notifications/NewLiteratureReferenceNotification.php",
+      "summary": "Notification dispatched to admins/scientists when a new literature reference is submitted, delivering both mail and Filament database channel messages.",
+      "tags": ["notification", "event-handler", "mail"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Notifications/NewLiteratureReferenceNotification.php:NewLiteratureReferenceNotification",
+      "type": "class",
+      "name": "NewLiteratureReferenceNotification",
+      "filePath": "app/Notifications/NewLiteratureReferenceNotification.php",
+      "lineRange": [12, 50],
+      "summary": "Multi-channel notification wrapping a Literature record, producing a MailMessage and a Filament database notification with a Review action.",
+      "tags": ["notification", "filament"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Observers/LiteratureObserver.php",
+      "type": "file",
+      "name": "LiteratureObserver.php",
+      "filePath": "app/Observers/LiteratureObserver.php",
+      "summary": "Eloquent observer that auto-generates the Literature code on create and notifies super_admin/scientist users after persistence.",
+      "tags": ["event-handler", "observer", "notification"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Observers/LiteratureObserver.php:LiteratureObserver",
+      "type": "class",
+      "name": "LiteratureObserver",
+      "filePath": "app/Observers/LiteratureObserver.php",
+      "lineRange": [10, 29],
+      "summary": "Hooks creating/created events on the Literature model to assign codes and fan out notifications to privileged users.",
+      "tags": ["event-handler", "observer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Policies/CommandRunPolicy.php",
+      "type": "file",
+      "name": "CommandRunPolicy.php",
+      "filePath": "app/Policies/CommandRunPolicy.php",
+      "summary": "Spatie/Shield authorization policy delegating all CommandRun CRUD/restore/replicate gates to permission checks via $user->can().",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/CommandRunPolicy.php:CommandRunPolicy",
+      "type": "class",
+      "name": "CommandRunPolicy",
+      "filePath": "app/Policies/CommandRunPolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Defines the full set of Filament Shield permission gates (view, create, update, delete, restore, replicate, reorder) for CommandRun records.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/IntroEventRecordPolicy.php",
+      "type": "file",
+      "name": "IntroEventRecordPolicy.php",
+      "filePath": "app/Policies/IntroEventRecordPolicy.php",
+      "summary": "Spatie/Shield authorization policy for IntroEventRecord delegating each ability to a granular permission via $user->can().",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/IntroEventRecordPolicy.php:IntroEventRecordPolicy",
+      "type": "class",
+      "name": "IntroEventRecordPolicy",
+      "filePath": "app/Policies/IntroEventRecordPolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Defines view/create/update/delete/restore/replicate/reorder ability checks for IntroEventRecord resources.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/LiteraturePolicy.php",
+      "type": "file",
+      "name": "LiteraturePolicy.php",
+      "filePath": "app/Policies/LiteraturePolicy.php",
+      "summary": "Spatie/Shield authorization policy for Literature mapping every ability to a corresponding permission name.",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/LiteraturePolicy.php:LiteraturePolicy",
+      "type": "class",
+      "name": "LiteraturePolicy",
+      "filePath": "app/Policies/LiteraturePolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Defines all standard Filament Shield abilities for Literature resources.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/ResourceLockAuditPolicy.php",
+      "type": "file",
+      "name": "ResourceLockAuditPolicy.php",
+      "filePath": "app/Policies/ResourceLockAuditPolicy.php",
+      "summary": "Spatie/Shield authorization policy guarding the audit trail of resource locks via per-ability permission checks.",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/ResourceLockAuditPolicy.php:ResourceLockAuditPolicy",
+      "type": "class",
+      "name": "ResourceLockAuditPolicy",
+      "filePath": "app/Policies/ResourceLockAuditPolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Implements the full Filament Shield ability surface (view/create/update/delete/restore/replicate/reorder) for ResourceLockAudit.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/ResourceLockPolicy.php",
+      "type": "file",
+      "name": "ResourceLockPolicy.php",
+      "filePath": "app/Policies/ResourceLockPolicy.php",
+      "summary": "Spatie/Shield authorization policy for ResourceLock entries used by the optimistic-locking plugin.",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/ResourceLockPolicy.php:ResourceLockPolicy",
+      "type": "class",
+      "name": "ResourceLockPolicy",
+      "filePath": "app/Policies/ResourceLockPolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Defines view/create/update/delete/restore/replicate/reorder gates for ResourceLock records.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/RolePolicy.php",
+      "type": "file",
+      "name": "RolePolicy.php",
+      "filePath": "app/Policies/RolePolicy.php",
+      "summary": "Spatie/Shield authorization policy controlling Filament Shield management of role records themselves.",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/RolePolicy.php:RolePolicy",
+      "type": "class",
+      "name": "RolePolicy",
+      "filePath": "app/Policies/RolePolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Implements the standard Shield ability set for Role administration in the panel.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/TaxonPolicy.php",
+      "type": "file",
+      "name": "TaxonPolicy.php",
+      "filePath": "app/Policies/TaxonPolicy.php",
+      "summary": "Spatie/Shield authorization policy gating Taxon CRUD and lifecycle operations in the Filament panel.",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/TaxonPolicy.php:TaxonPolicy",
+      "type": "class",
+      "name": "TaxonPolicy",
+      "filePath": "app/Policies/TaxonPolicy.php",
+      "lineRange": [11, 75],
+      "summary": "Defines all Filament Shield ability checks (view/create/update/delete/restore/replicate/reorder) for Taxon records.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Policies/UserPolicy.php",
+      "type": "file",
+      "name": "UserPolicy.php",
+      "filePath": "app/Policies/UserPolicy.php",
+      "summary": "Spatie/Shield authorization policy for User administration in the Filament panel.",
+      "tags": ["authorization", "policy", "spatie-shield"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Policies/UserPolicy.php:UserPolicy",
+      "type": "class",
+      "name": "UserPolicy",
+      "filePath": "app/Policies/UserPolicy.php",
+      "lineRange": [11, 72],
+      "summary": "Defines view/create/update/delete/restore/replicate ability checks for User resources, delegating to Shield permissions.",
+      "tags": ["authorization", "policy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Providers/AppServiceProvider.php",
+      "type": "file",
+      "name": "AppServiceProvider.php",
+      "filePath": "app/Providers/AppServiceProvider.php",
+      "summary": "Main service provider binding Filament auth response classes, registering Livewire components, the TaxonImport listener, and Spatie Health checks.",
+      "tags": ["bootstrap", "service-provider", "health-check"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Providers/AppServiceProvider.php:AppServiceProvider",
+      "type": "class",
+      "name": "AppServiceProvider",
+      "filePath": "app/Providers/AppServiceProvider.php",
+      "lineRange": [28, 82],
+      "summary": "Application-wide service provider performing container bindings (login/registration/email-verification responses), Livewire registration, event wiring, and Spatie Health probe configuration.",
+      "tags": ["bootstrap", "service-provider"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Providers/AppServiceProvider.php:register",
+      "type": "function",
+      "name": "register",
+      "filePath": "app/Providers/AppServiceProvider.php",
+      "lineRange": [33, 42],
+      "summary": "Binds Filament auth response contracts to custom responses and conditionally registers the Telescope service provider in local environments.",
+      "tags": ["bootstrap", "container-binding"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Providers/AppServiceProvider.php:boot",
+      "type": "function",
+      "name": "boot",
+      "filePath": "app/Providers/AppServiceProvider.php",
+      "lineRange": [47, 81],
+      "summary": "Boots Filament colour registration, wires the ImportWizard Livewire component, attaches the TaxonImportCompleted listener, and configures Spatie Health checks (DB, Redis, disk, cache, queue).",
+      "tags": ["bootstrap", "health-check", "livewire"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Providers/Filament/MamiasPanelProvider.php",
+      "type": "file",
+      "name": "MamiasPanelProvider.php",
+      "filePath": "app/Providers/Filament/MamiasPanelProvider.php",
+      "summary": "Single source of truth for the MAMIAS Filament panel: id, path, theme, auth flow, plugin stack (Shield, Lockscreen, Recycle Bin, Health, etc.), middleware, and widgets.",
+      "tags": ["bootstrap", "service-provider", "filament", "entry-point"],
+      "complexity": "complex",
+      "languageNotes": "Panel id/path is 'mamias' - per CLAUDE.md this must not be changed without approval."
+    },
+    {
+      "id": "class:app/Providers/Filament/MamiasPanelProvider.php:MamiasPanelProvider",
+      "type": "class",
+      "name": "MamiasPanelProvider",
+      "filePath": "app/Providers/Filament/MamiasPanelProvider.php",
+      "lineRange": [50, 263],
+      "summary": "PanelProvider implementing the entire MAMIAS panel configuration: branding, SPA mode, custom Login/Register/EmailVerification pages, twenty-plus plugins, navigation groups, colour palette, middleware stack, and Dashboard/Widget discovery.",
+      "tags": ["bootstrap", "filament", "service-provider"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Providers/Filament/MamiasPanelProvider.php:panel",
+      "type": "function",
+      "name": "panel",
+      "filePath": "app/Providers/Filament/MamiasPanelProvider.php",
+      "lineRange": [52, 262],
+      "summary": "Configures the Filament Panel instance with branding, auth pages, plugin stack, colours, user menu, navigation groups, resource/page/widget discovery, middleware, and render hooks.",
+      "tags": ["bootstrap", "filament-panel"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:app/Services/DoiMetadataService.php",
+      "type": "file",
+      "name": "DoiMetadataService.php",
+      "filePath": "app/Services/DoiMetadataService.php",
+      "summary": "Fetches and formats DOI metadata from the Crossref API, mapping Crossref publication types to the local LiteratureType enum and producing short/full citation strings.",
+      "tags": ["service", "external-api", "crossref"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Services/DoiMetadataService.php:DoiMetadataService",
+      "type": "class",
+      "name": "DoiMetadataService",
+      "filePath": "app/Services/DoiMetadataService.php",
+      "lineRange": [8, 107],
+      "summary": "Service encapsulating Crossref DOI lookup, response normalization, type mapping, and bibliographic reference formatting.",
+      "tags": ["service", "external-api"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/DoiMetadataService.php:fetchFromCrossref",
+      "type": "function",
+      "name": "fetchFromCrossref",
+      "filePath": "app/Services/DoiMetadataService.php",
+      "lineRange": [13, 33],
+      "summary": "Queries the Crossref REST API for a DOI and returns a normalized array of title, authors, year, mapped type, short and full reference strings.",
+      "tags": ["external-api", "crossref"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/DoiMetadataService.php:formatFullReference",
+      "type": "function",
+      "name": "formatFullReference",
+      "filePath": "app/Services/DoiMetadataService.php",
+      "lineRange": [53, 80],
+      "summary": "Builds an APA-style full bibliographic reference from Crossref author, year, title, journal, volume, issue and page metadata.",
+      "tags": ["formatting", "citation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Services/EasinService.php",
+      "type": "file",
+      "name": "EasinService.php",
+      "filePath": "app/Services/EasinService.php",
+      "summary": "Resolves EASIN (European Alien Species Information Network) identifiers for a scientific name via the EASIN REST API with one-day caching.",
+      "tags": ["service", "external-api", "easin"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Services/EasinService.php:EasinService",
+      "type": "class",
+      "name": "EasinService",
+      "filePath": "app/Services/EasinService.php",
+      "lineRange": [9, 44],
+      "summary": "Service wrapping the EASIN /SearchByName endpoint, returning the first matched EASIN id and caching the result by name hash.",
+      "tags": ["service", "external-api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Services/TaxonNormalizer.php",
+      "type": "file",
+      "name": "TaxonNormalizer.php",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "summary": "Normalizes Taxon attributes (scientific name, synonyms, environments, encoding artifacts, nomenclature/affinity/rank rules) prior to persistence or comparison.",
+      "tags": ["service", "normalization", "taxonomy"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:app/Services/TaxonNormalizer.php:TaxonNormalizer",
+      "type": "class",
+      "name": "TaxonNormalizer",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [10, 329],
+      "summary": "Static utility applying a pipeline of normalization rules - encoding cleanup, nomenclature/affinity/rank patterns, synonym deduplication, environment list canonicalization - to Taxon data.",
+      "tags": ["service", "normalization"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:normalize",
+      "type": "function",
+      "name": "normalize",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [12, 16],
+      "summary": "Top-level entry point that applies the full normalization pipeline to a Taxon array.",
+      "tags": ["normalization", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:normalizeScientificName",
+      "type": "function",
+      "name": "normalizeScientificName",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [124, 154],
+      "summary": "Cleans and standardizes the scientific name field by applying nomenclature, affinity and rank rules.",
+      "tags": ["normalization", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:normalizeEnvironments",
+      "type": "function",
+      "name": "normalizeEnvironments",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [42, 69],
+      "summary": "Canonicalizes a free-form list of environment tags against the Environment enum, removing duplicates and unknown values.",
+      "tags": ["normalization", "enum"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:normalizeSynonyms",
+      "type": "function",
+      "name": "normalizeSynonyms",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [71, 94],
+      "summary": "Deduplicates and cleans an array of synonym strings, returning a stable canonical list.",
+      "tags": ["normalization", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:applyNomenclatureRules",
+      "type": "function",
+      "name": "applyNomenclatureRules",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [159, 179],
+      "summary": "Applies regex-based nomenclature corrections (case, abbreviations, spacing) to a scientific name string.",
+      "tags": ["normalization", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:applyAffinityRules",
+      "type": "function",
+      "name": "applyAffinityRules",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [184, 208],
+      "summary": "Standardizes 'aff.' / 'cf.' affinity qualifiers and similar nomenclatural markers in a scientific name.",
+      "tags": ["normalization", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/TaxonNormalizer.php:applyRankRules",
+      "type": "function",
+      "name": "applyRankRules",
+      "filePath": "app/Services/TaxonNormalizer.php",
+      "lineRange": [213, 239],
+      "summary": "Normalizes infraspecific rank markers (subsp., var., f.) within a scientific name string.",
+      "tags": ["normalization", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Services/TaxonService.php",
+      "type": "file",
+      "name": "TaxonService.php",
+      "filePath": "app/Services/TaxonService.php",
+      "summary": "Core taxonomic domain service orchestrating WoRMS lookups, Taxon creation/update workflows, status/environment computation, and synonym handling.",
+      "tags": ["service", "taxonomy", "domain"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:app/Services/TaxonService.php:TaxonService",
+      "type": "class",
+      "name": "TaxonService",
+      "filePath": "app/Services/TaxonService.php",
+      "lineRange": [16, 486],
+      "summary": "High-level service coordinating the Taxon import/curation pipeline: matching WoRMS records, computing Catalogue/Worms status enums, persisting taxa, and resolving environment metadata.",
+      "tags": ["service", "taxonomy"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:app/Services/TaxonStateHelper.php",
+      "type": "file",
+      "name": "TaxonStateHelper.php",
+      "filePath": "app/Services/TaxonStateHelper.php",
+      "summary": "Helper that derives Taxon state - catalogue status, WoRMS status, environment categorization - from raw Taxon attributes.",
+      "tags": ["service", "taxonomy", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Services/TaxonStateHelper.php:TaxonStateHelper",
+      "type": "class",
+      "name": "TaxonStateHelper",
+      "filePath": "app/Services/TaxonStateHelper.php",
+      "lineRange": [11, 162],
+      "summary": "Stateless helper computing Catalogue_Status, Worms_Status and Environment classifications for a given Taxon model instance.",
+      "tags": ["service", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Services/WhatsAppService.php",
+      "type": "file",
+      "name": "WhatsAppService.php",
+      "filePath": "app/Services/WhatsAppService.php",
+      "summary": "GreenAPI WhatsApp phone-number validation service with E.164 normalization, 7-day caching, and silent fallback on API failure.",
+      "tags": ["service", "external-api", "whatsapp"],
+      "complexity": "moderate",
+      "languageNotes": "Per CLAUDE.md: returns false silently on API failure; cache TTL is 7 days keyed by normalized phone."
+    },
+    {
+      "id": "class:app/Services/WhatsAppService.php:WhatsAppService",
+      "type": "class",
+      "name": "WhatsAppService",
+      "filePath": "app/Services/WhatsAppService.php",
+      "lineRange": [18, 129],
+      "summary": "Service wrapping the GreenAPI checkWhatsapp endpoint with E.164 normalization, validation, 7-day cache, and a forgetCache helper for invalidation.",
+      "tags": ["service", "external-api"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/WhatsAppService.php:isRegistered",
+      "type": "function",
+      "name": "isRegistered",
+      "filePath": "app/Services/WhatsAppService.php",
+      "lineRange": [30, 67],
+      "summary": "Checks whether a phone number is registered on WhatsApp via GreenAPI, with E.164 validation and a 7-day result cache.",
+      "tags": ["external-api", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Services/WhatsAppService.php:normalize",
+      "type": "function",
+      "name": "normalize",
+      "filePath": "app/Services/WhatsAppService.php",
+      "lineRange": [76, 100],
+      "summary": "Normalizes a phone number to E.164 form by stripping non-digits and handling local-prefix conventions.",
+      "tags": ["normalization", "phone"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Services/WormsService.php",
+      "type": "file",
+      "name": "WormsService.php",
+      "filePath": "app/Services/WormsService.php",
+      "summary": "WoRMS (World Register of Marine Species) API client providing cached taxonomy lookups (phyla, AphiaID records, species search, synonyms, taxon matching) under the worms_v2.* cache prefix.",
+      "tags": ["service", "external-api", "worms", "taxonomy"],
+      "complexity": "complex",
+      "languageNotes": "Per CLAUDE.md: cache prefix is 'worms_v2.*'; HTTP responses are processed via processResponse helper."
+    },
+    {
+      "id": "class:app/Services/WormsService.php:WormsService",
+      "type": "class",
+      "name": "WormsService",
+      "filePath": "app/Services/WormsService.php",
+      "lineRange": [22, 311],
+      "summary": "Service encapsulating the WoRMS REST API: phyla listing, record fetch by AphiaID/name, fuzzy species search, taxon matching and synonym retrieval, with deterministic caching.",
+      "tags": ["service", "external-api", "worms"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:app/Support/FilamentAuthRedirect.php",
+      "type": "file",
+      "name": "FilamentAuthRedirect.php",
+      "filePath": "app/Support/FilamentAuthRedirect.php",
+      "summary": "Centralized helper that resolves the post-login redirect target: email verification, the mamias panel for admins/panel_users, or the public site for everyone else.",
+      "tags": ["utility", "authentication", "filament"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Support/FilamentAuthRedirect.php:FilamentAuthRedirect",
+      "type": "class",
+      "name": "FilamentAuthRedirect",
+      "filePath": "app/Support/FilamentAuthRedirect.php",
+      "lineRange": [11, 29],
+      "summary": "Static helper exposing FilamentAuthRedirect::for($user) returning the correct redirect URL based on role and email verification state.",
+      "tags": ["utility", "authentication"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:artisan",
+      "type": "config",
+      "name": "artisan",
+      "filePath": "artisan",
+      "summary": "Laravel Artisan command-line entry script that bootstraps the application kernel and dispatches the requested console command.",
+      "tags": ["entry-point", "cli", "laravel"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:boost.json",
+      "type": "config",
+      "name": "boost.json",
+      "filePath": "boost.json",
+      "summary": "Laravel Boost MCP server configuration listing enabled agents, cloud guidelines, MCP servers, packages, Sail integration, and skill directories.",
+      "tags": ["configuration", "laravel-boost", "mcp"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:bootstrap/app.php",
+      "type": "file",
+      "name": "app.php",
+      "filePath": "bootstrap/app.php",
+      "summary": "Laravel 11+ bootstrap file constructing the application instance and registering routing, middleware, and exception handler configuration.",
+      "tags": ["bootstrap", "entry-point", "laravel"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:bootstrap/providers.php",
+      "type": "file",
+      "name": "providers.php",
+      "filePath": "bootstrap/providers.php",
+      "summary": "Service provider registry array consumed by bootstrap/app.php, declaring AppServiceProvider and other custom providers.",
+      "tags": ["bootstrap", "service-provider", "laravel"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:app/Models/User.php", "target": "class:app/Models/User.php:User", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Models/User.php", "target": "function:app/Models/User.php:booted", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Models/User.php", "target": "function:app/Models/User.php:canAccessPanel", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Models/User.php", "target": "function:app/Models/User.php:getFilamentAvatarUrl", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Models/User.php", "target": "function:app/Models/User.php:casts", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Models/User.php", "target": "class:app/Models/User.php:User", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Models/User.php", "target": "file:database/factories/UserFactory.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Notifications/NewLiteratureReferenceNotification.php", "target": "class:app/Notifications/NewLiteratureReferenceNotification.php:NewLiteratureReferenceNotification", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Notifications/NewLiteratureReferenceNotification.php", "target": "class:app/Notifications/NewLiteratureReferenceNotification.php:NewLiteratureReferenceNotification", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Notifications/NewLiteratureReferenceNotification.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Observers/LiteratureObserver.php", "target": "class:app/Observers/LiteratureObserver.php:LiteratureObserver", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Observers/LiteratureObserver.php", "target": "class:app/Observers/LiteratureObserver.php:LiteratureObserver", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Observers/LiteratureObserver.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Observers/LiteratureObserver.php", "target": "file:app/Models/User.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Observers/LiteratureObserver.php", "target": "file:app/Notifications/NewLiteratureReferenceNotification.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Policies/CommandRunPolicy.php", "target": "class:app/Policies/CommandRunPolicy.php:CommandRunPolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/CommandRunPolicy.php", "target": "class:app/Policies/CommandRunPolicy.php:CommandRunPolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Policies/IntroEventRecordPolicy.php", "target": "class:app/Policies/IntroEventRecordPolicy.php:IntroEventRecordPolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/IntroEventRecordPolicy.php", "target": "class:app/Policies/IntroEventRecordPolicy.php:IntroEventRecordPolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Policies/IntroEventRecordPolicy.php", "target": "file:app/Models/IntroEventRecord.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Policies/LiteraturePolicy.php", "target": "class:app/Policies/LiteraturePolicy.php:LiteraturePolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/LiteraturePolicy.php", "target": "class:app/Policies/LiteraturePolicy.php:LiteraturePolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Policies/LiteraturePolicy.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Policies/ResourceLockAuditPolicy.php", "target": "class:app/Policies/ResourceLockAuditPolicy.php:ResourceLockAuditPolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/ResourceLockAuditPolicy.php", "target": "class:app/Policies/ResourceLockAuditPolicy.php:ResourceLockAuditPolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Policies/ResourceLockPolicy.php", "target": "class:app/Policies/ResourceLockPolicy.php:ResourceLockPolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/ResourceLockPolicy.php", "target": "class:app/Policies/ResourceLockPolicy.php:ResourceLockPolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Policies/RolePolicy.php", "target": "class:app/Policies/RolePolicy.php:RolePolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/RolePolicy.php", "target": "class:app/Policies/RolePolicy.php:RolePolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Policies/TaxonPolicy.php", "target": "class:app/Policies/TaxonPolicy.php:TaxonPolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/TaxonPolicy.php", "target": "class:app/Policies/TaxonPolicy.php:TaxonPolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Policies/TaxonPolicy.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Policies/UserPolicy.php", "target": "class:app/Policies/UserPolicy.php:UserPolicy", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Policies/UserPolicy.php", "target": "class:app/Policies/UserPolicy.php:UserPolicy", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "class:app/Providers/AppServiceProvider.php:AppServiceProvider", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "function:app/Providers/AppServiceProvider.php:register", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "function:app/Providers/AppServiceProvider.php:boot", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "class:app/Providers/AppServiceProvider.php:AppServiceProvider", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "file:app/Filament/Auth/Responses/EmailVerificationResponse.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "file:app/Filament/Auth/Responses/LoginResponse.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "file:app/Filament/Auth/Responses/RegistrationResponse.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "file:app/Listeners/TaxonImportCompletedListener.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/AppServiceProvider.php", "target": "file:app/Livewire/ImportWizard.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "class:app/Providers/Filament/MamiasPanelProvider.php:MamiasPanelProvider", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "function:app/Providers/Filament/MamiasPanelProvider.php:panel", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "class:app/Providers/Filament/MamiasPanelProvider.php:MamiasPanelProvider", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Filament/Pages/Auth/EmailVerificationPrompt.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Filament/Pages/Auth/Login.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Filament/Pages/Auth/Register.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Filament/Pages/Dashboard.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Filament/Pages/HealthCheckResults.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Filament/Widgets/MamiasInfoWidget.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Providers/Filament/MamiasPanelProvider.php", "target": "file:app/Http/Middleware/RedirectIfNotPanelUser.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Services/DoiMetadataService.php", "target": "class:app/Services/DoiMetadataService.php:DoiMetadataService", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/DoiMetadataService.php", "target": "function:app/Services/DoiMetadataService.php:fetchFromCrossref", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/DoiMetadataService.php", "target": "function:app/Services/DoiMetadataService.php:formatFullReference", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/DoiMetadataService.php", "target": "class:app/Services/DoiMetadataService.php:DoiMetadataService", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Services/DoiMetadataService.php", "target": "file:app/Enums/LiteratureType.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Services/EasinService.php", "target": "class:app/Services/EasinService.php:EasinService", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/EasinService.php", "target": "class:app/Services/EasinService.php:EasinService", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "class:app/Services/TaxonNormalizer.php:TaxonNormalizer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:normalize", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:normalizeScientificName", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:normalizeEnvironments", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:normalizeSynonyms", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:applyNomenclatureRules", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:applyAffinityRules", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "function:app/Services/TaxonNormalizer.php:applyRankRules", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "class:app/Services/TaxonNormalizer.php:TaxonNormalizer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Services/TaxonNormalizer.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Services/TaxonService.php", "target": "class:app/Services/TaxonService.php:TaxonService", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonService.php", "target": "class:app/Services/TaxonService.php:TaxonService", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Enums/Environment.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Enums/Worms_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Services/TaxonStateHelper.php", "target": "class:app/Services/TaxonStateHelper.php:TaxonStateHelper", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/TaxonStateHelper.php", "target": "class:app/Services/TaxonStateHelper.php:TaxonStateHelper", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Services/TaxonStateHelper.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/TaxonStateHelper.php", "target": "file:app/Enums/Environment.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/TaxonStateHelper.php", "target": "file:app/Enums/Worms_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/TaxonStateHelper.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Services/WhatsAppService.php", "target": "class:app/Services/WhatsAppService.php:WhatsAppService", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/WhatsAppService.php", "target": "function:app/Services/WhatsAppService.php:isRegistered", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/WhatsAppService.php", "target": "function:app/Services/WhatsAppService.php:normalize", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/WhatsAppService.php", "target": "class:app/Services/WhatsAppService.php:WhatsAppService", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Services/WormsService.php", "target": "class:app/Services/WormsService.php:WormsService", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Services/WormsService.php", "target": "class:app/Services/WormsService.php:WormsService", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Services/WormsService.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/WormsService.php", "target": "file:app/Enums/Environment.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/WormsService.php", "target": "file:app/Enums/Worms_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Services/WormsService.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Support/FilamentAuthRedirect.php", "target": "class:app/Support/FilamentAuthRedirect.php:FilamentAuthRedirect", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Support/FilamentAuthRedirect.php", "target": "class:app/Support/FilamentAuthRedirect.php:FilamentAuthRedirect", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Support/FilamentAuthRedirect.php", "target": "file:app/Models/User.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Observers/LiteratureObserver.php", "target": "file:app/Models/Literature.php", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Services/TaxonNormalizer.php", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Services/WormsService.php", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:app/Services/TaxonService.php", "target": "file:app/Services/TaxonStateHelper.php", "type": "depends_on", "direction": "forward", "weight": 0.6}
+  ]
+}

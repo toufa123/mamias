@@ -16,12 +16,12 @@ use Mattiverse\Userstamps\Traits\Userstamps;
 class PathwayRecord extends Model
 {
     use HasFactory, Userstamps;
-    
+
     public function introEvent(): BelongsTo
     {
         return $this->belongsTo(IntroEventRecord::class, 'intro_event_id');
     }
-    
+
     protected function casts(): array
     {
         return [

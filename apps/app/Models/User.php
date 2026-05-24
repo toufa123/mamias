@@ -34,7 +34,9 @@ namespace App\Models;
  * @property string|null $remember_token Token for "remember me" functionality
  */
 
+use App\Notifications\VerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
@@ -49,6 +51,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable([
+    'name',
     'title',
     'email',
     'password',
@@ -147,7 +150,22 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'mamias' && $this->hasAnyRole(['super_admin', 'scientist']);
+        if ($panel->getId() !== 'mamias') {
+            return false;
+        }
+
+        if (app()->environment('local')) {
+            return true;
+        }
+
+        return $this->hasAnyRole(['super_admin', 'scientist']);
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $notification = app(VerifyEmail::class);
+        $notification->url = Filament::getVerifyEmailUrl($this);
+        $this->notify($notification);
     }
 
     /**

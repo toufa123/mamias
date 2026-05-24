@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Services\DoiMetadataService;
 use App\Enums\LiteratureType;
+use App\Services\DoiMetadataService;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -16,7 +16,7 @@ it('returns null when DOI fetch is unsuccessful', function () {
         'api.crossref.org/*' => Http::response(null, 404),
     ]);
 
-    $service = new DoiMetadataService();
+    $service = new DoiMetadataService;
     $result = $service->fetchFromCrossref('10.1234/invalid');
 
     expect($result)->toBeNull();
@@ -42,7 +42,7 @@ it('formats metadata correctly from Crossref response', function () {
         ], 200),
     ]);
 
-    $service = new DoiMetadataService();
+    $service = new DoiMetadataService;
     $result = $service->fetchFromCrossref('10.1234/test');
 
     expect($result)->toBeArray()
@@ -62,7 +62,7 @@ it('handles missing author and title gracefully', function () {
         ], 200),
     ]);
 
-    $service = new DoiMetadataService();
+    $service = new DoiMetadataService;
     $result = $service->fetchFromCrossref('10.1234/no-data');
 
     expect($result)->toBeArray()
@@ -82,7 +82,7 @@ it('handles missing publication date', function () {
         ], 200),
     ]);
 
-    $service = new DoiMetadataService();
+    $service = new DoiMetadataService;
     $result = $service->fetchFromCrossref('10.1234/no-year');
 
     expect($result['short_ref'])->toBe('Lonely, n.d.')

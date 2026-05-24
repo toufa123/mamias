@@ -1,0 +1,155 @@
+{
+  "projectRoot": "/home/toufa/dev/2026/apps/mamias/apps",
+  "batchFiles": [
+    {
+      "path": "app/Filament/Pages/Auth/Register.php",
+      "language": "php",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Pages/BackupManager.php",
+      "language": "php",
+      "sizeLines": 389,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Pages/Dashboard.php",
+      "language": "php",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Pages/HealthCheckResults.php",
+      "language": "php",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php",
+      "language": "php",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php",
+      "language": "php",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php",
+      "language": "php",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+      "language": "php",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php",
+      "language": "php",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php",
+      "language": "php",
+      "sizeLines": 88,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Literatures/LiteratureResource.php",
+      "language": "php",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Literatures/Pages/CreateLiterature.php",
+      "language": "php",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Literatures/Pages/EditLiterature.php",
+      "language": "php",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Literatures/Pages/ListLiteratures.php",
+      "language": "php",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+      "language": "php",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Literatures/Tables/LiteraturesTable.php",
+      "language": "php",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/Pages/CreateTaxon.php",
+      "language": "php",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/Pages/EditTaxon.php",
+      "language": "php",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+      "language": "php",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "language": "php",
+      "sizeLines": 341,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php",
+      "language": "php",
+      "sizeLines": 246,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "language": "php",
+      "sizeLines": 464,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Taxons/TaxonResource.php",
+      "language": "php",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Users/Pages/CreateUser.php",
+      "language": "php",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "app/Filament/Resources/Users/Pages/EditUser.php",
+      "language": "php",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    }
+  ]
+}

@@ -11,23 +11,22 @@ use App\Models\Literature;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class LiteratureResource extends Resource
 {
     protected static ?string $model = Literature::class;
-    
+
     protected static string|BackedEnum|null $navigationIcon = 'tabler-book';
-    
+
     protected static ?string $modelLabel = 'Literature';
-    
+
     protected static ?string $pluralModelLabel = 'Literatures';
-    
+
     protected static ?string $navigationLabel = 'Literatures';
-    
+
     protected static string|null|\UnitEnum $navigationGroup = 'MAMIAS database';
-    
+
     protected static ?string $recordTitleAttribute = 'short_ref';
 
     public static function form(Schema $schema): Schema

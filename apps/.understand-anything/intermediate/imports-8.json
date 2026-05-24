@@ -1,0 +1,29 @@
+{
+  "database/migrations/2026_05_09_105305_add_soft_deletes_to_taxas_table.php": [],
+  "database/migrations/2026_05_10_230455_create_recycle_bin_items_table.php": [],
+  "database/migrations/2026_05_10_240537_create_intro_event_records_table.php": [],
+  "database/migrations/2026_05_10_250340_create_subregion_records_table.php": [],
+  "database/migrations/2026_05_10_250405_create_pathway_records_table.php": [],
+  "database/migrations/2026_05_14_132606_add_file_path_to_literatures_table.php~": [],
+  "database/migrations/2026_05_14_141918_create_alert_box_settings.php": [],
+  "database/migrations/2026_05_16_115201_add_user_and_tenant_to_recycle_bin_items_table.php": [],
+  "database/migrations/2026_05_16_130000_update_intro_event_records_for_import_review.php": [],
+  "database/migrations/2026_05_16_131000_make_taxon_id_not_nullable_on_intro_event_records.php": [],
+  "database/migrations/2026_05_16_140000_make_literature_id_nullable_on_intro_event_records.php": [],
+  "database/seeders/DatabaseSeeder.php": [
+    "app/Models/User.php"
+  ],
+  "database/seeders/RolesSeeder.php": [],
+  "package.json": [],
+  "phpunit.xml": [],
+  "public/.htaccess": [],
+  "public/index.php": [],
+  "public/robots.txt": [],
+  "README.md": [],
+  "rector.php": [],
+  "resources/css/app.css": [],
+  "resources/css/filament/mamias/theme.css": [],
+  "resources/js/app.js": [],
+  "resources/views/app.blade.php": [],
+  "resources/views/auth/empty-panel.blade.php": []
+}

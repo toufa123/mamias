@@ -16,7 +16,7 @@ class SpeciesByKingdomChart extends EChartWidget
 
     protected static int $contentHeight = 400;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = 1;
 
     protected const COLOR_PALETTE = [
         '#00899d',

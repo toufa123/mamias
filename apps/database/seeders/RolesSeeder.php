@@ -16,4 +16,3 @@ class RolesSeeder extends Seeder
         Role::findOrCreate('user', 'web');
     }
 }
-

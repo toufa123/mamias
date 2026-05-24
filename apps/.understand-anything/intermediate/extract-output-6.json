@@ -1,0 +1,578 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 409,
+      "nonEmptyLines": 284,
+      "sections": [
+        {
+          "heading": "Laravel Boost Guidelines",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "Foundational Context",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Skills Activation",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "Conventions",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "Verification Scripts",
+          "level": 2,
+          "line": 36
+        },
+        {
+          "heading": "Application Structure & Architecture",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "Frontend Bundling",
+          "level": 2,
+          "line": 45
+        },
+        {
+          "heading": "Documentation Files",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "Replies",
+          "level": 2,
+          "line": 53
+        },
+        {
+          "heading": "Laravel Boost",
+          "level": 1,
+          "line": 59
+        },
+        {
+          "heading": "Tools",
+          "level": 2,
+          "line": 61
+        },
+        {
+          "heading": "Searching Documentation (IMPORTANT)",
+          "level": 2,
+          "line": 69
+        },
+        {
+          "heading": "Search Syntax",
+          "level": 3,
+          "line": 76
+        },
+        {
+          "heading": "Artisan",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "Tinker",
+          "level": 2,
+          "line": 89
+        },
+        {
+          "heading": "PHP",
+          "level": 1,
+          "line": 97
+        },
+        {
+          "heading": "Deployment",
+          "level": 1,
+          "line": 108
+        },
+        {
+          "heading": "Test Enforcement",
+          "level": 1,
+          "line": 114
+        },
+        {
+          "heading": "Do Things the Laravel Way",
+          "level": 1,
+          "line": 121
+        },
+        {
+          "heading": "Model Creation",
+          "level": 3,
+          "line": 127
+        },
+        {
+          "heading": "APIs & Eloquent Resources",
+          "level": 2,
+          "line": 131
+        },
+        {
+          "heading": "URL Generation",
+          "level": 2,
+          "line": 135
+        },
+        {
+          "heading": "Testing",
+          "level": 2,
+          "line": 139
+        },
+        {
+          "heading": "Vite Error",
+          "level": 2,
+          "line": 145
+        },
+        {
+          "heading": "Livewire",
+          "level": 1,
+          "line": 151
+        },
+        {
+          "heading": "Laravel Pint Code Formatter",
+          "level": 1,
+          "line": 159
+        },
+        {
+          "heading": "Pest",
+          "level": 2,
+          "line": 166
+        },
+        {
+          "heading": "Filament",
+          "level": 2,
+          "line": 175
+        },
+        {
+          "heading": "Artisan",
+          "level": 3,
+          "line": 180
+        },
+        {
+          "heading": "Patterns",
+          "level": 3,
+          "line": 185
+        },
+        {
+          "heading": "Testing",
+          "level": 3,
+          "line": 306
+        },
+        {
+          "heading": "Correct Namespaces",
+          "level": 3,
+          "line": 386
+        },
+        {
+          "heading": "Common Mistakes",
+          "level": 3,
+          "line": 397
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 33
+      }
+    },
+    {
+      "path": "composer.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 136,
+      "nonEmptyLines": 136,
+      "sections": [
+        {
+          "heading": "$schema",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "type",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "description",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "keywords",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "license",
+          "level": 1,
+          "line": 10
+        },
+        {
+          "heading": "require",
+          "level": 1,
+          "line": 11
+        },
+        {
+          "heading": "require-dev",
+          "level": 1,
+          "line": 53
+        },
+        {
+          "heading": "autoload",
+          "level": 1,
+          "line": 67
+        },
+        {
+          "heading": "autoload-dev",
+          "level": 1,
+          "line": 74
+        },
+        {
+          "heading": "scripts",
+          "level": 1,
+          "line": 79
+        },
+        {
+          "heading": "extra",
+          "level": 1,
+          "line": 117
+        },
+        {
+          "heading": "config",
+          "level": 1,
+          "line": 124
+        },
+        {
+          "heading": "minimum-stability",
+          "level": 1,
+          "line": 134
+        },
+        {
+          "heading": "prefer-stable",
+          "level": 1,
+          "line": 135
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 15
+      }
+    },
+    {
+      "path": "config/action-overflow.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 12,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/app.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 126,
+      "nonEmptyLines": 104,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/auth.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 117,
+      "nonEmptyLines": 103,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/backup.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 383,
+      "nonEmptyLines": 334,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/breadcrumbs.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 75,
+      "nonEmptyLines": 62,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/cache.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 130,
+      "nonEmptyLines": 110,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/database.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 184,
+      "nonEmptyLines": 162,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/debugbar.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 410,
+      "nonEmptyLines": 383,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/dependency-manager.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 43,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament-alert-box.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 33,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament-clear-cache.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament-countries.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 17,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament-easy-footer.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 9,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament-import-wizard.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 68,
+      "nonEmptyLines": 62,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament-shield.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 268,
+      "nonEmptyLines": 236,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filament.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 137,
+      "nonEmptyLines": 117,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/filesystems.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 87,
+      "nonEmptyLines": 74,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/laravel-cookie-consent.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 265,
+      "nonEmptyLines": 239,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/logging.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 132,
+      "nonEmptyLines": 112,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/magellan.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 60,
+      "nonEmptyLines": 52,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/mail.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 119,
+      "nonEmptyLines": 101,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/permission.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 202,
+      "nonEmptyLines": 155,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "config/queue.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 129,
+      "nonEmptyLines": 110,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

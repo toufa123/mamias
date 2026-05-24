@@ -1,0 +1,1449 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": ".gitattributes",
+      "language": "unknown",
+      "fileCategory": "config",
+      "totalLines": 11,
+      "nonEmptyLines": 9,
+      "metrics": {}
+    },
+    {
+      "path": ".github/skills/debug-using-debugbar/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 102,
+      "nonEmptyLines": 69,
+      "sections": [
+        {
+          "heading": "Debugging and optimizing workflow",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "Finding requests",
+          "level": 2,
+          "line": 32
+        },
+        {
+          "heading": "Inspecting a request",
+          "level": 2,
+          "line": 59
+        },
+        {
+          "heading": "Analyzing queries",
+          "level": 2,
+          "line": 76
+        },
+        {
+          "heading": "Gotchas",
+          "level": 2,
+          "line": 96
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/advanced-queries.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 106,
+      "nonEmptyLines": 78,
+      "sections": [
+        {
+          "heading": "Advanced Query Patterns",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use `addSelect()` Subqueries for Single Values from Has-Many",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Create Dynamic Relationships via Subquery FK",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "Use Conditional Aggregates Instead of Multiple Count Queries",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "Use `setRelation()` to Prevent Circular N+1",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "Prefer `whereIn` + Subquery Over `whereHas`",
+          "level": 2,
+          "line": 61
+        },
+        {
+          "heading": "Sometimes Two Simple Queries Beat One Complex Query",
+          "level": 2,
+          "line": 77
+        },
+        {
+          "heading": "Use Compound Indexes Matching `orderBy` Column Order",
+          "level": 2,
+          "line": 81
+        },
+        {
+          "heading": "Use Correlated Subqueries for Has-Many Ordering",
+          "level": 2,
+          "line": 93
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/architecture.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 202,
+      "nonEmptyLines": 151,
+      "sections": [
+        {
+          "heading": "Architecture Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Single-Purpose Action Classes",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Dependency Injection",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "Code to Interfaces",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "Default Sort by Descending",
+          "level": 2,
+          "line": 83
+        },
+        {
+          "heading": "Use Atomic Locks for Race Conditions",
+          "level": 2,
+          "line": 97
+        },
+        {
+          "heading": "Use `mb_*` String Functions",
+          "level": 2,
+          "line": 110
+        },
+        {
+          "heading": "Use `defer()` for Post-Response Work",
+          "level": 2,
+          "line": 130
+        },
+        {
+          "heading": "Use `Context` for Request-Scoped Data",
+          "level": 2,
+          "line": 146
+        },
+        {
+          "heading": "Use `Concurrency::run()` for Parallel Execution",
+          "level": 2,
+          "line": 160
+        },
+        {
+          "heading": "Convention Over Configuration",
+          "level": 2,
+          "line": 175
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 11
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/blade-views.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 36,
+      "nonEmptyLines": 22,
+      "sections": [
+        {
+          "heading": "Blade & Views Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use `$attributes->merge()` in Component Templates",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use `@pushOnce` for Per-Component Scripts",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "Prefer Blade Components Over `@include`",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Use View Composers for Shared View Data",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "Use Blade Fragments for Partial Re-Renders (htmx/Turbo)",
+          "level": 2,
+          "line": 25
+        },
+        {
+          "heading": "Use `@aware` for Deeply Nested Component Props",
+          "level": 2,
+          "line": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/caching.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 70,
+      "nonEmptyLines": 45,
+      "sections": [
+        {
+          "heading": "Caching Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use `Cache::remember()` Instead of Manual Get/Put",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use `Cache::flexible()` for Stale-While-Revalidate",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "Use `Cache::memo()` to Avoid Redundant Hits Within a Request",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "Use Cache Tags to Invalidate Related Groups",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "Use `Cache::add()` for Atomic Conditional Writes",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Use `once()` for Per-Request Memoization",
+          "level": 2,
+          "line": 51
+        },
+        {
+          "heading": "Configure Failover Cache Stores in Production",
+          "level": 2,
+          "line": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/collections.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 44,
+      "nonEmptyLines": 27,
+      "sections": [
+        {
+          "heading": "Collection Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use Higher-Order Messages for Simple Operations",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Choose `cursor()` vs. `lazy()` Correctly",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Use `lazyById()` When Updating Records While Iterating",
+          "level": 2,
+          "line": 25
+        },
+        {
+          "heading": "Use `toQuery()` for Bulk Operations on Collections",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "Use `#[CollectedBy]` for Custom Collection Classes",
+          "level": 2,
+          "line": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/config.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 73,
+      "nonEmptyLines": 52,
+      "sections": [
+        {
+          "heading": "Configuration Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "`env()` Only in Config Files",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Encrypted Env or External Secrets",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "Use `App::environment()` for Environment Checks",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "Use Constants and Language Files",
+          "level": 2,
+          "line": 56
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/db-performance.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 192,
+      "nonEmptyLines": 150,
+      "sections": [
+        {
+          "heading": "Database Performance Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Always Eager Load Relationships",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Prevent Lazy Loading in Development",
+          "level": 2,
+          "line": 34
+        },
+        {
+          "heading": "Select Only Needed Columns",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "Chunk Large Datasets",
+          "level": 2,
+          "line": 65
+        },
+        {
+          "heading": "Add Database Indexes",
+          "level": 2,
+          "line": 94
+        },
+        {
+          "heading": "Use `withCount()` for Counting Relations",
+          "level": 2,
+          "line": 121
+        },
+        {
+          "heading": "Use `cursor()` for Memory-Efficient Iteration",
+          "level": 2,
+          "line": 152
+        },
+        {
+          "heading": "No Queries in Blade Templates",
+          "level": 2,
+          "line": 170
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/eloquent.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 148,
+      "nonEmptyLines": 113,
+      "sections": [
+        {
+          "heading": "Eloquent Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use Correct Relationship Types",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Local Scopes for Reusable Queries",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "Apply Global Scopes Sparingly",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Define Attribute Casts",
+          "level": 2,
+          "line": 70
+        },
+        {
+          "heading": "Cast Date Columns Properly",
+          "level": 2,
+          "line": 85
+        },
+        {
+          "heading": "Use `whereBelongsTo()` for Relationship Queries",
+          "level": 2,
+          "line": 109
+        },
+        {
+          "heading": "Avoid Hardcoded Table Names in Queries",
+          "level": 2,
+          "line": 124
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/error-handling.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 72,
+      "nonEmptyLines": 51,
+      "sections": [
+        {
+          "heading": "Error Handling Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Exception Reporting and Rendering",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use `ShouldntReport` for Exceptions That Should Never Log",
+          "level": 2,
+          "line": 34
+        },
+        {
+          "heading": "Throttle High-Volume Exceptions",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "Enable `dontReportDuplicates()`",
+          "level": 2,
+          "line": 46
+        },
+        {
+          "heading": "Force JSON Error Rendering for API Routes",
+          "level": 2,
+          "line": 50
+        },
+        {
+          "heading": "Add Context to Exception Classes",
+          "level": 2,
+          "line": 60
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/events-notifications.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 52,
+      "nonEmptyLines": 32,
+      "sections": [
+        {
+          "heading": "Events & Notifications Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Rely on Event Discovery",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Run `event:cache` in Production Deploy",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Use `ShouldDispatchAfterCommit` Inside Transactions",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Always Queue Notifications",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "Use `afterCommit()` on Notifications in Transactions",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "Route Notification Channels to Dedicated Queues",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "Use On-Demand Notifications for Non-User Recipients",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "Implement `HasLocalePreference` on Notifiable Models",
+          "level": 2,
+          "line": 50
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/http-client.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 160,
+      "nonEmptyLines": 121,
+      "sections": [
+        {
+          "heading": "HTTP Client Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Always Set Explicit Timeouts",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Retry with Backoff for External APIs",
+          "level": 2,
+          "line": 32
+        },
+        {
+          "heading": "Handle Errors Explicitly",
+          "level": 2,
+          "line": 61
+        },
+        {
+          "heading": "Use Request Pooling for Concurrent Requests",
+          "level": 2,
+          "line": 96
+        },
+        {
+          "heading": "Fake HTTP Calls in Tests",
+          "level": 2,
+          "line": 121
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/mail.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 27,
+      "nonEmptyLines": 15,
+      "sections": [
+        {
+          "heading": "Mail Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Implement `ShouldQueue` on the Mailable Class",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use `afterCommit()` on Mailables Inside Transactions",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Use `assertQueued()` Not `assertSent()` for Queued Mailables",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Use Markdown Mailables for Transactional Emails",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "Separate Content Tests from Sending Tests",
+          "level": 2,
+          "line": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/migrations.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 121,
+      "nonEmptyLines": 92,
+      "sections": [
+        {
+          "heading": "Migration Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Generate Migrations with Artisan",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use `constrained()` for Foreign Keys",
+          "level": 2,
+          "line": 18
+        },
+        {
+          "heading": "Never Modify Deployed Migrations",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "Add Indexes in the Migration",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "Mirror Defaults in Model `$attributes`",
+          "level": 2,
+          "line": 72
+        },
+        {
+          "heading": "Write Reversible `down()` Methods by Default",
+          "level": 2,
+          "line": 86
+        },
+        {
+          "heading": "Keep Migrations Focused",
+          "level": 2,
+          "line": 101
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/queue-jobs.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 144,
+      "nonEmptyLines": 111,
+      "sections": [
+        {
+          "heading": "Queue & Job Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Set `retry_after` Greater Than `timeout`",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Exponential Backoff",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "Implement `ShouldBeUnique`",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "Always Implement `failed()`",
+          "level": 2,
+          "line": 65
+        },
+        {
+          "heading": "Rate Limit External API Calls in Jobs",
+          "level": 2,
+          "line": 77
+        },
+        {
+          "heading": "Batch Related Jobs",
+          "level": 2,
+          "line": 88
+        },
+        {
+          "heading": "`retryUntil()` Needs `$tries = 0`",
+          "level": 2,
+          "line": 102
+        },
+        {
+          "heading": "Use `ShouldBeUniqueUntilProcessing` for Early Lock Release",
+          "level": 2,
+          "line": 115
+        },
+        {
+          "heading": "Use Horizon for Complex Queue Scenarios",
+          "level": 2,
+          "line": 126
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/routing.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 99,
+      "nonEmptyLines": 77,
+      "sections": [
+        {
+          "heading": "Routing & Controllers Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use Implicit Route Model Binding",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Scoped Bindings for Nested Resources",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "Use Resource Controllers",
+          "level": 2,
+          "line": 33
+        },
+        {
+          "heading": "Keep Controllers Thin",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Type-Hint Form Requests",
+          "level": 2,
+          "line": 72
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/scheduling.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 39,
+      "nonEmptyLines": 25,
+      "sections": [
+        {
+          "heading": "Task Scheduling Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use `withoutOverlapping()` on Variable-Duration Tasks",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use `onOneServer()` on Multi-Server Deployments",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Use `runInBackground()` for Concurrent Long Tasks",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Use `environments()` to Restrict Tasks",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "Use `takeUntilTimeout()` for Time-Bounded Processing",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "Use Schedule Groups for Shared Configuration",
+          "level": 2,
+          "line": 27
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/security.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 198,
+      "nonEmptyLines": 151,
+      "sections": [
+        {
+          "heading": "Security Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Mass Assignment Protection",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Authorize Every Action",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "Prevent SQL Injection",
+          "level": 2,
+          "line": 60
+        },
+        {
+          "heading": "Escape Output to Prevent XSS",
+          "level": 2,
+          "line": 77
+        },
+        {
+          "heading": "CSRF Protection",
+          "level": 2,
+          "line": 91
+        },
+        {
+          "heading": "Rate Limit Auth and API Routes",
+          "level": 2,
+          "line": 110
+        },
+        {
+          "heading": "Validate File Uploads",
+          "level": 2,
+          "line": 122
+        },
+        {
+          "heading": "Keep Secrets Out of Code",
+          "level": 2,
+          "line": 141
+        },
+        {
+          "heading": "Audit Dependencies",
+          "level": 2,
+          "line": 159
+        },
+        {
+          "heading": "Encrypt Sensitive Database Fields",
+          "level": 2,
+          "line": 167
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 11
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/style.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 125,
+      "nonEmptyLines": 98,
+      "sections": [
+        {
+          "heading": "Conventions & Style",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Follow Laravel Naming Conventions",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Prefer Shorter Readable Syntax",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "Use Laravel String & Array Helpers",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "No Inline JS/CSS in Blade",
+          "level": 2,
+          "line": 96
+        },
+        {
+          "heading": "No Unnecessary Comments",
+          "level": 2,
+          "line": 112
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/testing.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 43,
+      "nonEmptyLines": 24,
+      "sections": [
+        {
+          "heading": "Testing Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use `LazilyRefreshDatabase` Over `RefreshDatabase`",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Use Model Assertions Over Raw Database Assertions",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Use Factory States and Sequences",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "Use `Exceptions::fake()` to Assert Exception Reporting",
+          "level": 2,
+          "line": 23
+        },
+        {
+          "heading": "Call `Event::fake()` After Factory Setup",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "Use `recycle()` to Share Relationship Instances Across Factories",
+          "level": 2,
+          "line": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/rules/validation.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 75,
+      "nonEmptyLines": 58,
+      "sections": [
+        {
+          "heading": "Validation & Forms Best Practices",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Use Form Request Classes",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Array vs. String Notation for Rules",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "Always Use `validated()`",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "Use `Rule::when()` for Conditional Validation",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "Use the `after()` Method for Custom Validation",
+          "level": 2,
+          "line": 60
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": ".github/skills/laravel-best-practices/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 190,
+      "nonEmptyLines": 143,
+      "sections": [
+        {
+          "heading": "Laravel Best Practices",
+          "level": 1,
+          "line": 9
+        },
+        {
+          "heading": "Consistency First",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "Quick Reference",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "1. Database Performance → `rules/db-performance.md`",
+          "level": 3,
+          "line": 21
+        },
+        {
+          "heading": "2. Advanced Query Patterns → `rules/advanced-queries.md`",
+          "level": 3,
+          "line": 32
+        },
+        {
+          "heading": "3. Security → `rules/security.md`",
+          "level": 3,
+          "line": 43
+        },
+        {
+          "heading": "4. Caching → `rules/caching.md`",
+          "level": 3,
+          "line": 51
+        },
+        {
+          "heading": "5. Eloquent Patterns → `rules/eloquent.md`",
+          "level": 3,
+          "line": 62
+        },
+        {
+          "heading": "6. Validation & Forms → `rules/validation.md`",
+          "level": 3,
+          "line": 72
+        },
+        {
+          "heading": "7. Configuration → `rules/config.md`",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "8. Testing Patterns → `rules/testing.md`",
+          "level": 3,
+          "line": 86
+        },
+        {
+          "heading": "9. Queue & Job Patterns → `rules/queue-jobs.md`",
+          "level": 3,
+          "line": 94
+        },
+        {
+          "heading": "10. Routing & Controllers → `rules/routing.md`",
+          "level": 3,
+          "line": 102
+        },
+        {
+          "heading": "11. HTTP Client → `rules/http-client.md`",
+          "level": 3,
+          "line": 110
+        },
+        {
+          "heading": "12. Events, Notifications & Mail → `rules/events-notifications.md`, `rules/mail.md`",
+          "level": 3,
+          "line": 118
+        },
+        {
+          "heading": "13. Error Handling → `rules/error-handling.md`",
+          "level": 3,
+          "line": 128
+        },
+        {
+          "heading": "14. Task Scheduling → `rules/scheduling.md`",
+          "level": 3,
+          "line": 137
+        },
+        {
+          "heading": "15. Architecture → `rules/architecture.md`",
+          "level": 3,
+          "line": 146
+        },
+        {
+          "heading": "16. Migrations → `rules/migrations.md`",
+          "level": 3,
+          "line": 153
+        },
+        {
+          "heading": "17. Collections → `rules/collections.md`",
+          "level": 3,
+          "line": 163
+        },
+        {
+          "heading": "18. Blade & Views → `rules/blade-views.md`",
+          "level": 3,
+          "line": 170
+        },
+        {
+          "heading": "19. Conventions & Style → `rules/style.md`",
+          "level": 3,
+          "line": 177
+        },
+        {
+          "heading": "How to Apply",
+          "level": 2,
+          "line": 184
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 23
+      }
+    },
+    {
+      "path": ".github/skills/pest-testing/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 166,
+      "nonEmptyLines": 120,
+      "sections": [
+        {
+          "heading": "Pest Testing 4",
+          "level": 1,
+          "line": 9
+        },
+        {
+          "heading": "Documentation",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Basic Usage",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "Creating Tests",
+          "level": 3,
+          "line": 17
+        },
+        {
+          "heading": "Test Organization",
+          "level": 3,
+          "line": 27
+        },
+        {
+          "heading": "Basic Test Structure",
+          "level": 3,
+          "line": 33
+        },
+        {
+          "heading": "Running Tests",
+          "level": 3,
+          "line": 44
+        },
+        {
+          "heading": "Assertions",
+          "level": 2,
+          "line": 50
+        },
+        {
+          "heading": "Mocking",
+          "level": 2,
+          "line": 67
+        },
+        {
+          "heading": "Datasets",
+          "level": 2,
+          "line": 71
+        },
+        {
+          "heading": "Pest 4 Features",
+          "level": 2,
+          "line": 85
+        },
+        {
+          "heading": "Browser Test Example",
+          "level": 3,
+          "line": 95
+        },
+        {
+          "heading": "Smoke Testing",
+          "level": 3,
+          "line": 128
+        },
+        {
+          "heading": "Visual Regression Testing",
+          "level": 3,
+          "line": 139
+        },
+        {
+          "heading": "Test Sharding",
+          "level": 3,
+          "line": 143
+        },
+        {
+          "heading": "Architecture Testing",
+          "level": 3,
+          "line": 147
+        },
+        {
+          "heading": "Common Pitfalls",
+          "level": 2,
+          "line": 159
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 17
+      }
+    },
+    {
+      "path": ".github/skills/tailwindcss-development/SKILL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 119,
+      "nonEmptyLines": 90,
+      "sections": [
+        {
+          "heading": "Tailwind CSS Development",
+          "level": 1,
+          "line": 9
+        },
+        {
+          "heading": "Documentation",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Basic Usage",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "Tailwind CSS v4 Specifics",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "CSS-First Configuration",
+          "level": 3,
+          "line": 26
+        },
+        {
+          "heading": "Import Syntax",
+          "level": 3,
+          "line": 37
+        },
+        {
+          "heading": "Replaced Utilities",
+          "level": 3,
+          "line": 49
+        },
+        {
+          "heading": "Spacing",
+          "level": 2,
+          "line": 67
+        },
+        {
+          "heading": "Dark Mode",
+          "level": 2,
+          "line": 79
+        },
+        {
+          "heading": "Common Patterns",
+          "level": 2,
+          "line": 90
+        },
+        {
+          "heading": "Flexbox Layout",
+          "level": 3,
+          "line": 92
+        },
+        {
+          "heading": "Grid Layout",
+          "level": 3,
+          "line": 102
+        },
+        {
+          "heading": "Common Pitfalls",
+          "level": 2,
+          "line": 113
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 13
+      }
+    }
+  ]
+}

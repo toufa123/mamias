@@ -1,0 +1,656 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "resources/views/filament/forms/components/honeypot.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 31,
+      "nonEmptyLines": 30,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/filament/hooks/pending-references-alert.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 15,
+      "nonEmptyLines": 14,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/filament/pages/backup-manager.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 65,
+      "nonEmptyLines": 61,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/filament/widgets/mamias-info-widget.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 87,
+      "nonEmptyLines": 83,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/filament/widgets/worms-fetch-progress-widget.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 311,
+      "nonEmptyLines": 280,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/livewire/my-references.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 13,
+      "nonEmptyLines": 10,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/livewire/public-profile.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 33,
+      "nonEmptyLines": 28,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/mamias/about.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 14,
+      "nonEmptyLines": 7,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/mamias/home.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 239,
+      "nonEmptyLines": 218,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/partials/navbar.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 98,
+      "nonEmptyLines": 97,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "resources/views/partials/usermenu.blade.php",
+      "language": "blade",
+      "fileCategory": "markup",
+      "totalLines": 142,
+      "nonEmptyLines": 141,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "routes/breadcrumbs.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 27,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "routes/console.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "routes/web.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 26,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/ExampleTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 7,
+      "nonEmptyLines": 5,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/FetchTaxaFromWormsJobTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 80,
+      "nonEmptyLines": 60,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/IntroEventRecordImporterTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 315,
+      "nonEmptyLines": 238,
+      "functions": [
+        {
+          "name": "makeImporter",
+          "startLine": 179,
+          "endLine": 191,
+          "params": [
+            "$columnMap",
+            "$options",
+            "$record",
+            "$data"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "makeImporter",
+          "line": 179,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "makeImporter",
+          "callee": "Mockery::mock(Import::class)->makePartial",
+          "lineNumber": 181
+        },
+        {
+          "caller": "makeImporter",
+          "callee": "Mockery::mock",
+          "lineNumber": 181
+        },
+        {
+          "caller": "makeImporter",
+          "callee": "(function () use ($record, $data): void {\n        $this->record = $record;\n        $this->data = $data;\n    })->call",
+          "lineNumber": 185
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/LiteratureAlertBoxTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 63,
+      "nonEmptyLines": 49,
+      "functions": [
+        {
+          "name": "setUp",
+          "startLine": 16,
+          "endLine": 23,
+          "params": []
+        },
+        {
+          "name": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "startLine": 25,
+          "endLine": 38,
+          "params": []
+        },
+        {
+          "name": "test_alert_box_is_not_displayed_to_regular_user",
+          "startLine": 40,
+          "endLine": 50,
+          "params": []
+        },
+        {
+          "name": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "startLine": 52,
+          "endLine": 62,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "LiteratureAlertBoxTest",
+          "startLine": 12,
+          "endLine": 63,
+          "methods": [
+            "setUp",
+            "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+            "test_alert_box_is_not_displayed_to_regular_user",
+            "test_alert_box_is_not_displayed_when_no_pending_references"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "LiteratureAlertBoxTest",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setUp",
+          "callee": "parent::setUp",
+          "lineNumber": 18
+        },
+        {
+          "caller": "setUp",
+          "callee": "Literature::query()->delete",
+          "lineNumber": 19
+        },
+        {
+          "caller": "setUp",
+          "callee": "Literature::query",
+          "lineNumber": 19
+        },
+        {
+          "caller": "setUp",
+          "callee": "Role::findOrCreate",
+          "lineNumber": 20
+        },
+        {
+          "caller": "setUp",
+          "callee": "Role::findOrCreate",
+          "lineNumber": 21
+        },
+        {
+          "caller": "setUp",
+          "callee": "Role::findOrCreate",
+          "lineNumber": 22
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "User::factory()->create",
+          "lineNumber": 27
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "User::factory",
+          "lineNumber": 27
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "$admin->assignRole",
+          "lineNumber": 28
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "Literature::factory()->create",
+          "lineNumber": 30
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "Literature::factory",
+          "lineNumber": 30
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "$this->actingAs($admin)->get",
+          "lineNumber": 32
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "$this->actingAs",
+          "lineNumber": 32
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "$response->assertStatus",
+          "lineNumber": 35
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "$response->assertSee",
+          "lineNumber": 36
+        },
+        {
+          "caller": "test_alert_box_is_displayed_to_super_admin_when_pending_references_exist",
+          "callee": "$response->assertSee",
+          "lineNumber": 37
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "User::factory()->create",
+          "lineNumber": 42
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "User::factory",
+          "lineNumber": 42
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "$user->assignRole",
+          "lineNumber": 43
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "Literature::factory()->create",
+          "lineNumber": 45
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "Literature::factory",
+          "lineNumber": 45
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "$this->actingAs($user)\n            ->get('/mamias')->assertDontSee",
+          "lineNumber": 47
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "$this->actingAs($user)->get",
+          "lineNumber": 47
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_to_regular_user",
+          "callee": "$this->actingAs",
+          "lineNumber": 47
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "User::factory()->create",
+          "lineNumber": 54
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "User::factory",
+          "lineNumber": 54
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "$admin->assignRole",
+          "lineNumber": 55
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "Literature::factory()->create",
+          "lineNumber": 57
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "Literature::factory",
+          "lineNumber": 57
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "$this->actingAs($admin)\n            ->get('/mamias')->assertDontSee",
+          "lineNumber": 59
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "$this->actingAs($admin)->get",
+          "lineNumber": 59
+        },
+        {
+          "caller": "test_alert_box_is_not_displayed_when_no_pending_references",
+          "callee": "$this->actingAs",
+          "lineNumber": 59
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "tests/Feature/LiteratureApprovalTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 63,
+      "nonEmptyLines": 46,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/LiteratureNotificationTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 86,
+      "nonEmptyLines": 67,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/LoginRouteTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 21,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/MyReferencesTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 136,
+      "nonEmptyLines": 112,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/TaxonFormTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 137,
+      "nonEmptyLines": 107,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/TaxonSoftDeleteTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 46,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/Feature/UserManagementExtendedTest.php",
+      "language": "php",
+      "fileCategory": "code",
+      "totalLines": 210,
+      "nonEmptyLines": 163,
+      "functions": [
+        {
+          "name": "createAdminWithUserResourcePermissions",
+          "startLine": 31,
+          "endLine": 45,
+          "params": []
+        },
+        {
+          "name": "fakeWormsService",
+          "startLine": 47,
+          "endLine": 58,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "createAdminWithUserResourcePermissions",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "fakeWormsService",
+          "line": 47,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "Role::findOrCreate",
+          "lineNumber": 33
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "$role->givePermissionTo",
+          "lineNumber": 36
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "Permission::findOrCreate",
+          "lineNumber": 36
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "app(PermissionRegistrar::class)->forgetCachedPermissions",
+          "lineNumber": 39
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "app",
+          "lineNumber": 39
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "User::factory()->create",
+          "lineNumber": 41
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "User::factory",
+          "lineNumber": 41
+        },
+        {
+          "caller": "createAdminWithUserResourcePermissions",
+          "callee": "$user->assignRole",
+          "lineNumber": 42
+        },
+        {
+          "caller": "fakeWormsService",
+          "callee": "app()->instance",
+          "lineNumber": 49
+        },
+        {
+          "caller": "fakeWormsService",
+          "callee": "app",
+          "lineNumber": 49
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    }
+  ]
+}

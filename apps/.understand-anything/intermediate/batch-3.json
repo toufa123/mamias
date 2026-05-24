@@ -1,0 +1,777 @@
+{
+  "nodes": [
+    {
+      "id": "file:app/Filament/Pages/Auth/Register.php",
+      "type": "file",
+      "name": "Register.php",
+      "filePath": "app/Filament/Pages/Auth/Register.php",
+      "summary": "Custom Filament v5 registration page that adds title, first/last name, country, and honeypot fields, assigns the default `user` role after registration, and fires the Registered event.",
+      "tags": ["filament-page", "authentication", "registration", "entry-point"],
+      "complexity": "moderate",
+      "languageNotes": "Overrides Filament Auth\\Register handleRegistration to inject Spatie role assignment and honeypot spam protection."
+    },
+    {
+      "id": "class:app/Filament/Pages/Auth/Register.php:Register",
+      "type": "class",
+      "name": "Register",
+      "filePath": "app/Filament/Pages/Auth/Register.php",
+      "lineRange": [19, 111],
+      "summary": "Extends Filament's base Register page to render an extended registration form and post-process new users with role assignment and spam protection.",
+      "tags": ["filament-page", "authentication", "form-builder"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Pages/Auth/Register.php:form",
+      "type": "function",
+      "name": "form",
+      "filePath": "app/Filament/Pages/Auth/Register.php",
+      "lineRange": [32, 51],
+      "summary": "Builds the registration schema with a 3-column grid containing identity, contact, password, and honeypot fields.",
+      "tags": ["form-builder", "filament-schema"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Filament/Pages/Auth/Register.php:handleRegistration",
+      "type": "function",
+      "name": "handleRegistration",
+      "filePath": "app/Filament/Pages/Auth/Register.php",
+      "lineRange": [98, 110],
+      "summary": "Runs honeypot anti-spam check, delegates user creation to the parent class, then assigns the `user` role and dispatches the Registered event.",
+      "tags": ["registration", "role-assignment", "event-dispatch"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Pages/BackupManager.php",
+      "type": "file",
+      "name": "BackupManager.php",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "summary": "Filament admin page that lists PostgreSQL backup dumps and provides actions to create, download, delete, data-only restore, and full disaster-recovery restore via the backup/db Docker containers.",
+      "tags": ["filament-page", "backup", "database", "operations"],
+      "complexity": "complex",
+      "languageNotes": "Shells out to docker via Symfony Process; validates filenames with realpath + str_starts_with to prevent path traversal."
+    },
+    {
+      "id": "class:app/Filament/Pages/BackupManager.php:BackupManager",
+      "type": "class",
+      "name": "BackupManager",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [14, 389],
+      "summary": "Filament page exposing four actions (backup, restore data-only, full restore, delete) plus a download action over backup .dmp files stored on host volume.",
+      "tags": ["filament-page", "backup", "database", "docker"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:getBackupFilesWithSize",
+      "type": "function",
+      "name": "getBackupFilesWithSize",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [91, 117],
+      "summary": "Returns the list of .dmp backup files with human-readable size and modification time, sorted newest-first.",
+      "tags": ["backup", "filesystem", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:copyToDbContainer",
+      "type": "function",
+      "name": "copyToDbContainer",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [134, 150],
+      "summary": "Copies a local backup file into the database container using `docker cp` with proper shell argument escaping.",
+      "tags": ["docker", "process", "backup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:backupAction",
+      "type": "function",
+      "name": "backupAction",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [212, 237],
+      "summary": "Filament action that runs pg_dump inside the backup container and notifies on success or failure.",
+      "tags": ["backup", "filament-action", "pg-dump"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:restoreAction",
+      "type": "function",
+      "name": "restoreAction",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [239, 307],
+      "summary": "Restores data into existing tables by truncating then loading from the selected dump via psql in the db container; preserves schema.",
+      "tags": ["restore", "filament-action", "database"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:fullRestoreAction",
+      "type": "function",
+      "name": "fullRestoreAction",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [309, 388],
+      "summary": "Disaster-recovery restore: drops and recreates all tables, optionally pre-applying globals.sql, then loads the selected dump via pg_restore.",
+      "tags": ["restore", "disaster-recovery", "filament-action"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:downloadAction",
+      "type": "function",
+      "name": "downloadAction",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [152, 179],
+      "summary": "Provides authenticated download of a backup dump with realpath-based traversal protection.",
+      "tags": ["filament-action", "download", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Pages/BackupManager.php:deleteAction",
+      "type": "function",
+      "name": "deleteAction",
+      "filePath": "app/Filament/Pages/BackupManager.php",
+      "lineRange": [181, 210],
+      "summary": "Deletes a backup file and its sibling toc with path validation and notification.",
+      "tags": ["filament-action", "delete", "backup"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Pages/Dashboard.php",
+      "type": "file",
+      "name": "Dashboard.php",
+      "filePath": "app/Filament/Pages/Dashboard.php",
+      "summary": "Custom Filament Dashboard page composing the MAMIAS catalogue tab and data tab with grids of stats and chart widgets.",
+      "tags": ["filament-page", "dashboard", "widgets", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Pages/Dashboard.php:Dashboard",
+      "type": "class",
+      "name": "Dashboard",
+      "filePath": "app/Filament/Pages/Dashboard.php",
+      "lineRange": [16, 54],
+      "summary": "Extends Filament Dashboard with persistent tabs that arrange catalogue and data widgets in grid layouts.",
+      "tags": ["filament-page", "dashboard"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Pages/HealthCheckResults.php",
+      "type": "file",
+      "name": "HealthCheckResults.php",
+      "filePath": "app/Filament/Pages/HealthCheckResults.php",
+      "summary": "Wraps the Spatie health-check results page into the Filament panel under the System navigation group.",
+      "tags": ["filament-page", "health-check", "monitoring"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Pages/HealthCheckResults.php:HealthCheckResults",
+      "type": "class",
+      "name": "HealthCheckResults",
+      "filePath": "app/Filament/Pages/HealthCheckResults.php",
+      "lineRange": [9, 22],
+      "summary": "Thin subclass of the Spatie HealthCheckResults page that sets navigation group and heading.",
+      "tags": ["filament-page", "health-check"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php",
+      "type": "file",
+      "name": "IntroEventRecordResource.php",
+      "filePath": "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php",
+      "summary": "Filament resource for IntroEventRecord (NIS introduction events) wiring form, table, and CRUD pages.",
+      "tags": ["data-model", "filament-resource", "nis-records"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php:IntroEventRecordResource",
+      "type": "class",
+      "name": "IntroEventRecordResource",
+      "filePath": "app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php",
+      "lineRange": [18, 62],
+      "summary": "Defines the IntroEventRecord Filament resource with model binding, navigation metadata, and page routing.",
+      "tags": ["data-model", "filament-resource"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php",
+      "type": "file",
+      "name": "CreateIntroEventRecord.php",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php",
+      "summary": "Filament create page for IntroEventRecord records.",
+      "tags": ["filament-page", "create-page"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php",
+      "type": "file",
+      "name": "EditIntroEventRecord.php",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php",
+      "summary": "Filament edit page for IntroEventRecord records with header DeleteAction.",
+      "tags": ["filament-page", "edit-page"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+      "type": "file",
+      "name": "ListIntroEventRecords.php",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+      "summary": "Filament list page for IntroEventRecord with CSV import action and header CreateAction.",
+      "tags": ["filament-page", "list-page", "csv-import"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:ListIntroEventRecords",
+      "type": "class",
+      "name": "ListIntroEventRecords",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+      "lineRange": [14, 86],
+      "summary": "List page wiring CSV ImportAction with IntroEventRecordImporter and header validation of upload headers.",
+      "tags": ["filament-page", "list-page", "csv-import"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:getHeaderActions",
+      "type": "function",
+      "name": "getHeaderActions",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+      "lineRange": [18, 54],
+      "summary": "Configures ImportAction (chunked, csv only) and CreateAction header buttons for the list page.",
+      "tags": ["filament-action", "csv-import"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:csvHeaders",
+      "type": "function",
+      "name": "csvHeaders",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php",
+      "lineRange": [62, 85],
+      "summary": "Reads and validates the first row of an uploaded CSV to ensure expected import headers are present.",
+      "tags": ["csv", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php",
+      "type": "file",
+      "name": "IntroEventRecordForm.php",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php",
+      "summary": "Static form configurator for IntroEventRecord composing fields for taxon, location, subregion, status enums, CBD pathway, dates, and data-quality flags.",
+      "tags": ["form-builder", "filament-schema", "nis-records"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php:IntroEventRecordForm",
+      "type": "class",
+      "name": "IntroEventRecordForm",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php",
+      "lineRange": [10, 176],
+      "summary": "Static schema configurator returning the IntroEventRecord form layout populated with project enums.",
+      "tags": ["form-builder", "filament-schema"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php",
+      "type": "file",
+      "name": "IntroEventRecordsTable.php",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php",
+      "summary": "Static table configurator for IntroEventRecord with columns and filters for taxon, location, status, and pathways.",
+      "tags": ["table-builder", "filament-table", "nis-records"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php:IntroEventRecordsTable",
+      "type": "class",
+      "name": "IntroEventRecordsTable",
+      "filePath": "app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php",
+      "lineRange": [14, 88],
+      "summary": "Static configurator exposing IntroEventRecord listing with searchable columns and bulk delete.",
+      "tags": ["table-builder", "filament-table"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Resources/Literatures/LiteratureResource.php",
+      "type": "file",
+      "name": "LiteratureResource.php",
+      "filePath": "app/Filament/Resources/Literatures/LiteratureResource.php",
+      "summary": "Filament resource for Literature references that supports bibliographic metadata, DOI lookup, and PDF attachments.",
+      "tags": ["data-model", "filament-resource", "literature"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Resources/Literatures/LiteratureResource.php:LiteratureResource",
+      "type": "class",
+      "name": "LiteratureResource",
+      "filePath": "app/Filament/Resources/Literatures/LiteratureResource.php",
+      "lineRange": [16, 58],
+      "summary": "Wires the Literature model to its Filament form, table, and CRUD pages with navigation metadata.",
+      "tags": ["data-model", "filament-resource"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Literatures/Pages/CreateLiterature.php",
+      "type": "file",
+      "name": "CreateLiterature.php",
+      "filePath": "app/Filament/Resources/Literatures/Pages/CreateLiterature.php",
+      "summary": "Filament create page for Literature with redirect override returning to the index after save.",
+      "tags": ["filament-page", "create-page"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Literatures/Pages/EditLiterature.php",
+      "type": "file",
+      "name": "EditLiterature.php",
+      "filePath": "app/Filament/Resources/Literatures/Pages/EditLiterature.php",
+      "summary": "Filament edit page for Literature with delete header action and post-save redirect to the list.",
+      "tags": ["filament-page", "edit-page"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Literatures/Pages/ListLiteratures.php",
+      "type": "file",
+      "name": "ListLiteratures.php",
+      "filePath": "app/Filament/Resources/Literatures/Pages/ListLiteratures.php",
+      "summary": "Filament list page for Literature with status-based tabs and a CreateAction header button.",
+      "tags": ["filament-page", "list-page", "tabs"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Resources/Literatures/Pages/ListLiteratures.php:ListLiteratures",
+      "type": "class",
+      "name": "ListLiteratures",
+      "filePath": "app/Filament/Resources/Literatures/Pages/ListLiteratures.php",
+      "lineRange": [13, 37],
+      "summary": "List page providing per-status Filament tabs (e.g., draft/published) and a header create action.",
+      "tags": ["filament-page", "list-page"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+      "type": "file",
+      "name": "LiteratureForm.php",
+      "filePath": "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+      "summary": "Static configurator for the Literature form with DOI auto-fill via DoiMetadataService, code, type, references, link, and file upload fields.",
+      "tags": ["form-builder", "filament-schema", "doi"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:LiteratureForm",
+      "type": "class",
+      "name": "LiteratureForm",
+      "filePath": "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+      "lineRange": [16, 192],
+      "summary": "Builds the Literature form using small per-field static methods that compose into a bibliographic-reference section.",
+      "tags": ["form-builder", "filament-schema"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:getDoiField",
+      "type": "function",
+      "name": "getDoiField",
+      "filePath": "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+      "lineRange": [41, 46],
+      "summary": "Configures the DOI input with reactive lookup via DoiMetadataService to auto-populate citation fields.",
+      "tags": ["doi", "form-field", "reactive"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:getFileField",
+      "type": "function",
+      "name": "getFileField",
+      "filePath": "app/Filament/Resources/Literatures/Schemas/LiteratureForm.php",
+      "lineRange": [73, 78],
+      "summary": "Provides the file upload field for attaching the PDF or document associated with the literature entry.",
+      "tags": ["form-field", "file-upload"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php",
+      "type": "file",
+      "name": "LiteraturesTable.php",
+      "filePath": "app/Filament/Resources/Literatures/Tables/LiteraturesTable.php",
+      "summary": "Static table configurator for Literature with status badges, creator column, DOI/link/file columns, and bulk actions.",
+      "tags": ["table-builder", "filament-table", "literature"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php:LiteraturesTable",
+      "type": "class",
+      "name": "LiteraturesTable",
+      "filePath": "app/Filament/Resources/Literatures/Tables/LiteraturesTable.php",
+      "lineRange": [17, 145],
+      "summary": "Defines Literature table columns through small per-column static helpers including status, code, references, and creator metadata.",
+      "tags": ["table-builder", "filament-table"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/Pages/CreateTaxon.php",
+      "type": "file",
+      "name": "CreateTaxon.php",
+      "filePath": "app/Filament/Resources/Taxons/Pages/CreateTaxon.php",
+      "summary": "Filament create page for Taxon that hydrates form state from a matched WoRMS taxon result and overrides redirect.",
+      "tags": ["filament-page", "create-page", "worms"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/Pages/EditTaxon.php",
+      "type": "file",
+      "name": "EditTaxon.php",
+      "filePath": "app/Filament/Resources/Taxons/Pages/EditTaxon.php",
+      "summary": "Filament edit page for Taxon supporting WoRMS-driven state updates, delete header action, and post-save redirect.",
+      "tags": ["filament-page", "edit-page", "worms"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Resources/Taxons/Pages/EditTaxon.php:EditTaxon",
+      "type": "class",
+      "name": "EditTaxon",
+      "filePath": "app/Filament/Resources/Taxons/Pages/EditTaxon.php",
+      "lineRange": [11, 51],
+      "summary": "Edit page handling WoRMS taxon-match listener, header delete action, and redirecting to the list after save.",
+      "tags": ["filament-page", "edit-page"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+      "type": "file",
+      "name": "ListTaxons.php",
+      "filePath": "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+      "summary": "Filament list page for Taxon with per-catalogue-status tabs, header widgets (WoRMS progress), CSV import, and Spatie role-aware header actions.",
+      "tags": ["filament-page", "list-page", "tabs", "worms"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:app/Filament/Resources/Taxons/Pages/ListTaxons.php:ListTaxons",
+      "type": "class",
+      "name": "ListTaxons",
+      "filePath": "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+      "lineRange": [18, 102],
+      "summary": "Lists Taxon records with tab counts per Catalogue_Status enum, WormsFetchProgressWidget, import action, and reactive listener for fetch jobs.",
+      "tags": ["filament-page", "list-page", "worms"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Pages/ListTaxons.php:getTabs",
+      "type": "function",
+      "name": "getTabs",
+      "filePath": "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+      "lineRange": [37, 65],
+      "summary": "Builds tabs per Catalogue_Status enum value, each showing a badge with the live record count.",
+      "tags": ["filament-tabs", "catalogue-status"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Pages/ListTaxons.php:getHeaderActions",
+      "type": "function",
+      "name": "getHeaderActions",
+      "filePath": "app/Filament/Resources/Taxons/Pages/ListTaxons.php",
+      "lineRange": [78, 101],
+      "summary": "Composes header actions including Create, CSV ImportAction with TaxonImporter, and admin-only fetch jobs.",
+      "tags": ["filament-action", "csv-import", "permissions"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "type": "file",
+      "name": "TaxonForm.php",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "summary": "Static form configurator for Taxon composing general info, taxonomic classification, status/validation, and synonyms sections with WoRMS/EASIN service integrations.",
+      "tags": ["form-builder", "filament-schema", "worms", "easin"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:TaxonForm",
+      "type": "class",
+      "name": "TaxonForm",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "lineRange": [29, 341],
+      "summary": "Builds the Taxon edit/create form including reactive WoRMS sync action and synonyms management.",
+      "tags": ["form-builder", "filament-schema", "worms"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:getTaxonomicClassificationSection",
+      "type": "function",
+      "name": "getTaxonomicClassificationSection",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "lineRange": [93, 150],
+      "summary": "Renders the kingdom/phylum/class/order/family/genus classification section sourced from WoRMS data.",
+      "tags": ["form-section", "taxonomy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:getSynonymsSection",
+      "type": "function",
+      "name": "getSynonymsSection",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "lineRange": [180, 220],
+      "summary": "Renders the synonyms repeater section, including resolution of accepted-name relationships from WoRMS.",
+      "tags": ["form-section", "synonyms", "worms"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:makeSyncWithAcceptedNameFromWormsAction",
+      "type": "function",
+      "name": "makeSyncWithAcceptedNameFromWormsAction",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonForm.php",
+      "lineRange": [240, 320],
+      "summary": "Builds an action that synchronizes the current taxon record with its accepted name from the WoRMS service.",
+      "tags": ["filament-action", "worms", "sync"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php",
+      "type": "file",
+      "name": "TaxonInfolist.php",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php",
+      "summary": "Static infolist configurator for the Taxon view page presenting general info, taxonomic classification tab, status, synonyms tab, and audit metadata.",
+      "tags": ["form-builder", "filament-infolist", "view-page"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php:TaxonInfolist",
+      "type": "class",
+      "name": "TaxonInfolist",
+      "filePath": "app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php",
+      "lineRange": [16, 246],
+      "summary": "Read-only Taxon display using tabbed sections for classification and synonyms plus an audit footer.",
+      "tags": ["filament-infolist", "view-page"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "type": "file",
+      "name": "TaxonTable.php",
+      "filePath": "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "summary": "Static table configurator for Taxon defining 16 columns (taxonomy + WoRMS/EASIN ids + audit), filters by kingdom/phylum/rank/environment, and bulk WoRMS/EASIN refetch actions.",
+      "tags": ["table-builder", "filament-table", "taxonomy", "worms", "easin"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:app/Filament/Resources/Taxons/Tables/TaxonTable.php:TaxonTable",
+      "type": "class",
+      "name": "TaxonTable",
+      "filePath": "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "lineRange": [29, 464],
+      "summary": "Composes the Taxon listing through per-column and per-filter static helpers plus jobs to refetch from WoRMS and EASIN.",
+      "tags": ["table-builder", "filament-table", "worms", "easin"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Tables/TaxonTable.php:configure",
+      "type": "function",
+      "name": "configure",
+      "filePath": "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "lineRange": [31, 100],
+      "summary": "Entry point that assembles all columns, filters, and actions onto the provided Filament Table.",
+      "tags": ["table-builder", "configurator"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Tables/TaxonTable.php:formatScientificName",
+      "type": "function",
+      "name": "formatScientificName",
+      "filePath": "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "lineRange": [314, 333],
+      "summary": "Formats a Taxon scientific name with italic species/genus parts and authorship in plain text.",
+      "tags": ["formatting", "scientific-name"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/Filament/Resources/Taxons/Tables/TaxonTable.php:getDistinctFilterOptions",
+      "type": "function",
+      "name": "getDistinctFilterOptions",
+      "filePath": "app/Filament/Resources/Taxons/Tables/TaxonTable.php",
+      "lineRange": [400, 420],
+      "summary": "Returns distinct values for a given column from the Taxon table to populate filter dropdowns.",
+      "tags": ["filter", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Taxons/TaxonResource.php",
+      "type": "file",
+      "name": "TaxonResource.php",
+      "filePath": "app/Filament/Resources/Taxons/TaxonResource.php",
+      "summary": "Filament resource for Taxon — the core MAMIAS catalogue model — wiring form, table, infolist, and CRUD pages plus an Eloquent query override.",
+      "tags": ["data-model", "filament-resource", "taxonomy", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/Filament/Resources/Taxons/TaxonResource.php:TaxonResource",
+      "type": "class",
+      "name": "TaxonResource",
+      "filePath": "app/Filament/Resources/Taxons/TaxonResource.php",
+      "lineRange": [21, 74],
+      "summary": "Defines the Taxon Filament resource with model binding, navigation, view-page infolist, and a custom record-binding Eloquent query.",
+      "tags": ["data-model", "filament-resource"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Users/Pages/CreateUser.php",
+      "type": "file",
+      "name": "CreateUser.php",
+      "filePath": "app/Filament/Resources/Users/Pages/CreateUser.php",
+      "summary": "Filament create page for User with constrained max content width and post-save redirect to the list.",
+      "tags": ["filament-page", "create-page", "users"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/Filament/Resources/Users/Pages/EditUser.php",
+      "type": "file",
+      "name": "EditUser.php",
+      "filePath": "app/Filament/Resources/Users/Pages/EditUser.php",
+      "summary": "Filament edit page for User with constrained width, delete header action, and post-save redirect to the list.",
+      "tags": ["filament-page", "edit-page", "users"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:app/Filament/Pages/Auth/Register.php", "target": "class:app/Filament/Pages/Auth/Register.php:Register", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/Auth/Register.php", "target": "function:app/Filament/Pages/Auth/Register.php:form", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/Auth/Register.php", "target": "function:app/Filament/Pages/Auth/Register.php:handleRegistration", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/Auth/Register.php", "target": "class:app/Filament/Pages/Auth/Register.php:Register", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Pages/Auth/Register.php", "target": "file:app/Filament/Forms/Components/Honeypot.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "class:app/Filament/Pages/BackupManager.php:BackupManager", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:getBackupFilesWithSize", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:copyToDbContainer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:backupAction", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:restoreAction", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:fullRestoreAction", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:downloadAction", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "function:app/Filament/Pages/BackupManager.php:deleteAction", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/BackupManager.php", "target": "class:app/Filament/Pages/BackupManager.php:BackupManager", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "class:app/Filament/Pages/Dashboard.php:Dashboard", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "class:app/Filament/Pages/Dashboard.php:Dashboard", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "file:app/Filament/Widgets/CatalogueEnvironmentChart.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "file:app/Filament/Widgets/CatalogueStatsWidget.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "file:app/Filament/Widgets/PhylumByKingdomChart.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "file:app/Filament/Widgets/SpeciesByKingdomChart.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Pages/Dashboard.php", "target": "file:app/Filament/Widgets/SpeciesByPhylumChart.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Pages/HealthCheckResults.php", "target": "class:app/Filament/Pages/HealthCheckResults.php:HealthCheckResults", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Pages/HealthCheckResults.php", "target": "class:app/Filament/Pages/HealthCheckResults.php:HealthCheckResults", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "class:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php:IntroEventRecordResource", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "class:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php:IntroEventRecordResource", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "file:app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "file:app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "file:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "target": "file:app/Models/IntroEventRecord.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/CreateIntroEventRecord.php", "target": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/EditIntroEventRecord.php", "target": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "target": "class:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:ListIntroEventRecords", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "target": "function:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:getHeaderActions", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "target": "function:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:csvHeaders", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "target": "class:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php:ListIntroEventRecords", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "target": "file:app/Filament/Imports/IntroEventRecordImporter.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php", "target": "file:app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "class:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php:IntroEventRecordForm", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "class:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php:IntroEventRecordForm", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/CbdPathwayCategory.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/CbdPathwaySubcategory.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/DataQuality.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/EstablishmentStatus.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/NisStatus.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/PathwayType.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php", "target": "file:app/Enums/Subregion.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php", "target": "class:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php:IntroEventRecordsTable", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php", "target": "class:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php:IntroEventRecordsTable", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php", "target": "file:app/Models/IntroEventRecord.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "class:app/Filament/Resources/Literatures/LiteratureResource.php:LiteratureResource", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "class:app/Filament/Resources/Literatures/LiteratureResource.php:LiteratureResource", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "file:app/Filament/Resources/Literatures/Pages/CreateLiterature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "file:app/Filament/Resources/Literatures/Pages/EditLiterature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "file:app/Filament/Resources/Literatures/Pages/ListLiteratures.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "file:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Literatures/Pages/CreateLiterature.php", "target": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Literatures/Pages/EditLiterature.php", "target": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Literatures/Pages/ListLiteratures.php", "target": "class:app/Filament/Resources/Literatures/Pages/ListLiteratures.php:ListLiteratures", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Literatures/Pages/ListLiteratures.php", "target": "class:app/Filament/Resources/Literatures/Pages/ListLiteratures.php:ListLiteratures", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Literatures/Pages/ListLiteratures.php", "target": "file:app/Filament/Resources/Literatures/LiteratureResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/Pages/ListLiteratures.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "class:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:LiteratureForm", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "function:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:getDoiField", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "function:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:getFileField", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "class:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php:LiteratureForm", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "file:app/Enums/LiteratureType.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "file:app/Services/DoiMetadataService.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/Schemas/LiteratureForm.php", "target": "file:app/Services/DoiMetadataService.php", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php", "target": "class:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php:LiteraturesTable", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php", "target": "class:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php:LiteraturesTable", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php", "target": "file:app/Enums/LiteratureStatus.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Literatures/Tables/LiteraturesTable.php", "target": "file:app/Models/Literature.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Taxons/Pages/CreateTaxon.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/CreateTaxon.php", "target": "file:app/Filament/Resources/Taxons/TaxonResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Taxons/Pages/EditTaxon.php", "target": "class:app/Filament/Resources/Taxons/Pages/EditTaxon.php:EditTaxon", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/EditTaxon.php", "target": "class:app/Filament/Resources/Taxons/Pages/EditTaxon.php:EditTaxon", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/EditTaxon.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/EditTaxon.php", "target": "file:app/Filament/Resources/Taxons/TaxonResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "class:app/Filament/Resources/Taxons/Pages/ListTaxons.php:ListTaxons", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "function:app/Filament/Resources/Taxons/Pages/ListTaxons.php:getTabs", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "function:app/Filament/Resources/Taxons/Pages/ListTaxons.php:getHeaderActions", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "class:app/Filament/Resources/Taxons/Pages/ListTaxons.php:ListTaxons", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "file:app/Filament/Imports/TaxonImporter.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "file:app/Filament/Resources/Taxons/TaxonResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "file:app/Filament/Widgets/WormsFetchProgressWidget.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "class:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:TaxonForm", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "function:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:getTaxonomicClassificationSection", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "function:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:getSynonymsSection", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "function:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:makeSyncWithAcceptedNameFromWormsAction", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "class:app/Filament/Resources/Taxons/Schemas/TaxonForm.php:TaxonForm", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Enums/Environment.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Enums/Worms_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Services/EasinService.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Services/TaxonService.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Services/WormsService.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Services/WormsService.php", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "target": "file:app/Services/EasinService.php", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php", "target": "class:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php:TaxonInfolist", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php", "target": "class:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php:TaxonInfolist", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "class:app/Filament/Resources/Taxons/Tables/TaxonTable.php:TaxonTable", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "function:app/Filament/Resources/Taxons/Tables/TaxonTable.php:configure", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "function:app/Filament/Resources/Taxons/Tables/TaxonTable.php:formatScientificName", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "function:app/Filament/Resources/Taxons/Tables/TaxonTable.php:getDistinctFilterOptions", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "class:app/Filament/Resources/Taxons/Tables/TaxonTable.php:TaxonTable", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "file:app/Enums/Catalogue_Status.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "file:app/Enums/Environment.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "file:app/Jobs/FetchEasinIdsJob.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "file:app/Jobs/FetchTaxaFromWormsJob.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "target": "file:app/Models/User.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "class:app/Filament/Resources/Taxons/TaxonResource.php:TaxonResource", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "class:app/Filament/Resources/Taxons/TaxonResource.php:TaxonResource", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Filament/Resources/Taxons/Pages/CreateTaxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Filament/Resources/Taxons/Pages/EditTaxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Filament/Resources/Taxons/Pages/ListTaxons.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Filament/Resources/Taxons/Schemas/TaxonForm.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Filament/Resources/Taxons/Schemas/TaxonInfolist.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Filament/Resources/Taxons/Tables/TaxonTable.php", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:app/Filament/Resources/Taxons/TaxonResource.php", "target": "file:app/Models/Taxon.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Users/Pages/CreateUser.php", "target": "file:app/Filament/Resources/Users/UserResource.php", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:app/Filament/Resources/Users/Pages/EditUser.php", "target": "file:app/Filament/Resources/Users/UserResource.php", "type": "imports", "direction": "forward", "weight": 0.7}
+  ]
+}

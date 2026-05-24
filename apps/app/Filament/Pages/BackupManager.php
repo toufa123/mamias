@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Process;
 
 class BackupManager extends Page
 {
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     protected static string|BackedEnum|null $navigationIcon = 'tabler-database';
 
     protected string $view = 'filament.pages.backup-manager';
@@ -140,7 +145,7 @@ class BackupManager extends Page
         $result = Process::timeout(60)->run(
             sprintf(
                 'docker exec -i %s tee %s > /dev/null < %s',
-                $this->dbContainer(),
+                escapeshellarg($this->dbContainer()),
                 escapeshellarg($destPath),
                 escapeshellarg($localPath)
             )
@@ -217,7 +222,7 @@ class BackupManager extends Page
             ->icon('tabler-database-export')
             ->action(function () {
                 $result = Process::timeout(120)->run(
-                    sprintf('docker exec %s /backup-scripts/backups.sh', $this->backupContainer())
+                    sprintf('docker exec %s /backup-scripts/backups.sh', escapeshellarg($this->backupContainer()))
                 );
 
                 if ($result->successful()) {
@@ -254,10 +259,19 @@ class BackupManager extends Page
             ->modalDescription('This will truncate all tables and reload data from the selected backup. Table structure and indexes are preserved.')
             ->action(function (array $data) {
                 $file = $data['backup_file'];
+                $basePath = $this->backupsPath();
+
+                $realPath = realpath($file);
+                if ($realPath === false || ! str_starts_with($realPath, realpath($basePath)) || ! str_ends_with($realPath, '.dmp')) {
+                    Notification::make()->title('Restore failed')->body('Invalid file path.')->danger()->send();
+
+                    return;
+                }
+
                 $db = $this->dbCredentials();
                 $dbContainer = $this->dbContainer();
 
-                if (! $this->copyToDbContainer($file)) {
+                if (! $this->copyToDbContainer($realPath)) {
                     Notification::make()->title('Restore failed')->body('Could not copy dump file to database container.')->danger()->send();
 
                     return;
@@ -270,7 +284,7 @@ class BackupManager extends Page
                 $truncateCmd = sprintf(
                     'docker exec -e PGPASSWORD=%s %s psql -h localhost -U %s -d %s -q -c %s',
                     escapeshellarg($db['pass']),
-                    $dbContainer,
+                    escapeshellarg($dbContainer),
                     escapeshellarg($db['user']),
                     escapeshellarg($db['name']),
                     escapeshellarg($truncateSql)
@@ -279,12 +293,12 @@ class BackupManager extends Page
                 $restoreCmd = sprintf(
                     'docker exec -e PGPASSWORD=%s %s pg_restore -h localhost -U %s -d %s --data-only --disable-triggers --no-owner --no-privileges --single-transaction /tmp/_mamias_restore.dump',
                     escapeshellarg($db['pass']),
-                    $dbContainer,
+                    escapeshellarg($dbContainer),
                     escapeshellarg($db['user']),
                     escapeshellarg($db['name'])
                 );
 
-                $cleanupCmd = sprintf('docker exec %s rm -f /tmp/_mamias_restore.dump', $dbContainer);
+                $cleanupCmd = sprintf('docker exec %s rm -f /tmp/_mamias_restore.dump', escapeshellarg($dbContainer));
 
                 $result = Process::timeout(120)->run("{$truncateCmd} && {$restoreCmd}; {$cleanupCmd}");
 
@@ -324,10 +338,19 @@ class BackupManager extends Page
             ->modalDescription('This will DROP and RECREATE all tables from the selected dump. Use this for blank server recovery or when schema has changed.')
             ->action(function (array $data) {
                 $file = $data['backup_file'];
+                $basePath = $this->backupsPath();
+
+                $realPath = realpath($file);
+                if ($realPath === false || ! str_starts_with($realPath, realpath($basePath)) || ! str_ends_with($realPath, '.dmp')) {
+                    Notification::make()->title('Restore failed')->body('Invalid file path.')->danger()->send();
+
+                    return;
+                }
+
                 $db = $this->dbCredentials();
                 $dbContainer = $this->dbContainer();
 
-                if (! $this->copyToDbContainer($file)) {
+                if (! $this->copyToDbContainer($realPath)) {
                     Notification::make()->title('Restore failed')->body('Could not copy dump file to database container.')->danger()->send();
 
                     return;
@@ -343,7 +366,7 @@ class BackupManager extends Page
                     $commands[] = sprintf(
                         'docker exec -e PGPASSWORD=%s %s psql -h localhost -U %s -d postgres -q -f /tmp/_mamias_globals.sql',
                         escapeshellarg($db['pass']),
-                        $dbContainer,
+                        escapeshellarg($dbContainer),
                         escapeshellarg($db['user'])
                     );
                 }
@@ -351,7 +374,7 @@ class BackupManager extends Page
                 $commands[] = sprintf(
                     'docker exec -e PGPASSWORD=%s %s psql -h localhost -U %s -d postgres -c %s',
                     escapeshellarg($db['pass']),
-                    $dbContainer,
+                    escapeshellarg($dbContainer),
                     escapeshellarg($db['user']),
                     escapeshellarg("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$db['name']}' AND pid <> pg_backend_pid();")
                 );
@@ -359,12 +382,12 @@ class BackupManager extends Page
                 $commands[] = sprintf(
                     'docker exec -e PGPASSWORD=%s %s pg_restore -h localhost -U %s -d %s --clean --if-exists --no-owner --no-privileges --single-transaction /tmp/_mamias_restore.dump',
                     escapeshellarg($db['pass']),
-                    $dbContainer,
+                    escapeshellarg($dbContainer),
                     escapeshellarg($db['user']),
                     escapeshellarg($db['name'])
                 );
 
-                $commands[] = sprintf('docker exec %s rm -f /tmp/_mamias_restore.dump /tmp/_mamias_globals.sql', $dbContainer);
+                $commands[] = sprintf('docker exec %s rm -f /tmp/_mamias_restore.dump /tmp/_mamias_globals.sql', escapeshellarg($dbContainer));
 
                 $fullCmd = implode(' && ', $commands);
                 $result = Process::timeout(300)->run($fullCmd.' || true');

@@ -23,11 +23,11 @@ return [
     ],
 
     'default_colors' => [
-        'info' => 'sky',
-        'tip' => 'purple',
-        'success' => 'green',
-        'warning' => 'yellow',
-        'danger' => 'red',
+        'info' => 'info',
+        'tip' => 'primary',
+        'success' => 'success',
+        'warning' => 'warning',
+        'danger' => 'danger',
         'none' => null,
     ],
 

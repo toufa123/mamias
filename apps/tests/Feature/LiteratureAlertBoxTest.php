@@ -5,14 +5,11 @@ namespace Tests\Feature;
 use App\Enums\LiteratureStatus;
 use App\Models\Literature;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class LiteratureAlertBoxTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

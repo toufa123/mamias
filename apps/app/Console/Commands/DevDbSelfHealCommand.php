@@ -31,12 +31,12 @@ class DevDbSelfHealCommand extends Command
     private function syncUserSequence(): void
     {
         $this->comment('Syncing users table sequence...');
-        
+
         $maxId = User::max('id') ?? 0;
         $nextId = $maxId + 1;
 
         DB::statement("SELECT setval('users_id_seq', $nextId, false)");
-        
+
         $this->info("User sequence synced to next ID: {$nextId}");
     }
 }

@@ -13,9 +13,9 @@ class PhylumByKingdomChart extends EChartWidget
 
     protected static bool $isDiscovered = false;
 
-    protected static int $contentHeight = 400;
+    protected static int $contentHeight = 350;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     protected const PHYLUM_COLORS = [
         '#00899d', '#10b981', '#f59e0b', '#F43F5E',
@@ -25,29 +25,33 @@ class PhylumByKingdomChart extends EChartWidget
         '#d946ef', '#facc15', '#64748b', '#fb923c',
     ];
 
+    protected const MAX_PHYLA = 12;
+
     protected function getOptions(): array
     {
-        $taxa = Taxon::query()
+        $taxa = Taxon::selectRaw('kingdom, phylum, COUNT(*) as total')
             ->whereNotNull('kingdom')
             ->whereNotNull('phylum')
             ->where('kingdom', '!=', '')
             ->where('phylum', '!=', '')
-            ->selectRaw('kingdom, phylum, COUNT(*) as total')
             ->groupBy('kingdom', 'phylum')
             ->orderBy('kingdom')
             ->orderByDesc('total')
             ->get();
 
         $kingdoms = $taxa->pluck('kingdom')->unique()->values();
-        $phyla = $taxa->pluck('phylum')->unique()->values();
+        $topPhyla = $taxa->groupBy('phylum')
+            ->map(fn ($group) => $group->sum('total'))
+            ->sortDesc()
+            ->take(self::MAX_PHYLA)
+            ->keys();
 
         $series = [];
-        foreach ($phyla as $index => $phylum) {
+        foreach ($topPhyla as $index => $phylum) {
             $data = [];
-
             foreach ($kingdoms as $kingdom) {
                 $row = $taxa->where('kingdom', $kingdom)->firstWhere('phylum', $phylum);
-                $data[] = $row ? $row->total : 0;
+                $data[] = $row ? (int) $row->total : 0;
             }
 
             $series[] = [
@@ -65,17 +69,8 @@ class PhylumByKingdomChart extends EChartWidget
                         'shadowColor' => 'rgba(0, 0, 0, 0.3)',
                     ],
                 ],
-                'label' => [
-                    'show' => true,
-                    'position' => 'inside',
-                    'fontSize' => 10,
-                    'fontWeight' => 'bold',
-                    'formatter' => '{c}',
-                ],
             ];
         }
-
-        $dynamicHeight = max(400, $kingdoms->count() * 60);
 
         return [
             'tooltip' => [
