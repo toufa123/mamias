@@ -4,16 +4,18 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EmailVerificationPrompt;
 use App\Filament\Pages\Auth\Login;
-use App\Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use App\Filament\Pages\Auth\Register;
+use App\Filament\Pages\ComposerDependencies;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\HealthCheckResults;
+use App\Filament\Pages\NpmDependencies;
 use App\Filament\Widgets\MamiasInfoWidget;
 use App\Http\Middleware\RedirectIfNotPanelUser;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
+use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
-use Daljo25\FilamentDependencyManager\FilamentDependencyManagerPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
@@ -25,30 +27,29 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use App\Filament\Pages\Dashboard;
 use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use lockscreen\FilamentLockscreen\Lockscreen;
-use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
-use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
-use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
-use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
-use Filament\Support\Assets\Js;
-use Filament\Support\Facades\FilamentAsset;
-use Illuminate\Support\Facades\Vite;
+use lockscreen\FilamentLockscreen\Lockscreen;
 use Promethys\Revive\RevivePlugin;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
+use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
 class MamiasPanelProvider extends PanelProvider
 {
@@ -57,6 +58,9 @@ class MamiasPanelProvider extends PanelProvider
         FilamentAsset::register([
             Js::make('app-scripts', Vite::asset('resources/js/app.js')),
         ]);
+
+        Gate::define('manage-resource-locks', fn ($user) => $user->hasRole('super_admin'));
+        Gate::define('manage-resource-locks-audit', fn ($user) => $user->hasRole('super_admin'));
     }
 
     public function panel(Panel $panel): Panel
@@ -93,7 +97,7 @@ class MamiasPanelProvider extends PanelProvider
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
                 RevivePlugin::make()
-                    //->authorize(auth()->user()->isAdmin()) // Accepts a boolean or Closure to control access
+                    ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
                     ->navigationGroup('Settings') // Group the page under a custom sidebar section
                     ->navigationIcon('heroicon-o-archive-box-arrow-down')
                     ->activeNavigationIcon('heroicon-o-archive-box-arrow-down')
@@ -102,16 +106,20 @@ class MamiasPanelProvider extends PanelProvider
                     ->title('Custom Title')
                     ->slug('custom-slug'),
                 RefreshSidebarPlugin::make(),
-//                FilamentSpatieLaravelBackupPlugin::make()
-//                    ->navigationIcon('heroicon-o-cpu-chip')
-//                    ->navigationLabel('Backups')
-//                    ->navigationGroup('system')
-//                    ->navigationSort(3),
-                ResourceLockPlugin::make(),
+                //                FilamentSpatieLaravelBackupPlugin::make()
+                //                    ->navigationIcon('heroicon-o-cpu-chip')
+                //                    ->navigationLabel('Backups')
+                //                    ->navigationGroup('system')
+                //                    ->navigationSort(3),
+                ResourceLockPlugin::make()
+                    ->limitedAccessToResourceLockManager(true)
+                    ->gate('manage-resource-locks')
+                    ->auditLimitedAccess(true)
+                    ->auditGate('manage-resource-locks-audit'),
                 CommandRunnerPlugin::make()
+                    ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
                     ->navigationGroup('System')
                     ->navigationIcon('tabler-alert-triangle'),
-                FilamentDependencyManagerPlugin::make(),
                 FilamentSpatieLaravelHealthPlugin::make()
                     ->usingPage(HealthCheckResults::class)
                     ->authorize(fn (): bool => auth()->user()->hasRole('super_admin')),
@@ -229,13 +237,15 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('Dashboard'),
                 NavigationGroup::make('Use management'),
                 NavigationGroup::make('MAMIAS database'),
-                NavigationGroup::make('system'),
-                NavigationGroup::make('settings'),
+                NavigationGroup::make('System'),
+                NavigationGroup::make('Settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+                ComposerDependencies::class,
+                NpmDependencies::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([

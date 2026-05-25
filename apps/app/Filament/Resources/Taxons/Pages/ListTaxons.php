@@ -12,10 +12,7 @@ use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Waad\FilamentImportWizard\Actions\ImportWizardAction;
-
-
 
 class ListTaxons extends ListRecords
 {

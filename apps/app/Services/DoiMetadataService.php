@@ -102,8 +102,14 @@ class DoiMetadataService
      */
     private function getYear(array $data): string
     {
-        return $data['published-print']['date-parts'][0][0]
-            ?? $data['published-online']['date-parts'][0][0]
-            ?? 'n.d.';
+        if (isset($data['published-print']['date-parts'][0][0])) {
+            return (string) $data['published-print']['date-parts'][0][0];
+        }
+
+        if (isset($data['published-online']['date-parts'][0][0])) {
+            return (string) $data['published-online']['date-parts'][0][0];
+        }
+
+        return 'n.d.';
     }
 }

@@ -10,7 +10,6 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -45,7 +44,7 @@ class AddLiterature extends Component implements HasActions, HasForms
 
         $this->form->fill();
 
-        Notification::make()
+        notify()
             ->success()
             ->title('Bibliographic reference added successfully.')
             ->send();

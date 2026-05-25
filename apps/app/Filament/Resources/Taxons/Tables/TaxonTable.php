@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Taxons\Tables;
 
-use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
+use App\Jobs\FetchEasinIdsJob;
 use App\Jobs\FetchTaxaFromWormsJob;
 use App\Models\Taxon;
 use App\Models\User;
@@ -30,11 +30,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
-use App\Jobs\FetchEasinIdsJob;
-
 
 class TaxonTable
 {
@@ -128,7 +126,7 @@ class TaxonTable
 
                             Notification::make()
                                 ->title('WoRMS Sync Started')
-                                ->body('The taxonomy update for ' . $records->count() . ' species is now running in the background.')
+                                ->body('The taxonomy update for '.$records->count().' species is now running in the background.')
                                 ->success()
                                 ->send();
                         }),
@@ -149,7 +147,7 @@ class TaxonTable
 
                             Notification::make()
                                 ->title('EASIN Fetch Started')
-                                ->body('The EASIN ID lookup for ' . $records->count() . ' species is now running in the background.')
+                                ->body('The EASIN ID lookup for '.$records->count().' species is now running in the background.')
                                 ->success()
                                 ->send();
                         }),
@@ -159,6 +157,7 @@ class TaxonTable
                 ]),
             ]);
     }
+
     protected static function getIdColumn(): TextColumn
     {
         return TextColumn::make('id')
@@ -321,6 +320,7 @@ class TaxonTable
             ->searchable(['users.first_name', 'users.last_name'])
             ->toggleable(isToggledHiddenByDefault: true);
     }
+
     protected static function formatUserWithRole(?User $user): ?string
     {
         if (! $user) {

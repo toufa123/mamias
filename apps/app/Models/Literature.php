@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Mattiverse\Userstamps\Traits\Userstamps;
@@ -23,8 +24,8 @@ use Mattiverse\Userstamps\Traits\Userstamps;
  * @property string $short_ref
  * @property string $full_ref
  * @property string|null $link
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $created_by
  * @property int|null $updated_by
  */
@@ -35,6 +36,8 @@ use Mattiverse\Userstamps\Traits\Userstamps;
     'short_ref',
     'full_ref',
     'link',
+    'file_path',
+    'status',
     'created_at',
     'updated_at',
 ])]
@@ -42,6 +45,11 @@ use Mattiverse\Userstamps\Traits\Userstamps;
 class Literature extends Model
 {
     use HasFactory, Userstamps;
+
+    public function scopeForUser($query, $user): void
+    {
+        $query->where('created_by', $user->id);
+    }
 
     public function save(array $options = []): bool
     {

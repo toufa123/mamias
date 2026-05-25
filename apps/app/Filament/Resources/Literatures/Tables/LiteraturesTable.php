@@ -1,17 +1,16 @@
 <?php
 
-    namespace App\Filament\Resources\Literatures\Tables;
+namespace App\Filament\Resources\Literatures\Tables;
 
-    use Filament\Actions\BulkActionGroup;
-    use Filament\Actions\DeleteBulkAction;
-    use Filament\Actions\EditAction;
-    use Filament\Tables\Columns\TextColumn;
-    use Filament\Tables\Table;
-    use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
-    use App\Enums\LiteratureType;
+use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
-    class LiteraturesTable
-    {
+class LiteraturesTable
+{
     public static function configure(Table $table): Table
     {
         return $table
@@ -26,7 +25,7 @@
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
             ->bulkActions([
@@ -61,7 +60,7 @@
             ->searchable()
             ->icon(TablerIcon::Link)
             ->iconPosition('before')
-            ->url(fn ($state) => $state ? "https://doi.org/".$state : null)
+            ->url(fn ($state) => $state ? 'https://doi.org/'.$state : null)
             ->openUrlInNewTab()
             ->toggleable();
     }
@@ -82,6 +81,22 @@
             ->limit(100)
             ->wrap()
             ->toggleable(isToggledHiddenByDefault: true);
+    }
+
+    public static function getFileColumn(): TextColumn
+    {
+        return TextColumn::make('file_path')
+            ->label('File')
+            ->icon('heroicon-o-document')
+            ->toggleable();
+    }
+
+    public static function getStatusColumn(): TextColumn
+    {
+        return TextColumn::make('status')
+            ->label('Status')
+            ->badge()
+            ->sortable();
     }
 
     public static function getLinkColumn(): TextColumn

@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\Taxons\Pages;
 
-use App\Filament\Resources\Taxons\TaxonResource;
-use Filament\Resources\Pages\CreateRecord;
-
 use App\Enums\Catalogue_Status;
+use App\Filament\Resources\Taxons\TaxonResource;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 use Livewire\Attributes\On;
 
 class CreateTaxon extends CreateRecord
@@ -17,7 +16,7 @@ class CreateTaxon extends CreateRecord
     public function applyTaxonMatch(string $matchedName, string $originalName): void
     {
         $currentNotes = $this->data['notes'] ?? '';
-        $newNotes = trim(($currentNotes ? $currentNotes . "\n" : "") . "Original name before match: " . $originalName);
+        $newNotes = trim(($currentNotes ? $currentNotes."\n" : '').'Original name before match: '.$originalName);
 
         $this->data['notes'] = $newNotes;
         $this->data['scientificname'] = $matchedName;
@@ -34,5 +33,4 @@ class CreateTaxon extends CreateRecord
     {
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
-
 }

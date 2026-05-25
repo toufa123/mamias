@@ -48,7 +48,7 @@ class NisSuggestionsTable
                             ->when($data['date_until'], fn ($q, $v) => $q->whereDate('created_at', '<=', $v));
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 self::getApproveAction(),
                 self::getRejectAction(),
                 ViewAction::make(),

@@ -9,6 +9,8 @@
 @endsection
 
 <div>
+    <x-notify::notify />
+
     <form wire:submit="create" class="space-y-6">
         {{ $this->form }}
 

@@ -2,7 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Models\Taxon;
+use App\Filament\Imports\TaxonImporter;
+use App\Models\User;
 use Filament\Actions\Imports\Events\ImportCompleted;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Illuminate\Support\Facades\Cache;
@@ -13,7 +14,7 @@ class TaxonImportCompletedListener
     {
         $import = $event->getImport();
 
-        if ($import->importer !== \App\Filament\Imports\TaxonImporter::class) {
+        if ($import->importer !== TaxonImporter::class) {
             return;
         }
 
@@ -27,7 +28,7 @@ class TaxonImportCompletedListener
             ], now()->addMinutes(5));
 
             // Broadcast to trigger table refresh and notification polling in Filament
-            $user = \App\Models\User::find($userId);
+            $user = User::find($userId);
             if ($user) {
                 event(new DatabaseNotificationsSent($user));
             }

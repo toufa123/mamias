@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Mattiverse\Userstamps\Traits\Userstamps;
 
-
 #[Fillable('taxon_id', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes')]
 class IntroEventRecord extends Model
 {
@@ -44,5 +43,4 @@ class IntroEventRecord extends Model
     {
         return $this->hasMany(PathwayRecord::class, 'intro_event_id');
     }
-
 }

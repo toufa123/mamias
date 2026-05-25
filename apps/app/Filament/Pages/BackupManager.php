@@ -21,6 +21,11 @@ class BackupManager extends Page
 
     protected static ?string $title = 'Backup Manager';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     public function getBackupFiles(?string $extension = null): array
     {
         if (! Storage::disk('backups')->exists('')) {
@@ -56,6 +61,7 @@ class BackupManager extends Page
             ->color('gray')
             ->action(function (array $arguments) {
                 $file = $arguments['file'];
+
                 return Storage::disk('backups')->download($file);
             });
     }

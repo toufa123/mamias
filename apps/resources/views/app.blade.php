@@ -38,6 +38,12 @@
         [x-cloak] {
             display: none !important;
         }
+        .notify .border-green-500 {
+            border-color: #00899d !important;
+        }
+        .notify .text-green-400 {
+            color: #00899d !important;
+        }
     </style>
 
     {!! CookieConsent::styles() !!}
@@ -184,6 +190,18 @@
 @notifyJs
 {!! CookieConsent::scripts() !!}
 @stack('scripts')
+<script>
+    document.addEventListener('x-modal-opened', () => {
+        setTimeout(() => {
+            document.querySelectorAll('[x-data^="leafletMapField"]').forEach((el) => {
+                const data = window.Alpine?.$data(el);
+                if (data?.mapCore?.map) {
+                    data.mapCore.map.invalidateSize();
+                }
+            });
+        }, 100);
+    });
+</script>
 <script src="{{ asset('assets/js/core.bundle.js') }}"></script>
 <script src="{{ asset('assets/vendors/ktui/ktui.min.js') }}"></script>
 <script src="{{ asset('assets/js/widgets/general.js') }}"></script>

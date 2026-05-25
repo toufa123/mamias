@@ -13,7 +13,6 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -37,7 +36,7 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
             ->persistFiltersInSession(false)
             ->persistColumnSearchesInSession(false)
             ->persistSortInSession(false)
-            ->actions([
+            ->recordActions([
                 ViewAction::make('view')
                     ->form([LiteratureForm::getBibliographicReferenceSection()]),
             ])
@@ -90,10 +89,10 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
                     'status' => LiteratureStatus::PENDING,
                 ]);
 
-                Notification::make()
-                    ->title('Reference submitted')
-                    ->body('Your reference has been submitted for review.')
+                notify()
                     ->success()
+                    ->title('Reference submitted')
+                    ->message('Your reference has been submitted for review.')
                     ->send();
             });
     }

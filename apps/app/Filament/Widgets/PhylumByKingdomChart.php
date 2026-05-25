@@ -15,7 +15,7 @@ class PhylumByKingdomChart extends EChartWidget
 
     protected static int $contentHeight = 400;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected const PHYLUM_COLORS = [
         '#00899d', '#10b981', '#f59e0b', '#F43F5E',

@@ -13,5 +13,4 @@ class CreateLiterature extends CreateRecord
     {
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
-
 }

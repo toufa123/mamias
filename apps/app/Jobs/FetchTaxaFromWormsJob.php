@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Taxon;
 use App\Services\TaxonService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -38,7 +39,7 @@ class FetchTaxaFromWormsJob implements ShouldQueue
 
         try {
             Taxon::whereIn('id', $this->taxonIds)
-                ->chunkById(50, function (\Illuminate\Database\Eloquent\Collection $chunk) use ($taxonService, &$totals, &$processed, $total, $startTime): void {
+                ->chunkById(50, function (Collection $chunk) use ($taxonService, &$totals, &$processed, $total, $startTime): void {
                     $result = $taxonService->refreshFromWorms($chunk, function () use (&$processed, $total, $startTime) {
                         $processed++;
                         $this->updateProgress($processed, $total, $startTime);
@@ -112,13 +113,13 @@ class FetchTaxaFromWormsJob implements ShouldQueue
     private static function formatDuration(float $seconds): string
     {
         if ($seconds < 60) {
-            return round($seconds) . ' seconds';
+            return round($seconds).' seconds';
         }
 
         if ($seconds < 3600) {
-            return round($seconds / 60, 1) . ' minutes';
+            return round($seconds / 60, 1).' minutes';
         }
 
-        return round($seconds / 3600, 1) . ' hours';
+        return round($seconds / 3600, 1).' hours';
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Str;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Waad\FilamentImportWizard\Livewire\ImportWizard as BaseImportWizard;
 
@@ -29,7 +28,7 @@ class ImportWizard extends BaseImportWizard
             if ($rowIndex === 1) {
                 foreach ($cells as $i => $h) {
                     $headerName = $h ? Str::of($h)->trim()->studly()->toString() : '';
-                    $headers[] = $headerName ?: 'Column' . ($i + 1);
+                    $headers[] = $headerName ?: 'Column'.($i + 1);
                 }
 
                 continue;

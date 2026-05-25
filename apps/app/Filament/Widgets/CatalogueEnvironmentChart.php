@@ -16,7 +16,7 @@ class CatalogueEnvironmentChart extends EChartWidget
 
     protected static bool $isCollapsible = true;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = 1;
 
     protected const ENV_COLORS = [
         'marine' => '#00899d',

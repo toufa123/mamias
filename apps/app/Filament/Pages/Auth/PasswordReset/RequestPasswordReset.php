@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 class RequestPasswordReset extends BaseRequestPasswordReset
 {
     use HasCustomLayout;
+
     public ?string $cap_token = null;
 
     public function form(Schema $schema): Schema

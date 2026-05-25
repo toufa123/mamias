@@ -32,6 +32,7 @@ class PublicProfile extends Component implements HasActions, HasForms
     use InteractsWithForms;
 
     public ?array $data = [];
+
     public bool $isEditing = false;
 
     public function mount(): void
@@ -44,7 +45,7 @@ class PublicProfile extends Component implements HasActions, HasForms
         return $schema
             ->statePath('data')
             ->model(auth()->user())
-            ->disabled(fn () => !$this->isEditing)
+            ->disabled(fn () => ! $this->isEditing)
             ->components([
                 Section::make('Personal Details')
                     ->description('Identity and contact information.')
@@ -243,7 +244,7 @@ class PublicProfile extends Component implements HasActions, HasForms
         if ($this->isEditing) {
             $this->form->fill(auth()->user()->attributesToArray());
         }
-        $this->isEditing = !$this->isEditing;
+        $this->isEditing = ! $this->isEditing;
     }
 
     public function render(): View

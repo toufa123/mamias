@@ -48,9 +48,9 @@ class IntroEventRecordsTable
                     ->badge()
                     ->sortable()
                     ->searchable(),
-//                TextColumn::make('data_source_type')
-//                    ->badge()
-//                    ->searchable(),
+                //                TextColumn::make('data_source_type')
+                //                    ->badge()
+                //                    ->searchable(),
                 TextColumn::make('created_by')
                     ->numeric()
                     ->sortable()

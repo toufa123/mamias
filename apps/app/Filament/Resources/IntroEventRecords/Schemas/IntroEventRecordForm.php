@@ -14,14 +14,12 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Slider;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 
 class IntroEventRecordForm
@@ -79,9 +77,9 @@ class IntroEventRecordForm
                                     ->columnSpan(3),
                             ])->columnSpanFull(),
 
-                                RichEditor::make('notes')
-                                    ->label('Notes')
-                                    ->columnSpanFull(),
+                        RichEditor::make('notes')
+                            ->label('Notes')
+                            ->columnSpanFull(),
 
                     ]),
                 Tabs::make('Details')
@@ -169,7 +167,7 @@ class IntroEventRecordForm
                                     ]),
                             ]),
                     ])
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 }
