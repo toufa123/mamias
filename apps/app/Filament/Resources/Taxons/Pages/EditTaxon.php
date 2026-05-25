@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources\Taxons\Pages;
 
-use App\Enums\Catalogue_Status;
 use App\Filament\Resources\Taxons\TaxonResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+
+use App\Enums\Catalogue_Status;
+use Filament\Notifications\Notification;
 use Livewire\Attributes\On;
 
 class EditTaxon extends EditRecord
@@ -19,7 +20,7 @@ class EditTaxon extends EditRecord
     public function applyTaxonMatch(string $matchedName, string $originalName): void
     {
         $currentNotes = $this->data['notes'] ?? '';
-        $newNotes = trim(($currentNotes ? $currentNotes."\n" : '').'Original name before match: '.$originalName);
+        $newNotes = trim(($currentNotes ? $currentNotes . "\n" : "") . "Original name before match: " . $originalName);
 
         $this->data['notes'] = $newNotes;
         $this->data['scientificname'] = $matchedName;
@@ -37,6 +38,7 @@ class EditTaxon extends EditRecord
     {
         return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
+
 
     protected function getHeaderActions(): array
     {

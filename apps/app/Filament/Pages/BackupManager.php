@@ -8,16 +8,11 @@ use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Storage;
 
 class BackupManager extends Page
 {
-    public static function canAccess(): bool
-    {
-        return auth()->user()?->hasRole('super_admin') ?? false;
-    }
-
     protected static string|BackedEnum|null $navigationIcon = 'tabler-database';
 
     protected string $view = 'filament.pages.backup-manager';
@@ -26,132 +21,31 @@ class BackupManager extends Page
 
     protected static ?string $title = 'Backup Manager';
 
-    protected function backupsPath(): string
+    public function getBackupFiles(?string $extension = null): array
     {
-        return base_path('../backups');
-    }
-
-    protected function dbContainer(): string
-    {
-        $container = env('DOCKER_DB_CONTAINER', 'mamias_db');
-
-        if (! preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/', $container)) {
-            throw new \RuntimeException('Invalid DOCKER_DB_CONTAINER value.');
-        }
-
-        return $container;
-    }
-
-    protected function backupContainer(): string
-    {
-        $container = env('DOCKER_BACKUP_CONTAINER', 'mamias_db_backup');
-
-        if (! preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/', $container)) {
-            throw new \RuntimeException('Invalid DOCKER_BACKUP_CONTAINER value.');
-        }
-
-        return $container;
-    }
-
-    protected function dbCredentials(): array
-    {
-        return [
-            'name' => config('database.connections.pgsql.database'),
-            'user' => config('database.connections.pgsql.username'),
-            'pass' => config('database.connections.pgsql.password'),
-        ];
-    }
-
-    /**
-     * List .dmp files from the locally mounted backups directory.
-     */
-    public function getBackupFiles(): array
-    {
-        $path = $this->backupsPath();
-
-        if (! is_dir($path)) {
+        if (! Storage::disk('backups')->exists('')) {
             return [];
         }
 
-        $files = collect(File::allFiles($path))
-            ->filter(fn ($file) => $file->getExtension() === 'dmp')
-            ->map(fn ($file) => $file->getPathname())
-            ->all();
-        rsort($files);
+        $allFiles = Storage::disk('backups')->allFiles('');
+        $backups = [];
 
-        $options = [];
-
-        foreach ($files as $file) {
-            $options[$file] = basename($file);
+        foreach ($allFiles as $file) {
+            if ($extension) {
+                if (str_ends_with($file, $extension)) {
+                    $backups[$file] = $file;
+                }
+            } elseif (str_ends_with($file, '.dmp') || str_ends_with($file, '.sql')) {
+                $backups[$file] = $file;
+            }
         }
 
-        return $options;
+        return array_reverse($backups);
     }
 
     public function hasGlobalsSql(): bool
     {
-        return file_exists($this->backupsPath().'/globals.sql');
-    }
-
-    public function getBackupFilesWithSize(): array
-    {
-        $path = $this->backupsPath();
-
-        if (! is_dir($path)) {
-            return [];
-        }
-
-        $files = collect(File::allFiles($path))
-            ->filter(fn ($file) => $file->getExtension() === 'dmp')
-            ->map(fn ($file) => $file->getPathname())
-            ->all();
-        $result = [];
-
-        foreach ($files as $file) {
-            $result[] = [
-                'path' => $file,
-                'name' => basename($file),
-                'size' => $this->formatBytes(filesize($file)),
-                'date' => date('Y-m-d H:i', filemtime($file)),
-            ];
-        }
-
-        usort($result, fn ($a, $b) => filemtime($b['path']) <=> filemtime($a['path']));
-
-        return $result;
-    }
-
-    protected function formatBytes(int $bytes): string
-    {
-        if ($bytes >= 1048576) {
-            return round($bytes / 1048576, 1).' MB';
-        }
-        if ($bytes >= 1024) {
-            return round($bytes / 1024, 1).' KB';
-        }
-
-        return $bytes.' B';
-    }
-
-    /**
-     * Copy a backup file into the db container for restore.
-     */
-    protected function copyToDbContainer(string $localPath, string $destPath = '/tmp/_mamias_restore.dump'): bool
-    {
-        if (! file_exists($localPath)) {
-            return false;
-        }
-
-        $result = Process::timeout(60)->run(
-            sprintf(
-                'docker exec -i %s tee %s > /dev/null < %s',
-                escapeshellarg($this->dbContainer()),
-                escapeshellarg($destPath),
-                escapeshellarg($localPath)
-            )
-        );
-
-        return $result->successful();
+        return Storage::disk('backups')->exists('globals.sql');
     }
 
     public function downloadAction(): Action
@@ -161,25 +55,8 @@ class BackupManager extends Page
             ->icon('heroicon-o-arrow-down-tray')
             ->color('gray')
             ->action(function (array $arguments) {
-                $filePath = $arguments['file'];
-                $basePath = $this->backupsPath();
-
-                $realPath = realpath($filePath);
-                if ($realPath === false || ! str_starts_with($realPath, realpath($basePath)) || ! str_ends_with($realPath, '.dmp')) {
-                    Notification::make()->title('Download failed')->body('Invalid file path.')->danger()->send();
-
-                    return null;
-                }
-
-                $basename = basename($filePath);
-
-                if (! file_exists($filePath)) {
-                    Notification::make()->title('Download failed')->body('File not found.')->danger()->send();
-
-                    return null;
-                }
-
-                return response()->download($filePath, $basename);
+                $file = $arguments['file'];
+                return Storage::disk('backups')->download($file);
             });
     }
 
@@ -191,26 +68,13 @@ class BackupManager extends Page
             ->color('danger')
             ->requiresConfirmation()
             ->action(function (array $arguments) {
-                $filePath = $arguments['file'];
-                $basePath = $this->backupsPath();
+                $file = $arguments['file'];
+                Storage::disk('backups')->delete($file);
 
-                $realPath = realpath($filePath);
-                if ($realPath === false || ! str_starts_with($realPath, realpath($basePath)) || ! str_ends_with($realPath, '.dmp')) {
-                    Notification::make()->title('Delete failed')->body('Invalid file path.')->danger()->send();
-
-                    return;
-                }
-
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-
-                $metaPath = $filePath.'.meta.json';
-                if (file_exists($metaPath)) {
-                    unlink($metaPath);
-                }
-
-                Notification::make()->title('Backup deleted')->success()->send();
+                Notification::make()
+                    ->title('Backup deleted')
+                    ->success()
+                    ->send();
             });
     }
 
@@ -221,20 +85,19 @@ class BackupManager extends Page
             ->color('success')
             ->icon('tabler-database-export')
             ->action(function () {
-                $result = Process::timeout(120)->run(
-                    sprintf('docker exec %s /backup-scripts/backups.sh', escapeshellarg($this->backupContainer()))
-                );
+                $containerName = env('DOCKER_BACKUP_CONTAINER', 'mamias_db_backup');
+
+                $result = Process::run("docker exec {$containerName} /backup-scripts/backups.sh");
 
                 if ($result->successful()) {
                     Notification::make()
-                        ->title('Backup completed')
-                        ->body('Database dump created successfully.')
+                        ->title('Backup started successfully')
                         ->success()
                         ->send();
                 } else {
                     Notification::make()
-                        ->title('Backup failed')
-                        ->body($result->errorOutput() ?: 'Check backup container logs.')
+                        ->title('Failed to trigger docker backup')
+                        ->body($result->errorOutput() ?: 'Make sure the docker socket is shared or the app has permission to run docker commands.')
                         ->danger()
                         ->send();
                 }
@@ -244,76 +107,46 @@ class BackupManager extends Page
     public function restoreAction(): Action
     {
         return Action::make('restore')
-            ->label('Restore (Data Only)')
-            ->color('warning')
+            ->label('Restore Database')
+            ->color('danger')
             ->icon('tabler-database-import')
             ->schema([
                 Select::make('backup_file')
                     ->label('Select Backup')
                     ->options($this->getBackupFiles())
-                    ->required()
-                    ->helperText('Reloads data into existing tables. Schema is preserved.'),
+                    ->required(),
             ])
             ->requiresConfirmation()
-            ->modalHeading('Restore Database Data')
-            ->modalDescription('This will truncate all tables and reload data from the selected backup. Table structure and indexes are preserved.')
+            ->modalHeading('Restore Database')
+            ->modalDescription('Are you sure you want to restore the database? This will overwrite all current data.')
             ->action(function (array $data) {
                 $file = $data['backup_file'];
-                $basePath = $this->backupsPath();
-
-                $realPath = realpath($file);
-                if ($realPath === false || ! str_starts_with($realPath, realpath($basePath)) || ! str_ends_with($realPath, '.dmp')) {
-                    Notification::make()->title('Restore failed')->body('Invalid file path.')->danger()->send();
-
-                    return;
-                }
-
-                $db = $this->dbCredentials();
-                $dbContainer = $this->dbContainer();
-
-                if (! $this->copyToDbContainer($realPath)) {
-                    Notification::make()->title('Restore failed')->body('Could not copy dump file to database container.')->danger()->send();
-
-                    return;
-                }
+                $dbContainer = env('DOCKER_DB_CONTAINER', 'mamias_db');
+                $dbName = config('database.connections.pgsql.database');
+                $dbUser = config('database.connections.pgsql.username');
 
                 DB::disconnect();
 
-                $truncateSql = "DO \$\$ DECLARE r RECORD; BEGIN FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT IN ('spatial_ref_sys')) LOOP EXECUTE 'TRUNCATE TABLE public.' || quote_ident(r.tablename) || ' CASCADE'; END LOOP; END \$\$;";
+                $dbPass = config('database.connections.pgsql.password');
 
-                $truncateCmd = sprintf(
-                    'docker exec -e PGPASSWORD=%s %s psql -h localhost -U %s -d %s -q -c %s',
-                    escapeshellarg($db['pass']),
-                    escapeshellarg($dbContainer),
-                    escapeshellarg($db['user']),
-                    escapeshellarg($db['name']),
-                    escapeshellarg($truncateSql)
+                $terminateCmd = "PGPASSWORD='{$dbPass}' psql -h localhost -U {$dbUser} -d postgres -c \"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$dbName}' AND pid <> pg_backend_pid();\"";
+                $restoreCmd = "PGPASSWORD='{$dbPass}' pg_restore -h localhost -U {$dbUser} -d {$dbName} --clean --if-exists --no-owner --no-privileges /backups/{$file}";
+
+                $result = Process::timeout(120)->run(
+                    "docker exec {$dbContainer} bash -c '{$terminateCmd} && {$restoreCmd}'"
                 );
-
-                $restoreCmd = sprintf(
-                    'docker exec -e PGPASSWORD=%s %s pg_restore -h localhost -U %s -d %s --data-only --disable-triggers --no-owner --no-privileges --single-transaction /tmp/_mamias_restore.dump',
-                    escapeshellarg($db['pass']),
-                    escapeshellarg($dbContainer),
-                    escapeshellarg($db['user']),
-                    escapeshellarg($db['name'])
-                );
-
-                $cleanupCmd = sprintf('docker exec %s rm -f /tmp/_mamias_restore.dump', escapeshellarg($dbContainer));
-
-                $result = Process::timeout(120)->run("{$truncateCmd} && {$restoreCmd}; {$cleanupCmd}");
 
                 DB::reconnect();
 
                 if ($result->successful() || $result->exitCode() === 1) {
                     Notification::make()
-                        ->title('Data restore completed')
-                        ->body('All data reloaded. Schema was preserved.')
+                        ->title('Restore completed successfully')
                         ->success()
                         ->send();
                 } else {
                     Notification::make()
                         ->title('Restore failed')
-                        ->body($result->errorOutput() ?: 'Check container logs for details.')
+                        ->body($result->errorOutput() ?: 'Error output was empty. Check container logs.')
                         ->danger()
                         ->send();
                 }
@@ -329,81 +162,52 @@ class BackupManager extends Page
             ->schema([
                 Select::make('backup_file')
                     ->label('Select Database Dump')
-                    ->options($this->getBackupFiles())
+                    ->options($this->getBackupFiles('.dmp'))
                     ->required()
-                    ->helperText('globals.sql will be applied automatically before the dump if available.'),
+                    ->helperText('globals.sql will be applied automatically before the dump.'),
             ])
             ->requiresConfirmation()
             ->modalHeading('Full Disaster Recovery Restore')
-            ->modalDescription('This will DROP and RECREATE all tables from the selected dump. Use this for blank server recovery or when schema has changed.')
+            ->modalDescription('This will restore roles/users from globals.sql, then overwrite the database from the selected dump. Use this for blank server recovery.')
             ->action(function (array $data) {
+                if (! $this->hasGlobalsSql()) {
+                    Notification::make()
+                        ->title('globals.sql not found')
+                        ->body('Cannot perform full restore without globals.sql in the backups directory.')
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
                 $file = $data['backup_file'];
-                $basePath = $this->backupsPath();
-
-                $realPath = realpath($file);
-                if ($realPath === false || ! str_starts_with($realPath, realpath($basePath)) || ! str_ends_with($realPath, '.dmp')) {
-                    Notification::make()->title('Restore failed')->body('Invalid file path.')->danger()->send();
-
-                    return;
-                }
-
-                $db = $this->dbCredentials();
-                $dbContainer = $this->dbContainer();
-
-                if (! $this->copyToDbContainer($realPath)) {
-                    Notification::make()->title('Restore failed')->body('Could not copy dump file to database container.')->danger()->send();
-
-                    return;
-                }
+                $dbContainer = env('DOCKER_DB_CONTAINER', 'mamias_db');
+                $dbName = config('database.connections.pgsql.database');
+                $dbUser = config('database.connections.pgsql.username');
+                $dbPass = config('database.connections.pgsql.password');
 
                 DB::disconnect();
 
-                $commands = [];
+                $globalsCmd = "PGPASSWORD='{$dbPass}' psql -h localhost -U {$dbUser} -d postgres -f /backups/globals.sql";
+                $terminateCmd = "PGPASSWORD='{$dbPass}' psql -h localhost -U {$dbUser} -d postgres -c \"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$dbName}' AND pid <> pg_backend_pid();\"";
+                $restoreCmd = "PGPASSWORD='{$dbPass}' pg_restore -h localhost -U {$dbUser} -d {$dbName} --clean --if-exists --no-owner --no-privileges /backups/{$file}";
 
-                if ($this->hasGlobalsSql()) {
-                    $globalsPath = $this->backupsPath().'/globals.sql';
-                    $this->copyToDbContainer($globalsPath, '/tmp/_mamias_globals.sql');
-                    $commands[] = sprintf(
-                        'docker exec -e PGPASSWORD=%s %s psql -h localhost -U %s -d postgres -q -f /tmp/_mamias_globals.sql',
-                        escapeshellarg($db['pass']),
-                        escapeshellarg($dbContainer),
-                        escapeshellarg($db['user'])
-                    );
-                }
-
-                $commands[] = sprintf(
-                    'docker exec -e PGPASSWORD=%s %s psql -h localhost -U %s -d postgres -c %s',
-                    escapeshellarg($db['pass']),
-                    escapeshellarg($dbContainer),
-                    escapeshellarg($db['user']),
-                    escapeshellarg("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$db['name']}' AND pid <> pg_backend_pid();")
+                $result = Process::timeout(300)->run(
+                    "docker exec {$dbContainer} bash -c '{$globalsCmd} && {$terminateCmd} && {$restoreCmd}'"
                 );
-
-                $commands[] = sprintf(
-                    'docker exec -e PGPASSWORD=%s %s pg_restore -h localhost -U %s -d %s --clean --if-exists --no-owner --no-privileges --single-transaction /tmp/_mamias_restore.dump',
-                    escapeshellarg($db['pass']),
-                    escapeshellarg($dbContainer),
-                    escapeshellarg($db['user']),
-                    escapeshellarg($db['name'])
-                );
-
-                $commands[] = sprintf('docker exec %s rm -f /tmp/_mamias_restore.dump /tmp/_mamias_globals.sql', escapeshellarg($dbContainer));
-
-                $fullCmd = implode(' && ', $commands);
-                $result = Process::timeout(300)->run($fullCmd.' || true');
 
                 DB::reconnect();
 
                 if ($result->successful() || $result->exitCode() === 1) {
                     Notification::make()
-                        ->title('Full restore completed')
-                        ->body('Database fully restored from dump.')
+                        ->title('Full restore completed successfully')
+                        ->body('Roles (globals.sql) and database dump have been restored.')
                         ->success()
                         ->send();
                 } else {
                     Notification::make()
-                        ->title('Restore failed')
-                        ->body($result->errorOutput() ?: 'Check container logs for details.')
+                        ->title('Full restore failed')
+                        ->body($result->errorOutput() ?: 'Error output was empty. Check container logs.')
                         ->danger()
                         ->send();
                 }

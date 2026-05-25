@@ -2,22 +2,18 @@
 
 namespace App\Providers\Filament;
 
-use Agencetwogether\AlertBox\AlertBoxPlugin;
-use App;
 use App\Filament\Pages\Auth\EmailVerificationPrompt;
 use App\Filament\Pages\Auth\Login;
+use App\Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use App\Filament\Pages\Auth\Register;
-use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Widgets\MamiasInfoWidget;
 use App\Http\Middleware\RedirectIfNotPanelUser;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
-use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
-use Blendbyte\FilamentResourceLock\Resources\AuditResource;
-use Blendbyte\FilamentResourceLock\Resources\LockResource;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
+use Daljo25\FilamentDependencyManager\FilamentDependencyManagerPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
@@ -29,8 +25,8 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use App\Filament\Pages\Dashboard;
 use Filament\Navigation\NavigationGroup;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -41,17 +37,28 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
 use lockscreen\FilamentLockscreen\Lockscreen;
-use Promethys\Revive\RevivePlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
+use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Vite;
+use Promethys\Revive\RevivePlugin;
 
 class MamiasPanelProvider extends PanelProvider
 {
+    public function boot(): void
+    {
+        FilamentAsset::register([
+            Js::make('app-scripts', Vite::asset('resources/js/app.js')),
+        ]);
+    }
+
     public function panel(Panel $panel): Panel
     {
 
@@ -61,7 +68,7 @@ class MamiasPanelProvider extends PanelProvider
             ->path('mamias')
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
-            ->brandName('MAMIAS')
+            ->brandName('Filament Demo')
             ->brandLogo(asset('images/mamias.png'))
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/favicon.png'))
@@ -71,42 +78,40 @@ class MamiasPanelProvider extends PanelProvider
                 url('/mamias'),
                 url('/'),
             ])
+            ->maxContentWidth(Width::Full)
+            ->unsavedChangesAlerts()
             ->sidebarWidth('15rem')
             ->globalSearch(false)
             ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->databaseNotifications()
             ->viteTheme('resources/css/filament/mamias/theme.css')
-            ->renderHook('panels::head.end', fn () => Vite::withEntryPoints(['resources/js/app.js'])->toHtml())
             ->font('Roboto', provider: GoogleFontProvider::class)
             ->login(Login::class)
             ->registration(Register::class)
             ->passwordReset()
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
-                CommandRunnerPlugin::make()
-                    ->authorize(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
-                    ->navigationGroup('System'),
-                AlertBoxPlugin::make()
-                    ->navigationLabel('Alerts')
-                    ->navigationIcon('heroicon-o-bell-alert')
-                    ->navigationGroup('System')
-                    ->navigationSort(5)
-                    ->title('Alert Management')
-                    ->authorize(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false),
                 RevivePlugin::make()
-                    ->authorize(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
-                    ->navigationGroup('System')
+                    //->authorize(auth()->user()->isAdmin()) // Accepts a boolean or Closure to control access
+                    ->navigationGroup('Settings') // Group the page under a custom sidebar section
                     ->navigationIcon('heroicon-o-archive-box-arrow-down')
                     ->activeNavigationIcon('heroicon-o-archive-box-arrow-down')
                     ->navigationSort(1)
-                    ->navigationLabel('Recycle Bin')
-                    ->title('Recycle Bin')
-                    ->slug('recycle'),
+                    ->navigationLabel('Custom Label')
+                    ->title('Custom Title')
+                    ->slug('custom-slug'),
                 RefreshSidebarPlugin::make(),
-                ResourceLockPlugin::make()
-                    ->registerNavigation(false)
-                    ->registerAuditNavigation(false),
+//                FilamentSpatieLaravelBackupPlugin::make()
+//                    ->navigationIcon('heroicon-o-cpu-chip')
+//                    ->navigationLabel('Backups')
+//                    ->navigationGroup('system')
+//                    ->navigationSort(3),
+                ResourceLockPlugin::make(),
+                CommandRunnerPlugin::make()
+                    ->navigationGroup('System')
+                    ->navigationIcon('tabler-alert-triangle'),
+                FilamentDependencyManagerPlugin::make(),
                 FilamentSpatieLaravelHealthPlugin::make()
                     ->usingPage(HealthCheckResults::class)
                     ->authorize(fn (): bool => auth()->user()->hasRole('super_admin')),
@@ -129,9 +134,9 @@ class MamiasPanelProvider extends PanelProvider
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->environment('local'))
                     ->users([
-                        'Admin' => config('services.dev_login.admin_email'),
-                        'Scientist' => config('services.dev_login.scientist_email'),
-                        'Public User' => config('services.dev_login.public_email'),
+                        'Admin' => 'atef.ouerghi@spa-rac.org',
+                        'Scientist' => 'scientist@mamias.local',
+                        'Public User' => 'atef.ouerghi@gmail.com',
                     ]),
                 AuthUIEnhancerPlugin::make()
                     ->showEmptyPanelOnMobile(true)
@@ -148,7 +153,7 @@ class MamiasPanelProvider extends PanelProvider
                         ['title' => 'Cookies policy', 'url' => '#'],
                     ]),
                 FilamentEChartsPlugin::make(),
-                FilamentClearCachePlugin::make()->enabled(App::environment(['local'])),
+                FilamentClearCachePlugin::make(),
                 FilamentUnsavedChangesModalPlugin::make()
                     ->modalWidth('xl')
                     ->modalIcon('OutlinedExclamationTriangle')
@@ -224,23 +229,8 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('Dashboard'),
                 NavigationGroup::make('Use management'),
                 NavigationGroup::make('MAMIAS database'),
-                NavigationGroup::make('System'),
-                NavigationGroup::make('Settings'),
-            ])
-            ->navigationItems([
-                NavigationItem::make('Resource Lock Manager')
-                    ->group('System')
-                    ->icon('heroicon-o-lock-closed')
-                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
-                    ->url(fn (): string => LockResource::getUrl()),
-                NavigationItem::make('Lock Audit Log')
-                    ->group('System')
-                    ->icon('heroicon-o-clipboard-document-list')
-                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
-                    ->url(fn (): string => AuditResource::getUrl()),
-            ])
-            ->resources([
-
+                NavigationGroup::make('system'),
+                NavigationGroup::make('settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -267,10 +257,6 @@ class MamiasPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->renderHook(
-                'panels::page.start',
-                fn () => view('filament.hooks.pending-references-alert'),
-            );
+            ]);
     }
 }

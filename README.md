@@ -124,8 +124,9 @@ mamias/
 
 2. **Prepare environment:**
    ```bash
-   cp apps/.env.example apps/.env
+   cp .env.example .env && cp apps/.env.example apps/.env
    ```
+   Then edit `.env` and `apps/.env` and replace all `CHANGE_ME_*` values.
 
 3. **Start the stack:**
    ```bash
@@ -139,12 +140,12 @@ mamias/
    # 1. Open the Cap dashboard
    open http://localhost:3000
 
-   # 2. Log in with the ADMIN_KEY from your .env file
-   # 3. Create a site key, copy the site key and secret key
-   # 4. Add them to your .env file:
-   #      CAP_SITE_KEY=<from-dashboard>
-   #      CAP_SECRET_KEY=<from-dashboard>
-   # 5. Restart the app:
+    # 2. Log in with the ADMIN_KEY from your root .env (CAP_ADMIN_KEY)
+    # 3. Create a site key, copy the site key and secret key
+    # 4. Add them to your root .env:
+    #      CAP_SITE_KEY=<from-dashboard>
+    #      CAP_SECRET_KEY=<from-dashboard>
+    # 5. Restart the app:
    docker compose --profile dev restart app
    ```
    Cap is optional — without it configured, authentication falls back to the existing honeypot protection only.

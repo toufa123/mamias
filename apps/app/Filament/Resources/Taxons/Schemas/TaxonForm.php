@@ -3,10 +3,8 @@
 namespace App\Filament\Resources\Taxons\Schemas;
 
 use App\Enums\Catalogue_Status;
-use App\Enums\Environment;
 use App\Enums\Worms_Status;
-use App\Services\EasinService;
-use App\Services\TaxonNormalizer;
+use App\Enums\Environment;
 use App\Services\TaxonService;
 use App\Services\WormsService;
 use DefStudio\SearchableInput\DTO\SearchResult;
@@ -15,19 +13,19 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\HtmlString;
+use Novadaemon\FilamentPrettyJson\Form\PrettyJsonField;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Html;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
-use Novadaemon\FilamentPrettyJson\Form\PrettyJsonField;
+use App\Services\EasinService;
+use Filament\Notifications\Notification;
 
 class TaxonForm
 {
@@ -42,7 +40,6 @@ class TaxonForm
             ]);
 
     }
-
     protected static function getGeneralInformationSection(): Section
     {
         return Section::make('General Information')
@@ -69,19 +66,18 @@ class TaxonForm
                         TextInput::make('aphia_id')->label('Aphia ID')->numeric()->columnSpan(4)->live(),
                         TextInput::make('Easin_id')
                             ->label('EASIN ID')
-                            ->helperText(fn ($record) => $record?->Easin_id ? new HtmlString('<a href="https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/'.$record->Easin_id.'" target="_blank" class="text-primary-600 underline">View EASIN Factsheet</a>') : null)
+                            ->helperText(fn ($record) => $record?->Easin_id ? new HtmlString('<a href="https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/' . $record->Easin_id . '" target="_blank" class="text-primary-600 underline">View EASIN Factsheet</a>') : null)
                             ->suffixActions([
                                 Action::make('fetch_easin_id')
                                     ->icon('tabler-refresh')
                                     ->tooltip('Fetch EASIN ID')
-                                    ->action(function ($set, $get, EasinService $easinService) {
+                                    ->action(function ($set, $get, \App\Services\EasinService $easinService) {
                                         $scientificName = $get('scientificname');
-                                        if (! $scientificName) {
+                                        if (!$scientificName) {
                                             Notification::make()
                                                 ->title('Scientific Name Missing')
                                                 ->warning()
                                                 ->send();
-
                                             return;
                                         }
                                         $easinId = $easinService->fetchEasinId($scientificName);
@@ -97,9 +93,9 @@ class TaxonForm
                                                 ->danger()
                                                 ->send();
                                         }
-                                    }),
+                                    })
                             ])->columnSpan(4),
-                        TextInput::make('proposed_accepted_name')->label('Proposed Accepted Name')->hintIcon('tabler-info-circle', 'Fetched from WoRMS when the status is unaccepted')->columnSpan(4)->disabled()->dehydrated(),
+                        TextInput::make('proposed_accepted_name')->label('Proposed Accepted Name')->hintIcon('tabler-info-circle','Fetched from WoRMS when the status is unaccepted')->columnSpan(4)->disabled()->dehydrated(),
                         Toggle::make('is_extinct')
                             ->label('Extinct')
                             ->inline(false)
@@ -112,7 +108,7 @@ class TaxonForm
             ]);
     }
 
-    /** @return array<int, Component> */
+    /** @return array<int, \Filament\Schemas\Components\Component> */
     private static function getScientificNameFields(): array
     {
         return [
@@ -287,7 +283,7 @@ class TaxonForm
                         'style' => 'max-height: 250px;',
                     ])
                     ->copyable()
-                    ->dehydrateStateUsing(fn ($state, TaxonNormalizer $taxonNormalizer) => $taxonNormalizer->normalizeSynonyms($state))
+                    ->dehydrateStateUsing(fn ($state, \App\Services\TaxonNormalizer $taxonNormalizer) => $taxonNormalizer->normalizeSynonyms($state))
                     ->visible(fn ($get) => count(self::resolveSynonyms($get('synonyms_data'))) > 0),
             ]);
     }
@@ -325,3 +321,21 @@ class TaxonForm
             ->action(fn ($set, $get, TaxonService $taxonService) => $taxonService->syncWithWorms($get, $set, $useAcceptedNameFromNotes));
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

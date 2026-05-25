@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\Environment;
 use App\Models\Taxon;
 
 class TaxonNormalizer
@@ -53,7 +52,7 @@ class TaxonNormalizer
 
         return collect($environments)
             ->map(function (mixed $environment): ?string {
-                if ($environment instanceof Environment) {
+                if ($environment instanceof \App\Enums\Environment) {
                     return $environment->value;
                 }
 
@@ -61,7 +60,7 @@ class TaxonNormalizer
                     return null;
                 }
 
-                return Environment::fromLabelOrValue($environment)?->value ?? $this->normalizeNullableString($environment);
+                return \App\Enums\Environment::fromLabelOrValue($environment)?->value ?? $this->normalizeNullableString($environment);
             })
             ->filter(fn (?string $environment): bool => $environment !== null)
             ->sort()

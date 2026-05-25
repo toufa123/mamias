@@ -16,7 +16,7 @@ class SpeciesByPhylumChart extends EChartWidget
 
     protected static int $contentHeight = 400;
 
-    protected int|string|array $columnSpan = 1;
+    protected int | string | array $columnSpan = 1;
 
     protected const MAX_PHYLA_DISPLAY = 15;
 

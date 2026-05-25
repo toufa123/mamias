@@ -23,7 +23,7 @@ class UsersTable
             ->striped()
             ->columnManagerLayout(ColumnManagerLayout::Modal)
             ->modifyQueryUsing(fn ($query) => $query->with('roles'))
-            ->paginationPageOptions([10, 25, 50, 100])
+            ->paginationPageOptions([10, 25, 50,100])
             ->columns([
                 // add rowIndex
                 TextColumn::make('ID')
@@ -83,24 +83,24 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                CountryFilter::make('country'),
-                // ->displayFlags(true) // Show or hide the flag in the dropdown options (default: true)
-                // ->imageFlags()
-            ])
+                    CountryFilter::make('country'),
+                    // ->displayFlags(true) // Show or hide the flag in the dropdown options (default: true)
+                    // ->imageFlags()
+                ])
             ->recordActions([
-                ViewAction::make()
+                    ViewAction::make()
                     ->modalWidth('6xl')
                     ->modalHeading(fn ($record,
                     ) => trim(($record->first_name ?? '').' '.($record->last_name ?? '')) ?: 'User'),
-                EditAction::make()
+                    EditAction::make()
                     ->modalWidth('7xl'),
-                DeleteAction::make()
+                    DeleteAction::make()
                     ->modalWidth('3xl'),
-            ])
+                ])
             ->toolbarActions([
-                BulkActionGroup::make([
+                    BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                ]),
-            ]);
+                    ]),
+                ]);
     }
 }

@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Models\Taxon;
 use App\Services\EasinService;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -39,7 +38,7 @@ class FetchEasinIdsJob implements ShouldQueue
 
         try {
             Taxon::whereIn('id', $this->taxonIds)
-                ->chunkById(50, function (Collection $chunk) use ($easinService, &$totals, &$processed, $total, $startTime): void {
+                ->chunkById(50, function (\Illuminate\Database\Eloquent\Collection $chunk) use ($easinService, &$totals, &$processed, $total, $startTime): void {
                     foreach ($chunk as $taxon) {
                         if (! $taxon->scientificname) {
                             $totals['skipped']++;
@@ -120,13 +119,13 @@ class FetchEasinIdsJob implements ShouldQueue
     private static function formatDuration(float $seconds): string
     {
         if ($seconds < 60) {
-            return round($seconds).' seconds';
+            return round($seconds) . ' seconds';
         }
 
         if ($seconds < 3600) {
-            return round($seconds / 60, 1).' minutes';
+            return round($seconds / 60, 1) . ' minutes';
         }
 
-        return round($seconds / 3600, 1).' hours';
+        return round($seconds / 3600, 1) . ' hours';
     }
 }

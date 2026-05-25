@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\IntroEventRecord;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
 class IntroEventRecordPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:IntroEventRecord');
@@ -71,5 +71,4 @@ class IntroEventRecordPolicy
     {
         return $authUser->can('Reorder:IntroEventRecord');
     }
-
 }

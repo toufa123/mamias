@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class EasinService
 {
-    private string $baseUrl = 'https://easin.jrc.ec.europa.eu/apixg/catxg/term';
+    private string $baseUrl = "https://easin.jrc.ec.europa.eu/apixg/catxg/term";
 
     public function fetchEasinId(string $scientificName): ?string
     {
@@ -16,10 +15,10 @@ class EasinService
             return null;
         }
 
-        $term = str_replace(' ', '%20', $scientificName);
+        $term = str_replace(" ", "%20", $scientificName);
         $url = "{$this->baseUrl}/{$term}";
 
-        return Cache::remember('easin_id_'.md5($scientificName), 86400, function () use ($url, $scientificName) {
+        return Cache::remember("easin_id_" . md5($scientificName), 86400, function () use ($url) {
             try {
                 $response = Http::timeout(10)->get($url);
 
@@ -27,15 +26,10 @@ class EasinService
                     $data = $response->json();
 
                     if (is_array($data) && count($data) > 0) {
-                        return $data[0]['EASINID'] ?? $data[0]['easinId'] ?? null;
+                        return $data[0]["EASINID"] ?? $data[0]["easinId"] ?? null;
                     }
                 }
             } catch (\Exception $e) {
-                Log::error('EASIN API request failed', [
-                    'scientific_name' => $scientificName,
-                    'url' => $url,
-                    'error' => $e->getMessage(),
-                ]);
             }
 
             return null;

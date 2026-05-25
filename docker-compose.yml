@@ -327,7 +327,7 @@ services :
     ports :
       - "127.0.0.1:3000:3000"
     environment :
-      ADMIN_KEY : "${CAP_ADMIN_KEY}"
+      ADMIN_KEY : "${CAP_ADMIN_KEY:?CAP_ADMIN_KEY is required — set it in .env}"
       REDIS_URL : "redis://cap-valkey:6379"
     depends_on :
       cap-valkey :

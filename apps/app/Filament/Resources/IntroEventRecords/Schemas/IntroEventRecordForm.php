@@ -13,12 +13,15 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Slider;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
-use Icetalker\FilamentStepper\Forms\Components\Stepper;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 
 class IntroEventRecordForm
@@ -31,25 +34,23 @@ class IntroEventRecordForm
                     ->icon('tabler-fish')
                     ->columnSpanFull()
                     ->schema([
-                        Grid::make(6)
+                        Grid::make(5)
                             ->schema([
                                 Select::make('taxon_id')
                                     ->label('NIS Taxon')
-                                    ->relationship('taxon', 'scientificname', function ($query) {
-                                        $query->select('id', 'scientificname', 'authority');
-                                    })
-                                    ->getOptionLabelFromRecordUsing(fn ($record) => trim(($record->scientificname ?? '').' '.($record->authority ?? '')))
+                                    ->relationship('taxon', 'scientificname')
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->columnSpan(2),
-                                Stepper::make('first_introduction_year')
+                                    ->columnSpan(1),
+                                Slider::make('first_introduction_year')
+                                    ->label(fn (Get $get) => 'Year of 1st Introduction: '.($get('first_introduction_year') ?? now()->year))
                                     ->minValue(1800)
-                                    ->step(1)
                                     ->maxValue(now()->year)
+                                    ->step(1)
                                     ->default(now()->year)
+                                    ->live()
                                     ->columnSpan(2),
-
                                 CountrySelect::make('first_country')
                                     ->displayFlags(true)
                                     ->imageFlags()
@@ -71,14 +72,16 @@ class IntroEventRecordForm
 
                                 Select::make('literature_id')
                                     ->relationship('literature', 'short_ref')
+                                    ->multiple()
                                     ->preload()
+                                    ->required()
                                     ->label('Citations/Literature')
                                     ->columnSpan(3),
                             ])->columnSpanFull(),
 
-                        RichEditor::make('notes')
-                            ->label('Notes')
-                            ->columnSpanFull(),
+                                RichEditor::make('notes')
+                                    ->label('Notes')
+                                    ->columnSpanFull(),
 
                     ]),
                 Tabs::make('Details')
@@ -90,7 +93,7 @@ class IntroEventRecordForm
                                         TableColumn::make('EcAp Sub-region'),
                                         TableColumn::make('Establishment Success'),
                                         TableColumn::make('1st Year of Arrival'),
-
+                                        TableColumn::make('Time Lag (Years)'),
                                     ])
                                     ->addActionLabel('Add Subregion Record')
                                     ->compact()
@@ -108,12 +111,13 @@ class IntroEventRecordForm
                                         Select::make('nis_status')
                                             ->label('Establishment Success')
                                             ->options(NisStatus::class),
-                                        Stepper::make('first_arrival_year')
+                                        Slider::make('first_arrival_year')
+                                            ->label(fn (Get $get) => 'Year of 1st Introduction: '.($get('first_arrival_year') ?? now()->year))
                                             ->minValue(1800)
-                                            ->step(1)
                                             ->maxValue(now()->year)
+                                            ->step(1)
                                             ->default(now()->year)
-                                            ->columnSpan(2),
+                                            ->live(),
 
                                     ])
                                     ->columns(4),
@@ -165,7 +169,7 @@ class IntroEventRecordForm
                                     ]),
                             ]),
                     ])
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
             ]);
     }
 }

@@ -25,16 +25,15 @@
     <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet"/>
     <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet"/>
     @vite(['resources/css/app.css'])
-    <!-- Leaflet styles -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
-    <!-- Add Laravel Notify CSS -->
-    @notifyCss
+
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
     @filamentStyles
     @livewireStyles
+    @stack('styles')
     @stack('head')
+    <!-- Add Laravel Notify CSS -->
+    @notifyCss
     <style>
         [x-cloak] {
             display: none !important;
@@ -188,8 +187,6 @@
 <script src="{{ asset('assets/js/core.bundle.js') }}"></script>
 <script src="{{ asset('assets/vendors/ktui/ktui.min.js') }}"></script>
 <script src="{{ asset('assets/js/widgets/general.js') }}"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <!-- End of Scripts -->
 </body>
 </html>

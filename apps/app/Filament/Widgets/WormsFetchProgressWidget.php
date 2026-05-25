@@ -20,7 +20,7 @@ class WormsFetchProgressWidget extends Widget
 
     protected string $view = 'filament.widgets.worms-fetch-progress-widget';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int | string | array $columnSpan = 'full';
 
     #[On('worms-fetch-started')]
     public function activate(): void
@@ -38,7 +38,7 @@ class WormsFetchProgressWidget extends Widget
 
     public function getProgress(): ?array
     {
-        $progress = Cache::get('worms-fetch-progress-'.(auth()->id() ?? $this->userId));
+        $progress = Cache::get('worms-fetch-progress-' . (auth()->id() ?? $this->userId));
 
         if ($progress) {
             $this->isSyncing = true;
@@ -49,7 +49,7 @@ class WormsFetchProgressWidget extends Widget
 
     public function getEasinProgress(): ?array
     {
-        $progress = Cache::get('easin-fetch-progress-'.(auth()->id() ?? $this->userId));
+        $progress = Cache::get('easin-fetch-progress-' . (auth()->id() ?? $this->userId));
 
         if ($progress) {
             $this->isEasinSyncing = true;
@@ -60,7 +60,7 @@ class WormsFetchProgressWidget extends Widget
 
     public function getImportResult(): ?array
     {
-        $result = Cache::get('taxon-import-completed-'.(auth()->id() ?? $this->userId));
+        $result = Cache::get('taxon-import-completed-' . (auth()->id() ?? $this->userId));
 
         if ($result && ! $this->importRefreshTriggered) {
             $this->importRefreshTriggered = true;
@@ -77,7 +77,7 @@ class WormsFetchProgressWidget extends Widget
 
     public function dismiss(): void
     {
-        Cache::forget('worms-fetch-progress-'.(auth()->id() ?? $this->userId));
+        Cache::forget('worms-fetch-progress-' . (auth()->id() ?? $this->userId));
         $this->isSyncing = false;
         $this->dispatch('close-modal', id: 'worms-sync-progress');
         $this->dispatch('worms-fetch-completed');
@@ -85,7 +85,7 @@ class WormsFetchProgressWidget extends Widget
 
     public function dismissEasin(): void
     {
-        Cache::forget('easin-fetch-progress-'.(auth()->id() ?? $this->userId));
+        Cache::forget('easin-fetch-progress-' . (auth()->id() ?? $this->userId));
         $this->isEasinSyncing = false;
         $this->dispatch('close-modal', id: 'easin-sync-progress');
         $this->dispatch('worms-fetch-completed');
@@ -93,7 +93,7 @@ class WormsFetchProgressWidget extends Widget
 
     public function dismissImport(): void
     {
-        Cache::forget('taxon-import-completed-'.(auth()->id() ?? $this->userId));
+        Cache::forget('taxon-import-completed-' . (auth()->id() ?? $this->userId));
         $this->importRefreshTriggered = false;
         $this->dispatch('close-modal', id: 'import-result');
         $this->dispatch('worms-fetch-completed');

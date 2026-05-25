@@ -21,6 +21,10 @@
         @push('styles')
             <style>
                 {!! $config['customStyles'] !!}
+                /* Fix Leaflet 1.9 gray tile issue — mix-blend-mode makes tiles invisible on many browsers */
+                .leaflet-container img.leaflet-tile {
+                    mix-blend-mode: normal !important;
+                }
             </style>
         @endpush
 

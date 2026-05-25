@@ -12,6 +12,10 @@ use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Waad\FilamentImportWizard\Actions\ImportWizardAction;
+
+
 
 class ListTaxons extends ListRecords
 {
@@ -85,6 +89,14 @@ class ListTaxons extends ListRecords
             ImportAction::make()
                 ->importer(TaxonImporter::class)
                 ->chunkSize(100),
+            ImportWizardAction::make()
+                ->label('Import Excel')
+                ->icon('tabler-file-spreadsheet')
+                ->color('success')
+                ->forModel(Taxon::class)
+                ->chunkSize(500)
+                ->enableUpsert()
+                ->upsertKeys(['scientificname']),
         ];
     }
 }

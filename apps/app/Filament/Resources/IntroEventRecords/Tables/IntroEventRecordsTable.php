@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\IntroEventRecords\Tables;
 
-use App\Models\IntroEventRecord;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -40,7 +39,7 @@ class IntroEventRecordsTable
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('establishment_status')
-                    ->label('Establishment Status')
+                    ->label('NIS Status')
                     ->badge()
                     ->sortable()
                     ->searchable(),
@@ -49,9 +48,9 @@ class IntroEventRecordsTable
                     ->badge()
                     ->sortable()
                     ->searchable(),
-                //                TextColumn::make('data_source_type')
-                //                    ->badge()
-                //                    ->searchable(),
+//                TextColumn::make('data_source_type')
+//                    ->badge()
+//                    ->searchable(),
                 TextColumn::make('created_by')
                     ->numeric()
                     ->sortable()
@@ -79,10 +78,6 @@ class IntroEventRecordsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->recordClasses(fn (IntroEventRecord $record): string => $record->needs_review
-                ? 'bg-danger-50 dark:bg-danger-950 hover:bg-danger-100 dark:hover:bg-danger-900'
-                : ''
-            );
+            ]);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources\Taxons\Schemas;
 
-use App\Enums\Worms_Status;
+use App\Enums\Catalogue_Status;
+use Novadaemon\FilamentPrettyJson\Infolist\PrettyJsonEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
-use Novadaemon\FilamentPrettyJson\Infolist\PrettyJsonEntry;
+use Illuminate\Support\HtmlString;
 
 class TaxonInfolist
 {
@@ -64,7 +65,7 @@ class TaxonInfolist
                             ->copyable()
                             ->icon('tabler-fingerprint')
                             ->placeholder('—')
-                            ->url(fn ($state) => $state ? 'https://www.marinespecies.org/aphia.php?p=taxdetails&id='.last(explode(':', $state)) : null)
+                            ->url(fn ($state) => $state ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id=" . last(explode(':', $state)) : null)
                             ->openUrlInNewTab()
                             ->columnSpan(4),
                         TextEntry::make('proposed_accepted_name')
@@ -141,7 +142,7 @@ class TaxonInfolist
                         TextEntry::make('worms_status')
                             ->label('WoRMS Status')
                             ->badge()
-                            ->icon(fn ($state) => $state instanceof Worms_Status ? $state->getIcon() : 'tabler-info-circle')
+                            ->icon(fn ($state) => $state instanceof \App\Enums\Worms_Status ? $state->getIcon() : 'tabler-info-circle')
                             ->placeholder('—'),
                         TextEntry::make('unacceptreason')
                             ->label('Unaccept Reason')
@@ -185,6 +186,7 @@ class TaxonInfolist
                     ->copyable(),
             ]);
     }
+
 
     protected static function getAuditSection(): Section
     {

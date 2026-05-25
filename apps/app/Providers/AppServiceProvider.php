@@ -5,11 +5,12 @@ namespace App\Providers;
 use App\Filament\Auth\Responses\EmailVerificationResponse;
 use App\Filament\Auth\Responses\LoginResponse;
 use App\Filament\Auth\Responses\RegistrationResponse;
-use App\Listeners\TaxonImportCompletedListener;
-use Filament\Actions\Imports\Events\ImportCompleted;
 use Filament\Auth\Http\Responses\Contracts\EmailVerificationResponse as EmailVerificationResponseContract;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse as RegistrationResponseContract;
+use App\Listeners\TaxonImportCompletedListener;
+use Filament\Actions\Imports\Events\ImportCompleted;
+use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -61,8 +62,7 @@ class AppServiceProvider extends ServiceProvider
             ],
         ]);
 
-        // ImportWizard Livewire component disabled — use native ImportAction instead
-        // Livewire::component('filament-import-wizard', ImportWizard::class);
+        Livewire::component('filament-import-wizard', \App\Livewire\ImportWizard::class);
 
         Event::listen(ImportCompleted::class, TaxonImportCompletedListener::class);
 

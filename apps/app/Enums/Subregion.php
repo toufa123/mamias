@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Enums;
+    namespace App\Enums;
 
-use Filament\Support\Contracts\HasColor;
-use Filament\Support\Contracts\HasIcon;
-use Filament\Support\Contracts\HasLabel;
+    use Filament\Support\Contracts\HasColor;
+    use Filament\Support\Contracts\HasIcon;
+    use Filament\Support\Contracts\HasLabel;
 
-enum Subregion: string implements HasColor, HasIcon, HasLabel
-{
-    case WMED = 'WMED';
-    case CMED = 'CMED';
-    case ADRIA = 'ADRIA';
-    case EMED = 'EMED';
-
-    public function getLabel(): ?string
+    enum Subregion: string implements HasLabel, HasColor, HasIcon
     {
-        return match ($this) {
-            self::WMED => 'Western Mediterranean',
-            self::CMED => 'Central Mediterranean',
-            self::ADRIA => 'Adriatic Sea',
-            self::EMED => 'Eastern Mediterranean',
-        };
-    }
+        case WMED = 'WMED';
+        case CMED = 'CMED';
+        case ADRIA = 'ADRIA';
+        case EMED = 'EMED';
 
-    public function getColor(): string|array|null
-    {
-        return 'primary';
-    }
+        public function getLabel(): ?string
+        {
+            return match ($this) {
+                self::WMED => 'Western Mediterranean',
+                self::CMED => 'Central Mediterranean',
+                self::ADRIA => 'Adriatic Sea',
+                self::EMED => 'Eastern Mediterranean',
+            };
+        }
 
-    public function getIcon(): ?string
-    {
-        return 'tabler-map-pin';
-    }
+        public function getColor(): string|array|null
+        {
+            return 'primary';
+        }
 
-    public function label(): string
-    {
-        return $this->getLabel();
+        public function getIcon(): ?string
+        {
+            return 'tabler-map-pin';
+        }
+
+        public function label(): string
+        {
+            return $this->getLabel();
+        }
     }
-}

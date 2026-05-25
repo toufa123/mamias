@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Enums\Catalogue_Status;
+use App\Enums\Worms_Status;
+use App\Enums\Environment;
 use App\Models\Taxon;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Collection;
+
 
 class TaxonService
 {

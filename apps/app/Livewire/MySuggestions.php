@@ -33,6 +33,7 @@ use Icetalker\FilamentStepper\Forms\Components\Stepper;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
+use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 
 class MySuggestions extends Component implements HasActions, HasForms, HasTable
 {
@@ -151,17 +152,18 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 ->height(400)
                 ->center(36, 14)
                 ->zoom(5)
+                ->tileLayersUrl(TileLayer::OpenStreetMap)
                 ->extraAttributes(['style' => 'min-height:400px'])
                 ->columnSpanFull(),
-            FileUpload::make('photo_paths')
-                ->label('Photos (optional)')
-                ->multiple()
-                ->image()
-                ->disk('public')
-                ->directory('suggestions/photos')
-                ->visibility('public')
-                ->maxSize(5120)
-                ->columnSpanFull(),
+//            FileUpload::make('photo_paths')
+//                ->label('Photos (optional)')
+//                ->multiple()
+//                ->image()
+//                ->disk('public')
+//                ->directory('suggestions/photos')
+//                ->visibility('public')
+//                ->maxSize(5120)
+//                ->columnSpanFull(),
         ];
     }
 
