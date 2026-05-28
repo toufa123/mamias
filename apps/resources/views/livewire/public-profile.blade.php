@@ -5,7 +5,7 @@
         {{ Breadcrumbs::render('profile') }}
     @endsection
 
-    @section('content')
+
         <div>
             <form wire:submit="save" class="space-y-6">
                 {{ $this->form }}
@@ -28,6 +28,6 @@
 
             <x-filament-actions::modals />
         </div>
-    @endsection
+
 </div>
 

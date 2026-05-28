@@ -2,20 +2,20 @@
 
 namespace App\Filament\Resources\NisSuggestions\Schemas;
 
-use App\Models\NisSuggestion;
+use App\Filament\Resources\Literatures\Schemas\LiteratureForm;
 use App\Services\WormsService;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Fields\MapPicker;
+use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
-use Illuminate\Validation\Rule;
 
 class NisSuggestionForm
 {
@@ -51,9 +51,7 @@ class NisSuggestionForm
                 ->afterStateUpdated(fn (Set $set, mixed $state) => self::populateTaxonData($set, $state, $wormsService))
                 ->hintIcon('tabler-info-circle', tooltip: 'Type at least 4 characters to search the WoRMS database'),
             Hidden::make('suggested_scientific_name')
-                ->dehydrated(true)
-                ->rules([Rule::unique('taxas', 'scientificname')])
-                ->validationMessages(['unique' => 'This species already exists in the MAMIAS catalogue. Please contribute to the existing record instead.']),
+                ->dehydrated(true),
             TextInput::make('authority')->label('Authority')->readOnly()->dehydrated(true),
             Stepper::make('depth')
                 ->label('Depth (m)')
@@ -66,26 +64,19 @@ class NisSuggestionForm
     public static function getDetailFields(): array
     {
         return [
-            Textarea::make('bibliography')
-                ->label('Bibliography (optional)')
-                ->maxLength(1000)
-                ->rows(3)
+            Section::make('Bibliographic References')
+                ->schema([
+                    Select::make('literatures')
+                        ->relationship('literatures', 'short_ref')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->createOptionForm([LiteratureForm::getBibliographicReferenceSection()])
+                        ->hintIcon('tabler-info-circle', tooltip: 'Select existing references or create a new one with DOI auto-fill.'),
+                ])
+                ->compact()
                 ->columnSpanFull(),
-            TextInput::make('doi')
-                ->label('DOI (optional)')
-                ->nullable()
-                ->regex('/^10\.\d{4,9}\/[-._;()\/: A-Z0-9]+$/i')
-                ->validationMessages(['regex' => 'Enter a valid DOI (e.g. 10.1000/182).'])
-                ->columnSpanFull(),
-            FileUpload::make('document_paths')
-                ->label('Supporting Documents (optional)')
-                ->multiple()
-                ->acceptedFileTypes(['application/pdf', 'text/plain'])
-                ->disk('local')
-                ->directory('suggestions/documents')
-                ->visibility('private')
-                ->maxSize(10240)
-                ->columnSpanFull(),
+
         ];
     }
 
@@ -95,10 +86,31 @@ class NisSuggestionForm
             MapPicker::make('location')
                 ->label('Location (optional — click the map to set coordinates)')
                 ->height(400)
-                ->center(36, 14)
+                ->center([36, 14])
                 ->zoom(5)
                 ->tileLayersUrl(TileLayer::OpenStreetMap)
-                ->extraAttributes(['style' => 'min-height:400px'])
+                ->pickMarker(fn (Marker $marker) => $marker->red())
+                ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])
+                ->columnSpanFull(),
+            FileUpload::make('photo_paths')
+                ->label('Photos (optional)')
+
+                ->panelLayout('grid')
+                ->loadingIndicatorPosition('left')
+                ->panelAspectRatio('3:1')
+                // ->panelLayout('integrated')
+                ->removeUploadedFileButtonPosition('right')
+                ->uploadButtonPosition('left')
+                ->uploadProgressIndicatorPosition('left')
+                ->multiple()
+                ->image()
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->disk('public')
+                ->directory('suggestions/photos')
+                ->visibility('public')
+                ->maxSize(5120)
+                ->imagePreviewHeight('120')
+
                 ->columnSpanFull(),
         ];
     }

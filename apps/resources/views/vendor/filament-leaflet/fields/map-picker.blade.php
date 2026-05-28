@@ -14,9 +14,17 @@
             $wire,
             {{ Js::from($config) }},
         )"
-        style="height: {{ $config['mapHeight'] }}px; width: 100%"
+        x-on:x-modal-opened.window="
+            $nextTick(() => {
+                mapCore?.map?.invalidateSize();
+                setTimeout(() => mapCore?.map?.invalidateSize(), 100);
+                setTimeout(() => mapCore?.map?.invalidateSize(), 300);
+                setTimeout(() => mapCore?.map?.invalidateSize(), 800);
+            });
+        "
+        style="height: {{ $config['mapHeight'] }}px; width: 100%; min-height: {{ $config['mapHeight'] }}px;"
     >
-        <div id="{{ $config['mapId'] }}" style="height:100%;width:100%;"></div>
+        <div id="{{ $config['mapId'] }}" style="height: {{ $config['mapHeight'] }}px; width: 100%;"></div>
 
         @push('styles')
             <style>

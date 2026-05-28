@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<div class="bg-muted hidden lg:flex lg:items-stretch border-y border-input lg:mb-10 [--kt-drawer-enable:true] lg:[--kt-drawer-enable:false]"
+<div class="bg-muted lg:flex lg:items-stretch border-y border-input lg:mb-10 [--kt-drawer-enable:true] lg:[--kt-drawer-enable:false]"
      data-kt-drawer="true"
      data-kt-drawer-class="kt-drawer kt-drawer-start fixed z-10 top-0 bottom-0 w-full me-5 max-w-[250px] p-5 lg:p-0 overflow-auto"
      id="navbar">
@@ -46,14 +46,24 @@
                             <div class="kt-tooltip" id="menu_tooltip_3">Search MAMIAS.</div>
                         </a>
                     </div>
-                    <div class="kt-menu-item" data-kt-menu-item-placement="right-start"
-                         data-kt-menu-item-placement-rtl="left-start" data-kt-menu-item-toggle="dropdown"
+                    <div class="kt-menu-item" data-kt-menu-item-placement="bottom-start|lg:right-start"
+                         data-kt-menu-item-placement-rtl="bottom-start|lg:left-start" data-kt-menu-item-toggle="dropdown"
                          data-kt-menu-item-trigger="click|lg:hover">
                         <div class="kt-menu-link">
                             <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
                             <span class="kt-menu-title">Dashboard</span>
                             <span class="kt-menu-arrow">
-                                <i class="ki-filled ki-right text-xs rtl:transform rtl:rotate-180"></i>
+                                <span class="lg:hidden">
+                                    <span class="flex kt-menu-item-show:hidden">
+                                        <i class="ki-filled ki-plus text-xs text-secondary-foreground"></i>
+                                    </span>
+                                    <span class="hidden kt-menu-item-show:inline-flex">
+                                        <i class="ki-filled ki-minus text-xs text-secondary-foreground"></i>
+                                    </span>
+                                </span>
+                                <span class="hidden lg:inline-flex">
+                                    <i class="ki-filled ki-right text-xs rtl:transform rtl:rotate-180"></i>
+                                </span>
                             </span>
                         </div>
                         <div class="kt-menu-dropdown kt-menu-default w-full max-w-[175px] lg:max-w-[220px]">

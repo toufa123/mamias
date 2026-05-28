@@ -7,6 +7,10 @@
 @source '../../../../vendor/defstudio/filament-searchable-input/resources/**/*.blade.php';
 @source '../../../../vendor/agencetwogether/filament-alert-box/resources/views/**/*';
 
+/* Fix Leaflet 1.9 gray tile issue — mix-blend-mode makes tiles invisible on many browsers */
+.leaflet-container img.leaflet-tile {
+    mix-blend-mode: normal !important;
+}
 
 .dark {
     --info-500: #3b82f6;

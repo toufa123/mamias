@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\NisSuggestions\Schemas;
 
+use App\Enums\LiteratureStatus;
 use App\Models\NisSuggestion;
+use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
 
 class NisSuggestionInfolist
 {
@@ -37,47 +41,49 @@ class NisSuggestionInfolist
     {
         return Section::make('Species Information')
             ->icon('tabler-fish')
-            ->columns(3)
+            ->compact()
             ->schema([
-                TextEntry::make('suggested_scientific_name')
-                    ->label('Scientific Name')
-                    ->html()
-                    ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>')
-                    ->columnSpan(2),
-                TextEntry::make('authority')
-                    ->label('Authority')
-                    ->placeholder('—'),
-                TextEntry::make('aphia_id')
-                    ->label('Aphia ID')
+                Grid::make(5)->schema([
+                    TextEntry::make('suggested_scientific_name')
+                        ->label('Scientific Name')
+                        ->html()
+                        ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>'),
+                    TextEntry::make('authority')
+                        ->label('Authority')
+                        ->placeholder('—'),
+                    TextEntry::make('aphia_id')
+                        ->label('Aphia ID')
+                        ->placeholder('—')
+                        ->url(fn (NisSuggestion $record): ?string => $record->aphia_id
+                            ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id={$record->aphia_id}"
+                            : null)
+                        ->openUrlInNewTab(),
+                    TextEntry::make('worms_status')
+                        ->label('WoRMS Status')
+                        ->badge()
+                        ->placeholder('—'),
+                    TextEntry::make('depth')
+                        ->label('Depth')
+                        ->placeholder('—')
+                        ->suffix(' m')
+                        ->numeric(),
+                ]),
+                TextEntry::make('literatures')
+                    ->label('References')
                     ->placeholder('—')
-                    ->url(fn (NisSuggestion $record): ?string => $record->aphia_id
-                        ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id={$record->aphia_id}"
-                        : null)
-                    ->openUrlInNewTab(),
-                TextEntry::make('worms_status')
-                    ->label('WoRMS Status')
-                    ->badge()
-                    ->placeholder('—'),
-                TextEntry::make('suggested_common_name')
-                    ->label('Common Name')
-                    ->placeholder('—'),
-                TextEntry::make('depth')
-                    ->label('Depth')
+                    ->listWithLineBreaks()
+                    ->badge(),
+                TextEntry::make('taxon.scientificname')
+                    ->label('Catalogue Taxon')
                     ->placeholder('—')
-                    ->suffix(' m')
-                    ->numeric(),
-                TextEntry::make('bibliography')
-                    ->label('Bibliography')
-                    ->placeholder('—')
-                    ->columnSpanFull(),
-                TextEntry::make('doi')
-                    ->label('DOI')
-                    ->placeholder('—')
-                    ->url(fn (NisSuggestion $record): ?string => $record->doi
-                        ? "https://doi.org/{$record->doi}"
+                    ->weight(FontWeight::Bold)
+                    ->color('success')
+                    ->url(fn (NisSuggestion $record): ?string => $record->taxon_id
+                        ? route('filament.mamias.resources.taxons.edit', ['record' => $record->taxon_id])
                         : null)
                     ->openUrlInNewTab()
-                    ->columnSpanFull(),
+                    ->icon('tabler-fish')
+                    ->hidden(fn (NisSuggestion $record): bool => $record->taxon_id === null),
             ]);
     }
 
@@ -85,19 +91,16 @@ class NisSuggestionInfolist
     {
         return Section::make('Location')
             ->icon('tabler-map-pin')
-            ->columns(2)
+            ->compact()
             ->hidden(fn (NisSuggestion $record): bool => $record->getRawOriginal('location') === null)
             ->schema([
-                TextEntry::make('latitude')
-                    ->label('Latitude')
-                    ->state(fn (NisSuggestion $record): ?string => $record->getRawOriginal('location') !== null
-                        ? number_format(json_decode($record->getRawOriginal('location'), true)['lat'] ?? 0, 7)
-                        : null),
-                TextEntry::make('longitude')
-                    ->label('Longitude')
-                    ->state(fn (NisSuggestion $record): ?string => $record->getRawOriginal('location') !== null
-                        ? number_format(json_decode($record->getRawOriginal('location'), true)['lng'] ?? 0, 7)
-                        : null),
+                SpeciesLocationsMapEntry::make('location')
+                    ->height(284)
+                    ->zoom(10)
+                    ->pickMarker(fn (Marker $marker) => $marker->red())
+                    ->static()
+                    ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -105,12 +108,13 @@ class NisSuggestionInfolist
     {
         return Section::make('Photos')
             ->icon('tabler-photo')
+            ->compact()
             ->hidden(fn (NisSuggestion $record): bool => empty($record->photo_paths))
             ->schema([
                 ImageEntry::make('photo_paths')
-                    ->label('')
+                    ->hiddenLabel()
                     ->disk('public')
-                    ->stacked()
+                    ->imageGallery()
                     ->columnSpanFull(),
             ]);
     }
@@ -119,6 +123,7 @@ class NisSuggestionInfolist
     {
         return Section::make('Supporting Documents')
             ->icon('tabler-file-description')
+            ->compact()
             ->hidden(fn (NisSuggestion $record): bool => empty($record->document_paths))
             ->schema([
                 TextEntry::make('document_paths')
@@ -141,16 +146,30 @@ class NisSuggestionInfolist
     {
         return Section::make('Review')
             ->icon('tabler-clipboard-check')
-            ->columns(3)
+            ->compact()
             ->schema([
-                TextEntry::make('status')
-                    ->label('Status')
-                    ->badge(),
-                TextEntry::make('user.name')
-                    ->label('Submitted By'),
-                TextEntry::make('created_at')
-                    ->label('Submitted')
-                    ->dateTime(),
+                Grid::make(4)->schema([
+                    TextEntry::make('status')
+                        ->label('Status')
+                        ->badge(),
+                    TextEntry::make('user.name')
+                        ->label('Submitted By'),
+                    TextEntry::make('created_at')
+                        ->label('Submitted')
+                        ->dateTime(),
+                    TextEntry::make('updated_at')
+                        ->label('Reviewed At')
+                        ->dateTime()
+                        ->hidden(fn (NisSuggestion $record): bool => $record->status === LiteratureStatus::PENDING)
+                        ->placeholder('—'),
+                ]),
+                TextEntry::make('resubmittedFrom.suggested_scientific_name')
+                    ->label('Resubmitted From')
+                    ->html()
+                    ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>')
+                    ->placeholder('—')
+                    ->hidden(fn (NisSuggestion $record): bool => $record->resubmitted_from_id === null)
+                    ->columnSpanFull(),
                 TextEntry::make('rejection_reason')
                     ->label('Rejection Reason')
                     ->placeholder('—')

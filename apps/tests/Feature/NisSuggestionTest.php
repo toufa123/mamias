@@ -57,7 +57,12 @@ it('approves a suggestion and creates a taxon draft', function () {
     ]);
 
     livewire(ListNisSuggestions::class)
-        ->callAction(TestAction::make('approve')->table($suggestion))
+        ->callAction(TestAction::make('approve')->table($suggestion), [
+            'scientificname' => $uniqueName,
+            'authority' => 'Test, 2026',
+            'catalogue_status' => Catalogue_Status::not_checked->value,
+            'notes' => '',
+        ])
         ->assertNotified();
 
     assertDatabaseHas(NisSuggestion::class, [

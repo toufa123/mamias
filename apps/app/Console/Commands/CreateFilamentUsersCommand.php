@@ -18,24 +18,24 @@ class CreateFilamentUsersCommand extends Command
             'title' => 'Mr',
             'first_name' => 'Atef',
             'last_name' => 'OUERGHI',
-            'email' => 'atef.ouerghi@spa-rac.org',
-            'password' => 'Toufa_251205',
+            'email_env' => 'DEV_LOGIN_ADMIN_EMAIL',
+            'password_env' => 'DEV_LOGIN_ADMIN_PASSWORD',
             'role' => 'scientist',
         ],
         [
             'title' => null,
             'first_name' => 'Scientist',
             'last_name' => null,
-            'email' => 'scientist@mamias.local',
-            'password' => 'Toufa_251205',
+            'email_env' => 'DEV_LOGIN_SCIENTIST_EMAIL',
+            'password_env' => 'DEV_LOGIN_SCIENTIST_PASSWORD',
             'role' => 'scientist',
         ],
         [
             'title' => null,
             'first_name' => 'Public',
             'last_name' => 'User',
-            'email' => 'atef.ouerghi@gmail.com',
-            'password' => 'Toufa_251205',
+            'email_env' => 'DEV_LOGIN_PUBLIC_EMAIL',
+            'password_env' => 'DEV_LOGIN_PUBLIC_PASSWORD',
             'role' => 'user',
         ],
     ];
@@ -55,10 +55,19 @@ class CreateFilamentUsersCommand extends Command
 
     private function createUser(array $data): void
     {
-        $existing = User::where('email', $data['email'])->first();
+        $email = config("app.{$data['email_env']}");
+        $password = config("app.{$data['password_env']}");
+
+        if (blank($email) || blank($password)) {
+            $this->warn("Skipping {$data['first_name']} {$data['last_name']}: missing env config.");
+
+            return;
+        }
+
+        $existing = User::where('email', $email)->first();
 
         if ($existing) {
-            $this->warn("User {$data['email']} already exists, skipping.");
+            $this->warn("User {$email} already exists, skipping.");
 
             return;
         }
@@ -69,13 +78,13 @@ class CreateFilamentUsersCommand extends Command
             'title' => $data['title'],
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'email' => $email,
+            'password' => Hash::make($password),
             'email_verified_at' => now(),
         ]);
 
         $user->assignRole($role);
 
-        $this->info("Created user: {$data['email']} ({$data['role']})");
+        $this->info("Created user: {$email} ({$data['role']})");
     }
 }

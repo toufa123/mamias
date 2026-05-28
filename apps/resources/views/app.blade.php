@@ -23,8 +23,8 @@
     <link href="{{ asset('img/favicon.ico') }}" rel="shortcut icon"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet"/>
     @vite(['resources/css/app.css'])
+    <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet"/>
 
 
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
@@ -43,6 +43,23 @@
         }
         .notify .text-green-400 {
             color: #00899d !important;
+        }
+    </style>
+    <style>
+        @media (width >= 64rem) {
+            #navbar { display: flex !important; }
+        }
+        @media (width < 64rem) {
+            #navbar { display: none; }
+            #navbar.open { display: flex; }
+        }
+
+        .mobile-notice { display: flex; }
+        .desktop-content { display: none; }
+
+        @media (width >= 48rem) {
+            .mobile-notice { display: none; }
+            .desktop-content { display: block; }
         }
     </style>
 
@@ -147,8 +164,17 @@
             </div>
             <!-- End of Toolbar -->
 
+            <!-- Mobile notice -->
+            <div class="mobile-notice kt-container-fixed grow">
+                <div class="flex flex-col items-center justify-center text-center px-6" style="min-height: 60vh;">
+                    <svg class="w-16 h-16 text-primary mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    <h2 class="text-xl font-semibold text-mono mb-2">Optimized for Larger Screens</h2>
+                    <p class="text-base text-muted-foreground max-w-md">This website is best viewed on a tablet or desktop computer. Please switch to a larger screen for the full experience.</p>
+                </div>
+            </div>
+
             <!-- Content -->
-            <div class="kt-container-fixed grow">
+            <div class="desktop-content kt-container-fixed grow">
                 <div class="grid gap-5 lg:gap-7.5">
                     @yield('content')
                 </div>
@@ -205,6 +231,23 @@
 <script src="{{ asset('assets/js/core.bundle.js') }}"></script>
 <script src="{{ asset('assets/vendors/ktui/ktui.min.js') }}"></script>
 <script src="{{ asset('assets/js/widgets/general.js') }}"></script>
+<script>
+    document.addEventListener('livewire:navigated', () => {
+        if (window.KTMenu && typeof KTMenu.init === 'function') {
+            KTMenu.init();
+        }
+        if (window.KTDropdown && typeof KTDropdown.reinit === 'function') {
+            KTDropdown.reinit();
+        } else if (window.KTDropdown && typeof KTDropdown.init === 'function') {
+            KTDropdown.init();
+        }
+        if (window.KTDrawer && typeof KTDrawer.reinit === 'function') {
+            KTDrawer.reinit();
+        } else if (window.KTDrawer && typeof KTDrawer.init === 'function') {
+            KTDrawer.init();
+        }
+    });
+</script>
 <!-- End of Scripts -->
 </body>
 </html>

@@ -13,7 +13,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -31,6 +33,7 @@ class NisSuggestionsTable
                 self::getAuthorityColumn(),
                 self::getAphiaIdColumn(),
                 self::getStatusColumn(),
+                self::getTaxonColumn(),
                 self::getSubmitterColumn(),
                 self::getSubmittedAtColumn(),
             ])
@@ -98,7 +101,11 @@ class NisSuggestionsTable
         return TextColumn::make('status')
             ->label('Status')
             ->badge()
-            ->sortable();
+            ->sortable()
+            ->tooltip(fn (NisSuggestion $record): ?string => match (true) {
+                $record->status === LiteratureStatus::REJECTED && $record->rejection_reason => $record->rejection_reason,
+                default => null,
+            });
     }
 
     public static function getSubmitterColumn(): TextColumn
@@ -117,36 +124,71 @@ class NisSuggestionsTable
             ->sortable();
     }
 
+    public static function getTaxonColumn(): TextColumn
+    {
+        return TextColumn::make('taxon')
+            ->label('Taxon')
+            ->placeholder('—')
+            ->state(fn (NisSuggestion $record): ?string => $record->taxon?->scientificname)
+            ->url(fn (NisSuggestion $record): ?string => $record->taxon_id
+                ? route('filament.mamias.resources.taxons.edit', ['record' => $record->taxon_id])
+                : null)
+            ->openUrlInNewTab()
+            ->icon('tabler-fish')
+            ->toggleable();
+    }
+
     public static function getApproveAction(): Action
     {
         return Action::make('approve')
             ->label('Approve')
             ->icon('tabler-check')
             ->color('success')
-            ->requiresConfirmation()
-            ->modalHeading('Approve suggestion')
-            ->modalDescription('This will create a new Taxon draft in the MAMIAS catalogue and notify the submitter.')
             ->visible(fn (NisSuggestion $record): bool => $record->status === LiteratureStatus::PENDING)
-            ->action(function (NisSuggestion $record): void {
-                $alreadyExists = Taxon::where('scientificname', $record->suggested_scientific_name)->exists();
+            ->modalHeading('Approve suggestion')
+            ->modalSubmitActionLabel('Create Taxon & Approve')
+            ->schema([
+                TextInput::make('scientificname')
+                    ->label('Scientific Name')
+                    ->default(fn (NisSuggestion $record): string => $record->suggested_scientific_name)
+                    ->required(),
+                TextInput::make('authority')
+                    ->label('Authority')
+                    ->default(fn (NisSuggestion $record): ?string => $record->authority),
+                Select::make('catalogue_status')
+                    ->label('Catalogue Status')
+                    ->options(Catalogue_Status::class)
+                    ->default(Catalogue_Status::not_checked)
+                    ->required(),
+                Textarea::make('notes')
+                    ->label('Notes')
+                    ->rows(3),
+            ])
+            ->action(function (NisSuggestion $record, array $data): void {
+                $alreadyExists = Taxon::where('scientificname', $data['scientificname'])->exists();
+
+                $taxonId = null;
 
                 if (! $alreadyExists) {
-                    Taxon::create([
-                        'scientificname' => $record->suggested_scientific_name,
-                        'aphia_id' => $record->aphia_id,
-                        'authority' => $record->authority,
-                        'catalogue_status' => Catalogue_Status::not_checked,
-                        'notes' => $record->bibliography,
+                    $taxon = Taxon::create([
+                        'scientificname' => $data['scientificname'],
+                        'authority' => $data['authority'],
+                        'catalogue_status' => $data['catalogue_status'],
+                        'notes' => $data['notes'],
                     ]);
+                    $taxonId = $taxon->id;
                 }
 
-                $record->update(['status' => LiteratureStatus::APPROVED]);
+                $record->update([
+                    'status' => LiteratureStatus::APPROVED,
+                    'taxon_id' => $taxonId,
+                ]);
 
                 $record->user?->notify(new NisSuggestionApproved($record));
 
                 $body = $alreadyExists
-                    ? "\"{$record->suggested_scientific_name}\" already exists in the catalogue."
-                    : "A Taxon draft was created for \"{$record->suggested_scientific_name}\".";
+                    ? "\"{$data['scientificname']}\" already exists in the catalogue."
+                    : "Taxon \"{$data['scientificname']}\" was created in the catalogue.";
 
                 Notification::make()
                     ->title('Suggestion approved')

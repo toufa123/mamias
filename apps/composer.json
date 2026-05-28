@@ -11,6 +11,7 @@
   "require": {
     "php": "^8.3",
     "agencetwogether/filament-alert-box": "^1.1",
+    "al-saloul/filament-image-gallery": "^3.0",
     "aureuserp/progress-bar": "@dev",
     "azgasim/filament-unsaved-changes-modal": "^1.0",
     "bezhansalleh/filament-shield": "^4.2",

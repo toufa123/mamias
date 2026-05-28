@@ -41,21 +41,22 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
                     ->form([LiteratureForm::getBibliographicReferenceSection()]),
             ])
             ->recordAction('view')
-            ->headerActions([
-                $this->createAction(),
-            ])
             ->defaultSort('created_at', 'desc');
     }
 
     private function getTableColumns(): array
     {
         return [
-            LiteraturesTable::getCodeColumn(),
+            LiteraturesTable::getCodeColumn()
+                ->hiddenFrom('sm'),
             LiteraturesTable::getShortRefColumn(),
-            LiteraturesTable::getDoiColumn(),
-            LiteraturesTable::getTypeColumn(),
+            LiteraturesTable::getDoiColumn()
+                ->hiddenFrom('sm'),
+            LiteraturesTable::getTypeColumn()
+                ->hiddenFrom('sm'),
             LiteraturesTable::getStatusColumn(),
-            LiteraturesTable::getFileColumn(),
+            LiteraturesTable::getFileColumn()
+                ->hiddenFrom('sm'),
             TextColumn::make('created_at')
                 ->label('Submitted')
                 ->dateTime()

@@ -28,6 +28,8 @@ class CapService
     public function verifyToken(?string $token): bool
     {
         if (! $this->isConfigured()) {
+            logger()->warning('CAPTCHA verification bypassed: CAP_SITE_KEY or CAP_SECRET_KEY not configured.');
+
             return true;
         }
 

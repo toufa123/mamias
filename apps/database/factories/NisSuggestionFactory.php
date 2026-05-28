@@ -24,8 +24,6 @@ class NisSuggestionFactory extends Factory
             'worms_status' => 'accepted',
             'suggested_common_name' => $this->faker->optional()->word(),
             'depth' => $this->faker->optional()->randomFloat(2, 0, 500),
-            'bibliography' => $this->faker->optional()->sentence(),
-            'doi' => null,
             'photo_paths' => null,
             'document_paths' => null,
             'status' => LiteratureStatus::PENDING,

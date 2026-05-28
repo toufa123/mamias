@@ -123,4 +123,25 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dev Login Credentials
+    |--------------------------------------------------------------------------
+    |
+    | Used by app:create-filament-users command. Only intended for local dev.
+    |
+    */
+
+    'DEV_LOGIN_ADMIN_EMAIL' => env('DEV_LOGIN_ADMIN_EMAIL'),
+
+    'DEV_LOGIN_ADMIN_PASSWORD' => env('DEV_LOGIN_ADMIN_PASSWORD'),
+
+    'DEV_LOGIN_SCIENTIST_EMAIL' => env('DEV_LOGIN_SCIENTIST_EMAIL'),
+
+    'DEV_LOGIN_SCIENTIST_PASSWORD' => env('DEV_LOGIN_SCIENTIST_PASSWORD'),
+
+    'DEV_LOGIN_PUBLIC_EMAIL' => env('DEV_LOGIN_PUBLIC_EMAIL'),
+
+    'DEV_LOGIN_PUBLIC_PASSWORD' => env('DEV_LOGIN_PUBLIC_PASSWORD'),
+
 ];

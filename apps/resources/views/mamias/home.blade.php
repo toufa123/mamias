@@ -65,10 +65,10 @@
             </div>
 
             {{-- Cards grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="features-grid">
 
                 {{-- Card 1 — Lightning Workflows --}}
-                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
+                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                     <div class="flex items-start justify-between mb-6">
                         <div class="size-12 rounded-full flex items-center justify-center bg-blue-50">
                             <i class="ki-filled ki-flash text-xl text-blue-500"></i>
@@ -84,7 +84,7 @@
                 </div>
 
                 {{-- Card 2 — Adaptive Safeguards --}}
-                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
+                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                     <div class="flex items-start justify-between mb-6">
                         <div class="size-12 rounded-full flex items-center justify-center bg-red-50">
                             <i class="ki-filled ki-shield-tick text-xl text-red-400"></i>
@@ -100,7 +100,7 @@
                 </div>
 
                 {{-- Card 3 — Smart Team Sync (featured/active) --}}
-                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
+                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                     <div class="flex items-start justify-between mb-6">
                         <div class="size-12 rounded-full flex items-center justify-center bg-[#4cafbf]/10">
                             <i class="ki-filled ki-people text-xl text-[#018d9a]"></i>
@@ -116,7 +116,7 @@
                 </div>
 
                 {{-- Card 4 — Predictive Insights --}}
-                <div class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
+                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                     <div class="flex items-start justify-between mb-6">
                         <div class="size-12 rounded-full flex items-center justify-center bg-amber-50">
                             <i class="ki-filled ki-graph-up text-xl text-amber-500"></i>
@@ -215,6 +215,22 @@
         </div>
     </section>
 @endsection
+
+@push('styles')
+<style>
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 48rem) {
+    .features-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>
