@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Mattiverse\Userstamps\Traits\Userstamps;
 
-#[Fillable('intro_event_id', 'subregion', 'nis_status', 'first_arrival_year', 'notes')]
+#[Fillable(['intro_event_id', 'subregion', 'nis_status', 'first_arrival_year', 'notes'])]
 class SubregionRecord extends Model
 {
     use HasFactory, Userstamps;

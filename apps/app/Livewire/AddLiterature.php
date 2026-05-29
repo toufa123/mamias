@@ -37,8 +37,9 @@ class AddLiterature extends Component implements HasActions, HasForms
     {
         $data = $this->form->getState();
 
-        // Ensure code is generated if not provided (it's disabled in form)
         $data['code'] = Literature::generateNextCode();
+        $data['status'] = 'pending';
+        $data['created_by'] = auth()->id();
 
         Literature::create($data);
 

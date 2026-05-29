@@ -14,6 +14,8 @@ class ListNisSuggestions extends ListRecords
 
     public function getTabs(): array
     {
+        $trashedCount = NisSuggestion::onlyTrashed()->count();
+
         return [
             'all' => Tab::make('All'),
             'pending' => Tab::make('Pending Review')
@@ -24,6 +26,11 @@ class ListNisSuggestions extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'approved')),
             'rejected' => Tab::make('Rejected')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'rejected')),
+            'trashed' => Tab::make('Trashed')
+                ->icon('tabler-trash')
+                ->badgeColor('danger')
+                ->badge($trashedCount)
+                ->modifyQueryUsing(fn (Builder $query) => $query->onlyTrashed()),
         ];
     }
 }

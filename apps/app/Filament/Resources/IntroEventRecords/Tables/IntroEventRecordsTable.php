@@ -13,10 +13,12 @@ class IntroEventRecordsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['taxon', 'literature']))
             ->columns([
                 TextColumn::make('taxon.scientificname')
                     ->label('Taxon')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn ($state, $record): string => $state.($record?->taxon?->authority ? ' ('.$record->taxon->authority.')' : '')),
                 TextColumn::make('first_introduction_year')
                     ->label('1st Year of Introduction')
                     ->numeric()
@@ -39,15 +41,15 @@ class IntroEventRecordsTable
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('establishment_status')
-                    ->label('NIS Status')
+                    ->label('Establishment Status')
                     ->badge()
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('Literature.source_type')
+                TextColumn::make('literature.short_ref')
                     ->label('Citation')
-                    ->badge()
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(50)
+                    ->toggleable(),
                 //                TextColumn::make('data_source_type')
                 //                    ->badge()
                 //                    ->searchable(),

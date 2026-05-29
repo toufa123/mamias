@@ -10,6 +10,9 @@ use App\Models\Taxon;
 use App\Notifications\NisSuggestionApproved;
 use App\Notifications\NisSuggestionRejected;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -23,13 +26,16 @@ class ViewNisSuggestion extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
             Action::make('approve')
-                ->label('Approve')
+                ->label(fn (): string => $this->record->status === LiteratureStatus::APPROVED ? 'Re-approve' : 'Approve')
                 ->icon('tabler-check')
                 ->color('success')
-                ->modalHeading('Approve suggestion')
+                ->modalHeading(fn (): string => $this->record->status === LiteratureStatus::APPROVED ? 'Re-approve suggestion' : 'Approve suggestion')
                 ->modalSubmitActionLabel('Create Taxon & Approve')
-                ->visible(fn (): bool => $this->record->status === LiteratureStatus::PENDING)
+                ->visible(fn (): bool => $this->record->status !== LiteratureStatus::APPROVED)
                 ->schema([
                     TextInput::make('scientificname')
                         ->label('Scientific Name')
@@ -68,6 +74,7 @@ class ViewNisSuggestion extends ViewRecord
                     $suggestion->update([
                         'status' => LiteratureStatus::APPROVED,
                         'taxon_id' => $taxonId,
+                        'rejection_reason' => null,
                     ]);
 
                     $suggestion->user?->notify(new NisSuggestionApproved($suggestion));
@@ -86,10 +93,10 @@ class ViewNisSuggestion extends ViewRecord
                 }),
 
             Action::make('reject')
-                ->label('Reject')
+                ->label(fn (): string => $this->record->status === LiteratureStatus::REJECTED ? 'Re-reject' : 'Reject')
                 ->icon('tabler-x')
                 ->color('danger')
-                ->visible(fn (): bool => $this->record->status === LiteratureStatus::PENDING)
+                ->visible(fn (): bool => $this->record->status !== LiteratureStatus::REJECTED)
                 ->schema([
                     Textarea::make('rejection_reason')
                         ->label('Rejection reason')

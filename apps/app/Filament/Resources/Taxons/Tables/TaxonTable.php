@@ -39,33 +39,16 @@ class TaxonTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]))
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->withoutGlobalScopes([SoftDeletingScope::class])
+                ->with(['creator', 'editor'])
+            )
             ->defaultSort('id', 'asc')
             ->extremePaginationLinks()
             ->deferLoading()
             ->searchable(false)
             ->striped()
             ->columns([
-                self::getIdColumn(),
-                self::getAphiaIdColumn(),
-                self::getEasinIdColumn(),
-                self::getScientificNameColumn(),
-                self::getWormsStatusColumn(),
-                self::getCatalogueStatusColumn(),
-                self::getRankColumn(),
-                self::getKingdomColumn(),
-                self::getPhylumColumn(),
-                self::getLsidColumn(),
-                self::getEnvironmentsColumn(),
-                self::getFetchedAtColumn(),
-                self::getCreatedAtColumn(),
-                self::getUpdatedAtColumn(),
-                self::getCreatedByColumn(),
-                self::getUpdatedByColumn(),
-            ])
-            ->filters([
                 self::getIdColumn(),
                 self::getAphiaIdColumn(),
                 self::getEasinIdColumn(),

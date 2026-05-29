@@ -8,9 +8,16 @@ use App\Models\NisSuggestion;
 use App\Models\Taxon;
 use App\Notifications\NisSuggestionApproved;
 use App\Notifications\NisSuggestionRejected;
+use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
+use EduardoRibeiroDev\FilamentLeaflet\Tables\MapColumn;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -20,24 +27,32 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class NisSuggestionsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query
+                ->withoutGlobalScopes([SoftDeletingScope::class])
+                ->with(['user', 'taxon'])
+            )
             ->columns([
                 self::getScientificNameColumn(),
                 self::getAuthorityColumn(),
                 self::getAphiaIdColumn(),
                 self::getStatusColumn(),
+                self::getMapColumn(),
                 self::getTaxonColumn(),
                 self::getSubmitterColumn(),
                 self::getSubmittedAtColumn(),
             ])
             ->filters([
+                TrashedFilter::make(),
                 SelectFilter::make('status')
                     ->options(LiteratureStatus::class),
                 Filter::make('date_from')
@@ -55,11 +70,16 @@ class NisSuggestionsTable
                 self::getApproveAction(),
                 self::getRejectAction(),
                 ViewAction::make(),
+                DeleteAction::make(),
+                RestoreAction::make(),
+                ForceDeleteAction::make(),
             ])
             ->recordAction(ViewAction::class)
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -131,21 +151,36 @@ class NisSuggestionsTable
             ->placeholder('—')
             ->state(fn (NisSuggestion $record): ?string => $record->taxon?->scientificname)
             ->url(fn (NisSuggestion $record): ?string => $record->taxon_id
-                ? route('filament.mamias.resources.taxons.edit', ['record' => $record->taxon_id])
+                ? route('filament.mamias.resources.taxons.taxa.edit', ['record' => $record->taxon_id])
                 : null)
             ->openUrlInNewTab()
             ->icon('tabler-fish')
             ->toggleable();
     }
 
+    public static function getMapColumn(): MapColumn
+    {
+        return MapColumn::make('location')
+            ->label('Location')
+            ->state(fn (?NisSuggestion $record): ?array => $record?->location?->toArray())
+            ->height(72)
+            ->width(108)
+            ->zoom(5)
+            ->static()
+            ->pickMarker(fn (Marker $marker) => $marker->red())
+            ->placeholder('—')
+            ->hidden(fn (?NisSuggestion $record): bool => $record?->getRawOriginal('location') === null)
+            ->toggleable();
+    }
+
     public static function getApproveAction(): Action
     {
         return Action::make('approve')
-            ->label('Approve')
+            ->label(fn (NisSuggestion $record): string => $record->status === LiteratureStatus::APPROVED ? 'Re-approve' : 'Approve')
             ->icon('tabler-check')
             ->color('success')
-            ->visible(fn (NisSuggestion $record): bool => $record->status === LiteratureStatus::PENDING)
-            ->modalHeading('Approve suggestion')
+            ->visible(fn (NisSuggestion $record): bool => $record->status !== LiteratureStatus::APPROVED)
+            ->modalHeading(fn (NisSuggestion $record): string => $record->status === LiteratureStatus::APPROVED ? 'Re-approve suggestion' : 'Approve suggestion')
             ->modalSubmitActionLabel('Create Taxon & Approve')
             ->schema([
                 TextInput::make('scientificname')
@@ -182,6 +217,7 @@ class NisSuggestionsTable
                 $record->update([
                     'status' => LiteratureStatus::APPROVED,
                     'taxon_id' => $taxonId,
+                    'rejection_reason' => null,
                 ]);
 
                 $record->user?->notify(new NisSuggestionApproved($record));
@@ -201,10 +237,10 @@ class NisSuggestionsTable
     public static function getRejectAction(): Action
     {
         return Action::make('reject')
-            ->label('Reject')
+            ->label(fn (NisSuggestion $record): string => $record->status === LiteratureStatus::REJECTED ? 'Re-reject' : 'Reject')
             ->icon('tabler-x')
             ->color('danger')
-            ->visible(fn (NisSuggestion $record): bool => $record->status === LiteratureStatus::PENDING)
+            ->visible(fn (NisSuggestion $record): bool => $record->status !== LiteratureStatus::REJECTED)
             ->schema([
                 Textarea::make('rejection_reason')
                     ->label('Rejection reason')

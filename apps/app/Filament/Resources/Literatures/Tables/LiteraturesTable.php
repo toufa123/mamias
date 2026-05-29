@@ -19,7 +19,9 @@ class LiteraturesTable
                 self::getShortRefColumn(),
                 self::getDoiColumn(),
                 self::getTypeColumn(),
+                self::getStatusColumn(),
                 self::getFullRefColumn(),
+                self::getFileColumn(),
                 self::getLinkColumn(),
             ])
             ->filters([

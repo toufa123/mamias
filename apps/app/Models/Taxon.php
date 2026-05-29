@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Mattiverse\Userstamps\Traits\Userstamps;
@@ -93,5 +94,15 @@ class Taxon extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public function introEvents(): HasMany
+    {
+        return $this->hasMany(IntroEventRecord::class);
+    }
+
+    public function nisSuggestions(): HasMany
+    {
+        return $this->hasMany(NisSuggestion::class);
     }
 }

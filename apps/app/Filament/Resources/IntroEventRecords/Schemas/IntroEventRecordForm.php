@@ -32,15 +32,16 @@ class IntroEventRecordForm
                     ->icon('tabler-fish')
                     ->columnSpanFull()
                     ->schema([
-                        Grid::make(5)
+                        Grid::make(6)
                             ->schema([
                                 Select::make('taxon_id')
                                     ->label('NIS Taxon')
                                     ->relationship('taxon', 'scientificname')
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->scientificname.($record->authority ? ' ('.$record->authority.')' : ''))
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->columnSpan(1),
+                                    ->columnSpan(2),
                                 Slider::make('first_introduction_year')
                                     ->label(fn (Get $get) => 'Year of 1st Introduction: '.($get('first_introduction_year') ?? now()->year))
                                     ->minValue(1800)
@@ -90,8 +91,8 @@ class IntroEventRecordForm
                                     ->table([
                                         TableColumn::make('EcAp Sub-region'),
                                         TableColumn::make('Establishment Success'),
-                                        TableColumn::make('1st Year of Arrival'),
-                                        TableColumn::make('Time Lag (Years)'),
+                                        TableColumn::make('Year of 1st Introduction'),
+
                                     ])
                                     ->addActionLabel('Add Subregion Record')
                                     ->compact()
@@ -110,7 +111,9 @@ class IntroEventRecordForm
                                             ->label('Establishment Success')
                                             ->options(NisStatus::class),
                                         Slider::make('first_arrival_year')
-                                            ->label(fn (Get $get) => 'Year of 1st Introduction: '.($get('first_arrival_year') ?? now()->year))
+                                            ->label('Year of 1st Introduction')
+                                            // ->hint(fn (?int $state) => $state ?? now()->year)
+                                            // ->tooltips(true)
                                             ->minValue(1800)
                                             ->maxValue(now()->year)
                                             ->step(1)

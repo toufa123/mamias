@@ -79,7 +79,7 @@ class NisSuggestionInfolist
                     ->weight(FontWeight::Bold)
                     ->color('success')
                     ->url(fn (NisSuggestion $record): ?string => $record->taxon_id
-                        ? route('filament.mamias.resources.taxons.edit', ['record' => $record->taxon_id])
+                        ? route('filament.mamias.resources.taxons.taxa.edit', ['record' => $record->taxon_id])
                         : null)
                     ->openUrlInNewTab()
                     ->icon('tabler-fish')

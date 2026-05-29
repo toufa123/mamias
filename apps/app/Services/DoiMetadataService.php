@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\LiteratureType;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class DoiMetadataService
@@ -14,24 +15,26 @@ class DoiMetadataService
      */
     final public function fetchFromCrossref(string $doi): ?array
     {
-        $response = Http::get('https://api.crossref.org/works/'.rawurlencode($doi));
+        return Cache::remember("doi_{$doi}", now()->addDay(), function () use ($doi) {
+            $response = Http::timeout(10)->get('https://api.crossref.org/works/'.rawurlencode($doi));
 
-        if (! $response->successful()) {
-            return null;
-        }
+            if (! $response->successful()) {
+                return null;
+            }
 
-        $data = $response->json('message');
+            $data = $response->json('message');
 
-        if (empty($data)) {
-            return null;
-        }
+            if (empty($data)) {
+                return null;
+            }
 
-        return [
-            'full_ref' => $this->formatFullReference($data),
-            'short_ref' => $this->formatShortReference($data),
-            'type' => $this->mapType($data['type'] ?? ''),
-            'link' => $data['URL'] ?? "https://doi.org/{$doi}",
-        ];
+            return [
+                'full_ref' => $this->formatFullReference($data),
+                'short_ref' => $this->formatShortReference($data),
+                'type' => $this->mapType($data['type'] ?? ''),
+                'link' => $data['URL'] ?? "https://doi.org/{$doi}",
+            ];
+        });
     }
 
     /**

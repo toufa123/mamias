@@ -36,6 +36,7 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 NisSuggestionsTable::getScientificNameColumn(),
                 NisSuggestionsTable::getAuthorityColumn(),
                 NisSuggestionsTable::getStatusColumn(),
+                NisSuggestionsTable::getMapColumn(),
                 TextColumn::make('created_at')->label('Submitted')->dateTime()->sortable(),
             ])
             ->recordActions([
@@ -116,6 +117,8 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
             ->modalHeading('Resubmit suggestion')
             ->modalDescription('A new suggestion will be created with the same data for re-review.')
             ->action(function (NisSuggestion $record): void {
+                abort_unless($record->user_id === auth()->id(), 403);
+
                 $resubmitted = NisSuggestion::create([
                     'user_id' => auth()->id(),
                     'aphia_id' => $record->aphia_id,
@@ -143,13 +146,19 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
 
     public function getStats(): array
     {
-        $userId = auth()->id();
+        $row = NisSuggestion::where('user_id', auth()->id())
+            ->selectRaw('count(*) as total, count(*) filter (where status = ?) as pending, count(*) filter (where status = ?) as approved, count(*) filter (where status = ?) as rejected', [
+                LiteratureStatus::PENDING->value,
+                LiteratureStatus::APPROVED->value,
+                LiteratureStatus::REJECTED->value,
+            ])
+            ->first();
 
         return [
-            'total' => NisSuggestion::where('user_id', $userId)->count(),
-            'pending' => NisSuggestion::where('user_id', $userId)->where('status', LiteratureStatus::PENDING)->count(),
-            'approved' => NisSuggestion::where('user_id', $userId)->where('status', LiteratureStatus::APPROVED)->count(),
-            'rejected' => NisSuggestion::where('user_id', $userId)->where('status', LiteratureStatus::REJECTED)->count(),
+            'total' => $row->total,
+            'pending' => $row->pending,
+            'approved' => $row->approved,
+            'rejected' => $row->rejected,
         ];
     }
 

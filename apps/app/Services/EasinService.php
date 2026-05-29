@@ -15,7 +15,7 @@ class EasinService
             return null;
         }
 
-        $term = str_replace(' ', '%20', $scientificName);
+        $term = rawurlencode($scientificName);
         $url = "{$this->baseUrl}/{$term}";
 
         return Cache::remember('easin_id_'.md5($scientificName), 86400, function () use ($url) {
@@ -30,6 +30,10 @@ class EasinService
                     }
                 }
             } catch (\Exception $e) {
+                logger()->error('EASIN API request failed', [
+                    'scientific_name' => $scientificName,
+                    'message' => $e->getMessage(),
+                ]);
             }
 
             return null;

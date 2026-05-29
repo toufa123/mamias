@@ -184,19 +184,18 @@
             <!-- Footer -->
             <footer class="footer">
                 <div class="kt-container-fixed">
-                    <div class="flex flex-col md:flex-row justify-center md:justify-between items-center gap-3 py-5">
-                        <div class="flex order-2 md:order-1 gap-2 font-normal text-sm">
-                            <span class="text-muted-foreground ">{{ now()->format('Y') }}©</span>
+                    <div class="flex flex-col items-center gap-3 py-5 md:flex-row md:justify-between">
+                        <div class="flex order-2 gap-2 text-sm font-normal md:order-1">
+                            <span class="text-muted-foreground">{{ now()->format('Y') }}©</span>
                             <a class="text-secondary-foreground hover:text-primary"
                                href="https://spa-rac.org">SPA/RAC.</a>
                         </div>
-                        <nav class="flex order-1 md:order-2 gap-4 font-normal text-sm text-secondary-foreground">
+                        <nav class="flex order-1 flex-wrap justify-center gap-x-4 gap-y-1 text-sm font-normal text-secondary-foreground md:order-2">
                             <a class="hover:text-primary" href="#">Legal notice</a>
                             <a class="hover:text-primary" href="#">Terme of Use</a>
                             <a class="hover:text-primary" href="#">Cookies policy</a>
                             <a class="hover:text-primary" onclick="showHideToggleCookiePreferencesModal()">Change Cookie
                                 Preferences</a>
-
                             <a class="hover:text-primary" href="{{ url('sitemap.xml') }}">SiteMap</a>
                         </nav>
                     </div>

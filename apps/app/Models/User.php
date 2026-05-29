@@ -194,4 +194,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     {
         return $this->hasMany(Literature::class, 'created_by');
     }
+
+    public function nisSuggestions(): HasMany
+    {
+        return $this->hasMany(NisSuggestion::class);
+    }
+
+    public function introEventRecords(): HasMany
+    {
+        return $this->hasMany(IntroEventRecord::class, 'created_by');
+    }
 }

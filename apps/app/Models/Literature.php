@@ -6,9 +6,10 @@ use App\Enums\LiteratureType;
 use App\Observers\LiteratureObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -38,17 +39,15 @@ use Mattiverse\Userstamps\Traits\Userstamps;
     'link',
     'file_path',
     'status',
-    'created_at',
-    'updated_at',
 ])]
 #[ObservedBy([LiteratureObserver::class])]
 class Literature extends Model
 {
     use HasFactory, Userstamps;
 
-    public function scopeForUser($query, $user): void
+    public function scopeForUser($query, $user): Builder
     {
-        $query->where('created_by', $user->id);
+        return $query->where('created_by', $user->id);
     }
 
     public function save(array $options = []): bool
@@ -109,8 +108,8 @@ class Literature extends Model
         ];
     }
 
-    // public function introEvents(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(IntroEvent::class, 'intro_event_literature');
-    // }
+    public function introEvents(): HasMany
+    {
+        return $this->hasMany(IntroEventRecord::class);
+    }
 }

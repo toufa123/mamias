@@ -97,8 +97,7 @@ class NisSuggestionForm
 
                 ->panelLayout('grid')
                 ->loadingIndicatorPosition('left')
-                ->panelAspectRatio('3:1')
-                // ->panelLayout('integrated')
+                ->panelAspectRatio('8:1')
                 ->removeUploadedFileButtonPosition('right')
                 ->uploadButtonPosition('left')
                 ->uploadProgressIndicatorPosition('left')
@@ -109,7 +108,7 @@ class NisSuggestionForm
                 ->directory('suggestions/photos')
                 ->visibility('public')
                 ->maxSize(5120)
-                ->imagePreviewHeight('120')
+                ->imagePreviewHeight('40')
 
                 ->columnSpanFull(),
         ];

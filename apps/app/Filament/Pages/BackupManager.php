@@ -16,6 +16,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Process\ProcessResult;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,8 @@ class BackupManager extends Page implements HasTable
     protected string $view = 'filament.pages.backup-manager';
 
     protected static string|null|\UnitEnum $navigationGroup = 'System';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $title = 'Backup Manager';
 
@@ -199,7 +202,7 @@ class BackupManager extends Page implements HasTable
                         ->icon('heroicon-o-trash')
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->action(function (\Illuminate\Support\Collection $records): void {
+                        ->action(function (Collection $records): void {
                             foreach ($records as $record) {
                                 Storage::disk('backups')->delete($record['path']);
                             }

@@ -8,14 +8,13 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.4",
-    "concurrently": "^9.0.1",
+    "concurrently": "^10.0.0",
     "laravel-vite-plugin": "^3.0.0",
     "tailwindcss": "^4.2.4"
   },
   "dependencies": {
     "cap-widget": "^0.1.53",
     "leaflet": "^1.9.4",
-
     "leaflet-mouse-position": "^1.2.0"
   }
 }

@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\View\View;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
 use lockscreen\FilamentLockscreen\Lockscreen;
 use Promethys\Revive\RevivePlugin;
@@ -267,6 +268,10 @@ class MamiasPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook(
+                'panels::body.start',
+                fn (): View => view('filament.mobile-notice'),
+            );
     }
 }

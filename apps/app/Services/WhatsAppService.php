@@ -57,7 +57,12 @@ class WhatsAppService
                     }
 
                     return $response->json('existsWhatsapp', false);
-                } catch (\Throwable) {
+                } catch (\Throwable $e) {
+                    logger()->error('WhatsApp check failed', [
+                        'phone' => $clean,
+                        'message' => $e->getMessage(),
+                    ]);
+
                     return false;
                 }
             },
