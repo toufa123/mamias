@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NisSuggestions\Schemas;
 
+use App\Enums\Habitat;
 use App\Enums\LiteratureStatus;
 use App\Models\NisSuggestion;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
@@ -43,7 +44,7 @@ class NisSuggestionInfolist
             ->icon('tabler-fish')
             ->compact()
             ->schema([
-                Grid::make(5)->schema([
+                Grid::make(4)->schema([
                     TextEntry::make('suggested_scientific_name')
                         ->label('Scientific Name')
                         ->html()
@@ -67,6 +68,26 @@ class NisSuggestionInfolist
                         ->placeholder('—')
                         ->suffix(' m')
                         ->numeric(),
+                    TextEntry::make('acfor_scale')
+                        ->label('Abundance (ACFOR Scale)')
+                        ->badge()
+                        ->placeholder('—')
+                        ->formatStateUsing(fn (NisSuggestion $record): ?string => $record->acfor_scale
+                            ? $record->acfor_scale->getLabel().' — '.(
+                                in_array($record->kingdom, ['Plantae', 'Chromista'], true)
+                                    ? $record->acfor_scale->getPlantDescription()
+                                    : $record->acfor_scale->getAnimalDescription()
+                            )
+                            : null),
+                    TextEntry::make('habitats')
+                        ->label('Habitats')
+                        ->placeholder('—')
+                        ->columnSpan(2)
+                        ->formatStateUsing(fn (NisSuggestion $record): ?string => $record->habitats
+                            ? collect($record->habitats)
+                                ->map(fn (string $h) => Habitat::tryFrom($h)?->getLabel() ?? $h)
+                                ->implode(', ')
+                            : null),
                 ]),
                 TextEntry::make('literatures')
                     ->label('References')
@@ -95,6 +116,7 @@ class NisSuggestionInfolist
             ->hidden(fn (NisSuggestion $record): bool => $record->getRawOriginal('location') === null)
             ->schema([
                 SpeciesLocationsMapEntry::make('location')
+                    ->hiddenLabel()
                     ->height(284)
                     ->zoom(10)
                     ->pickMarker(fn (Marker $marker) => $marker->red())

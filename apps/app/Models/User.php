@@ -100,6 +100,23 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         return str($this->email)->before('@')->toString();
     }
 
+    public function getFormattedNameWithRoles(): ?string
+    {
+        $name = trim(($this->first_name ?? '').' '.($this->last_name ?? ''));
+
+        if ($name === '') {
+            return null;
+        }
+
+        $roles = $this->getRoleNames()->all();
+
+        if (! empty($roles)) {
+            $name .= ' ('.implode(', ', $roles).')';
+        }
+
+        return $name;
+    }
+
     /**
      * Get the user's avatar URL for Filament admin panel.
      *

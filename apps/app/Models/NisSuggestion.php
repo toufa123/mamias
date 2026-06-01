@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Casts\SafeCoordinateCast;
+use App\Casts\CoordinatesCast;
+use App\Enums\AcforScale;
 use App\Enums\LiteratureStatus;
-use EduardoRibeiroDev\FilamentLeaflet\ValueObjects\Coordinate;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,8 +24,11 @@ use Mattiverse\Userstamps\Traits\Userstamps;
  * @property string|null $authority
  * @property string|null $worms_status
  * @property string|null $suggested_common_name
- * @property Coordinate|null $location
+ * @property array|null $location
  * @property float|null $depth
+ * @property string|null $kingdom
+ * @property AcforScale|null $acfor_scale
+ * @property array|null $habitats
  * @property array|null $photo_paths
  * @property array|null $document_paths
  * @property LiteratureStatus $status
@@ -46,6 +49,9 @@ use Mattiverse\Userstamps\Traits\Userstamps;
     'suggested_common_name',
     'location',
     'depth',
+    'kingdom',
+    'acfor_scale',
+    'habitats',
     'photo_paths',
     'document_paths',
     'status',
@@ -61,11 +67,14 @@ class NisSuggestion extends Model
     {
         return [
             'aphia_id' => 'integer',
+            'acfor_scale' => AcforScale::class,
+            'kingdom' => 'string',
+            'habitats' => 'array',
             'photo_paths' => 'array',
             'document_paths' => 'array',
             'status' => LiteratureStatus::class,
             'depth' => 'float',
-            'location' => SafeCoordinateCast::class,
+            'location' => CoordinatesCast::class,
         ];
     }
 

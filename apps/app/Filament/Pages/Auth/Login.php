@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\Filament\Pages\Auth;
 
 use App\Filament\Forms\Components\CapField;
-use App\Services\CapService;
+use App\Filament\Pages\Auth\Concerns\ValidatesCapToken;
 use App\Support\FilamentAuthRedirect;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Schema;
-use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
-    use HasCustomLayout;
+    use HasCustomLayout, ValidatesCapToken;
 
     public ?string $cap_token = null;
 
@@ -46,11 +45,7 @@ class Login extends BaseLogin
     {
         $data = $this->form->getState();
 
-        if (! app(CapService::class)->verifyToken($data['cap_token'] ?? null)) {
-            throw ValidationException::withMessages([
-                'cap_token' => __('CAPTCHA verification failed. Please try again.'),
-            ]);
-        }
+        $this->validateCapToken($data['cap_token'] ?? null);
 
         return parent::authenticate();
     }

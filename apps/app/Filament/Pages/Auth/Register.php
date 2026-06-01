@@ -6,7 +6,7 @@ namespace App\Filament\Pages\Auth;
 
 use App\Filament\Forms\Components\CapField;
 use App\Filament\Forms\Components\HoneypotField;
-use App\Services\CapService;
+use App\Filament\Pages\Auth\Concerns\ValidatesCapToken;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Select;
@@ -14,7 +14,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\ValidationException;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
@@ -22,7 +21,7 @@ use Spatie\Permission\Models\Role;
 
 class Register extends BaseRegister
 {
-    use HasCustomLayout, UsesSpamProtection;
+    use HasCustomLayout, UsesSpamProtection, ValidatesCapToken;
 
     public HoneypotData $honeypotData;
 
@@ -123,14 +122,5 @@ class Register extends BaseRegister
         $user->assignRole('user');
 
         return $user;
-    }
-
-    protected function validateCapToken(?string $token): void
-    {
-        if (! app(CapService::class)->verifyToken($token)) {
-            throw ValidationException::withMessages([
-                'cap_token' => __('CAPTCHA verification failed. Please try again.'),
-            ]);
-        }
     }
 }

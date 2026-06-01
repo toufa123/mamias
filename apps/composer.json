@@ -16,7 +16,7 @@
     "azgasim/filament-unsaved-changes-modal": "^1.0",
     "bezhansalleh/filament-shield": "^4.2",
     "binarybuilds/filament-command-runner": "^1.2",
-    "blendbyte/filament-resource-lock": "^2.1",
+   
     "clcbws/laravel-schema-sentinel": "^1.6",
     "clickbar/laravel-magellan": "*",
     "cms-multi/filament-clear-cache": "^3.0",
@@ -45,12 +45,10 @@
     "phpoffice/phpspreadsheet": "^5.7",
     "promethys/revive": "*",
     "pxlrbt/filament-environment-indicator": "^3.5",
-    "rector/rector": "^2.4",
-    "secondnetwork/blade-tabler-icons": "^3.41",
-    "shuvroroy/filament-spatie-laravel-backup": "^3.4",
-    "shuvroroy/filament-spatie-laravel-health": "^3.3",
+    "pxlrbt/filament-spotlight": "^2.1",
+     "secondnetwork/blade-tabler-icons": "^3.41",
+     "shuvroroy/filament-spatie-laravel-health": "^3.3",
     "spatie/laravel-honeypot": "^4.7",
-    "waad/filament-import-wizard": "^1.0",
     "wildside/userstamps": "^4.0"
   } ,
   "require-dev": {

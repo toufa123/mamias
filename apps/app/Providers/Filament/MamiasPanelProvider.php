@@ -14,7 +14,6 @@ use App\Http\Middleware\RedirectIfNotPanelUser;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
-use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin;
@@ -40,16 +39,14 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\View;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
 use lockscreen\FilamentLockscreen\Lockscreen;
-use Promethys\Revive\RevivePlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
-use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
 class MamiasPanelProvider extends PanelProvider
@@ -60,8 +57,6 @@ class MamiasPanelProvider extends PanelProvider
             Js::make('app-scripts', Vite::asset('resources/js/app.js')),
         ]);
 
-        Gate::define('manage-resource-locks', fn ($user) => $user->hasRole('super_admin'));
-        Gate::define('manage-resource-locks-audit', fn ($user) => $user->hasRole('super_admin'));
     }
 
     public function panel(Panel $panel): Panel
@@ -97,26 +92,8 @@ class MamiasPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
-                RevivePlugin::make()
-                    ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
-                    ->navigationGroup('Settings') // Group the page under a custom sidebar section
-                    ->navigationIcon('heroicon-o-archive-box-arrow-down')
-                    ->activeNavigationIcon('heroicon-o-archive-box-arrow-down')
-                    ->navigationSort(1)
-                    ->navigationLabel('Custom Label')
-                    ->title('Custom Title')
-                    ->slug('custom-slug'),
+                SpotlightPlugin::make(),
                 RefreshSidebarPlugin::make(),
-                //                FilamentSpatieLaravelBackupPlugin::make()
-                //                    ->navigationIcon('heroicon-o-cpu-chip')
-                //                    ->navigationLabel('Backups')
-                //                    ->navigationGroup('system')
-                //                    ->navigationSort(3),
-                ResourceLockPlugin::make()
-                    ->limitedAccessToResourceLockManager(true)
-                    ->gate('manage-resource-locks')
-                    ->auditLimitedAccess(true)
-                    ->auditGate('manage-resource-locks-audit'),
                 CommandRunnerPlugin::make()
                     ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
                     ->navigationGroup('System')

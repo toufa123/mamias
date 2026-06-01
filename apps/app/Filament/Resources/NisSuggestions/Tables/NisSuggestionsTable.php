@@ -2,15 +2,12 @@
 
 namespace App\Filament\Resources\NisSuggestions\Tables;
 
-use App\Enums\Catalogue_Status;
+use App\Enums\Habitat;
 use App\Enums\LiteratureStatus;
+use App\Filament\Resources\NisSuggestions\Actions\NisSuggestionActions;
 use App\Models\NisSuggestion;
-use App\Models\Taxon;
-use App\Notifications\NisSuggestionApproved;
-use App\Notifications\NisSuggestionRejected;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use EduardoRibeiroDev\FilamentLeaflet\Tables\MapColumn;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -20,10 +17,6 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -50,6 +43,8 @@ class NisSuggestionsTable
                 self::getTaxonColumn(),
                 self::getSubmitterColumn(),
                 self::getSubmittedAtColumn(),
+                self::getAcforScaleColumn(),
+                self::getHabitatsColumn(),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -67,8 +62,8 @@ class NisSuggestionsTable
                     }),
             ])
             ->recordActions([
-                self::getApproveAction(),
-                self::getRejectAction(),
+                NisSuggestionActions::makeApproveAction(),
+                NisSuggestionActions::makeRejectAction(),
                 ViewAction::make(),
                 DeleteAction::make(),
                 RestoreAction::make(),
@@ -162,7 +157,11 @@ class NisSuggestionsTable
     {
         return MapColumn::make('location')
             ->label('Location')
-            ->state(fn (?NisSuggestion $record): ?array => $record?->location?->toArray())
+            ->state(fn (?NisSuggestion $record): ?array => match (true) {
+                $record?->location === null => null,
+                is_array($record->location) && isset($record->location[0]) => $record->location[0],
+                default => $record->location,
+            })
             ->height(72)
             ->width(108)
             ->zoom(5)
@@ -173,93 +172,25 @@ class NisSuggestionsTable
             ->toggleable();
     }
 
-    public static function getApproveAction(): Action
+    public static function getAcforScaleColumn(): TextColumn
     {
-        return Action::make('approve')
-            ->label(fn (NisSuggestion $record): string => $record->status === LiteratureStatus::APPROVED ? 'Re-approve' : 'Approve')
-            ->icon('tabler-check')
-            ->color('success')
-            ->visible(fn (NisSuggestion $record): bool => $record->status !== LiteratureStatus::APPROVED)
-            ->modalHeading(fn (NisSuggestion $record): string => $record->status === LiteratureStatus::APPROVED ? 'Re-approve suggestion' : 'Approve suggestion')
-            ->modalSubmitActionLabel('Create Taxon & Approve')
-            ->schema([
-                TextInput::make('scientificname')
-                    ->label('Scientific Name')
-                    ->default(fn (NisSuggestion $record): string => $record->suggested_scientific_name)
-                    ->required(),
-                TextInput::make('authority')
-                    ->label('Authority')
-                    ->default(fn (NisSuggestion $record): ?string => $record->authority),
-                Select::make('catalogue_status')
-                    ->label('Catalogue Status')
-                    ->options(Catalogue_Status::class)
-                    ->default(Catalogue_Status::not_checked)
-                    ->required(),
-                Textarea::make('notes')
-                    ->label('Notes')
-                    ->rows(3),
-            ])
-            ->action(function (NisSuggestion $record, array $data): void {
-                $alreadyExists = Taxon::where('scientificname', $data['scientificname'])->exists();
-
-                $taxonId = null;
-
-                if (! $alreadyExists) {
-                    $taxon = Taxon::create([
-                        'scientificname' => $data['scientificname'],
-                        'authority' => $data['authority'],
-                        'catalogue_status' => $data['catalogue_status'],
-                        'notes' => $data['notes'],
-                    ]);
-                    $taxonId = $taxon->id;
-                }
-
-                $record->update([
-                    'status' => LiteratureStatus::APPROVED,
-                    'taxon_id' => $taxonId,
-                    'rejection_reason' => null,
-                ]);
-
-                $record->user?->notify(new NisSuggestionApproved($record));
-
-                $body = $alreadyExists
-                    ? "\"{$data['scientificname']}\" already exists in the catalogue."
-                    : "Taxon \"{$data['scientificname']}\" was created in the catalogue.";
-
-                Notification::make()
-                    ->title('Suggestion approved')
-                    ->body($body)
-                    ->success()
-                    ->send();
-            });
+        return TextColumn::make('acfor_scale')
+            ->label('Abundance (ACFOR)')
+            ->badge()
+            ->sortable()
+            ->placeholder('—');
     }
 
-    public static function getRejectAction(): Action
+    public static function getHabitatsColumn(): TextColumn
     {
-        return Action::make('reject')
-            ->label(fn (NisSuggestion $record): string => $record->status === LiteratureStatus::REJECTED ? 'Re-reject' : 'Reject')
-            ->icon('tabler-x')
-            ->color('danger')
-            ->visible(fn (NisSuggestion $record): bool => $record->status !== LiteratureStatus::REJECTED)
-            ->schema([
-                Textarea::make('rejection_reason')
-                    ->label('Rejection reason')
-                    ->required()
-                    ->rows(3)
-                    ->placeholder('Explain why the suggestion is being rejected…'),
-            ])
-            ->action(function (NisSuggestion $record, array $data): void {
-                $record->update([
-                    'status' => LiteratureStatus::REJECTED,
-                    'rejection_reason' => $data['rejection_reason'],
-                ]);
-
-                $record->user?->notify(new NisSuggestionRejected($record));
-
-                Notification::make()
-                    ->title('Suggestion rejected')
-                    ->warning()
-                    ->send();
-            });
+        return TextColumn::make('habitats')
+            ->label('Habitats')
+            ->placeholder('—')
+            ->toggleable(isToggledHiddenByDefault: true)
+            ->formatStateUsing(fn (NisSuggestion $record): ?string => $record->habitats
+                ? collect($record->habitats)
+                    ->map(fn (string $h) => Habitat::tryFrom($h)?->getLabel() ?? $h)
+                    ->implode(', ')
+                : null);
     }
 }

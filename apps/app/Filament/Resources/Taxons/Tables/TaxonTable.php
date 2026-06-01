@@ -6,7 +6,6 @@ use App\Enums\Environment;
 use App\Jobs\FetchEasinIdsJob;
 use App\Jobs\FetchTaxaFromWormsJob;
 use App\Models\Taxon;
-use App\Models\User;
 use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -286,7 +285,7 @@ class TaxonTable
             ->label('Created By')
             ->icon(TablerIcon::User)
             ->placeholder('—')
-            ->formatStateUsing(fn ($state, $record) => self::formatUserWithRole($record->creator))
+            ->formatStateUsing(fn ($state, $record) => $record->creator?->getFormattedNameWithRoles())
             ->sortable()
             ->searchable(['users.first_name', 'users.last_name'])
             ->toggleable(isToggledHiddenByDefault: true);
@@ -298,28 +297,10 @@ class TaxonTable
             ->label('Updated By')
             ->icon(TablerIcon::UserEdit)
             ->placeholder('—')
-            ->formatStateUsing(fn ($state, $record) => self::formatUserWithRole($record->editor))
+            ->formatStateUsing(fn ($state, $record) => $record->editor?->getFormattedNameWithRoles())
             ->sortable()
             ->searchable(['users.first_name', 'users.last_name'])
             ->toggleable(isToggledHiddenByDefault: true);
-    }
-
-    protected static function formatUserWithRole(?User $user): ?string
-    {
-        if (! $user) {
-            return null;
-        }
-        $name = trim(($user->first_name ?? '').' '.($user->last_name ?? ''));
-        if ($name === '') {
-            return null;
-        }
-
-        $roles = method_exists($user, 'getRoleNames') ? $user->getRoleNames()->all() : [];
-        if (! empty($roles)) {
-            $name .= ' ('.implode(', ', $roles).')';
-        }
-
-        return $name;
     }
 
     protected static function formatScientificName(?string $state, ?string $rank): ?string

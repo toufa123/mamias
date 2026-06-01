@@ -51,15 +51,18 @@ class SpeciesLocationsMapEntry extends MapEntry
             return parent::getPickMarkerData();
         }
 
-        $coords = json_decode($record->getRawOriginal('location'), true);
-        $lat = $coords['lat'] ?? null;
-        $lng = $coords['lng'] ?? null;
+        $coords = $record->location;
+        $first = is_array($coords) ? ($coords[0] ?? null) : $coords;
 
-        $pickMarker = Marker::make((float) $lat, (float) $lng)
+        if (! $first || ! isset($first['lat'], $first['lng'])) {
+            return parent::getPickMarkerData();
+        }
+
+        $pickMarker = Marker::make((float) $first['lat'], (float) $first['lng'])
             ->red()
-            ->tooltipContent("{$lat}, {$lng}")
+            ->tooltipContent("{$first['lat']}, {$first['lng']}")
             ->tooltipOptions(['direction' => 'top'])
-            ->popupContent("{$record->suggested_scientific_name}<br>Lat: {$lat}<br>Lng: {$lng}");
+            ->popupContent("{$record->suggested_scientific_name}<br>Lat: {$first['lat']}<br>Lng: {$first['lng']}");
 
         return $pickMarker->toArray();
     }

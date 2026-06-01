@@ -201,7 +201,7 @@ class TaxonInfolist
                             ->label('Created By')
                             ->icon('tabler-user')
                             ->placeholder('—')
-                            ->formatStateUsing(fn ($record) => self::formatUser($record?->creator)),
+                            ->formatStateUsing(fn ($record) => $record?->creator?->getFormattedNameWithRoles()),
                         TextEntry::make('created_at')
                             ->label('Created At')
                             ->dateTime()
@@ -216,7 +216,7 @@ class TaxonInfolist
                             ->label('Updated By')
                             ->icon('tabler-user-edit')
                             ->placeholder('—')
-                            ->formatStateUsing(fn ($record) => self::formatUser($record?->editor)),
+                            ->formatStateUsing(fn ($record) => $record?->editor?->getFormattedNameWithRoles()),
                         TextEntry::make('updated_at')
                             ->label('Updated At')
                             ->dateTime()
@@ -224,21 +224,5 @@ class TaxonInfolist
                             ->placeholder('—'),
                     ]),
             ]);
-    }
-
-    protected static function formatUser($user): ?string
-    {
-        if (! $user) {
-            return null;
-        }
-
-        $name = trim(($user->first_name ?? '').' '.($user->last_name ?? ''));
-        if ($name === '') {
-            $name = (string) ($user->name ?? $user->email ?? '');
-        }
-
-        $roles = method_exists($user, 'getRoleNames') ? $user->getRoleNames()->implode(', ') : '';
-
-        return $roles !== '' ? trim($name).' ('.$roles.')' : trim($name);
     }
 }

@@ -172,14 +172,21 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
             ->where('suggested_scientific_name', $scientificName)
             ->whereNotNull('location')
             ->get(['location'])
-            ->map(function (NisSuggestion $s): ?array {
-                $coords = json_decode($s->getRawOriginal('location'), true);
-                $lat = $coords['lat'] ?? null;
-                $lng = $coords['lng'] ?? null;
+            ->flatMap(function (NisSuggestion $s): array {
+                $data = json_decode($s->getRawOriginal('location'), true);
+                if (isset($data['lat'], $data['lng'])) {
+                    $data = [$data];
+                }
 
-                return ($lat === null || $lng === null) ? null : ['lat' => (float) $lat, 'lng' => (float) $lng];
+                if (! is_array($data)) {
+                    return [];
+                }
+
+                return collect($data)
+                    ->filter(fn (array $c) => isset($c['lat'], $c['lng']))
+                    ->map(fn (array $c) => ['lat' => (float) $c['lat'], 'lng' => (float) $c['lng']])
+                    ->all();
             })
-            ->filter()
             ->values()
             ->all();
     }

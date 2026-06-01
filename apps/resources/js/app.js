@@ -122,8 +122,8 @@ document.addEventListener('livewire:init', () => {
     }, 0);
 });
 
-// Patch leafletMapField after the vendor bundle registers it to add a WoRMS popup
-// on the pick marker when the user clicks the map to set coordinates.
+// Patch leafletMapField for multi-marker support: store an array of coordinates,
+// render all markers on the map, and listen for Geoman draw events.
 document.addEventListener('livewire:init', () => {
     setTimeout(() => {
         const original = window.leafletMapField;
@@ -131,8 +131,9 @@ document.addEventListener('livewire:init', () => {
 
         window.leafletMapField = function ($wire, config) {
             const base = original($wire, config);
-            const origUpdate = base.updatePickMarker.bind(base);
-            const origInit   = base.init.bind(base);
+            const origInit = base.init.bind(base);
+
+            base.pickMarkers = [];
 
             base.siblingMarkers = [];
 
@@ -163,35 +164,32 @@ document.addEventListener('livewire:init', () => {
                 });
             };
 
-            base.init = function () {
-                origInit();
-                const map = this.mapCore?.map;
-                // Debug: check what window.L actually is
-                if (!window.L || typeof window.L.map !== 'function') {
-                    console.warn('window.L invalid at init. keys:', window.L ? Object.keys(window.L).slice(0, 15).join(',') : 'null/undef');
-                }
-                addMapControls(map, _L || window.L);
-
-                const prefix    = config.state.statePath.replace(/\.[^.]+$/, '');
-                const namePath  = prefix + '.suggested_scientific_name';
-
-                base.renderSiblingMarkers($wire.get(namePath));
-                $wire.watch(namePath, (name) => base.renderSiblingMarkers(name));
+            base.getState = function () {
+                if (!this.config.state) return [];
+                const val = this.$wire.get(this.config.state.statePath);
+                if (!val) return [];
+                if (Array.isArray(val)) return val;
+                if (val.lat !== undefined && val.lng !== undefined) return [val];
+                return [];
             };
 
-            base.updatePickMarker = function () {
-                origUpdate();
-                if (!base.pickMarker) return;
+            base.setState = function (lat, lng) {
+                if (!this.config.state) return;
+                const current = this.getState();
+                this.$wire.set(this.config.state.statePath, [...current, { lat, lng }]);
+            };
 
-                const marker = Alpine.raw(base.pickMarker);
-                const coords = base.getState();
-                if (!coords) return;
+            base.removeMarker = function (index) {
+                const current = this.getState();
+                current.splice(index, 1);
+                this.$wire.set(this.config.state.statePath, current);
+            };
 
+            base.buildMarkerPopupHtml = function (coords) {
                 const prefix = config.state.statePath.replace(/\.[^.]+$/, '');
                 const aphiaId = $wire.get(prefix + '.aphia_id');
-                const name    = $wire.get(prefix + '.suggested_scientific_name');
-                const auth    = $wire.get(prefix + '.authority');
-
+                const name = $wire.get(prefix + '.suggested_scientific_name');
+                const auth = $wire.get(prefix + '.authority');
                 const lat = Number(coords.lat).toFixed(5);
                 const lng = Number(coords.lng).toFixed(5);
 
@@ -199,16 +197,74 @@ document.addEventListener('livewire:init', () => {
                 if (aphiaId && name) {
                     const url = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=' + aphiaId;
                     html += '<a href="' + url + '" target="_blank" rel="noopener noreferrer"'
-                          + ' style="font-weight:600;color:#005f98;text-decoration:none;">'
-                          + name + (auth ? ' <em>' + auth + '</em>' : '')
-                          + '</a><br>';
+                        + ' style="font-weight:600;color:#005f98;text-decoration:none;">'
+                        + name + (auth ? ' <em>' + auth + '</em>' : '')
+                        + '</a><br>';
                 } else {
                     html += '<em style="color:#999;">No species selected</em><br>';
                 }
                 html += '<span style="color:#555;font-size:12px;">&#x1F4CD; ' + lat + ', ' + lng + '</span>';
                 html += '</div>';
+                return html;
+            };
 
-                marker.bindPopup(html, { maxWidth: 320 }).openPopup();
+            base.renderPickMarkers = function () {
+                base.pickMarkers.forEach(m => {
+                    if (base.mapCore?.map) {
+                        Alpine.raw(base.mapCore.map).removeLayer(Alpine.raw(m));
+                    }
+                });
+                base.pickMarkers = [];
+
+                const coordsList = this.getState();
+                if (coordsList.length === 0) return;
+
+                let markerOptions = this.config.state.pickMarker;
+
+                coordsList.forEach((coords) => {
+                    const opts = { ...markerOptions, coords: [coords.lat, coords.lng] };
+                    const marker = this.mapCore.createMarker(opts);
+                    Alpine.raw(marker).addTo(Alpine.raw(this.mapCore.map));
+                    base.pickMarkers.push(marker);
+
+                    marker.bindPopup(this.buildMarkerPopupHtml(coords), { maxWidth: 320 });
+                });
+
+                if (coordsList.length > 0) {
+                    const last = Alpine.raw(base.pickMarkers[base.pickMarkers.length - 1]);
+                    if (last && typeof last.openPopup === 'function') {
+                        last.openPopup();
+                    }
+                }
+            };
+
+            base.init = function () {
+                origInit();
+                const map = this.mapCore?.map;
+                if (!window.L || typeof window.L.map !== 'function') {
+                    console.warn('window.L invalid at init. keys:', window.L ? Object.keys(window.L).slice(0, 15).join(',') : 'null/undef');
+                }
+                addMapControls(map, _L || window.L);
+
+                const prefix = config.state.statePath.replace(/\.[^.]+$/, '');
+                const namePath = prefix + '.suggested_scientific_name';
+
+                base.renderSiblingMarkers($wire.get(namePath));
+                $wire.watch(namePath, (name) => base.renderSiblingMarkers(name));
+
+                if (map) {
+                    Alpine.raw(map).on('pm:create', (e) => {
+                        if (e.shape === 'Marker') {
+                            const latlng = e.layer.getLatLng();
+                            Alpine.raw(map).removeLayer(e.layer);
+                            base.setState(latlng.lat, latlng.lng);
+                        }
+                    });
+                }
+            };
+
+            base.updatePickMarker = function () {
+                this.renderPickMarkers();
             };
 
             return base;
