@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,9 +19,9 @@ class IntroEventRecord extends Model
     protected function casts(): array
     {
         return [
+            'first_country' => 'array',
             'nis_status' => NisStatus::class,
             'establishment_status' => EstablishmentStatus::class,
-
         ];
     }
 

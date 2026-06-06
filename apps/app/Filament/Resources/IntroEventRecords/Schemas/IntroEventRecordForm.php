@@ -2,24 +2,33 @@
 
 namespace App\Filament\Resources\IntroEventRecords\Schemas;
 
+use App\Enums\AcforScale;
 use App\Enums\CbdPathwayCategory;
 use App\Enums\CbdPathwaySubcategory;
 use App\Enums\DataQuality;
 use App\Enums\EstablishmentStatus;
+use App\Enums\Habitat;
 use App\Enums\NisStatus;
 use App\Enums\PathwayType;
 use App\Enums\Subregion;
+use App\Filament\Forms\MultipleMarkersMapPicker;
+use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
+use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Slider;
+use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Icetalker\FilamentStepper\Forms\Components\Stepper;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 
 class IntroEventRecordForm
@@ -43,11 +52,10 @@ class IntroEventRecordForm
                                     ->required()
                                     ->columnSpan(2),
                                 Slider::make('first_introduction_year')
-                                    ->label(fn (Get $get) => 'Year of 1st Introduction: '.($get('first_introduction_year') ?? now()->year))
+                                    ->label('Year of 1st Introduction')
                                     ->minValue(1800)
                                     ->maxValue(now()->year)
                                     ->step(1)
-                                    ->default(now()->year)
                                     ->live()
                                     ->columnSpan(2),
                                 CountrySelect::make('first_country')
@@ -73,7 +81,6 @@ class IntroEventRecordForm
                                     ->relationship('literature', 'short_ref')
                                     ->multiple()
                                     ->preload()
-                                    ->required()
                                     ->label('Citations/Literature')
                                     ->columnSpan(3),
                             ])->columnSpanFull(),
@@ -105,8 +112,7 @@ class IntroEventRecordForm
                                             ->placeholder('Select Subregion')
                                             ->searchable()
                                             ->preload()
-                                            ->options(Subregion::class)
-                                            ->required(),
+                                            ->options(Subregion::class),
                                         Select::make('nis_status')
                                             ->label('Establishment Success')
                                             ->options(NisStatus::class),
@@ -140,12 +146,10 @@ class IntroEventRecordForm
                                     ->schema([
                                         Select::make('pathway_type')
                                             ->label('Pathway Type')
-                                            ->options(PathwayType::class)
-                                            ->required(),
+                                            ->options(PathwayType::class),
                                         Select::make('category')
                                             ->label('CBD Category')
                                             ->options(CbdPathwayCategory::class)
-                                            ->required()
                                             ->live()
                                             ->afterStateUpdated(fn ($set) => $set('subcategory', null)),
                                         Select::make('subcategory')
@@ -162,11 +166,76 @@ class IntroEventRecordForm
                                                 return collect(CbdPathwaySubcategory::cases())
                                                     ->filter(fn (CbdPathwaySubcategory $case) => str_starts_with($case->value, (string) $categoryValue.'.'))
                                                     ->mapWithKeys(fn (CbdPathwaySubcategory $case) => [$case->value => $case->getLabel()]);
-                                            })
-                                            ->required(),
+                                            }),
                                         Select::make('uncertainty')
                                             ->label('Uncertainty')
                                             ->options(DataQuality::class),
+                                    ]),
+                            ]),
+                        Tab::make('Occurrences')
+                            ->schema([
+                                Repeater::make('occurrences')
+                                    ->addActionLabel('Add Occurrence')
+                                    ->compact()
+                                    ->minItems(0)
+                                    ->relationship()
+                                    ->schema([
+                                        Hidden::make('user_id')
+                                            ->default(fn (): int => auth()->id()),
+                                        Grid::make(3)->schema([
+                                            Stepper::make('depth')
+                                                ->label('Depth (m)')
+                                                ->minValue(0)
+                                                ->maxValue(11000)
+                                                ->step(1),
+                                            Select::make('acfor_scale')
+                                                ->label('Abundance (ACFOR Scale)')
+                                                ->options(AcforScale::class)
+                                                ->native(false)
+                                                ->placeholder('Select ACFOR scale'),
+                                            Select::make('habitats')
+                                                ->label('Habitats')
+                                                ->multiple()
+                                                ->options(Habitat::class)
+                                                ->native(false)
+                                                ->placeholder('Select habitats'),
+                                        ])->columnSpanFull(),
+                                        DateTimePicker::make('observed_at')
+                                            ->label('Date & Time of Observation')
+                                            ->required()
+                                            ->default(now())
+                                            ->seconds(false)
+                                            ->displayFormat('Y-m-d H:i'),
+                                        MultipleMarkersMapPicker::make('location')
+                                            ->hiddenLabel()
+                                            ->height(250)
+                                            ->center([36, 14])
+                                            ->zoom(5)
+                                            ->tileLayersUrl(TileLayer::OpenStreetMap)
+                                            ->pickMarker(fn (Marker $marker) => $marker->red())
+                                            ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])
+                                            ->columnSpanFull(),
+                                        FileUpload::make('photo_paths')
+                                            ->label('Photos')
+                                            ->panelLayout('grid')
+                                            ->loadingIndicatorPosition('left')
+                                            ->panelAspectRatio('8:1')
+                                            ->removeUploadedFileButtonPosition('right')
+                                            ->uploadButtonPosition('left')
+                                            ->uploadProgressIndicatorPosition('left')
+                                            ->multiple()
+                                            ->image()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->disk('public')
+                                            ->directory('occurrences/photos')
+                                            ->visibility('public')
+                                            ->maxSize(5120)
+                                            ->imagePreviewHeight('40')
+                                            ->columnSpanFull(),
+                                        Textarea::make('notes')
+                                            ->label('Notes')
+                                            ->rows(3)
+                                            ->columnSpanFull(),
                                     ]),
                             ]),
                     ])
