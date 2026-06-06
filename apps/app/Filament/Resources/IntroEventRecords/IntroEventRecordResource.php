@@ -5,6 +5,7 @@ namespace App\Filament\Resources\IntroEventRecords;
 use App\Filament\Resources\IntroEventRecords\Pages\CreateIntroEventRecord;
 use App\Filament\Resources\IntroEventRecords\Pages\EditIntroEventRecord;
 use App\Filament\Resources\IntroEventRecords\Pages\ListIntroEventRecords;
+use App\Filament\Resources\IntroEventRecords\RelationManagers\OccurrencesRelationManager;
 use App\Filament\Resources\IntroEventRecords\Schemas\IntroEventRecordForm;
 use App\Filament\Resources\IntroEventRecords\Tables\IntroEventRecordsTable;
 use App\Models\IntroEventRecord;
@@ -45,7 +46,7 @@ class IntroEventRecordResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            OccurrencesRelationManager::class,
         ];
     }
 

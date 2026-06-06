@@ -48,11 +48,7 @@
         'w-full' => $footerPosition === 'sidebar' || $footerPosition === 'sidebar.footer'
         ])>&copy; {{ now()->format('Y') }} -
         @if($sentence)
-            @if($isHtmlSentence)
-                <span class="flex items-center gap-2">{!! $sentence !!}</span>
-            @else
-                {{ $sentence }}
-            @endif
+            <span class="flex items-center gap-2">{{ $sentence }}</span>
         @else
             {{ config('filament-easy-footer.app_name') ?? config('app.name') }}
         @endif

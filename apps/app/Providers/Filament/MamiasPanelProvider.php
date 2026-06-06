@@ -201,10 +201,12 @@ class MamiasPanelProvider extends PanelProvider
             ])
 
             ->userMenuItems([
+
                 Action::make('home')
                     ->label('Public site')
                     ->url(fn (): string => url('/'))
                     ->icon('heroicon-o-home'),
+
                 Action::make('decomposer')
                     ->label('Decomposer')
                     ->url(fn (): string => url('mamias/decompose'))

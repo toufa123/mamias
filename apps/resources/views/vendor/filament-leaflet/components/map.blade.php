@@ -28,15 +28,8 @@
 
     @push('styles')
         <style>
-            {!! $config['customStyles'] !!}
+            {{ $config['customStyles'] }}
         </style>
-    @endpush
-
-
-    @push('scripts')
-        <script>
-            {!! $config['customScripts'] !!}
-        </script>
     @endpush
     
 </div>

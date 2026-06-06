@@ -35,7 +35,7 @@ class DevDbSelfHealCommand extends Command
         $maxId = User::max('id') ?? 0;
         $nextId = $maxId + 1;
 
-        DB::statement("SELECT setval('users_id_seq', $nextId, false)");
+        DB::statement('SELECT setval(?, ?, false)', ['users_id_seq', $nextId]);
 
         $this->info("User sequence synced to next ID: {$nextId}");
     }

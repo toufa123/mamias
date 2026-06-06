@@ -7,6 +7,7 @@ namespace App\Filament\Resources\IntroEventRecords\Pages;
 use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 class EditIntroEventRecord extends EditRecord
 {
@@ -17,5 +18,20 @@ class EditIntroEventRecord extends EditRecord
         return [
             DeleteAction::make(),
         ];
+    }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
+    public function getContentTabLabel(): ?string
+    {
+        return 'Event Details';
+    }
+
+    public function getContentTabIcon(): string|\BackedEnum|Htmlable|null
+    {
+        return 'tabler-forms';
     }
 }

@@ -6,6 +6,8 @@ namespace App\Filament\Pages;
 
 use App\Filament\Widgets\CatalogueEnvironmentChart;
 use App\Filament\Widgets\CatalogueStatsWidget;
+use App\Filament\Widgets\PendingOccurrencesTableWidget;
+use App\Filament\Widgets\PendingOccurrencesWidget;
 use App\Filament\Widgets\PhylumByKingdomChart;
 use App\Filament\Widgets\SpeciesByKingdomChart;
 use App\Filament\Widgets\SpeciesByPhylumChart;
@@ -45,7 +47,12 @@ class Dashboard extends BaseDashboard
                         Tab::make('MAMIAS Data')
                             ->icon('tabler-database')
                             ->schema([
-
+                                Grid::make(4)->schema(
+                                    $this->getWidgetsSchemaComponents([
+                                        PendingOccurrencesWidget::class,
+                                    ])
+                                ),
+                                Livewire::make(PendingOccurrencesTableWidget::class),
                             ]),
                     ]),
             ]);

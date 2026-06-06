@@ -1,7 +1,7 @@
 # MAMIAS — Software Requirements Specification
 
-> **Version:** 1.1.0
-> **Date:** 2026-05-14
+> **Version:** 1.2.0
+> **Date:** 2026-06-06
 > **Status:** Active
 > **Language:** Français / English (code & terms)
 
@@ -28,6 +28,7 @@
 | **Health & Ops** | Health checks, backup manager, command runner | Implemented |
 | **Notifications** | Laravel notification system | Implemented |
 | **Spatial Data** | PostGIS extension enabled; spatial columns pending | Partial |
+| **Occurrences** | Public species occurrence reporting with lat/lon, depth, habitat, photos, linked to introduction events | Planned |
 | **Reporting** | CBD compliance reports, Darwin Core export | Planned |
 
 ### 1.3 Key Features
@@ -45,6 +46,7 @@
 | 9 | **System Health** | Spatie Health checks + backup manager + command runner | Done |
 | 10 | **Spatial Visualization** | PostGIS-powered geographic distribution mapping | Planned |
 | 11 | **CBD Reporting** | Compliance reports for Convention on Biological Diversity | Planned |
+| 12 | **Species Occurrence Reporting** | Report sightings of catalogue species with location, depth, habitat, and photos, linked to introduction events | Planned |
 
 ### 1.4 Definitions & Acronyms
 
@@ -233,6 +235,20 @@ There is no traditional REST API in v1.
 | FR-NOTIF-01 | Laravel notification system for users | Must | Done |
 | FR-NOTIF-02 | Email notifications for critical events | Should | Partial |
 
+### 3.11 Species Occurrence Reporting (FR-OCC)
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| FR-OCC-01 | Report occurrence of a catalogue species linked to an IntroEventRecord | Must | Planned |
+| FR-OCC-02 | Capture location (latitude/longitude) via interactive map with multiple markers | Must | Planned |
+| FR-OCC-03 | Capture depth, habitats, observed date, and notes | Must | Planned |
+| FR-OCC-04 | Upload photos (JPEG/PNG/WebP) with the occurrence report | Should | Planned |
+| FR-OCC-05 | Moderation workflow: pending → approved/rejected by admin | Must | Planned |
+| FR-OCC-06 | Approved occurrences visible to all authenticated users | Should | Planned |
+| FR-OCC-07 | Users can view/edit their own pending occurrences | Must | Planned |
+| FR-OCC-08 | Email notifications on approve/reject | Should | Planned |
+| FR-OCC-09 | Admin review resource with approve/reject actions and moderation notes | Must | Planned |
+
 ---
 
 ## 4. Non-Functional Requirements
@@ -370,6 +386,7 @@ There is no traditional REST API in v1.
 | `LiteratureType` | Literature reference types |
 | `Environment` | Marine, freshwater, terrestrial, brackish |
 | `DataQuality` | Data quality levels |
+| `OccurrenceStatus` | Species occurrence status (pending, approved, rejected) |
 
 ### 5.5 Infrastructure
 
@@ -407,6 +424,7 @@ There is no traditional REST API in v1.
 | `intro_event_records` | NIS introduction events | taxon_id (FK), first_introduction_year, first_country, nis_status, establishment_status, literature_id (FK) |
 | `subregion_records` | Per-subregion event data | intro_event_id (FK), subregion (enum), nis_status, first_arrival_year |
 | `pathway_records` | CBD pathway classification | intro_event_id (FK), category, subcategory, pathway_type, description |
+| `occurrences` | User-reported species sightings | user_id (FK), intro_event_record_id (FK), location (JSON), depth, habitats (JSON), photo_paths (JSON), observed_at, status, moderation_notes |
 
 **User & Auth:**
 
@@ -449,6 +467,7 @@ There is no traditional REST API in v1.
 | **IntroEventRecordResource** | Introduction events with nested subregion + pathway records |
 | **LiteratureResource** | References with DOI auto-fetch |
 | **UserResource** | User management with role assignment |
+| **OccurrenceResource** | Species occurrence review with approve/reject workflow |
 | **HealthCheckResults** | System health monitoring page |
 | **BackupManager** | Database/file backup management |
 
@@ -514,6 +533,7 @@ There is no traditional REST API in v1.
 - [ ] PostGIS spatial queries for geographic filtering
 - [ ] Darwin Core format export
 - [ ] CBD compliance report generation
+- [ ] Species occurrence reporting with moderation workflow
 
 ### 9.3 Non-Functional
 

@@ -75,11 +75,11 @@ class Literature extends Model
             }
 
             if ($driver === 'pgsql') {
-                $query->orderByRaw("CAST(SUBSTRING($column, $start) AS INTEGER) DESC");
+                $query->orderByRaw('CAST(SUBSTRING(code, ?) AS INTEGER) DESC', [$start]);
             } elseif ($driver === 'sqlite') {
-                $query->orderByRaw("CAST(SUBSTR($column, $start) AS INTEGER) DESC");
+                $query->orderByRaw('CAST(SUBSTR(code, ?) AS INTEGER) DESC', [$start]);
             } else {
-                $query->orderByRaw("CAST(SUBSTRING($column, $start) AS UNSIGNED) DESC");
+                $query->orderByRaw('CAST(SUBSTRING(code, ?) AS UNSIGNED) DESC', [$start]);
             }
 
             $lastRecord = $query->lockForUpdate()->first();

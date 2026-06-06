@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\MyReferences;
+use App\Livewire\MySpeciesReports;
 use App\Livewire\MySuggestions;
 use App\Livewire\PublicProfile;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::get('/profile', PublicProfile::class)
 Route::get('/references', MyReferences::class)
     ->middleware(['auth', 'verified'])
     ->name('references');
+
+Route::get('/my-species-reports', MySpeciesReports::class)
+    ->middleware(['auth', 'verified'])
+    ->name('my-species-reports');
 
 Route::get('/my-suggestions', MySuggestions::class)
     ->middleware(['auth', 'verified'])

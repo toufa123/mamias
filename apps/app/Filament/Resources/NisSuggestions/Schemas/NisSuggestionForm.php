@@ -2,23 +2,18 @@
 
 namespace App\Filament\Resources\NisSuggestions\Schemas;
 
-use App\Enums\AcforScale;
-use App\Enums\Habitat;
-use App\Filament\Forms\MultipleMarkersMapPicker;
 use App\Filament\Resources\Literatures\Schemas\LiteratureForm;
 use App\Services\WormsService;
-use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
-use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Icetalker\FilamentStepper\Forms\Components\Stepper;
 
 class NisSuggestionForm
 {
@@ -34,8 +29,47 @@ class NisSuggestionForm
             Grid::make(3)->schema(self::getTaxonFields())->columnSpanFull(),
             Hidden::make('worms_status'),
             Hidden::make('kingdom'),
-            ...self::getLocationAndMediaFields(),
-            ...self::getDetailFields(),
+            Tabs::make('Details')
+                ->columnSpanFull()
+                ->tabs([
+                    Tab::make('Photos')
+                        ->schema([
+                            FileUpload::make('photo_paths')
+                                ->label('Photos')
+                                ->required()
+                                ->panelLayout('grid')
+                                ->loadingIndicatorPosition('left')
+                                ->panelAspectRatio('8:1')
+                                ->removeUploadedFileButtonPosition('right')
+                                ->uploadButtonPosition('left')
+                                ->uploadProgressIndicatorPosition('left')
+                                ->multiple()
+                                ->image()
+                                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                ->disk('public')
+                                ->directory('suggestions/photos')
+                                ->visibility('public')
+                                ->maxSize(5120)
+                                ->imagePreviewHeight('40')
+                                ->columnSpanFull(),
+                        ]),
+                    Tab::make('Notes')
+                        ->schema([
+                            Textarea::make('notes')
+                                ->label('Notes')
+                                ->rows(5)
+                                ->columnSpanFull(),
+                            Select::make('literatures')
+                                ->label('Bibliographic References')
+                                ->relationship('literatures', 'short_ref')
+                                ->multiple()
+                                ->preload()
+                                ->searchable()
+                                ->createOptionForm([LiteratureForm::getBibliographicReferenceSection()])
+                                ->hintIcon('tabler-info-circle', tooltip: 'Select existing references or create a new one with DOI auto-fill.')
+                                ->columnSpanFull(),
+                        ]),
+                ]),
         ];
     }
 
@@ -61,100 +95,7 @@ class NisSuggestionForm
                 ->label('Aphia ID')
                 ->readOnly()
                 ->dehydrated(true),
-            Stepper::make('depth')
-                ->label('Depth (m)')
-                ->minValue(0)
-                ->maxValue(11000)
-                ->step(1),
-            Select::make('acfor_scale')
-                ->label('Abundance (ACFOR Scale)')
-                ->options(fn (Get $get): array => self::getAcforOptions($get('kingdom')))
-                ->native(false)
-                ->live()
-                ->placeholder('Select ACFOR scale'),
-            Select::make('habitats')
-                ->label('Habitats')
-                ->multiple()
-                ->options(Habitat::class)
-                ->native(false)
-                ->placeholder('Select habitats'),
         ];
-    }
-
-    public static function getDetailFields(): array
-    {
-        return [
-            Section::make('Supporting documents')
-                ->schema([
-                    FileUpload::make('photo_paths')
-                        ->label('Photos')
-                        ->required()
-                        ->panelLayout('grid')
-                        ->loadingIndicatorPosition('left')
-                        ->panelAspectRatio('8:1')
-                        ->removeUploadedFileButtonPosition('right')
-                        ->uploadButtonPosition('left')
-                        ->uploadProgressIndicatorPosition('left')
-                        ->multiple()
-                        ->image()
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                        ->disk('public')
-                        ->directory('suggestions/photos')
-                        ->visibility('public')
-                        ->maxSize(5120)
-                        ->imagePreviewHeight('40')
-                        ->columnSpanFull(),
-                    Select::make('literatures')
-                        ->label('Bibliographic References')
-                        ->relationship('literatures', 'short_ref')
-                        ->multiple()
-                        ->preload()
-                        ->searchable()
-                        ->createOptionForm([LiteratureForm::getBibliographicReferenceSection()])
-                        ->hintIcon('tabler-info-circle', tooltip: 'Select existing references or create a new one with DOI auto-fill.')
-                        ->columnSpanFull(),
-                ])
-                ->compact()
-                ->columnSpanFull(),
-        ];
-    }
-
-    public static function getLocationAndMediaFields(): array
-    {
-        return [
-            Section::make('Location')
-                ->schema([
-                    MultipleMarkersMapPicker::make('location')
-                        ->hiddenLabel()
-                        ->height(400)
-                        ->center([36, 14])
-                        ->zoom(5)
-                        ->tileLayersUrl(TileLayer::OpenStreetMap)
-                        ->pickMarker(fn (Marker $marker) => $marker->red())
-                        ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])
-                        ->columnSpanFull(),
-                ])
-                ->compact()
-                ->columnSpanFull(),
-        ];
-    }
-
-    public static function getAcforOptions(?string $kingdom): array
-    {
-        return collect(AcforScale::cases())->mapWithKeys(fn (AcforScale $scale) => [
-            $scale->value => $scale->getLabel().self::getAcforDescriptionSuffix($kingdom, $scale),
-        ])->toArray();
-    }
-
-    public static function getAcforDescriptionSuffix(?string $kingdom, AcforScale $scale): string
-    {
-        if (! $kingdom) {
-            return '';
-        }
-
-        $isPlant = in_array($kingdom, ['Plantae', 'Chromista'], true);
-
-        return ' — '.($isPlant ? $scale->getPlantDescription() : $scale->getAnimalDescription());
     }
 
     public static function searchWoRMS(string $search, WormsService $wormsService): array

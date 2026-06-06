@@ -43,4 +43,9 @@ class IntroEventRecord extends Model
     {
         return $this->hasMany(PathwayRecord::class, 'intro_event_id');
     }
+
+    public function occurrences(): HasMany
+    {
+        return $this->hasMany(Occurrence::class, 'intro_event_record_id');
+    }
 }

@@ -221,4 +221,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     {
         return $this->hasMany(IntroEventRecord::class, 'created_by');
     }
+
+    public function occurrences(): HasMany
+    {
+        return $this->hasMany(Occurrence::class);
+    }
 }

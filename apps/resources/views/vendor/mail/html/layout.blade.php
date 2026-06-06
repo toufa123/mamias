@@ -23,7 +23,7 @@ width: 100% !important;
 }
 }
 </style>
-{!! $head ?? '' !!}
+{{ $head ?? '' }}
 </head>
 <body>
 
@@ -49,7 +49,7 @@ width: 100% !important;
 </td>
 </tr>
 
-{!! $footer ?? '' !!}
+{{ $footer ?? '' }}
 </table>
 </td>
 </tr>
