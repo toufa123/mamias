@@ -14,6 +14,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Process\ProcessResult;
 use Illuminate\Support\Collection;
@@ -89,18 +91,27 @@ class BackupManager extends Page implements HasTable
                 }
             }
 
+            $pathParts = explode('/', $file);
+            $month = count($pathParts) >= 2 ? $pathParts[1] : null;
+
+            if (isset($filters['month']['value']) && filled($filters['month']['value']) && $month !== $filters['month']['value']) {
+                continue;
+            }
+
             $backups[] = [
                 '__key' => $file,
                 'name' => $file,
+                'year' => count($pathParts) >= 2 ? $pathParts[0] : null,
+                'month' => $month,
                 'size' => $this->formatBytes($size),
                 'size_bytes' => $size,
-                'date' => $lastModifiedDate->format('Y-m-d H:i'),
+                'date' => $lastModifiedDate->format('Y-m'),
                 'last_modified' => $lastModified,
                 'path' => $file,
             ];
         }
 
-        if ($sortColumn && in_array($sortColumn, ['name', 'size', 'date'], true)) {
+        if ($sortColumn && in_array($sortColumn, ['name', 'size', 'date', 'year', 'month'], true)) {
             $sortField = match ($sortColumn) {
                 'size' => 'size_bytes',
                 'date' => 'last_modified',
@@ -119,6 +130,20 @@ class BackupManager extends Page implements HasTable
         }
 
         return $backups;
+    }
+
+    public function getBackupMonths(): array
+    {
+        $files = Storage::disk('backups')->allFiles('');
+
+        return collect($files)
+            ->filter(fn (string $file): bool => str_ends_with($file, '.dmp') || str_ends_with($file, '.sql'))
+            ->map(fn (string $file): ?string => str($file)->contains('/') ? str($file)->after('/')->before('/')->toString() : null)
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
     }
 
     private function formatBytes(int $bytes): string
@@ -160,9 +185,16 @@ class BackupManager extends Page implements HasTable
                     ->label('Size')
                     ->sortable(),
                 TextColumn::make('date')
-                    ->label('Date')
+                    ->label('Year-Month')
                     ->sortable(),
             ])
+            ->groups([
+                Group::make('year')
+                    ->label('Year'),
+                Group::make('month')
+                    ->label('Month'),
+            ])
+            ->defaultGroup('year')
             ->actions([
                 Action::make('download')
                     ->label('Download')
@@ -189,6 +221,8 @@ class BackupManager extends Page implements HasTable
                         DatePicker::make('date_from')->label('From'),
                         DatePicker::make('date_until')->label('Until'),
                     ]),
+                SelectFilter::make('month')
+                    ->options(fn (): array => $this->getBackupMonths()),
             ])
             ->headerActions([
                 $this->backupAction(),

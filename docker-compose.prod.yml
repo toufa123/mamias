@@ -100,8 +100,8 @@ services:
       DOCKER_BACKUP_CONTAINER: "${NAME:-mamias}_db_backup"
 
     ports:
-      - "${APP_HTTPS_PORT:-443}:8443"
-      - "${APP_HTTPS_PORT:-443}:8443/udp"
+      - "${APP_HTTPS_PORT:-7443}:8443"
+      - "${APP_HTTPS_PORT:-7443}:8443/udp"
 
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:8443/up"]

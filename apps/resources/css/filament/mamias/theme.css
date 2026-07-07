@@ -123,4 +123,21 @@
 .fi-ta-cell > div:has(.flex) {
     @apply py-0.5
 }
-@source '../../../../vendor/agencetwogether/filament-alert-box/resources/views/**/*';
+
+/* ── Stepper ───────────────────────────────────────────── */
+.it-stepper-btn-decrement,
+.it-stepper-btn-increment {
+    @apply text-white;
+    background-color: var(--primary-500) !important;
+}
+
+.it-stepper-btn-decrement:hover,
+.it-stepper-btn-increment:hover {
+    background-color: var(--primary-600) !important;
+}
+
+.it-stepper-btn-decrement:disabled,
+.it-stepper-btn-increment:disabled {
+    background-color: var(--primary-300, #5eeaff) !important;
+    opacity: 0.6;
+}

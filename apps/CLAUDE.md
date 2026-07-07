@@ -98,7 +98,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Always use curly braces for control structures, even for single-line bodies.
 - Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
 - Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Follow existing application Enum naming conventions.
+- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
 
@@ -107,6 +107,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Deployment
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
+
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
 
 === laravel/core rules ===
 
@@ -397,5 +404,50 @@ livewire(ListUsers::class)
   - `$navigationIcon`: `protected static string | BackedEnum | null` (not `?string`)
   - `$navigationGroup`: `protected static string | UnitEnum | null` (not `?string`)
   - `$view`: `protected string` (not `protected static string`) on `Page` and `Widget` classes
+
+=== jeffersongoncalves/filament-refresh-sidebar rules ===
+
+## Filament Refresh Sidebar
+
+A lightweight Filament plugin that keeps sidebar navigation in sync by automatically refreshing when database notifications arrive via Laravel Echo, or manually via a dispatched Livewire event.
+
+### Installation
+
+<code-snippet name="Install the plugin" lang="bash">
+composer require jeffersongoncalves/filament-refresh-sidebar
+</code-snippet>
+
+### Register Plugin
+
+<code-snippet name="Register in PanelProvider" lang="php">
+use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->plugins([
+            RefreshSidebarPlugin::make(),
+        ]);
+}
+</code-snippet>
+
+### Manual Refresh from Livewire
+
+<code-snippet name="Dispatch refresh-sidebar event" lang="php">
+$this->dispatch('refresh-sidebar');
+</code-snippet>
+
+### Features
+
+- Automatic sidebar refresh when database notifications arrive via Laravel Echo
+- Manual sidebar refresh by dispatching the `refresh-sidebar` Livewire event
+- Zero configuration after plugin registration
+- Injects a script via `PanelsRenderHook::SCRIPTS_AFTER`
+
+### Best Practices
+
+- Ensure Laravel Echo is configured for automatic notification-based refresh
+- Dispatch `refresh-sidebar` after creating, updating, or deleting records that affect navigation badges
+- No config files or migrations needed -- works out of the box
 
 </laravel-boost-guidelines>

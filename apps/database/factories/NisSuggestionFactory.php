@@ -23,6 +23,7 @@ class NisSuggestionFactory extends Factory
             'authority' => $this->faker->optional()->lastName(),
             'worms_status' => 'accepted',
             'suggested_common_name' => $this->faker->optional()->word(),
+            'location' => [['lat' => $this->faker->latitude(30, 46), 'lng' => $this->faker->longitude(-6, 36)]],
             'depth' => $this->faker->optional()->randomFloat(2, 0, 500),
             'photo_paths' => null,
             'document_paths' => null,

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\Subregion;
+use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Services\WhatsAppService;
 use App\Services\WormsService;
 use Filament\Actions\Action;
@@ -23,7 +24,6 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
-use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Nakanakaii\FilamentCountries\Forms\Components\PhoneInput;
 
 class PublicProfile extends Component implements HasActions, HasForms
@@ -132,7 +132,7 @@ class PublicProfile extends Component implements HasActions, HasForms
                                         'default' => 12,
                                         'sm' => 3,
                                     ]),
-                                CountrySelect::make('country')
+                                CountrySelectWithMedPriority::make('country')
                                     ->label('Country')
                                     ->displayFlags(true)
                                     ->searchable()
@@ -211,7 +211,7 @@ class PublicProfile extends Component implements HasActions, HasForms
                                             })
                                             ->searchable()
                                             ->placeholder('Select subregions...'),
-                                        CountrySelect::make('countries')
+                                        CountrySelectWithMedPriority::make('countries')
                                             ->label('Countries of Interest')
                                             ->displayFlags(true)
                                             ->searchable()

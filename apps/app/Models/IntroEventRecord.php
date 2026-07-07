@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Mattiverse\Userstamps\Traits\Userstamps;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable(['taxon_id', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes'])]
 class IntroEventRecord extends Model
 {
-    use HasFactory, Userstamps;
+    use HasFactory, LogsActivity, Userstamps;
 
     protected function casts(): array
     {
@@ -23,6 +25,14 @@ class IntroEventRecord extends Model
             'nis_status' => NisStatus::class,
             'establishment_status' => EstablishmentStatus::class,
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
     }
 
     public function taxon(): BelongsTo

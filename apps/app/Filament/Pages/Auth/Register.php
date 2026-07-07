@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Pages\Auth;
 
 use App\Filament\Forms\Components\CapField;
+use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Filament\Forms\Components\HoneypotField;
 use App\Filament\Pages\Auth\Concerns\ValidatesCapToken;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
@@ -14,7 +15,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
 use Spatie\Permission\Models\Role;
@@ -91,7 +91,7 @@ class Register extends BaseRegister
 
     protected function getCountryComponent(): Select
     {
-        return CountrySelect::make('country')
+        return CountrySelectWithMedPriority::make('country')
             ->displayFlags(true)
             ->required();
     }

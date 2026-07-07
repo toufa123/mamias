@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Occurrences\Schemas;
 
 use App\Enums\AcforScale;
 use App\Enums\Habitat;
+use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Filament\Forms\MultipleMarkersMapPicker;
 use App\Models\IntroEventRecord;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
@@ -20,7 +21,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
-use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 
 class OccurrenceForm
 {
@@ -35,7 +35,7 @@ class OccurrenceForm
         return [
             Hidden::make('kingdom'),
             Grid::make(3)->schema([
-                CountrySelect::make('country')
+                CountrySelectWithMedPriority::make('country')
                     ->label('Country')
                     ->dehydrated(false)
                     ->placeholder('Filter species by country…')

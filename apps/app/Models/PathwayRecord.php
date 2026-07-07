@@ -11,11 +11,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Mattiverse\Userstamps\Traits\Userstamps;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable(['intro_event_id', 'category', 'subcategory', 'pathway_type', 'description', 'uncertainty'])]
 class PathwayRecord extends Model
 {
-    use HasFactory, Userstamps;
+    use HasFactory, LogsActivity, Userstamps;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
 
     public function introEvent(): BelongsTo
     {

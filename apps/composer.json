@@ -16,8 +16,7 @@
     "azgasim/filament-unsaved-changes-modal": "^1.0",
     "bezhansalleh/filament-shield": "^4.2",
     "binarybuilds/filament-command-runner": "^1.2",
-   
-    "clcbws/laravel-schema-sentinel": "^1.6",
+    "clcbws/laravel-schema-sentinel": "2.0.0",
     "clickbar/laravel-magellan": "*",
     "cms-multi/filament-clear-cache": "^3.0",
     "daljo25/filament-dependency-manager": "^5.0",
@@ -38,6 +37,7 @@
     "laravel/tinker": "^3.0",
     "livewire/livewire": "^4.3",
     "lubusin/laravel-decomposer": "^1.4",
+    "mantraideas/laravel-env-doctor": "^1.0",
     "marjose123/filament-lockscreen": "*",
     "mckenziearts/laravel-notify": "^3.2",
     "nakanakaii/filament-countries": "^1.0",
@@ -46,13 +46,16 @@
     "promethys/revive": "*",
     "pxlrbt/filament-environment-indicator": "^3.5",
     "pxlrbt/filament-spotlight": "^2.1",
-     "secondnetwork/blade-tabler-icons": "^3.41",
-     "shuvroroy/filament-spatie-laravel-health": "^3.3",
+    "secondnetwork/blade-tabler-icons": "^3.41",
+    "shuvroroy/filament-spatie-laravel-health": "^3.3",
+    "spatie/laravel-activitylog": "^5.0",
     "spatie/laravel-honeypot": "^4.7",
-    "wildside/userstamps": "^4.0"
+    "wildside/userstamps": "^4.0",
+    "yousefaman/filament-modal-repeater": "^1.1"
   } ,
   "require-dev": {
     "andreapollastri/checkpoint": "^1.0",
+    "baspa/filament-canary": "^1.2",
     "fakerphp/faker": "^1.23",
     "fruitcake/laravel-debugbar": "^4.2",
     "laramint/laravel-brain": "*",
@@ -130,8 +133,7 @@
     "allow-plugins": {
       "pestphp/pest-plugin": true ,
       "php-http/discovery": true
-    },
-    "disable-tls": true
+    }
   } ,
   "minimum-stability": "stable" ,
   "prefer-stable": true

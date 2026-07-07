@@ -37,7 +37,7 @@ it('returns null when API request fails', function () {
     expect($service->fetchEasinId('Caulerpa cylindracea'))->toBeNull();
 });
 
-it('extracts EASIN ID from response with EASINID key', function () {
+it('extracts EASIN ID from response with uppercase EASINID key', function () {
     Http::fake([
         'easin.jrc.ec.europa.eu/*' => Http::response([
             ['EASINID' => 'SP000123'],

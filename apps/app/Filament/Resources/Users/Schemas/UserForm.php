@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Enums\Subregion;
+use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Services\WhatsAppService;
 use App\Services\WormsService;
 use Filament\Actions\Action;
@@ -19,7 +20,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 use Nakanakaii\FilamentCountries\Forms\Components\PhoneInput;
 
 class UserForm
@@ -110,7 +110,7 @@ class UserForm
                                             ),
                                         Hidden::make('has_whatsapp'),
                                     ]),
-                                CountrySelect::make('country')
+                                CountrySelectWithMedPriority::make('country')
                                     ->label('Country')
                                     ->displayFlags(true)
                                     ->searchable()
@@ -208,7 +208,7 @@ class UserForm
                                             ->hintIcon('heroicon-m-question-mark-circle',
                                                 tooltip: 'Select broad geographic regions of interest.')
                                             ->helperText('Select broad geographic regions of interest.'),
-                                        CountrySelect::make('countries')
+                                        CountrySelectWithMedPriority::make('countries')
                                             ->label('Countries?')
                                             ->displayFlags(true)
                                             ->searchable()

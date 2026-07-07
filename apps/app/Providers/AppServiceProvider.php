@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Filament\Auth\Responses\EmailVerificationResponse;
 use App\Filament\Auth\Responses\LoginResponse;
 use App\Filament\Auth\Responses\RegistrationResponse;
+use App\Listeners\LogRoleChangeListener;
 use App\Listeners\TaxonImportCompletedListener;
 use App\Livewire\ImportWizard;
 use Filament\Actions\Imports\Events\ImportCompleted;
@@ -24,6 +25,10 @@ use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
+use Spatie\Permission\Events\PermissionAttachedEvent;
+use Spatie\Permission\Events\PermissionDetachedEvent;
+use Spatie\Permission\Events\RoleAttachedEvent;
+use Spatie\Permission\Events\RoleDetachedEvent;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -65,6 +70,11 @@ class AppServiceProvider extends ServiceProvider
         Livewire::component('filament-import-wizard', ImportWizard::class);
 
         Event::listen(ImportCompleted::class, TaxonImportCompletedListener::class);
+
+        Event::listen(
+            [RoleAttachedEvent::class, RoleDetachedEvent::class, PermissionAttachedEvent::class, PermissionDetachedEvent::class],
+            LogRoleChangeListener::class,
+        );
 
         Health::checks([
             OptimizedAppCheck::new(),

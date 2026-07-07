@@ -24,6 +24,8 @@ class NisSuggestionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Species Suggestions';
 
+    protected static ?int $navigationSort = 4;
+
     protected static string|null|\UnitEnum $navigationGroup = 'MAMIAS database';
 
     public static function table(Table $table): Table

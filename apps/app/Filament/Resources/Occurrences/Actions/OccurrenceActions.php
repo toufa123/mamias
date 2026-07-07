@@ -35,6 +35,17 @@ class OccurrenceActions
                     'moderation_notes' => $data['moderation_notes'] ?? null,
                 ]);
 
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($record)
+                    ->withProperties([
+                        'old_status' => OccurrenceStatus::PENDING->value,
+                        'new_status' => OccurrenceStatus::APPROVED->value,
+                        'moderation_notes' => $data['moderation_notes'] ?? null,
+                    ])
+                    ->event('approved')
+                    ->log('approved');
+
                 $record->user?->notify(new OccurrenceApproved($record));
 
                 Notification::make()
@@ -65,6 +76,17 @@ class OccurrenceActions
                     'status' => OccurrenceStatus::REJECTED,
                     'moderation_notes' => $data['moderation_notes'],
                 ]);
+
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($record)
+                    ->withProperties([
+                        'old_status' => OccurrenceStatus::PENDING->value,
+                        'new_status' => OccurrenceStatus::REJECTED->value,
+                        'moderation_notes' => $data['moderation_notes'],
+                    ])
+                    ->event('rejected')
+                    ->log('rejected');
 
                 $record->user?->notify(new OccurrenceRejected($record));
 

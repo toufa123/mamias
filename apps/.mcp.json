@@ -1,12 +1,12 @@
 {
-  "mcpServers": {
-    "laravel-boost": {
-      "command": "wsl.exe" ,
-      "args": [
-        "/home/toufa/.config/herd-lite/bin/php" ,
-        "/home/toufa/dev/2026/apps/mamias/apps/artisan" ,
-        "boost:mcp"
-      ]
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "wsl.exe",
+            "args": [
+                "/usr/bin/php8.5",
+                "/home/toufa/dev/2026/apps/mamias/apps/artisan",
+                "boost:mcp"
+            ]
+        }
     }
-  }
 }

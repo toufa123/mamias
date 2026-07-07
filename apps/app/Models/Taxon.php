@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Mattiverse\Userstamps\Traits\Userstamps;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * Class Taxon
@@ -72,7 +74,7 @@ use Mattiverse\Userstamps\Traits\Userstamps;
 #[Table('taxas')]
 class Taxon extends Model
 {
-    use HasFactory, SoftDeletes, Userstamps;
+    use HasFactory, LogsActivity, SoftDeletes, Userstamps;
 
     protected static function booted(): void
     {
@@ -94,6 +96,15 @@ class Taxon extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->logExcept(['synonyms_data', 'fetched_at']);
     }
 
     public function introEvents(): HasMany

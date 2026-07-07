@@ -66,8 +66,8 @@ services :
 
     # ── Ports ────────────────────────────────────────────────────────
     ports :
-      - "127.0.0.1:443:8443"        # HTTPS — local-only TLS / HTTP 1.1 / HTTP 2
-      - "127.0.0.1:443:8443/udp"    # HTTP/3 (QUIC) local-only
+      - "127.0.0.1:7443:8443"        # HTTPS — local-only TLS / HTTP 1.1 / HTTP 2
+      - "127.0.0.1:7443:8443/udp"    # HTTP/3 (QUIC) local-only
 
     # ── Runtime filesystem ───────────────────────────────────────────
     volumes :

@@ -14,6 +14,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Mattiverse\Userstamps\Traits\Userstamps;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * Class Literature
@@ -43,7 +45,15 @@ use Mattiverse\Userstamps\Traits\Userstamps;
 #[ObservedBy([LiteratureObserver::class])]
 class Literature extends Model
 {
-    use HasFactory, Userstamps;
+    use HasFactory, LogsActivity, Userstamps;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
 
     public function scopeForUser($query, $user): Builder
     {

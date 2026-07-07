@@ -66,6 +66,16 @@ class NisSuggestionActions
                     'rejection_reason' => null,
                 ]);
 
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($record)
+                    ->withProperties([
+                        'taxon_created' => ! $alreadyExists,
+                        'scientificname' => $data['scientificname'],
+                    ])
+                    ->event('approved')
+                    ->log('approved');
+
                 $record->user?->notify(new NisSuggestionApproved($record));
 
                 $body = $alreadyExists
@@ -101,6 +111,15 @@ class NisSuggestionActions
                     'status' => LiteratureStatus::REJECTED,
                     'rejection_reason' => $data['rejection_reason'],
                 ]);
+
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($record)
+                    ->withProperties([
+                        'rejection_reason' => $data['rejection_reason'],
+                    ])
+                    ->event('rejected')
+                    ->log('rejected');
 
                 $record->user?->notify(new NisSuggestionRejected($record));
 

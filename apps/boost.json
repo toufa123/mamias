@@ -2,7 +2,10 @@
     "agents": [
         "claude_code",
         "copilot",
-        "junie"
+        "junie",
+        "antigravity",
+        "opencode",
+        "zed"
     ],
     "cloud": false,
     "guidelines": true,
@@ -10,7 +13,9 @@
     "nightwatch": false,
     "packages": [
         "filament/filament",
-        "fruitcake/laravel-debugbar"
+        "fruitcake/laravel-debugbar",
+        "jeffersongoncalves/filament-refresh-sidebar",
+        "laramint/laravel-brain"
     ],
     "sail": false,
     "skills": [
@@ -18,6 +23,8 @@
         "livewire-development",
         "pest-testing",
         "tailwindcss-development",
-        "debug-using-debugbar"
+        "filament-refresh-sidebar-development",
+        "debug-using-debugbar",
+        "laravel-brain"
     ]
 }

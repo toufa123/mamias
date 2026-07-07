@@ -48,6 +48,7 @@ use lockscreen\FilamentLockscreen\Lockscreen;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use YousefAman\ModalRepeater\ModalRepeaterPlugin;
 
 class MamiasPanelProvider extends PanelProvider
 {
@@ -146,6 +147,7 @@ class MamiasPanelProvider extends PanelProvider
                     ->modalIconColor('danger')
                     ->stayButtonColor('gray')
                     ->leaveButtonColor('warning'),
+                ModalRepeaterPlugin::make(),
                 FilamentShieldPlugin::make()
                     ->navigationGroup('Use management')
                     ->navigationSort(-1)
@@ -218,6 +220,7 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('Use management'),
                 NavigationGroup::make('MAMIAS database'),
                 NavigationGroup::make('System'),
+                NavigationGroup::make('Quality'),
                 NavigationGroup::make('Settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

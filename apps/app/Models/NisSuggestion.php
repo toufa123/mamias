@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Casts\CoordinatesCast;
 use App\Enums\AcforScale;
 use App\Enums\LiteratureStatus;
+use App\Models\Traits\HasSpatialLocation;
+use Clickbar\Magellan\Data\Geometries\Point;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Mattiverse\Userstamps\Traits\Userstamps;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property int $id
@@ -48,6 +52,7 @@ use Mattiverse\Userstamps\Traits\Userstamps;
     'worms_status',
     'suggested_common_name',
     'location',
+    'location_point',
     'depth',
     'kingdom',
     'acfor_scale',
@@ -61,7 +66,7 @@ use Mattiverse\Userstamps\Traits\Userstamps;
 ])]
 class NisSuggestion extends Model
 {
-    use HasFactory, SoftDeletes, Userstamps;
+    use HasFactory, HasSpatialLocation, LogsActivity, SoftDeletes, Userstamps;
 
     protected function casts(): array
     {
@@ -76,6 +81,15 @@ class NisSuggestion extends Model
             'depth' => 'float',
             'location' => CoordinatesCast::class,
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->logExcept(['location_point']);
     }
 
     public function user(): BelongsTo
@@ -111,6 +125,17 @@ class NisSuggestion extends Model
                     $suggestion->$field = strip_tags($suggestion->$field);
                 }
             }
+
+            if (! $suggestion->isDirty('location')) {
+                return;
+            }
+
+            $coords = $suggestion->location;
+            $first = is_array($coords) ? ($coords[0] ?? null) : $coords;
+
+            $suggestion->location_point = $first && isset($first['lat'], $first['lng'])
+                ? Point::makeGeodetic((float) $first['lat'], (float) $first['lng'])
+                : null;
         });
     }
 }

@@ -50,6 +50,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable([
@@ -71,7 +73,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable;
+    use HasFactory, HasRoles, LogsActivity, Notifiable;
 
     /**
      * Bootstrap the model - run during model initialization.
@@ -195,6 +197,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
      *
      * @return array<string, string> Type cast mapping for model attributes
      */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['first_name', 'last_name', 'title', 'email', 'phone', 'country', 'taxonomic_area', 'subregions', 'countries', 'bio', 'has_whatsapp'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
+
     protected function casts(): array
     {
         return [
