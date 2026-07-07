@@ -220,7 +220,6 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('Use management'),
                 NavigationGroup::make('MAMIAS database'),
                 NavigationGroup::make('System'),
-                NavigationGroup::make('Quality'),
                 NavigationGroup::make('Settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

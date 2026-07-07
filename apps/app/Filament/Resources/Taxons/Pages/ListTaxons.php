@@ -59,6 +59,47 @@ class ListTaxons extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('catalogue_status', $value));
         }
 
+        $qualityIssuesCount = Taxon::query()
+            ->where(function (Builder $q) {
+                $q->whereNull('fetched_at')
+                    ->orWhere('fetched_at', '<', now()->subDays(90))
+                    ->orWhere('catalogue_status', '!=', Catalogue_Status::checked_accepted->value);
+            })
+            ->count();
+
+        $tabs['quality_issues'] = Tab::make('Quality Issues')
+            ->icon('tabler-alert-triangle')
+            ->badgeColor('warning')
+            ->badge($qualityIssuesCount)
+            ->modifyQueryUsing(fn (Builder $query) => $query->where(function (Builder $q) {
+                $q->whereNull('fetched_at')
+                    ->orWhere('fetched_at', '<', now()->subDays(90))
+                    ->orWhere('catalogue_status', '!=', Catalogue_Status::checked_accepted->value);
+            }));
+
+        $duplicateNames = Taxon::query()
+            ->select('scientificname')
+            ->whereNotNull('scientificname')
+            ->groupBy('scientificname')
+            ->havingRaw('COUNT(*) > 1')
+            ->pluck('scientificname');
+
+        $duplicatesCount = Taxon::query()
+            ->whereIn('scientificname', $duplicateNames)
+            ->count();
+
+        $tabs['duplicates'] = Tab::make('Duplicates')
+            ->icon('tabler-copy')
+            ->badgeColor('danger')
+            ->badge($duplicatesCount)
+            ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('scientificname', function ($sub) {
+                $sub->select('scientificname')
+                    ->from('taxas')
+                    ->whereNotNull('scientificname')
+                    ->groupBy('scientificname')
+                    ->havingRaw('COUNT(*) > 1');
+            }));
+
         $tabs['trashed'] = Tab::make('Trashed')
             ->icon('tabler-trash')
             ->badgeColor('danger')

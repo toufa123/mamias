@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Taxons\Tables;
 
+use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
 use App\Jobs\FetchEasinIdsJob;
 use App\Jobs\FetchTaxaFromWormsJob;
@@ -84,6 +85,64 @@ class TaxonTable
                         ->modalWidth('7xl')
                         ->modalHeading(fn ($record) => trim(($record->scientificname ?? '').' '.($record->authority ?? '')) ?: 'Taxon'),
                     EditAction::make(),
+                    Action::make('sync_worms')
+                        ->label('Sync WoRMS')
+                        ->icon('tabler-cloud-download')
+                        ->color('info')
+                        ->visible(fn (Taxon $record): bool => $record->fetched_at === null || $record->fetched_at?->lt(now()->subDays(90)))
+                        ->requiresConfirmation()
+                        ->modalHeading('Sync with WoRMS')
+                        ->modalDescription(fn (Taxon $record) => 'This will update classification data for '.($record->scientificname ?? 'this taxon').' from the WoRMS database.')
+                        ->action(function (Taxon $record, $livewire) {
+                            FetchTaxaFromWormsJob::dispatch([$record->id], auth()->id());
+                            $livewire->dispatch('worms-fetch-started');
+                            Notification::make()
+                                ->title('WoRMS Sync Queued')
+                                ->success()
+                                ->send();
+                        }),
+                    Action::make('mark_accepted')
+                        ->label('Mark as Accepted')
+                        ->icon('tabler-circle-check')
+                        ->color('success')
+                        ->visible(fn (Taxon $record): bool => $record->catalogue_status !== Catalogue_Status::checked_accepted)
+                        ->requiresConfirmation()
+                        ->modalHeading('Mark as Checked & Accepted')
+                        ->modalDescription(fn (Taxon $record) => 'Set catalogue status to "Checked & accepted" for '.($record->scientificname ?? 'this taxon').'?')
+                        ->action(function (Taxon $record) {
+                            $record->update(['catalogue_status' => Catalogue_Status::checked_accepted]);
+                            Notification::make()
+                                ->title('Marked as accepted')
+                                ->success()
+                                ->send();
+                        }),
+                    Action::make('view_duplicates')
+                        ->label('View Duplicates')
+                        ->icon('tabler-copy')
+                        ->color('warning')
+                        ->visible(function (Taxon $record): bool {
+                            return Taxon::where('scientificname', $record->scientificname)
+                                ->where('id', '!=', $record->id)
+                                ->exists();
+                        })
+                        ->modalWidth('2xl')
+                        ->modalHeading(fn (Taxon $record) => 'Duplicates: '.($record->scientificname ?? 'unnamed'))
+                        ->modalContent(function (Taxon $record): HtmlString {
+                            $duplicates = Taxon::where('scientificname', $record->scientificname)
+                                ->where('id', '!=', $record->id)
+                                ->get();
+
+                            $html = '<div class="space-y-2">';
+                            $html .= '<p class="text-sm text-gray-500">The following records share the same scientific name:</p>';
+                            $html .= '<ul class="list-disc pl-5 space-y-1">';
+                            foreach ($duplicates as $dup) {
+                                $label = $dup->catalogue_status?->getLabel() ?? '—';
+                                $html .= '<li>#'.$dup->id.' — '.e($dup->scientificname ?? 'unnamed').' ('.e($label).')</li>';
+                            }
+                            $html .= '</ul></div>';
+
+                            return new HtmlString($html);
+                        }),
                     DeleteAction::make(),
                     RestoreAction::make(),
                     ForceDeleteAction::make(),

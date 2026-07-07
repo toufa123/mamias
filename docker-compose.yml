@@ -295,7 +295,7 @@ services :
     container_name: "${name:-mamias}_redis"
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     ports :
-      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:6380:6379"
     healthcheck :
       test : [ "CMD", "redis-cli", "ping" ]
       interval : 5s
