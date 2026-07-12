@@ -6,6 +6,10 @@ use App\Enums\Environment;
 use App\Models\Taxon;
 use Elemind\FilamentECharts\Widgets\EChartWidget;
 
+/**
+ * ECharts pie widget displaying the distribution of catalogue species
+ * grouped by environment type (marine, freshwater, brackish, terrestrial).
+ */
 class CatalogueEnvironmentChart extends EChartWidget
 {
     protected static ?string $heading = 'Distribution by Environment';

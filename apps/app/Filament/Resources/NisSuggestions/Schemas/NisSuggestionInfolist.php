@@ -13,8 +13,17 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 
+/**
+ * Configures the Filament infolist schema for NIS suggestions.
+ * Displays species information, location map, photos, supporting
+ * documents, and review status.
+ */
 class NisSuggestionInfolist
 {
+    /**
+     * @param  Schema  $schema  The infolist schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -27,6 +36,9 @@ class NisSuggestionInfolist
             ]);
     }
 
+    /**
+     * @return array<int, mixed> The array of infolist sections.
+     */
     public static function getComponents(): array
     {
         return [
@@ -38,6 +50,9 @@ class NisSuggestionInfolist
         ];
     }
 
+    /**
+     * @return Section The species information section with scientific name, authority, Aphia ID, etc.
+     */
     protected static function getSpeciesSection(): Section
     {
         return Section::make('Species Information')
@@ -108,6 +123,9 @@ class NisSuggestionInfolist
             ]);
     }
 
+    /**
+     * @return Section The location section with an interactive map entry.
+     */
     protected static function getLocationSection(): Section
     {
         return Section::make('Location')
@@ -126,6 +144,9 @@ class NisSuggestionInfolist
             ]);
     }
 
+    /**
+     * @return Section The photos section with an image gallery entry.
+     */
     protected static function getPhotosSection(): Section
     {
         return Section::make('Photos')
@@ -141,6 +162,9 @@ class NisSuggestionInfolist
             ]);
     }
 
+    /**
+     * @return Section The supporting documents section listing uploaded file names.
+     */
     protected static function getDocumentsSection(): Section
     {
         return Section::make('Supporting Documents')
@@ -164,6 +188,9 @@ class NisSuggestionInfolist
             ]);
     }
 
+    /**
+     * @return Section The review section with status, submitter, timestamps, and rejection info.
+     */
     protected static function getReviewSection(): Section
     {
         return Section::make('Review')

@@ -22,8 +22,17 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
 
+/**
+ * Configures the Filament form schema for occurrence records.
+ * Provides species/country search, depth, abundance, habitat,
+ * location map, photos, and notes fields.
+ */
 class OccurrenceForm
 {
+    /**
+     * @param  Schema  $schema  The form schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -120,6 +129,11 @@ class OccurrenceForm
         ];
     }
 
+    /**
+     * @param  string  $search  The search query (minimum 3 characters).
+     * @param  Get  $get  The reactive form state getter.
+     * @return array<int, string> Map of intro event record IDs to formatted species labels.
+     */
     public static function searchSpecies(string $search, Get $get): array
     {
         if (strlen($search) < 3) {
@@ -144,6 +158,10 @@ class OccurrenceForm
             ->toArray();
     }
 
+    /**
+     * @param  mixed  $value  The intro event record ID.
+     * @return string|null The formatted species label or null.
+     */
     public static function getSpeciesLabel(mixed $value): ?string
     {
         if (! $value) {
@@ -159,6 +177,10 @@ class OccurrenceForm
         return ($ie->taxon?->scientificname ?? 'Unknown species').' — '.($ie->first_introduction_year ?? '?').', '.($ie->first_country ?? '?');
     }
 
+    /**
+     * @param  Set  $set  The form state setter utility.
+     * @param  mixed  $state  The selected intro event record ID.
+     */
     public static function populateKingdom(Set $set, mixed $state): void
     {
         if (! $state) {
@@ -176,6 +198,10 @@ class OccurrenceForm
         }
     }
 
+    /**
+     * @param  string|null  $kingdom  The kingdom to filter ACFOR descriptions for (e.g. "Plantae").
+     * @return array<string, string> Map of ACFOR scale values to labels with kingdom-specific descriptions.
+     */
     public static function getAcforOptions(?string $kingdom): array
     {
         return collect(AcforScale::cases())->mapWithKeys(fn (AcforScale $scale) => [
@@ -183,6 +209,11 @@ class OccurrenceForm
         ])->toArray();
     }
 
+    /**
+     * @param  string|null  $kingdom  The kingdom (e.g. "Plantae", "Chromista") or null.
+     * @param  AcforScale  $scale  The ACFOR scale value.
+     * @return string The appropriate description suffix for the given kingdom.
+     */
     public static function getAcforDescriptionSuffix(?string $kingdom, AcforScale $scale): string
     {
         if (! $kingdom) {

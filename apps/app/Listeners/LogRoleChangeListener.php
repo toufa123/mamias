@@ -15,11 +15,15 @@ class LogRoleChangeListener
 {
     public function handle(RoleAttachedEvent|RoleDetachedEvent|PermissionAttachedEvent|PermissionDetachedEvent $event): void
     {
-        $roleNames = $this->resolveRoleNames($event->rolesOrIds);
+        $isPermissionEvent = $event instanceof PermissionAttachedEvent || $event instanceof PermissionDetachedEvent;
+
+        $names = $isPermissionEvent
+            ? $this->resolveNames($event->permissionsOrIds)
+            : $this->resolveNames($event->rolesOrIds);
 
         $activity = activity()
             ->performedOn($event->model)
-            ->withProperties(['roles' => $roleNames]);
+            ->withProperties([$isPermissionEvent ? 'permissions' : 'roles' => $names]);
 
         if (auth()->check()) {
             $activity->causedBy(auth()->user());
@@ -33,20 +37,20 @@ class LogRoleChangeListener
         };
     }
 
-    private function resolveRoleNames(mixed $rolesOrIds): array
+    private function resolveNames(mixed $ids): array
     {
-        if ($rolesOrIds instanceof Role) {
-            return [$rolesOrIds->name];
+        if ($ids instanceof Role) {
+            return [$ids->name];
         }
 
-        if ($rolesOrIds instanceof Collection) {
-            return $rolesOrIds->map(fn ($role) => $role instanceof Role ? $role->name : (string) $role)->values()->toArray();
+        if ($ids instanceof Collection) {
+            return $ids->map(fn ($item) => $item instanceof Role ? $item->name : (string) $item)->values()->toArray();
         }
 
-        if (is_array($rolesOrIds)) {
-            return array_map(fn ($role) => $role instanceof Role ? $role->name : (string) $role, $rolesOrIds);
+        if (is_array($ids)) {
+            return array_map(fn ($item) => $item instanceof Role ? $item->name : (string) $item, $ids);
         }
 
-        return [(string) $rolesOrIds];
+        return [(string) $ids];
     }
 }

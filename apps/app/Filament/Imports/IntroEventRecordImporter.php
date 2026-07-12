@@ -15,10 +15,20 @@ use Filament\Actions\Imports\Models\Import;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
+/**
+ * Importer for IntroEventRecord models. Maps CSV columns to taxonomy,
+ * status enums, and subregion records via after-save hooks. Flags rows
+ * that need manual review when enum resolution fails.
+ */
 class IntroEventRecordImporter extends Importer
 {
     protected static ?string $model = IntroEventRecord::class;
 
+    /**
+     * Defines the CSV-to-model column mappings for the import.
+     *
+     * @return array<int, ImportColumn>
+     */
     public static function getColumns(): array
     {
         return [
@@ -113,6 +123,10 @@ class IntroEventRecordImporter extends Importer
         ];
     }
 
+    /**
+     * Resolves an existing IntroEventRecord by taxon_id, or creates a
+     * new instance if none exists.
+     */
     public function resolveRecord(): IntroEventRecord
     {
         $taxonId = $this->data['taxon_id'] ?? null;
@@ -191,6 +205,11 @@ class IntroEventRecordImporter extends Importer
         }
     }
 
+    /**
+     * Returns the notification body shown after the import completes.
+     *
+     * @param  Import  $import  The completed import model.
+     */
     public static function getCompletedNotificationBody(Import $import): string
     {
         $body = 'Intro event import completed: '

@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the taxas table with WoRMS taxonomy hierarchy and synonyms. */
 return new class extends Migration
 {
     /**

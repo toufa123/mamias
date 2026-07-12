@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the subregion_records table for subregion-level NIS status. */
 return new class extends Migration
 {
     /**

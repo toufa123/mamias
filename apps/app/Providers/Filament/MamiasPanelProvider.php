@@ -15,6 +15,7 @@ use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
+use Crumbls\Layup\LayupPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
@@ -33,6 +34,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -50,8 +52,18 @@ use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 use YousefAman\ModalRepeater\ModalRepeaterPlugin;
 
+/**
+ * Configures the main MAMIAS Filament administration panel.
+ *
+ * Registers the panel under the `mamias` id and path, sets up
+ * authentication, plugins, navigation groups, theme, colours,
+ * middleware, and asset registration.
+ */
 class MamiasPanelProvider extends PanelProvider
 {
+    /**
+     * Register any panel-specific assets.
+     */
     public function boot(): void
     {
         FilamentAsset::register([
@@ -60,6 +72,9 @@ class MamiasPanelProvider extends PanelProvider
 
     }
 
+    /**
+     * Build and return the panel configuration.
+     */
     public function panel(Panel $panel): Panel
     {
 
@@ -148,6 +163,7 @@ class MamiasPanelProvider extends PanelProvider
                     ->stayButtonColor('gray')
                     ->leaveButtonColor('warning'),
                 ModalRepeaterPlugin::make(),
+                LayupPlugin::make(),
                 FilamentShieldPlugin::make()
                     ->navigationGroup('Use management')
                     ->navigationSort(-1)
@@ -207,12 +223,12 @@ class MamiasPanelProvider extends PanelProvider
                 Action::make('home')
                     ->label('Public site')
                     ->url(fn (): string => url('/'))
-                    ->icon('heroicon-o-home'),
+                    ->icon(Heroicon::OutlinedHome),
 
                 Action::make('decomposer')
                     ->label('Decomposer')
                     ->url(fn (): string => url('mamias/decompose'))
-                    ->icon('heroicon-o-cog-6-tooth'),
+                    ->icon(Heroicon::OutlinedCog6Tooth),
             ])
 
             ->navigationGroups([
@@ -221,6 +237,7 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('MAMIAS database'),
                 NavigationGroup::make('System'),
                 NavigationGroup::make('Settings'),
+                NavigationGroup::make('Content management'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

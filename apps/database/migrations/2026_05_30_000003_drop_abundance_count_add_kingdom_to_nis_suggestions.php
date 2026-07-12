@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Drop abundance_count and add kingdom column to nis_suggestions table. */
 return new class extends Migration
 {
     public function up(): void

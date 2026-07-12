@@ -4,6 +4,7 @@ use App\Models\NisSuggestion;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/** Convert single-object JSON location to array format on nis_suggestions table. */
 return new class extends Migration
 {
     public function up(): void

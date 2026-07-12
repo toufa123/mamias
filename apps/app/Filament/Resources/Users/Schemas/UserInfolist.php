@@ -14,8 +14,17 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Nakanakaii\Countries\Countries;
 
+/**
+ * Configures the Filament infolist schema for user records.
+ * Displays personal details, account information, and professional
+ * focus sections including WhatsApp status and geographic interests.
+ */
 class UserInfolist
 {
+    /**
+     * @param  Schema  $schema  The infolist schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema

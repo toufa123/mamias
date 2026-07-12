@@ -6,6 +6,9 @@ use App\Filament\Resources\Literatures\LiteratureResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Page for editing literatures.
+ */
 class EditLiterature extends EditRecord
 {
     protected static string $resource = LiteratureResource::class;

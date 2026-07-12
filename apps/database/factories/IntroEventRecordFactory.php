@@ -11,13 +11,13 @@ use App\Models\Literature;
 use App\Models\Taxon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<IntroEventRecord>
- */
+/** Create IntroEventRecord model instances with taxon, literature, year, country and status data. */
+/** @extends Factory<IntroEventRecord> */
 class IntroEventRecordFactory extends Factory
 {
     protected $model = IntroEventRecord::class;
 
+    /** @return array<string, mixed> */
     public function definition(): array
     {
         return [

@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the literatures table with DOI, references, type and file attachment. */
 return new class extends Migration
 {
     /**

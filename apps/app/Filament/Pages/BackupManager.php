@@ -10,6 +10,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -23,6 +24,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Admin page for managing PostgreSQL database backups: list, download,
+ * delete, create new backups via a Docker container, and restore from
+ * dump files (including full disaster recovery with globals.sql).
+ */
 class BackupManager extends Page implements HasTable
 {
     use InteractsWithTable;
@@ -37,11 +43,21 @@ class BackupManager extends Page implements HasTable
 
     protected static ?string $title = 'Backup Manager';
 
+    /**
+     * {@inheritDoc}
+     */
     public static function canAccess(): bool
     {
         return auth()->user()?->hasRole('super_admin') ?? false;
     }
 
+    /**
+     * Returns an array of backup file paths, optionally filtered by
+     * file extension.
+     *
+     * @param  string|null  $extension  Optional file extension to filter by.
+     * @return array<int, string>
+     */
     public function getBackupFiles(?string $extension = null): array
     {
         if (! Storage::disk('backups')->exists('')) {
@@ -64,6 +80,15 @@ class BackupManager extends Page implements HasTable
         return array_reverse($backups);
     }
 
+    /**
+     * Returns backup files with metadata (size, date, year, month),
+     * optionally sorted and filtered by date range or month.
+     *
+     * @param  string|null  $sortColumn  Column to sort by.
+     * @param  string|null  $sortDirection  Sort direction (asc|desc).
+     * @param  array|null  $filters  Associative array of filter values.
+     * @return array<int, array<string, mixed>>
+     */
     public function getBackupFilesWithSize(?string $sortColumn = null, ?string $sortDirection = null, ?array $filters = null): array
     {
         $files = Storage::disk('backups')->allFiles('');
@@ -132,6 +157,12 @@ class BackupManager extends Page implements HasTable
         return $backups;
     }
 
+    /**
+     * Returns the list of unique month values extracted from backup
+     * file paths for the month filter.
+     *
+     * @return array<int, string>
+     */
     public function getBackupMonths(): array
     {
         $files = Storage::disk('backups')->allFiles('');
@@ -162,11 +193,20 @@ class BackupManager extends Page implements HasTable
         };
     }
 
+    /**
+     * Checks whether the globals.sql file exists in the backups disk.
+     */
     public function hasGlobalsSql(): bool
     {
         return Storage::disk('backups')->exists('globals.sql');
     }
 
+    /**
+     * Configures the backups table with columns, groups, filters, and
+     * header/bulk actions.
+     *
+     * @param  Table  $table  The Filament table instance.
+     */
     public function table(Table $table): Table
     {
         return $table
@@ -198,12 +238,12 @@ class BackupManager extends Page implements HasTable
             ->actions([
                 Action::make('download')
                     ->label('Download')
-                    ->icon('heroicon-o-arrow-down-tray')
+                    ->icon(Heroicon::OutlinedArrowDownTray)
                     ->color('gray')
                     ->action(fn (array $record) => Storage::disk('backups')->download($record['path'])),
                 Action::make('delete')
                     ->label('Delete')
-                    ->icon('heroicon-o-trash')
+                    ->icon(Heroicon::OutlinedTrash)
                     ->color('danger')
                     ->requiresConfirmation()
                     ->action(function (array $record) {
@@ -233,7 +273,7 @@ class BackupManager extends Page implements HasTable
                 BulkActionGroup::make([
                     BulkAction::make('deleteSelected')
                         ->label('Delete selected')
-                        ->icon('heroicon-o-trash')
+                        ->icon(Heroicon::OutlinedTrash)
                         ->color('danger')
                         ->requiresConfirmation()
                         ->action(function (Collection $records): void {
@@ -252,6 +292,10 @@ class BackupManager extends Page implements HasTable
             ->poll('60s');
     }
 
+    /**
+     * Action that triggers a new database backup via the backup Docker
+     * container.
+     */
     public function backupAction(): Action
     {
         return Action::make('backup')
@@ -279,6 +323,9 @@ class BackupManager extends Page implements HasTable
             });
     }
 
+    /**
+     * Action that restores the database from a selected backup dump file.
+     */
     public function restoreAction(): Action
     {
         return Action::make('restore')
@@ -325,13 +372,17 @@ class BackupManager extends Page implements HasTable
             });
     }
 
+    /**
+     * Action that performs a full disaster recovery: restores
+     * globals.sql first, then the database dump.
+     */
     public function fullRestoreAction(): Action
     {
         return Action::make('fullRestore')
             ->label('Full Restore')
             ->tooltip('Disaster recovery — restores globals.sql then the database dump')
             ->color('danger')
-            ->icon('heroicon-o-server-stack')
+            ->icon(Heroicon::OutlinedServerStack)
             ->schema([
                 Select::make('backup_file')
                     ->label('Select Database Dump')

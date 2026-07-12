@@ -13,6 +13,9 @@ use Filament\Resources\Pages\ListRecords;
 use League\Csv\Info as CsvInfo;
 use League\Csv\Reader as CsvReader;
 
+/**
+ * Page for listing intro event records.
+ */
 class ListIntroEventRecords extends ListRecords
 {
     protected static string $resource = IntroEventRecordResource::class;

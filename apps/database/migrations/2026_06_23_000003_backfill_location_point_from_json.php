@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/** Backfill location_point geometry from JSON location data on occurrences and nis_suggestions tables. */
 return new class extends Migration
 {
     public function up(): void

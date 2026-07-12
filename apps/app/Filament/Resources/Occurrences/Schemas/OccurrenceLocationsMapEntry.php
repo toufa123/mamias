@@ -6,8 +6,15 @@ use App\Models\Occurrence;
 use EduardoRibeiroDev\FilamentLeaflet\Infolists\MapEntry;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 
+/**
+ * Custom MapEntry that renders the occurrence's location as a red
+ * pick marker with taxon scientific name in the popup.
+ */
 class OccurrenceLocationsMapEntry extends MapEntry
 {
+    /**
+     * @return array<string, mixed> The pick marker configuration array for the occurrence location.
+     */
     public function getPickMarkerData(): array
     {
         $record = $this->getRecord();

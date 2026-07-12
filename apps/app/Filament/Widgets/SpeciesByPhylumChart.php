@@ -6,6 +6,10 @@ use App\Models\Taxon;
 use Elemind\FilamentECharts\Widgets\EChartWidget;
 use Illuminate\Support\Collection;
 
+/**
+ * ECharts horizontal bar widget displaying the number of species grouped
+ * by phylum (top 15 phyla).
+ */
 class SpeciesByPhylumChart extends EChartWidget
 {
     protected static ?string $heading = 'Number of Species by Phylum';

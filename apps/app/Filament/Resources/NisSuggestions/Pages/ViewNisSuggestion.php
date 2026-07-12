@@ -11,6 +11,9 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 
+/**
+ * Page for viewing NIS suggestions.
+ */
 class ViewNisSuggestion extends ViewRecord
 {
     protected static string $resource = NisSuggestionResource::class;

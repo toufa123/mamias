@@ -34,8 +34,19 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
+/**
+ * Configures the Filament table for taxon records.
+ * Displays ID, Aphia ID, EASIN ID, scientific name, WoRMS status,
+ * catalogue status, rank, kingdom, phylum, LSID, environments,
+ * fetch/creation/update timestamps, and creator/editor columns
+ * with WoRMS sync, duplicate detection, and bulk fetch actions.
+ */
 class TaxonTable
 {
+    /**
+     * @param  Table  $table  The table to configure.
+     * @return Table The configured table instance.
+     */
     public static function configure(Table $table): Table
     {
         return $table

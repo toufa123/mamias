@@ -8,6 +8,12 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * High-level service for managing Taxon records and synchronising with WoRMS.
+ *
+ * Orchestrates WoRMS data fetching, normalisation, EASIN ID resolution,
+ * and form-state comparison for taxon resources in the Filament panel.
+ */
 class TaxonService
 {
     public function __construct(
@@ -80,6 +86,10 @@ class TaxonService
         ];
     }
 
+    /**
+     * Determine whether a taxon record has meaningful changes beyond timestamp updates.
+     * Ignores blank-to-blank transitions for the `unacceptreason` field.
+     */
     final public function hasMeaningfulChanges(Taxon $taxon): bool
     {
         $dirtyAttributes = array_diff(array_keys($taxon->getDirty()), ['fetched_at', 'updated_at']);
@@ -100,11 +110,17 @@ class TaxonService
         return false;
     }
 
+    /**
+     * Check if a value is null or a blank/whitespace-only string.
+     */
     final protected function isBlankValue(mixed $value): bool
     {
         return $value === null || (is_string($value) && trim($value) === '');
     }
 
+    /**
+     * Extract the proposed accepted name from a taxon record or array.
+     */
     final public function extractAcceptedNameFromNotes(mixed $taxon): ?string
     {
         if ($taxon instanceof Taxon) {
@@ -118,6 +134,9 @@ class TaxonService
         return null;
     }
 
+    /**
+     * Compose a notes string indicating the original unaccepted name.
+     */
     final public function composeAcceptedNameNotes(?string $originalName): ?string
     {
         if ($originalName) {
@@ -127,6 +146,10 @@ class TaxonService
         return null;
     }
 
+    /**
+     * Compose or update the "Proposed accepted name from WoRMS" line in the notes.
+     * Replaces an existing proposal line if present, or appends a new one.
+     */
     final public function composeProposedAcceptedNameNotes(?string $acceptedName, mixed $existingNotes): ?string
     {
         $existingNotes = $this->taxonNormalizer->normalizeNullableString($existingNotes);
@@ -153,6 +176,9 @@ class TaxonService
         return $newProposedLine."\n".$existingNotes;
     }
 
+    /**
+     * Compose a notes string for an original unaccepted name.
+     */
     final public function composeOriginalUnacceptedNameNotes(?string $unacceptedName): ?string
     {
         if (! $unacceptedName) {
@@ -162,6 +188,9 @@ class TaxonService
         return "Original unaccepted name: {$unacceptedName}";
     }
 
+    /**
+     * Build a display name combining scientific name and authority.
+     */
     final public function buildDisplayName(array $data): ?string
     {
         $name = $data['scientificname'] ?? null;
@@ -174,6 +203,10 @@ class TaxonService
         return trim("{$name} {$authority}");
     }
 
+    /**
+     * Format a WoRMS record array for display in a Filament form.
+     * Fetches synonyms and EASIN ID for the record.
+     */
     final public function formatWormsDataForForm(array $record): array
     {
         $aphiaId = $record['AphiaID'] ?? null;
@@ -188,6 +221,9 @@ class TaxonService
         return $this->stateHelper->formatWormsDataForForm($record, $formattedSynonyms);
     }
 
+    /**
+     * Format a notification message listing the changed fields after a WoRMS fetch.
+     */
     final public function formatChangedFieldsForNotification(array $changedFields): string
     {
         $modifiedFields = implode(', ', $changedFields);
@@ -195,6 +231,9 @@ class TaxonService
         return "Updated fields: {$modifiedFields}. Updated At date was refreshed.";
     }
 
+    /**
+     * Remove any existing "Proposed accepted name from WoRMS" line from notes.
+     */
     final public function removeOldProposedAcceptedNameLine(?string $notes): ?string
     {
         if ($notes === null) {
@@ -204,6 +243,10 @@ class TaxonService
         return trim(preg_replace('/Proposed accepted name from WoRMS: ([^(\n\r]+)/i', '', $notes)) ?: null;
     }
 
+    /**
+     * Attempt a WoRMS Taxon Match against a scientific name and notify the user
+     * with a suggestion action to apply the match.
+     */
     final public function tryTaxonMatch(
         callable $get,
         callable $set
@@ -263,6 +306,11 @@ class TaxonService
         }
     }
 
+    /**
+     * Synchronise a taxon form's fields with data fetched from WoRMS.
+     * Compares current form state with incoming WoRMS data and updates
+     * only fields that have changed, with notification feedback.
+     */
     final public function syncWithWorms(
         callable $get,
         callable $set,

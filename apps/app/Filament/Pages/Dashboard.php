@@ -18,8 +18,18 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
+/**
+ * Custom dashboard page that organises catalogue stats, charts, and
+ * pending occurrences into two tabs: "MAMIAS Catalogue" and "MAMIAS Data".
+ */
 class Dashboard extends BaseDashboard
 {
+    /**
+     * Builds the dashboard content with two tabs containing catalogue
+     * stats, charts, and pending occurrences widgets.
+     *
+     * @param  Schema  $schema  The Filament schema instance.
+     */
     public function content(Schema $schema): Schema
     {
         return $schema

@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Add abundance_count and abundance_category columns to nis_suggestions table. */
 return new class extends Migration
 {
     public function up(): void

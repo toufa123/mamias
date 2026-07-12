@@ -9,6 +9,10 @@ use App\Models\Taxon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
+/**
+ * Stats overview widget showing catalogue totals: total species, accepted,
+ * not accepted, and not yet checked counts with percentage breakdowns.
+ */
 class CatalogueStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 0;

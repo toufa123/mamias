@@ -8,6 +8,12 @@ use App\Enums\Catalogue_Status;
 use Filament\Notifications\Notification;
 use Livewire\Attributes\On;
 
+/**
+ * Trait that applies a WoRMS taxon name match to a taxon create/edit form.
+ *
+ * Listens for the `applyTaxonMatch` event and updates the scientific name,
+ * notes, and catalogue status accordingly.
+ */
 trait AppliesTaxonMatch
 {
     #[On('applyTaxonMatch')]

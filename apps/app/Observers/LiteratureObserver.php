@@ -9,8 +9,17 @@ use App\Models\User;
 use App\Notifications\NewLiteratureReferenceNotification;
 use Illuminate\Support\Facades\Notification;
 
+/**
+ * Observes the Literature model for lifecycle events.
+ *
+ * Auto-generates a sequential code and notifies admins/scientists
+ * when a new literature reference is created.
+ */
 class LiteratureObserver
 {
+    /**
+     * Auto-assign a sequential code before the model is persisted.
+     */
     public function creating(Literature $literature): void
     {
         if (empty($literature->code)) {
@@ -18,6 +27,9 @@ class LiteratureObserver
         }
     }
 
+    /**
+     * Send a notification to all super admins and scientists after creation.
+     */
     public function created(Literature $literature): void
     {
         $adminsAndScientists = User::whereHas('roles', function ($query) {

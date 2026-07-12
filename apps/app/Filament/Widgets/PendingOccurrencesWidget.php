@@ -7,6 +7,10 @@ use App\Models\Occurrence;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
+/**
+ * Stats widget showing the total count of pending occurrences that need
+ * moderation, with a link to the intro event records index.
+ */
 class PendingOccurrencesWidget extends BaseWidget
 {
     protected static ?int $sort = 4;

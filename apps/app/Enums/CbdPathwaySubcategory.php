@@ -6,6 +6,12 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
+/**
+ * CBD (Convention on Biological Diversity) pathway subcategories.
+ *
+ * Detailed subcategories under each of the six main CBD pathway categories
+ * for tracking the specific mechanism of species introduction.
+ */
 enum CbdPathwaySubcategory: string implements HasLabel
 {
     // Category 1: Release into Nature
@@ -39,6 +45,9 @@ enum CbdPathwaySubcategory: string implements HasLabel
     case Unaided_6_1 = '6.1';
     case Unaided_6_2 = '6.2';
 
+    /**
+     * Human-readable label for the CBD pathway subcategory.
+     */
     public function getLabel(): ?string
     {
         return match ($this) {

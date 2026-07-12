@@ -6,9 +6,8 @@ use App\Enums\LiteratureType;
 use App\Models\Literature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Literature>
- */
+/** Create Literature model instances with codes, references, DOIs and links. */
+/** @extends Factory<Literature> */
 class LiteratureFactory extends Factory
 {
     protected $model = Literature::class;

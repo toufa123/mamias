@@ -5,10 +5,19 @@ namespace App\Services;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Service for fetching EASIN (European Alien Species Information Network) identifiers.
+ *
+ * Queries the JRC EASIN API to retrieve the EASIN ID for a given scientific name.
+ * Results are cached for 24 hours to reduce API calls.
+ */
 class EasinService
 {
     private string $baseUrl = 'https://easin.jrc.ec.europa.eu/apixg/catxg/term';
 
+    /**
+     * Fetch the EASIN ID for a scientific name from the JRC EASIN API.
+     */
     public function fetchEasinId(string $scientificName): ?string
     {
         if (strlen($scientificName) < 4) {

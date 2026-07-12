@@ -8,6 +8,9 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Page for listing NIS suggestions.
+ */
 class ListNisSuggestions extends ListRecords
 {
     protected static string $resource = NisSuggestionResource::class;

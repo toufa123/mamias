@@ -18,8 +18,18 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Configures the Filament table for occurrence records.
+ * Displays species, status, location map, depth, ACFOR scale,
+ * habitats, observed-at, submitter, and submitted-at columns
+ * with approve/reject actions.
+ */
 class OccurrencesTable
 {
+    /**
+     * @param  Table  $table  The table to configure.
+     * @return Table The configured table instance.
+     */
     public static function configure(Table $table): Table
     {
         return $table
@@ -63,6 +73,9 @@ class OccurrencesTable
             ->defaultSort('created_at', 'desc');
     }
 
+    /**
+     * @return TextColumn The species column, searchable, sortable, rendered in italics.
+     */
     public static function getSpeciesColumn(): TextColumn
     {
         return TextColumn::make('introEventRecord.taxon.scientificname')
@@ -73,6 +86,9 @@ class OccurrencesTable
             ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>');
     }
 
+    /**
+     * @return TextColumn The status column as a badge with moderation notes tooltip.
+     */
     public static function getStatusColumn(): TextColumn
     {
         return TextColumn::make('status')
@@ -85,6 +101,9 @@ class OccurrencesTable
             });
     }
 
+    /**
+     * @return MapColumn The location map column, toggleable with a red pick marker.
+     */
     public static function getMapColumn(): MapColumn
     {
         return MapColumn::make('location')
@@ -104,6 +123,9 @@ class OccurrencesTable
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The depth column with "m" suffix, numeric and sortable.
+     */
     public static function getDepthColumn(): TextColumn
     {
         return TextColumn::make('depth')
@@ -114,6 +136,9 @@ class OccurrencesTable
             ->sortable();
     }
 
+    /**
+     * @return TextColumn The ACFOR scale column as a badge, sortable.
+     */
     public static function getAcforScaleColumn(): TextColumn
     {
         return TextColumn::make('acfor_scale')
@@ -123,6 +148,9 @@ class OccurrencesTable
             ->placeholder('—');
     }
 
+    /**
+     * @return TextColumn The habitats column, toggleable with human-readable labels.
+     */
     public static function getHabitatsColumn(): TextColumn
     {
         return TextColumn::make('habitats')
@@ -136,6 +164,9 @@ class OccurrencesTable
                 : null);
     }
 
+    /**
+     * @return TextColumn The observed-at date column, sortable.
+     */
     public static function getObservedAtColumn(): TextColumn
     {
         return TextColumn::make('observed_at')
@@ -144,6 +175,9 @@ class OccurrencesTable
             ->sortable();
     }
 
+    /**
+     * @return TextColumn The submitter name column, sortable and searchable.
+     */
     public static function getSubmitterColumn(): TextColumn
     {
         return TextColumn::make('user.name')
@@ -152,6 +186,9 @@ class OccurrencesTable
             ->searchable();
     }
 
+    /**
+     * @return TextColumn The submitted-at date column, sortable.
+     */
     public static function getSubmittedAtColumn(): TextColumn
     {
         return TextColumn::make('created_at')

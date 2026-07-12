@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Add taxon_id and resubmitted_from_id foreign keys to nis_suggestions table. */
 return new class extends Migration
 {
     public function up(): void

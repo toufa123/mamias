@@ -14,13 +14,9 @@ Route::get('/email-verification/prompt', function () {
     return redirect()->route('filament.mamias.auth.email-verification.prompt');
 })->name('verification.notice');
 
-Route::get('/', function () {
-    return view('mamias.home');
-})->name('home');
+Route::permanentRedirect('/', '/pages/home')->name('home');
 
-Route::get('/about', function () {
-    return view('mamias.about');
-})->name('about');
+Route::permanentRedirect('/about', '/pages/about')->name('about');
 
 Route::get('/profile', PublicProfile::class)
     ->middleware(['auth', 'verified'])

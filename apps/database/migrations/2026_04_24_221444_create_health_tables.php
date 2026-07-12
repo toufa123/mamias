@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Spatie\Health\Models\HealthCheckResultHistoryItem;
 use Spatie\Health\ResultStores\EloquentHealthResultStore;
 
+/** Create the health check result history table. */
 return new class extends Migration
 {
     public function up()

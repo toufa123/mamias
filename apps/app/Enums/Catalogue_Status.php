@@ -6,20 +6,29 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
+/**
+ * Catalogue validation status of a taxon record against WoRMS data.
+ *
+ * Tracks whether a species entry has been verified against the World Register
+ * of Marine Species and whether the name is currently accepted.
+ */
 enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
 {
-    /**
-     * The status of the catalogue entry, based on the WoRMS data.
-     * - checked_accepted: The entry has been checked and is accepted in WoRMS.
-     * - checked_not_accepted: The entry has been checked but is not accepted in WoRMS.
-     * - not_checked: The entry has not been checked against WoRMS data and should be for imported data.
-     * - no_data_from_worms: There was no data available from WoRMS for this entry.
-     */
+    /** The entry has been checked and the name is accepted in WoRMS. */
     case checked_accepted = 'checked & accepted';
+
+    /** The entry has been checked but the name is not accepted in WoRMS. */
     case checked_not_accepted = 'checked & not accepted';
+
+    /** The entry has not yet been checked against WoRMS data. */
     case not_checked = 'not checked yet';
+
+    /** No data was available from WoRMS for this entry. */
     case no_data_from_worms = 'no data from WORMS';
 
+    /**
+     * Human-readable label for the catalogue status.
+     */
     public function getLabel(): string
     {
         return match ($this) {
@@ -30,6 +39,9 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    /**
+     * Filament color for UI display.
+     */
     public function getColor(): string|array|null
     {
         return match ($this) {
@@ -40,6 +52,9 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    /**
+     * Filament icon for UI display.
+     */
     public function getIcon(): ?string
     {
         return match ($this) {
@@ -50,11 +65,21 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    /**
+     * Alias for getLabel, required by some Filament components.
+     */
     public function label(): string
     {
         return $this->getLabel();
     }
 
+    /**
+     * Derive the catalogue status from a WoRMS taxon status.
+     *
+     * Accepted and alternative-representation statuses map to "checked & accepted";
+     * all others map to "checked & not accepted". Null or empty input returns
+     * "no data from WORMS".
+     */
     public static function fromWormsData(Worms_Status|string|null $status): self
     {
         if ($status === null || $status === '') {

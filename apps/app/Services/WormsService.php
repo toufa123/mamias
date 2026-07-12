@@ -10,6 +10,13 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Service for interacting with the WoRMS (World Register of Marine Species) REST API.
+ *
+ * Provides methods to fetch taxonomic records, search species, retrieve synonyms,
+ * and populate/persist taxon data from WoRMS into the local Taxon model.
+ * Uses caching (24h TTL) to minimise API calls.
+ */
 class WormsService
 {
     private const KINGDOMS = [
@@ -301,6 +308,9 @@ class WormsService
         $taxon->environments = Environment::fromWormsData($data);
     }
 
+    /**
+     * Send an HTTP GET request to the WoRMS API with retry and timeout settings.
+     */
     final protected function wormsRequest(string $url, array $query = []): ?Response
     {
         return Http::connectTimeout($this->connectTimeoutSeconds)

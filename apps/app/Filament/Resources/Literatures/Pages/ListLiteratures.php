@@ -11,6 +11,9 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Page for listing literatures.
+ */
 class ListLiteratures extends ListRecords
 {
     protected static string $resource = LiteratureResource::class;

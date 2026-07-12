@@ -29,8 +29,17 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 use Novadaemon\FilamentPrettyJson\Form\PrettyJsonField;
 
+/**
+ * Configures the Filament form schema for taxon records.
+ * Provides general information, taxonomic classification, status
+ * and validation, and synonyms sections with WoRMS integration.
+ */
 class TaxonForm
 {
+    /**
+     * @param  Schema  $schema  The form schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -43,6 +52,9 @@ class TaxonForm
 
     }
 
+    /**
+     * @return Section The general information section with scientific name, authority, Aphia ID, EASIN ID, etc.
+     */
     protected static function getGeneralInformationSection(): Section
     {
         return Section::make('General Information')
@@ -185,6 +197,9 @@ class TaxonForm
         ];
     }
 
+    /**
+     * @return Section The taxonomic classification section with kingdom, phylum, class, order, family, genus, rank, and environment.
+     */
     protected static function getTaxonomicClassificationSection(): Section
     {
         return Section::make('Taxonomic Classification')
@@ -213,6 +228,9 @@ class TaxonForm
             ]);
     }
 
+    /**
+     * @return Section The status and validation section with WoRMS status, catalogue status, fetch timestamps, and notes.
+     */
     protected static function getStatusAndValidationSection(): Section
     {
         return Section::make('Status & Validation')
@@ -264,6 +282,9 @@ class TaxonForm
             ]);
     }
 
+    /**
+     * @return Section The synonyms section displaying WoRMS synonym data in a JSON viewer.
+     */
     protected static function getSynonymsSection(): Section
     {
         return Section::make(fn ($get) => 'Synonyms ('.count(self::resolveSynonyms($get('synonyms_data'))).')')

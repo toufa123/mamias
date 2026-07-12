@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LiteratureStatus;
 use App\Enums\LiteratureType;
 use App\Observers\LiteratureObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,6 +21,10 @@ use Spatie\Activitylog\Support\LogOptions;
 /**
  * Class Literature
  *
+ * Represents a bibliographic reference linked to species records in the catalogue.
+ * Each reference has a unique auto-generated code (mamiasXXXXXX) and tracks
+ * its review status through an observer.
+ *
  * @property int $id
  * @property string $code
  * @property string|null $doi
@@ -27,10 +32,14 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string $short_ref
  * @property string $full_ref
  * @property string|null $link
+ * @property string|null $file_path
+ * @property LiteratureStatus|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int|null $created_by
  * @property int|null $updated_by
+ *
+ * @method HasMany introEvents()
  */
 #[Fillable([
     'code',
@@ -47,6 +56,9 @@ class Literature extends Model
 {
     use HasFactory, LogsActivity, Userstamps;
 
+    /**
+     * Configure activity logging to track all attribute changes.
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -55,11 +67,17 @@ class Literature extends Model
             ->dontLogEmptyChanges();
     }
 
+    /**
+     * Scope query to literature records created by a specific user.
+     */
     public function scopeForUser($query, $user): Builder
     {
         return $query->where('created_by', $user->id);
     }
 
+    /**
+     * Save the literature record within a database transaction for atomic code generation.
+     */
     public function save(array $options = []): bool
     {
         if ($this->exists) {
@@ -71,6 +89,10 @@ class Literature extends Model
         });
     }
 
+    /**
+     * Generate the next unique literature code in the format "mamiasXXXXXX".
+     * Uses a database-level lock to prevent race conditions on sequential code generation.
+     */
     final public static function generateNextCode(): string
     {
         try {
@@ -118,6 +140,9 @@ class Literature extends Model
         ];
     }
 
+    /**
+     * Introduction event records referencing this literature.
+     */
     public function introEvents(): HasMany
     {
         return $this->hasMany(IntroEventRecord::class);

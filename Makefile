@@ -1,4 +1,4 @@
-.PHONY: dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-up
+.PHONY: dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-up
 
 -include .env
 export
@@ -152,9 +152,45 @@ dev-test: dev-db-backup
 	@echo "Re-seeding developer users..."
 	@$(DEV_COMPOSE) exec -T app php artisan db:seed --class=DeveloperLoginUsersSeeder
 
+# ── Seed .env.production for a first-time production deploy ─────────
+#    Copies the example, then fills in SERVER_NAME, APP_URL and the DB /
+#    Redis credentials. A blank password answer auto-generates a strong
+#    random secret. APP_KEY is generated locally (no container needed).
+#    Requires openssl (present on Debian/Plesk by default).
+prod-env:
+	@if [ -f .env.production ]; then \
+		echo "ERROR: .env.production already exists — refusing to overwrite."; \
+		echo "Edit it directly, or 'rm .env.production' first to re-seed."; \
+		exit 1; \
+	fi
+	@if [ ! -f .env.production.example ]; then \
+		echo "ERROR: .env.production.example not found."; exit 1; \
+	fi
+	@cp .env.production.example .env.production
+	@echo "Seeding .env.production (press Enter to keep the example default)..."
+	@read -p "SERVER_NAME (e.g. app.example.com): " V; \
+		[ -n "$$V" ] && sed -i "s|^SERVER_NAME=.*|SERVER_NAME=$$V|" .env.production || true
+	@read -p "APP_URL (e.g. https://app.example.com): " V; \
+		[ -n "$$V" ] && sed -i "s|^APP_URL=.*|APP_URL=$$V|" .env.production || true
+	@read -p "DB_DATABASE [mamias_db]: " V; \
+		[ -n "$$V" ] && sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$$V|" .env.production || true
+	@read -p "DB_USERNAME: " V; \
+		[ -n "$$V" ] && sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$$V|" .env.production || true
+	@read -p "DB_PASSWORD (blank = auto-generate): " V; \
+		[ -z "$$V" ] && { V=$$(openssl rand -hex 24); echo "  -> generated DB_PASSWORD"; }; \
+		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" .env.production
+	@read -p "REDIS_PASSWORD (blank = auto-generate): " V; \
+		[ -z "$$V" ] && { V=$$(openssl rand -hex 24); echo "  -> generated REDIS_PASSWORD"; }; \
+		sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD=$$V|" .env.production
+	@KEY="base64:$$(openssl rand -base64 32)"; \
+		sed -i "s|^APP_KEY=.*|APP_KEY=$$KEY|" .env.production; \
+		echo "  -> generated APP_KEY"
+	@echo ""
+	@echo ".env.production seeded. Still set MAIL_* to real SMTP values, then run 'make prod-up'."
+
 prod-up:
 	@if [ ! -f .env.production ]; then \
-		echo "ERROR: .env.production is missing. Copy .env.production.example first."; \
+		echo "ERROR: .env.production is missing. Run 'make prod-env' to create it."; \
 		exit 1; \
 	fi
 	@echo "Starting production stack from docker-compose.prod.yml..."

@@ -13,6 +13,9 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Page for listing taxons.
+ */
 class ListTaxons extends ListRecords
 {
     protected static string $resource = TaxonResource::class;

@@ -5,6 +5,12 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
+/**
+ * CAPTCHA verification service using a self-hosted CAP (CAPTCHA Alternative Provider).
+ *
+ * Communicates with an internal CAP service to verify user-submitted tokens.
+ * In local environments, verification is bypassed when credentials are missing.
+ */
 class CapService
 {
     protected string $siteKey;
@@ -20,11 +26,20 @@ class CapService
         $this->internalUrl = config('services.cap.internal_url') ?? 'http://cap:3000';
     }
 
+    /**
+     * Check whether CAPTCHA credentials are configured.
+     */
     public function isConfigured(): bool
     {
         return filled($this->siteKey) && filled($this->secretKey);
     }
 
+    /**
+     * Verify a CAPTCHA token against the internal CAP service.
+     * In local environment, returns true if CAP is not configured.
+     *
+     * @throws RuntimeException When not in local environment and credentials are missing.
+     */
     public function verifyToken(?string $token): bool
     {
         if (! $this->isConfigured()) {

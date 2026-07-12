@@ -20,10 +20,20 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Nakanakaii\FilamentCountries\Forms\Components\PhoneInput;
 
+/**
+ * Configures the Filament form schema for user records.
+ * Provides personal details, account information, and professional
+ * focus sections with WhatsApp validation and WoRMS phyla selection.
+ */
 class UserForm
 {
+    /**
+     * @param  Schema  $schema  The form schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -121,7 +131,7 @@ class UserForm
                                     ->multiple()
                                     ->preload()
                                     ->searchable()
-                                    ->hintIcon('heroicon-m-question-mark-circle',
+                                    ->hintIcon(Heroicon::QuestionMarkCircle,
                                         tooltip: 'Assign one or more roles to this user.'),
 
                             ]),
@@ -151,7 +161,7 @@ class UserForm
                                     ->dehydrated(fn ($state) => filled($state))
                                     ->required(fn ($operation) => $operation === 'create')
                                     ->maxLength(255)
-                                    ->hintIcon('heroicon-m-question-mark-circle',
+                                    ->hintIcon(Heroicon::QuestionMarkCircle,
                                         tooltip: 'Minimum 8 characters recommended.'),
                                 DateTimePicker::make('email_verified_at')
                                     ->label('Email Verified At')
@@ -181,7 +191,7 @@ class UserForm
                                         }
                                     })
                                     ->placeholder('Select taxonomic areas...')
-                                    ->hintIcon('heroicon-m-question-mark-circle',
+                                    ->hintIcon(Heroicon::QuestionMarkCircle,
                                         tooltip: 'Phyla of scientific interest (sourced from WoRMS).')
                                     ->helperText('Phyla of scientific interest (sourced from WoRMS).')
                                     ->columnSpanFull(),
@@ -205,7 +215,7 @@ class UserForm
                                             })
                                             ->searchable()
                                             ->placeholder('Select subregions...')
-                                            ->hintIcon('heroicon-m-question-mark-circle',
+                                            ->hintIcon(Heroicon::QuestionMarkCircle,
                                                 tooltip: 'Select broad geographic regions of interest.')
                                             ->helperText('Select broad geographic regions of interest.'),
                                         CountrySelectWithMedPriority::make('countries')
@@ -214,7 +224,7 @@ class UserForm
                                             ->searchable()
                                             ->multiple()
                                             ->placeholder('Select countries...')
-                                            ->hintIcon('heroicon-m-question-mark-circle',
+                                            ->hintIcon(Heroicon::QuestionMarkCircle,
                                                 tooltip: 'Select specific countries of interest.')
                                             ->helperText('Select specific countries of interest.'),
                                     ])

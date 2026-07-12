@@ -14,9 +14,19 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
+/**
+ * Configures the Filament form schema for literature records.
+ * Provides fields for DOI auto-fetch, code, short/full reference,
+ * resource type, and link.
+ */
 class LiteratureForm
 {
+    /**
+     * @param  Schema  $schema  The form schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -25,6 +35,9 @@ class LiteratureForm
             ]);
     }
 
+    /**
+     * @return Section The bibliographic reference section containing DOI, code, short ref, type, full ref, and link fields.
+     */
     public static function getBibliographicReferenceSection(): Section
     {
         return Section::make('Bibliographic Reference')
@@ -41,6 +54,9 @@ class LiteratureForm
             ->columnSpanFull();
     }
 
+    /**
+     * @return TextInput The DOI text input with auto-fetch action from Crossref.
+     */
     public static function getDoiField(): TextInput
     {
         return TextInput::make('doi')
@@ -68,7 +84,7 @@ class LiteratureForm
                 }
             })
             ->placeholder('10.1000/182')
-            ->hintIcon('heroicon-m-question-mark-circle',
+            ->hintIcon(Heroicon::QuestionMarkCircle,
                 tooltip: 'Enter the DOI and click "Fetch" to automatically fill in the fields. Validation checks for duplicates upon entry.')
             ->prefixAction(
                 Action::make('openDoi')
@@ -117,6 +133,9 @@ class LiteratureForm
             ->columnSpan(1);
     }
 
+    /**
+     * @return TextInput The auto-generated code field (disabled, for display only).
+     */
     public static function getCodeField(): TextInput
     {
         return TextInput::make('code')
@@ -127,6 +146,9 @@ class LiteratureForm
             ->columnSpan(1);
     }
 
+    /**
+     * @return TextInput The short reference text input (e.g. "Smith et al., 2024").
+     */
     public static function getShortRefField(): TextInput
     {
         return TextInput::make('short_ref')
@@ -137,6 +159,9 @@ class LiteratureForm
             ->columnSpan(1);
     }
 
+    /**
+     * @return Select The resource type select (mapped from LiteratureType enum).
+     */
     public static function getTypeField(): Select
     {
         return Select::make('type')
@@ -146,6 +171,9 @@ class LiteratureForm
             ->columnSpan(1);
     }
 
+    /**
+     * @return Textarea The full reference textarea with uniqueness validation.
+     */
     public static function getFullRefField(): Textarea
     {
         return Textarea::make('full_ref')
@@ -155,11 +183,14 @@ class LiteratureForm
             ->required()
             ->unique(ignoreRecord: true)
             ->live(onBlur: true)
-            ->hintIcon('heroicon-m-question-mark-circle',
+            ->hintIcon(Heroicon::QuestionMarkCircle,
                 tooltip: 'Real-time validation checks if this title or reference already exists..')
             ->columnSpanFull();
     }
 
+    /**
+     * @return TextInput The optional URL/DOI link field.
+     */
     public static function getLinkField(): TextInput
     {
         return TextInput::make('link')

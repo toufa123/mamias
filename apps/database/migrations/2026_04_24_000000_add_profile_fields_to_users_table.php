@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Add profile, contact and taxonomy preference fields to the users table. */
 return new class extends Migration
 {
     /**

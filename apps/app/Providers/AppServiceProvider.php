@@ -30,6 +30,13 @@ use Spatie\Permission\Events\PermissionDetachedEvent;
 use Spatie\Permission\Events\RoleAttachedEvent;
 use Spatie\Permission\Events\RoleDetachedEvent;
 
+/**
+ * Core service provider for the MAMIAS application.
+ *
+ * Registers custom Filament auth responses, IDE helper debugbar
+ * (local only), application-wide colour palette, Livewire components,
+ * event listeners, and server health checks.
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**

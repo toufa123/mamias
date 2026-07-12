@@ -6,6 +6,9 @@ use App\Filament\Resources\Taxons\Pages\Concerns\AppliesTaxonMatch;
 use App\Filament\Resources\Taxons\TaxonResource;
 use Filament\Resources\Pages\CreateRecord;
 
+/**
+ * Page for creating taxons.
+ */
 class CreateTaxon extends CreateRecord
 {
     use AppliesTaxonMatch;

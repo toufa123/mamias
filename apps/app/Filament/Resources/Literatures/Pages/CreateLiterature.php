@@ -5,6 +5,9 @@ namespace App\Filament\Resources\Literatures\Pages;
 use App\Filament\Resources\Literatures\LiteratureResource;
 use Filament\Resources\Pages\CreateRecord;
 
+/**
+ * Page for creating literatures.
+ */
 class CreateLiterature extends CreateRecord
 {
     protected static string $resource = LiteratureResource::class;
