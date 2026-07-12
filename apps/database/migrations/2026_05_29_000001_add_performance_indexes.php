@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Add performance indexes to taxas, nis_suggestions, literatures, intro_event_records, subregion_records and pathway_records tables. */
 return new class extends Migration
 {
     public function up(): void

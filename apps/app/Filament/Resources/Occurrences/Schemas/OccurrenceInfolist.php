@@ -13,14 +13,25 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 
+/**
+ * Configures the Filament infolist schema for occurrence records.
+ * Displays species information, location map, photos, and review status.
+ */
 class OccurrenceInfolist
 {
+    /**
+     * @param  Schema  $schema  The infolist schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components(self::getComponents());
     }
 
+    /**
+     * @return array<int, mixed> The array of infolist sections.
+     */
     public static function getComponents(): array
     {
         return [
@@ -31,6 +42,9 @@ class OccurrenceInfolist
         ];
     }
 
+    /**
+     * @return Section The species information section with scientific name, authority, depth, ACFOR, etc.
+     */
     protected static function getSpeciesSection(): Section
     {
         return Section::make('Species Information')
@@ -78,6 +92,9 @@ class OccurrenceInfolist
             ]);
     }
 
+    /**
+     * @return Section The location section with an interactive map entry.
+     */
     protected static function getLocationSection(): Section
     {
         return Section::make('Location')
@@ -96,6 +113,9 @@ class OccurrenceInfolist
             ]);
     }
 
+    /**
+     * @return Section The photos section with an image gallery entry.
+     */
     protected static function getPhotosSection(): Section
     {
         return Section::make('Photos')
@@ -111,6 +131,9 @@ class OccurrenceInfolist
             ]);
     }
 
+    /**
+     * @return Section The review section with status, submitter, timestamps, and moderation notes.
+     */
     protected static function getReviewSection(): Section
     {
         return Section::make('Review')

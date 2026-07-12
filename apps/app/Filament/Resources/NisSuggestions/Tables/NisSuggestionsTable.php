@@ -25,8 +25,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Configures the Filament table for NIS suggestions.
+ * Displays scientific name, authority, Aphia ID, status, location
+ * map, taxon, submitter, submitted timestamp, ACFOR scale, and
+ * habitats columns with approve/reject actions.
+ */
 class NisSuggestionsTable
 {
+    /**
+     * @param  Table  $table  The table to configure.
+     * @return Table The configured table instance.
+     */
     public static function configure(Table $table): Table
     {
         return $table
@@ -80,6 +90,9 @@ class NisSuggestionsTable
             ->defaultSort('created_at', 'desc');
     }
 
+    /**
+     * @return TextColumn The scientific name column, searchable, sortable, rendered in italics.
+     */
     public static function getScientificNameColumn(): TextColumn
     {
         return TextColumn::make('suggested_scientific_name')
@@ -90,6 +103,9 @@ class NisSuggestionsTable
             ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>');
     }
 
+    /**
+     * @return TextColumn The authority column, toggleable with a placeholder fallback.
+     */
     public static function getAuthorityColumn(): TextColumn
     {
         return TextColumn::make('authority')
@@ -98,6 +114,9 @@ class NisSuggestionsTable
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The Aphia ID column linking to WoRMS, toggleable.
+     */
     public static function getAphiaIdColumn(): TextColumn
     {
         return TextColumn::make('aphia_id')
@@ -111,6 +130,9 @@ class NisSuggestionsTable
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The status column as a badge with rejection reason tooltip.
+     */
     public static function getStatusColumn(): TextColumn
     {
         return TextColumn::make('status')
@@ -123,6 +145,9 @@ class NisSuggestionsTable
             });
     }
 
+    /**
+     * @return TextColumn The submitter name column, sortable and searchable.
+     */
     public static function getSubmitterColumn(): TextColumn
     {
         return TextColumn::make('user.name')
@@ -131,6 +156,9 @@ class NisSuggestionsTable
             ->searchable();
     }
 
+    /**
+     * @return TextColumn The submitted-at date column, sortable.
+     */
     public static function getSubmittedAtColumn(): TextColumn
     {
         return TextColumn::make('created_at')
@@ -139,6 +167,9 @@ class NisSuggestionsTable
             ->sortable();
     }
 
+    /**
+     * @return TextColumn The linked taxon column, toggleable with a fish icon.
+     */
     public static function getTaxonColumn(): TextColumn
     {
         return TextColumn::make('taxon')
@@ -153,6 +184,9 @@ class NisSuggestionsTable
             ->toggleable();
     }
 
+    /**
+     * @return MapColumn The location map column, toggleable with a red pick marker.
+     */
     public static function getMapColumn(): MapColumn
     {
         return MapColumn::make('location')
@@ -172,6 +206,9 @@ class NisSuggestionsTable
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The ACFOR scale column as a badge, sortable.
+     */
     public static function getAcforScaleColumn(): TextColumn
     {
         return TextColumn::make('acfor_scale')
@@ -181,6 +218,9 @@ class NisSuggestionsTable
             ->placeholder('—');
     }
 
+    /**
+     * @return TextColumn The habitats column, toggleable with human-readable labels.
+     */
     public static function getHabitatsColumn(): TextColumn
     {
         return TextColumn::make('habitats')

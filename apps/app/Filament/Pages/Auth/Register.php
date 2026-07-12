@@ -19,6 +19,10 @@ use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
 use Spatie\Permission\Models\Role;
 
+/**
+ * Custom registration page with CAPTCHA, honeypot spam protection,
+ * title/name/country fields, and automatic user-role assignment.
+ */
 class Register extends BaseRegister
 {
     use HasCustomLayout, UsesSpamProtection, ValidatesCapToken;
@@ -27,6 +31,10 @@ class Register extends BaseRegister
 
     public ?string $cap_token = null;
 
+    /**
+     * Initialises the honeypot data property and delegates to the
+     * parent mount logic.
+     */
     public function mount(): void
     {
         parent::mount();
@@ -36,6 +44,9 @@ class Register extends BaseRegister
         }
     }
 
+    /**
+     * @param  Schema  $schema  The Filament schema instance.
+     */
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -96,6 +107,10 @@ class Register extends BaseRegister
             ->required();
     }
 
+    /**
+     * Returns the post-registration redirect URL to the email
+     * verification prompt page.
+     */
     public function getRedirectUrl(): string
     {
         return route('filament.mamias.auth.email-verification.prompt');

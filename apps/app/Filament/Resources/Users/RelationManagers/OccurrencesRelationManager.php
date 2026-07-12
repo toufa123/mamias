@@ -10,6 +10,9 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
+/**
+ * Relation manager for viewing occurrences associated with a user.
+ */
 class OccurrencesRelationManager extends RelationManager
 {
     protected static string $relationship = 'occurrences';

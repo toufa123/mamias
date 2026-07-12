@@ -7,13 +7,13 @@ use App\Models\NisSuggestion;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<NisSuggestion>
- */
+/** Create NisSuggestion model instances with user, taxonomy, location, status and documents. */
+/** @extends Factory<NisSuggestion> */
 class NisSuggestionFactory extends Factory
 {
     protected $model = NisSuggestion::class;
 
+    /** @return array<string, mixed> */
     public function definition(): array
     {
         return [

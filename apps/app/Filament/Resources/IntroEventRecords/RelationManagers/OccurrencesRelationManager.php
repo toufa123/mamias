@@ -12,6 +12,9 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
+/**
+ * Relation manager for managing occurrences of an intro event record.
+ */
 class OccurrencesRelationManager extends RelationManager
 {
     protected static string $relationship = 'occurrences';

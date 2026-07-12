@@ -5,6 +5,13 @@ namespace App\Services;
 use App\Enums\Environment;
 use App\Models\Taxon;
 
+/**
+ * Normalizer for Taxon scientific names and related fields.
+ *
+ * Applies nomenclature rules (rank suffixes, affinity notations, authorship cleanup),
+ * kingdom-specific formatting (subgenus/subspecies conventions), and sanitises
+ * encoding artifacts from Excel/CSV imports. Also normalises LSIDs and environment data.
+ */
 class TaxonNormalizer
 {
     /**
@@ -16,6 +23,9 @@ class TaxonNormalizer
         $this->normalizeLsid($taxon);
     }
 
+    /**
+     * Normalise a mixed value to a trimmed string or null if empty.
+     */
     final public function normalizeNullableString(mixed $value): ?string
     {
         if ($value === null) {
@@ -31,6 +41,9 @@ class TaxonNormalizer
         return $normalizedValue !== '' ? $normalizedValue : null;
     }
 
+    /**
+     * Normalise a mixed value to an integer or null if empty.
+     */
     final public function normalizeNullableInt(mixed $value): ?int
     {
         if ($value === null || (is_string($value) && $value === '')) {
@@ -40,6 +53,9 @@ class TaxonNormalizer
         return (int) $value;
     }
 
+    /**
+     * Normalise environment data from various input formats into a sorted array of environment values.
+     */
     final public function normalizeEnvironments(mixed $environments): array
     {
         if (is_string($environments)) {
@@ -69,6 +85,9 @@ class TaxonNormalizer
             ->all();
     }
 
+    /**
+     * Normalise synonym data from various input formats into a cleaned, sorted array.
+     */
     final public function normalizeSynonyms(mixed $synonyms): array
     {
         if (is_string($synonyms)) {

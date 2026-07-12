@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/** Add PostGIS geometry column location_point to the occurrences table. */
 return new class extends Migration
 {
     public function up(): void

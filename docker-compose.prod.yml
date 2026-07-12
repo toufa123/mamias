@@ -20,12 +20,11 @@ services:
       PUID: "${PUID:-33}"
       PGID: "${PGID:-33}"
 
-      # TLS/domain
-      SSL_MODE: "full"
-      SERVER_NAME: "${SERVER_NAME}"
-      CADDY_HTTP_SERVER_ADDRESS: "http://${SERVER_NAME}"
-      CADDY_HTTPS_SERVER_ADDRESS: "https://${SERVER_NAME}"
-      CADDY_AUTO_HTTPS: "on"
+      # ── Serving model: HTTP-only behind Plesk's nginx reverse proxy ──
+      # Plesk terminates TLS (Let's Encrypt) and proxies to the container
+      # over plain HTTP on port 8080. The container does NOT run its own
+      # ACME/HTTPS (ports 80/443 are owned by Plesk). Do not set SSL_MODE.
+      # See: serversideup docs → "Reverse Proxy (recommended)".
       CADDY_SERVER_ROOT: "/var/www/html/public"
       CADDY_ADMIN: "off"
       CADDY_LOG_FORMAT: "json"
@@ -34,7 +33,6 @@ services:
       CADDY_SERVER_EXTRA_DIRECTIVES: |
         encode zstd gzip
         header {
-          Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
           X-Content-Type-Options "nosniff"
           X-Frame-Options "SAMEORIGIN"
           Referrer-Policy "strict-origin-when-cross-origin"
@@ -42,6 +40,11 @@ services:
           Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' blob:; frame-ancestors 'self'"
           -Server
         }
+
+      # Trust Plesk's nginx proxy so Laravel reads X-Forwarded-Proto/Host
+      # and generates https:// URLs (prevents redirect loops / mixed content).
+      # The app port is bound to loopback only, so the proxy is the sole caller.
+      TRUSTED_PROXIES: "${TRUSTED_PROXIES:-*}"
 
       # PHP/Laravel production defaults
       PHP_DISPLAY_ERRORS: "Off"
@@ -99,12 +102,13 @@ services:
       DOCKER_DB_CONTAINER: "${NAME:-mamias}_db"
       DOCKER_BACKUP_CONTAINER: "${NAME:-mamias}_db_backup"
 
+    # Bind to loopback only — Plesk's nginx reverse-proxies to this port.
+    # Never expose the app's HTTP port directly to the public internet.
     ports:
-      - "${APP_HTTPS_PORT:-7443}:8443"
-      - "${APP_HTTPS_PORT:-7443}:8443/udp"
+      - "127.0.0.1:${APP_HTTP_PORT:-7080}:8080"
 
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:8443/up"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/up"]
       interval: 30s
       timeout: 10s
       retries: 5

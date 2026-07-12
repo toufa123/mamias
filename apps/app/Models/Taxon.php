@@ -19,6 +19,9 @@ use Spatie\Activitylog\Support\LogOptions;
 /**
  * Class Taxon
  *
+ * Represents a taxonomic entity (species, genus, etc.) sourced from WoRMS
+ * with catalogue validation status, synonym data, and environment classification.
+ *
  * @property int $id
  * @property int|null $aphia_id
  * @property string|null $url
@@ -44,8 +47,12 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $updated_by
+ *
+ * @method HasMany introEvents()
+ * @method HasMany nisSuggestions()
  */
 #[Fillable([
     'aphia_id',

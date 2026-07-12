@@ -10,10 +10,12 @@ use App\Models\Occurrence;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/** Create Occurrence model instances with user, intro event, location, habitats and moderation status. */
 class OccurrenceFactory extends Factory
 {
     protected $model = Occurrence::class;
 
+    /** @return array<string, mixed> */
     public function definition(): array
     {
         $lat = $this->faker->latitude(30, 46);

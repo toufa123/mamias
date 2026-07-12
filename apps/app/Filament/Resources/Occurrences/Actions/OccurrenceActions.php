@@ -13,8 +13,17 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 
+/**
+ * Provides approve and reject actions for occurrence records.
+ * Approve/reject update the occurrence status and notify the
+ * submitter via database notification.
+ */
 class OccurrenceActions
 {
+    /**
+     * @param  Closure|null  $afterAction  Optional callback invoked after the approve routine.
+     * @return Action The configured approve action.
+     */
     public static function makeApproveAction(?Closure $afterAction = null): Action
     {
         return Action::make('approve')
@@ -57,6 +66,10 @@ class OccurrenceActions
             });
     }
 
+    /**
+     * @param  Closure|null  $afterAction  Optional callback invoked after the reject routine.
+     * @return Action The configured reject action.
+     */
     public static function makeRejectAction(?Closure $afterAction = null): Action
     {
         return Action::make('reject')

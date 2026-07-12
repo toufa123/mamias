@@ -12,13 +12,13 @@ use App\Models\IntroEventRecord;
 use App\Models\PathwayRecord;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<PathwayRecord>
- */
+/** Create PathwayRecord model instances with intro event, CBD pathway category/subcategory and uncertainty. */
+/** @extends Factory<PathwayRecord> */
 class PathwayRecordFactory extends Factory
 {
     protected $model = PathwayRecord::class;
 
+    /** @return array<string, mixed> */
     public function definition(): array
     {
         $category = fake()->randomElement(CbdPathwayCategory::cases());

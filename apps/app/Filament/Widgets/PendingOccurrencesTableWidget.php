@@ -10,6 +10,10 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Table widget listing the five most recent pending occurrence reports
+ * awaiting moderation review, with inline approve/reject actions.
+ */
 class PendingOccurrencesTableWidget extends BaseWidget
 {
     protected static ?int $sort = 5;
@@ -18,6 +22,9 @@ class PendingOccurrencesTableWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    /**
+     * @param  Table  $table  The Filament table instance to configure.
+     */
     public function table(Table $table): Table
     {
         return OccurrencesTable::configure($table)

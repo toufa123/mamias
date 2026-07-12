@@ -37,7 +37,7 @@
                 </div>
                 <div class="kt-menu-dropdown kt-menu-default py-2.5 w-full max-w-[220px]">
                     <div class="kt-menu-item">
-                        <a class="kt-menu-link" href="#" tabindex="0">
+                        <a class="kt-menu-link" href="{{ url('pages/data') }}" tabindex="0">
                             <span class="kt-menu-icon"><i class="ki-filled ki-data"></i></span>
                             <span class="kt-menu-title">Data</span>
                             <span class="kt-menu-badge" data-kt-tooltip="#menu_tooltip_3">
@@ -68,13 +68,13 @@
                         </div>
                         <div class="kt-menu-dropdown kt-menu-default w-full max-w-[175px] lg:max-w-[220px]">
                             <div class="kt-menu-item">
-                                <a class="kt-menu-link" href="#" tabindex="0">
+                                <a class="kt-menu-link" href="{{ url('pages/dashboard/mediterranean') }}" tabindex="0">
                                     <span class="kt-menu-icon"><i class="ki-filled ki-graph"></i></span>
                                     <span class="kt-menu-title grow-0">Mediterranean</span>
                                 </a>
                             </div>
                             <div class="kt-menu-item">
-                                <a class="kt-menu-link" href="#" tabindex="0">
+                                <a class="kt-menu-link" href="{{ url('pages/dashboard/by-country') }}" tabindex="0">
                                     <span class="kt-menu-icon"><i class="ki-filled ki-graph-up"></i></span>
                                     <span class="kt-menu-title grow-0">By Country</span>
                                 </a>
@@ -82,7 +82,7 @@
                         </div>
                     </div>
                     <div class="kt-menu-item">
-                        <a class="kt-menu-link" href="#" tabindex="0">
+                        <a class="kt-menu-link" href="{{ url('pages/map') }}" tabindex="0">
                             <span class="kt-menu-icon"><i class="ki-filled ki-map"></i></span>
                             <span class="kt-menu-title">MAP</span>
                             <span class="kt-menu-badge" data-kt-tooltip="#menu_tooltip_4">
@@ -94,10 +94,10 @@
                 </div>
             </div>
             <div class="kt-menu-item">
-                <a class="kt-menu-link lg:py-3.5 border-b border-b-transparent kt-menu-item-active:border-b-mono text-foreground kt-menu-item-hover:text-mono kt-menu-item-active:text-mono kt-menu-item-here:border-b-mono kt-menu-item-here:text-mono"
-                   href="#">
-                    <span class="kt-menu-title font-medium text-foreground text-sm grow-0">Resources</span>
-                </a>
+                    <a class="kt-menu-link lg:py-3.5 border-b border-b-transparent kt-menu-item-active:border-b-mono text-foreground kt-menu-item-hover:text-mono kt-menu-item-active:text-mono kt-menu-item-here:border-b-mono kt-menu-item-here:text-mono"
+                       href="{{ url('pages/resources') }}">
+                        <span class="kt-menu-title font-medium text-foreground text-sm grow-0">Resources</span>
+                    </a>
             </div>
         </div>
         <!-- End of Mega Menu -->

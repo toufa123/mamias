@@ -5,14 +5,32 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
+/**
+ * Publication types for literature references in the catalogue.
+ *
+ * Classifies each reference by its format (journal article, report, thesis, etc.)
+ * for filtering and display in the Filament panel.
+ */
 enum LiteratureType: string implements HasIcon, HasLabel
 {
+    /** Peer-reviewed journal article. */
     case ARTICLE = 'article';
+
+    /** Technical or project report. */
     case TECHNICAL_REPORT = 'technical_report';
+
+    /** PhD or MSc thesis. */
     case THESIS = 'thesis';
+
+    /** Book or book chapter. */
     case BOOK = 'book';
+
+    /** Conference proceedings paper. */
     case CONFERENCE_PROCEEDINGS = 'conference_proceedings';
 
+    /**
+     * Human-readable label for the literature type.
+     */
     public function getLabel(): ?string
     {
         return match ($this) {
@@ -24,6 +42,9 @@ enum LiteratureType: string implements HasIcon, HasLabel
         };
     }
 
+    /**
+     * Filament icon for UI display.
+     */
     public function getIcon(): ?string
     {
         return match ($this) {

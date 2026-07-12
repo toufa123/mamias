@@ -9,6 +9,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/** Seed the application with roles and developer login users. */
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;

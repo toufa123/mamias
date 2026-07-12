@@ -8,6 +8,12 @@ use App\Enums\LiteratureType;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Service for fetching bibliographic metadata from Crossref via DOI.
+ *
+ * Retrieves full and short reference strings, literature type mapping,
+ * and links. All fetched metadata is cached for 24 hours.
+ */
 class DoiMetadataService
 {
     /**

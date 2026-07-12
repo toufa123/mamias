@@ -9,6 +9,9 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
 
+/**
+ * Page for editing intro event records.
+ */
 class EditIntroEventRecord extends EditRecord
 {
     protected static string $resource = IntroEventRecordResource::class;

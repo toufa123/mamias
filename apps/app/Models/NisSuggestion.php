@@ -21,6 +21,13 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * NIS (Non-Indigenous Species) Suggestion — a user-submitted species observation
+ * for review and potential inclusion in the catalogue.
+ *
+ * Includes spatial location (lat/lng + PostGIS point), ACFOR abundance scale,
+ * habitat types, and supporting media (photos, documents). Suggestions go through
+ * a moderation workflow before being linked to a Taxon.
+ *
  * @property int $id
  * @property int $user_id
  * @property int|null $aphia_id
@@ -42,6 +49,12 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ *
+ * @method BelongsTo user()
+ * @method BelongsToMany literatures()
+ * @method BelongsTo taxon()
+ * @method BelongsTo resubmittedFrom()
+ * @method HasMany resubmissions()
  */
 #[Table('nis_suggestions')]
 #[Fillable([
@@ -83,6 +96,9 @@ class NisSuggestion extends Model
         ];
     }
 
+    /**
+     * Configure activity logging to track all attribute changes.
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -92,26 +108,41 @@ class NisSuggestion extends Model
             ->logExcept(['location_point']);
     }
 
+    /**
+     * The user who submitted this NIS suggestion.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Literature references linked to this suggestion via the pivot table.
+     */
     public function literatures(): BelongsToMany
     {
         return $this->belongsToMany(Literature::class, 'nis_suggestion_literature')->withTimestamps();
     }
 
+    /**
+     * The accepted taxon record that this suggestion was matched to.
+     */
     public function taxon(): BelongsTo
     {
         return $this->belongsTo(Taxon::class);
     }
 
+    /**
+     * The original suggestion that this is a resubmission of.
+     */
     public function resubmittedFrom(): BelongsTo
     {
         return $this->belongsTo(self::class, 'resubmitted_from_id');
     }
 
+    /**
+     * Subsequent resubmissions of this suggestion.
+     */
     public function resubmissions(): HasMany
     {
         return $this->hasMany(self::class, 'resubmitted_from_id');

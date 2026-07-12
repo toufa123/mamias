@@ -7,6 +7,9 @@ namespace App\Filament\Resources\Users\Pages;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Resources\Pages\CreateRecord;
 
+/**
+ * Page for creating users.
+ */
 class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
@@ -18,6 +21,6 @@ class CreateUser extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+        return $this->getResource()::getUrl('index');
     }
 }

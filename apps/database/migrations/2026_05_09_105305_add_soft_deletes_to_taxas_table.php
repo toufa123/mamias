@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Add soft deletes and deleted_by column to the taxas table. */
 return new class extends Migration
 {
     /**

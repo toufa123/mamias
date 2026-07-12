@@ -6,11 +6,21 @@ use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * Configures the Filament table for literature records.
+ * Displays code, short reference, DOI, type, status, full reference,
+ * file, and link columns.
+ */
 class LiteraturesTable
 {
+    /**
+     * @param  Table  $table  The table to configure.
+     * @return Table The configured table instance.
+     */
     public static function configure(Table $table): Table
     {
         return $table
@@ -37,6 +47,9 @@ class LiteraturesTable
             ]);
     }
 
+    /**
+     * @return TextColumn The code column, sortable and searchable.
+     */
     public static function getCodeColumn(): TextColumn
     {
         return TextColumn::make('code')
@@ -45,6 +58,9 @@ class LiteraturesTable
             ->searchable();
     }
 
+    /**
+     * @return TextColumn The short reference column, sortable, searchable, and wrapping.
+     */
     public static function getShortRefColumn(): TextColumn
     {
         return TextColumn::make('short_ref')
@@ -54,6 +70,9 @@ class LiteraturesTable
             ->wrap();
     }
 
+    /**
+     * @return TextColumn The DOI column with an external link icon, sortable and searchable.
+     */
     public static function getDoiColumn(): TextColumn
     {
         return TextColumn::make('doi')
@@ -67,6 +86,9 @@ class LiteraturesTable
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The type column as a badge, sortable and toggleable.
+     */
     public static function getTypeColumn(): TextColumn
     {
         return TextColumn::make('type')
@@ -76,6 +98,9 @@ class LiteraturesTable
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The full reference column, limited to 100 characters and toggleable.
+     */
     public static function getFullRefColumn(): TextColumn
     {
         return TextColumn::make('full_ref')
@@ -85,14 +110,20 @@ class LiteraturesTable
             ->toggleable(isToggledHiddenByDefault: true);
     }
 
+    /**
+     * @return TextColumn The file column with a document icon, toggleable.
+     */
     public static function getFileColumn(): TextColumn
     {
         return TextColumn::make('file_path')
             ->label('File')
-            ->icon('heroicon-o-document')
+            ->icon(Heroicon::OutlinedDocument)
             ->toggleable();
     }
 
+    /**
+     * @return TextColumn The status column as a badge, sortable.
+     */
     public static function getStatusColumn(): TextColumn
     {
         return TextColumn::make('status')
@@ -101,6 +132,9 @@ class LiteraturesTable
             ->sortable();
     }
 
+    /**
+     * @return TextColumn The link column with an external URL, limited to 50 characters and toggleable.
+     */
     public static function getLinkColumn(): TextColumn
     {
         return TextColumn::make('link')

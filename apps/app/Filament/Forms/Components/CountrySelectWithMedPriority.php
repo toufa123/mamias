@@ -5,6 +5,10 @@ namespace App\Filament\Forms\Components;
 use Nakanakaii\Countries\Countries;
 use Nakanakaii\FilamentCountries\Forms\Components\CountrySelect;
 
+/**
+ * Country select field that groups Mediterranean countries first in a
+ * dedicated optgroup, then all remaining countries.
+ */
 class CountrySelectWithMedPriority extends CountrySelect
 {
     protected function setUp(): void

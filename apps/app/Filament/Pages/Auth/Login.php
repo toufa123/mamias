@@ -12,12 +12,20 @@ use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContrac
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Schema;
 
+/**
+ * Custom login page with CAPTCHA, redirect logic for authenticated users,
+ * and role-based post-login redirection.
+ */
 class Login extends BaseLogin
 {
     use HasCustomLayout, ValidatesCapToken;
 
     public ?string $cap_token = null;
 
+    /**
+     * Redirects already-authenticated users to the role-based URL,
+     * otherwise proceeds with the standard login mount logic.
+     */
     public function mount(): void
     {
         if (auth()->check()) {
@@ -29,6 +37,9 @@ class Login extends BaseLogin
         parent::mount();
     }
 
+    /**
+     * @param  Schema  $schema  The Filament schema instance.
+     */
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -41,6 +52,10 @@ class Login extends BaseLogin
             ]);
     }
 
+    /**
+     * Validates the CAPTCHA token before delegating to the parent
+     * authentication logic.
+     */
     public function authenticate(): ?LoginResponseContract
     {
         $data = $this->form->getState();

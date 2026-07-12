@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the nis_suggestions table for user-submitted species suggestions. */
 return new class extends Migration
 {
     public function up(): void

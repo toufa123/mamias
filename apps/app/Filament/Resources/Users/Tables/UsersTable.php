@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
@@ -15,8 +15,17 @@ use Filament\Tables\Table;
 use Nakanakaii\FilamentCountries\Tables\Columns\CountryColumn;
 use Nakanakaii\FilamentCountries\Tables\Filters\CountryFilter;
 
+/**
+ * Configures the Filament table for user records.
+ * Displays row index, avatar, title, name, email, roles, phone,
+ * country, email verification, and timestamps with view/edit/delete actions.
+ */
 class UsersTable
 {
+    /**
+     * @param  Table  $table  The table to configure.
+     * @return Table The configured table instance.
+     */
     public static function configure(Table $table): Table
     {
         return $table
@@ -53,17 +62,13 @@ class UsersTable
                 TextColumn::make('phone')
                     ->label('Phone')
                     ->searchable()
-                    ->url(fn ($record) => $record->phone ? 'tel:'.$record->phone : null)
-                    ->icon('tabler-phone')
-                    ->iconColor('gray'),
-                IconColumn::make('has_whatsapp')
-                    ->label('WhatsApp')
-                    ->icon('tabler-brand-whatsapp')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->url(fn ($record) => $record->has_whatsapp && $record->phone
-                        ? 'whatsapp://send?phone='.preg_replace('/\D/', '', $record->phone)
+                    ->url(fn ($record) => $record->phone
+                        ? ($record->has_whatsapp
+                            ? 'whatsapp://send?phone='.preg_replace('/\D/', '', $record->phone)
+                            : 'tel:'.$record->phone)
                         : null)
-                    ->tooltip(fn ($record) => $record->has_whatsapp ? 'Open WhatsApp' : 'Not on WhatsApp'),
+                    ->icon(fn ($record) => $record->has_whatsapp ? 'tabler-brand-whatsapp' : 'tabler-phone')
+                    ->iconColor(fn ($record) => $record->has_whatsapp ? 'success' : 'gray'),
                 CountryColumn::make('country')
                     ->displayFlags(true) // Show or hide the flag (default: true)
                     ->hideName(false)    // Show or hide the country name (default: false)
@@ -87,17 +92,19 @@ class UsersTable
                 // ->displayFlags(true) // Show or hide the flag in the dropdown options (default: true)
                 // ->imageFlags()
             ])
-            ->recordActions([
-                ViewAction::make()
-                    ->modalWidth('6xl')
-                    ->modalHeading(fn ($record,
-                    ) => trim(($record->first_name ?? '').' '.($record->last_name ?? '')) ?: 'User'),
-                EditAction::make()
-                    ->modalWidth('7xl'),
-                DeleteAction::make()
-                    ->modalWidth('3xl'),
+            ->actions([
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->modalWidth('6xl')
+                        ->modalHeading(fn ($record,
+                        ) => trim(($record->first_name ?? '').' '.($record->last_name ?? '')) ?: 'User'),
+                    EditAction::make()
+                        ->modalWidth('7xl'),
+                    DeleteAction::make()
+                        ->modalWidth('3xl'),
+                ]),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

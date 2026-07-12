@@ -17,8 +17,17 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 
+/**
+ * Provides approve and reject actions for NIS suggestions.
+ * Approve creates a new Taxon (or links an existing one) and
+ * notifies the submitter; reject records the rejection reason.
+ */
 class NisSuggestionActions
 {
+    /**
+     * @param  Closure|null  $afterAction  Optional callback invoked after the approve routine.
+     * @return Action The configured approve action.
+     */
     public static function makeApproveAction(?Closure $afterAction = null): Action
     {
         return Action::make('approve')
@@ -92,6 +101,10 @@ class NisSuggestionActions
             });
     }
 
+    /**
+     * @param  Closure|null  $afterAction  Optional callback invoked after the reject routine.
+     * @return Action The configured reject action.
+     */
     public static function makeRejectAction(?Closure $afterAction = null): Action
     {
         return Action::make('reject')

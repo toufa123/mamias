@@ -43,3 +43,11 @@ Breadcrumbs::for('suggestions', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('My Suggestions', route('suggestions'));
 });
+
+// CMS pages
+Breadcrumbs::for('layup.page.show', function (BreadcrumbTrail $trail, $page = null) {
+    $trail->parent('home');
+    if ($page) {
+        $trail->push($page->title, url('pages/'.$page->path));
+    }
+});

@@ -9,6 +9,9 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Page for editing taxons.
+ */
 class EditTaxon extends EditRecord
 {
     use AppliesTaxonMatch;

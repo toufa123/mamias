@@ -34,6 +34,11 @@ namespace App\Models;
  * @property \DateTime $created_at Timestamp when created
  * @property \DateTime $updated_at Timestamp when last updated
  * @property string|null $remember_token Token for "remember me" functionality
+ *
+ * @method HasMany literatures()
+ * @method HasMany nisSuggestions()
+ * @method HasMany introEventRecords()
+ * @method HasMany occurrences()
  */
 
 use App\Notifications\VerifyEmail;
@@ -91,6 +96,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         });
     }
 
+    /**
+     * Compute the user's full name from first and last name fields.
+     * Falls back to the email local-part if both name fields are empty.
+     */
     protected function getComputedFullName(): string
     {
         $fullName = trim("{$this->first_name} {$this->last_name}");
@@ -102,6 +111,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         return str($this->email)->before('@')->toString();
     }
 
+    /**
+     * Get the user's full name with role labels appended in parentheses.
+     * Returns null if both first and last names are empty.
+     */
     public function getFormattedNameWithRoles(): ?string
     {
         $name = trim(($this->first_name ?? '').' '.($this->last_name ?? ''));

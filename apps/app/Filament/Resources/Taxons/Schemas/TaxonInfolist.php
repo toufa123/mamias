@@ -10,8 +10,17 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Novadaemon\FilamentPrettyJson\Infolist\PrettyJsonEntry;
 
+/**
+ * Configures the Filament infolist schema for taxon records.
+ * Displays general information, taxonomic classification, synonyms,
+ * status and validation, and audit details.
+ */
 class TaxonInfolist
 {
+    /**
+     * @param  Schema  $schema  The infolist schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -29,6 +38,9 @@ class TaxonInfolist
             ]);
     }
 
+    /**
+     * @return Section The general information section with scientific name, WoRMS URL, LSID, Aphia ID, etc.
+     */
     protected static function getGeneralInformationSection(): Section
     {
         return Section::make('General Information')
@@ -99,6 +111,9 @@ class TaxonInfolist
             ]);
     }
 
+    /**
+     * @return Tabs\Tab The taxonomic classification tab with kingdom, phylum, class, order, family, genus, rank, and environment.
+     */
     protected static function getTaxonomicClassificationTab(): Tabs\Tab
     {
         return Tabs\Tab::make('Taxonomic Classification')
@@ -128,6 +143,9 @@ class TaxonInfolist
             ]);
     }
 
+    /**
+     * @return Section The status and validation section with WoRMS status, catalogue status, and timestamps.
+     */
     protected static function getStatusSection(): Section
     {
         return Section::make('Status & Validation')
@@ -174,6 +192,9 @@ class TaxonInfolist
             ]);
     }
 
+    /**
+     * @return Tabs\Tab The synonyms tab with a pretty-printed JSON viewer of WoRMS synonym data.
+     */
     protected static function getSynonymsTab(): Tabs\Tab
     {
         return Tabs\Tab::make('Synonyms')
@@ -186,6 +207,9 @@ class TaxonInfolist
             ]);
     }
 
+    /**
+     * @return Section The audit section with creator, editor, EASIN ID, and timestamps.
+     */
     protected static function getAuditSection(): Section
     {
         return Section::make('Audit')

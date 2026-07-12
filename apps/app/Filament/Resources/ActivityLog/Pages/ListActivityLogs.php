@@ -8,6 +8,9 @@ use App\Filament\Resources\ActivityLog\ActivityLogResource;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 
+/**
+ * Page for listing activity logs.
+ */
 class ListActivityLogs extends ListRecords
 {
     protected static string $resource = ActivityLogResource::class;

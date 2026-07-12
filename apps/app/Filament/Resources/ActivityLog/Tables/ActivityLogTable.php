@@ -14,8 +14,18 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Activity;
 
+/**
+ * Configures the Filament table for the activity log.
+ * Displays date, event, user, record type, record ID, event type,
+ * and properties columns with filtering by event type, log name,
+ * and date range.
+ */
 class ActivityLogTable
 {
+    /**
+     * @param  Table  $table  The table to configure.
+     * @return Table The configured table instance.
+     */
     public static function configure(Table $table): Table
     {
         return $table

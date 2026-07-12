@@ -8,6 +8,9 @@ use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Page for editing users.
+ */
 class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
@@ -19,7 +22,7 @@ class EditUser extends EditRecord
 
     protected function getRedirectUrl(): string
     {
-        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+        return $this->getResource()::getUrl('index');
     }
 
     protected function getHeaderActions(): array

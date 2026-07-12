@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Add deleted_by, tenant_id columns and indexes to recycle_bin_items table. */
 return new class extends Migration
 {
     /**

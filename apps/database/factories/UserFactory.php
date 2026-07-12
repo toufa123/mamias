@@ -9,9 +9,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends Factory<User>
- */
+/** Create User model instances with profile fields, contact info and taxonomic preferences. */
+/** @extends Factory<User> */
 class UserFactory extends Factory
 {
     /**

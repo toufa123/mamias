@@ -10,12 +10,19 @@ use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Pages\PasswordReset\RequestPasswordReset as BaseRequestPasswordReset;
 use Filament\Schemas\Schema;
 
+/**
+ * Custom password reset request page that adds CAPTCHA validation to
+ * the base Filament request flow.
+ */
 class RequestPasswordReset extends BaseRequestPasswordReset
 {
     use HasCustomLayout, ValidatesCapToken;
 
     public ?string $cap_token = null;
 
+    /**
+     * @param  Schema  $schema  The Filament schema instance.
+     */
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -26,6 +33,10 @@ class RequestPasswordReset extends BaseRequestPasswordReset
             ]);
     }
 
+    /**
+     * Validates the CAPTCHA token before delegating to the parent
+     * password reset request logic.
+     */
     public function request(): void
     {
         $data = $this->form->getState();

@@ -175,9 +175,7 @@
 
             <!-- Content -->
             <div class="desktop-content kt-container-fixed grow">
-                <div class="grid gap-5 lg:gap-7.5">
-                    @yield('content')
-                </div>
+                @yield('content')
             </div>
             <!-- End of Content -->
 

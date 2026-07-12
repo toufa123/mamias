@@ -6,8 +6,14 @@ use App\Models\NisSuggestion;
 use EduardoRibeiroDev\FilamentLeaflet\Infolists\MapEntry;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 
+/**
+ * Custom MapEntry that renders all NisSuggestion locations for the same
+ * suggested species name as gray markers, plus the current record's
+ * location as a red marker.
+ */
 class SpeciesLocationsMapEntry extends MapEntry
 {
+    /** @return array<int, Marker> */
     protected function getMarkers(): array
     {
         $record = $this->getRecord();
@@ -43,6 +49,9 @@ class SpeciesLocationsMapEntry extends MapEntry
             ->all();
     }
 
+    /**
+     * @return array<string, mixed> The pick marker configuration array for the current record's location.
+     */
     public function getPickMarkerData(): array
     {
         $record = $this->getRecord();

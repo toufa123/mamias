@@ -5,6 +5,10 @@ namespace App\Filament\Widgets;
 use App\Models\Taxon;
 use Elemind\FilamentECharts\Widgets\EChartWidget;
 
+/**
+ * ECharts stacked bar widget showing the distribution of phyla across
+ * kingdoms in the catalogue.
+ */
 class PhylumByKingdomChart extends EChartWidget
 {
     protected static ?string $heading = 'Phylum by Kingdom';

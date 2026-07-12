@@ -15,14 +15,26 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
+/**
+ * Configures the Filament form schema for NIS suggestions.
+ * Includes WoRMS-driven taxon search, photo uploads, notes, and
+ * literature selection.
+ */
 class NisSuggestionForm
 {
+    /**
+     * @param  Schema  $schema  The form schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components(self::getComponents());
     }
 
+    /**
+     * @return array<int, mixed> The array of form components (grid, hidden fields, tabs).
+     */
     public static function getComponents(): array
     {
         return [
@@ -73,6 +85,9 @@ class NisSuggestionForm
         ];
     }
 
+    /**
+     * @return array<int, mixed> The WoRMS searchable taxon fields and hidden Aphia/authority inputs.
+     */
     public static function getTaxonFields(): array
     {
         $wormsService = app(WormsService::class);
@@ -98,6 +113,11 @@ class NisSuggestionForm
         ];
     }
 
+    /**
+     * @param  string  $search  The search query (minimum 4 characters).
+     * @param  WormsService  $wormsService  The WoRMS API service instance.
+     * @return array<string, string> Map of AphiaID to formatted scientific name labels.
+     */
     public static function searchWoRMS(string $search, WormsService $wormsService): array
     {
         if (strlen($search) < 4) {
@@ -111,6 +131,11 @@ class NisSuggestionForm
             ->toArray();
     }
 
+    /**
+     * @param  mixed  $value  The AphiaID or raw value.
+     * @param  WormsService  $wormsService  The WoRMS API service instance.
+     * @return string|null The formatted scientific name label or null.
+     */
     public static function getWormsLabel(mixed $value, WormsService $wormsService): ?string
     {
         if (! $value) {
@@ -128,6 +153,11 @@ class NisSuggestionForm
         return (string) $value;
     }
 
+    /**
+     * @param  Set  $set  The form state setter utility.
+     * @param  mixed  $state  The selected AphiaID value.
+     * @param  WormsService  $wormsService  The WoRMS API service instance.
+     */
     public static function populateTaxonData(Set $set, mixed $state, WormsService $wormsService): void
     {
         if (! $state) {

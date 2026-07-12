@@ -8,37 +8,101 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
+/**
+ * WoRMS (World Register of Marine Species) taxonomic status values.
+ *
+ * Mirrors the full set of taxonomic status codes used by WoRMS to describe
+ * the nomenclatural and taxonomic standing of a species name.
+ */
 enum Worms_Status: string implements HasColor, HasIcon, HasLabel
 {
+    /** Currently accepted name. */
     case accepted = 'accepted';
+
+    /** Not accepted — superseded or invalid. */
     case unaccepted = 'unaccepted';
+
+    /** Name of doubtful application (nomen dubium). */
     case nomen_dubium = 'nomen dubium';
+
+    /** Name published without a description (nomen nudum). */
     case nomen_nudum = 'nomen nudum';
+
+    /** Name requiring further investigation (taxon inquirendum). */
     case taxon_inquirendum = 'taxon inquirendum';
+
+    /** Name published but not yet validly published. */
     case interim_unpublished = 'interim unpublished';
+
+    /** Taxon record deleted from WoRMS. */
     case deleted = 'deleted';
+
+    /** Taxonomic status is uncertain. */
     case uncertain = 'uncertain';
+
+    /** Alternative representation of the same taxon. */
     case alternative_representation = 'alternative representation';
+
+    /** Temporary name placeholder. */
     case temporary_name = 'temporary name';
+
+    /** Superseded combination (moved to another genus). */
     case superseded_combination = 'superseded combination';
+
+    /** Junior homonym (same name used for different taxon). */
     case junior_homonym = 'junior homonym';
+
+    /** Name misapplied to this taxon. */
     case misapplication = 'misapplication';
+
+    /** Taxonomic discrepancy between sources. */
     case taxonomic_discrepancy = 'taxonomic discrepancy';
+
+    /** Status not yet assessed. */
     case unassessed = 'unassessed';
+
+    /** Misspelling — incorrect subsequent spelling. */
     case misspelling_incorrect_subsequent_spelling = 'misspelling - incorrect subsequent spelling';
+
+    /** Misspelling — incorrect original spelling. */
     case misspelling_incorrect_original_spelling = 'misspelling - incorrect original spelling';
+
+    /** Junior subjective synonym. */
     case junior_subjective_synonym = 'junior subjective synonym';
+
+    /** Junior objective synonym. */
     case junior_objective_synonym = 'junior objective synonym';
+
+    /** Name forgotten or unused (nomen oblitum). */
     case nomen_oblitum = 'nomen oblitum';
+
+    /** General misspelling. */
     case misspelling = 'misspelling';
+
+    /** Unjustified emendation of the original name. */
     case unjustified_emendation = 'unjustified emendation';
+
+    /** Incorrect grammatical agreement. */
     case incorrect_grammatical_agreement = 'incorrect grammatical agreement';
+
+    /** Name not available under nomenclatural rules. */
     case unavailable_name = 'unavailable name';
+
+    /** Superseded rank classification. */
     case superseded_rank = 'superseded rank';
+
+    /** Name rejected under nomenclatural rules (nomen rejiciendum). */
     case nomen_rejiciendum = 'nomen rejiciendum';
+
+    /** Unreplaced junior homonym. */
     case unreplaced_junior_homonym = 'unreplaced junior homonym';
+
+    /** Uncertain taxonomic placement (incertae sedis). */
     case incertae_sedis = 'incertae sedis';
 
+    /**
+     * Human-readable label for the WoRMS taxonomic status.
+     */
     public function getLabel(): string
     {
         return match ($this) {
@@ -73,6 +137,9 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    /**
+     * Filament color for UI display.
+     */
     public function getColor(): string|array|null
     {
         return match ($this) {
@@ -83,6 +150,9 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    /**
+     * Filament icon for UI display.
+     */
     public function getIcon(): ?string
     {
         return match ($this) {

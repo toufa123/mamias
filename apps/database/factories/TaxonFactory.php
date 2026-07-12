@@ -9,13 +9,13 @@ use App\Enums\Worms_Status;
 use App\Models\Taxon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Taxon>
- */
+/** Create Taxon model instances with WoRMS taxonomy data, Aphia ID and catalogue status. */
+/** @extends Factory<Taxon> */
 class TaxonFactory extends Factory
 {
     protected $model = Taxon::class;
 
+    /** @return array<string, mixed> */
     public function definition(): array
     {
         return [

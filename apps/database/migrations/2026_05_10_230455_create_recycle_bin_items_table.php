@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the recycle_bin_items table for soft-deleted model snapshots. */
 return new class extends Migration
 {
     /**

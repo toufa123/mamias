@@ -10,10 +10,20 @@ use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Support\Number;
 
+/**
+ * Importer for Taxon models. Resolves records by scientific name and
+ * runs the TaxonNormalizer before saving to populate rank, kingdom,
+ * phylum, and other taxonomic fields.
+ */
 class TaxonImporter extends Importer
 {
     protected static ?string $model = Taxon::class;
 
+    /**
+     * Defines the CSV-to-model column mappings for the import.
+     *
+     * @return array<int, ImportColumn>
+     */
     public static function getColumns(): array
     {
         return [
@@ -71,6 +81,10 @@ class TaxonImporter extends Importer
         ];
     }
 
+    /**
+     * Resolves an existing Taxon by scientific name, or creates a new
+     * instance with a default not_checked catalogue status.
+     */
     public function resolveRecord(): Taxon
     {
         $scientificname = $this->data['scientificname'] ?? null;
@@ -88,12 +102,21 @@ class TaxonImporter extends Importer
         ]);
     }
 
+    /**
+     * Runs the TaxonNormalizer on the record before persisting to
+     * populate taxonomic fields (rank, kingdom, phylum, etc.).
+     */
     public function beforeSave(): void
     {
         $normalizer = app(TaxonNormalizer::class);
         $normalizer->normalize($this->record);
     }
 
+    /**
+     * Returns the notification body shown after the import completes.
+     *
+     * @param  Import  $import  The completed import model.
+     */
     public static function getCompletedNotificationBody(Import $import): string
     {
         $body = 'Your taxon import has completed and '

@@ -3,9 +3,12 @@
 namespace App\Filament\Resources\IntroEventRecords\Schemas;
 
 use App\Enums\AcforScale;
+use App\Enums\AssessmentScale;
 use App\Enums\CbdPathwayCategory;
 use App\Enums\CbdPathwaySubcategory;
 use App\Enums\DataQuality;
+use App\Enums\EicatCategory;
+use App\Enums\EicatMechanism;
 use App\Enums\EstablishmentStatus;
 use App\Enums\Habitat;
 use App\Enums\NisStatus;
@@ -16,6 +19,7 @@ use App\Filament\Forms\MultipleMarkersMapPicker;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Forms\Components\Component;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -30,8 +34,17 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
 
+/**
+ * Configures the Filament form schema for intro event records.
+ * Organises species identification, references, subregion records,
+ * pathways, occurrences, and EICAT impact assessments into sections and tabs.
+ */
 class IntroEventRecordForm
 {
+    /**
+     * @param  Schema  $schema  The form schema to configure.
+     * @return Schema The configured schema instance.
+     */
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -195,6 +208,64 @@ class IntroEventRecordForm
                         Tab::make('Occurrences')
                             ->icon('tabler-map-pin')
                             ->schema(static::occurrenceSchema()),
+                        Tab::make('EICAT Impact')
+                            ->icon('tabler-alert-triangle')
+                            ->schema([
+                                Repeater::make('eicatAssessments')
+                                    ->hiddenLabel()
+                                    ->table([
+                                        TableColumn::make('Category'),
+                                        TableColumn::make('Mechanism'),
+                                        TableColumn::make('Confidence'),
+                                        TableColumn::make('Literature'),
+                                    ])
+                                    ->addActionLabel('Add EICAT Assessment')
+                                    ->compact()
+                                    ->minItems(0)
+                                    ->maxItems(10)
+                                    ->relationship()
+                                    ->schema([
+                                        Select::make('category')
+                                            ->label('Impact Category')
+                                            ->options(EicatCategory::class)
+                                            ->placeholder('Select category')
+                                            ->required()
+                                            ->columnSpan(1),
+                                        Select::make('mechanism')
+                                            ->label('Impact Mechanism')
+                                            ->options(EicatMechanism::class)
+                                            ->placeholder('Select mechanism')
+                                            ->required()
+                                            ->columnSpan(1),
+                                        Select::make('confidence')
+                                            ->label('Confidence')
+                                            ->options(DataQuality::class)
+                                            ->default('medium')
+                                            ->columnSpan(1),
+                                        Select::make('assessment_scale')
+                                            ->label('Assessment Scale')
+                                            ->options(AssessmentScale::class)
+                                            ->placeholder('Select scale')
+                                            ->helperText('Geographic scope of this assessment')
+                                            ->columnSpan(1),
+                                        Select::make('literature_id')
+                                            ->label('Supporting Literature')
+                                            ->relationship('literature', 'short_ref')
+                                            ->searchable()
+                                            ->preload()
+                                            ->columnSpan(1),
+                                        Textarea::make('rationale')
+                                            ->label('Rationale')
+                                            ->placeholder('Describe the evidence and justification for this assessment...')
+                                            ->rows(3)
+                                            ->columnSpanFull(),
+                                        DatePicker::make('assessed_at')
+                                            ->label('Assessment Date')
+                                            ->default(now())
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns(5),
+                            ]),
                     ]),
             ]);
     }

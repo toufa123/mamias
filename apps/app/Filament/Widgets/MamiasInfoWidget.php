@@ -4,10 +4,17 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\Widget;
 
+/**
+ * Info widget displaying MAMIAS application name, version, logo URL, and
+ * related links on the dashboard.
+ */
 class MamiasInfoWidget extends Widget
 {
     protected string $view = 'filament.widgets.mamias-info-widget';
 
+    /**
+     * @return array<string, string> Application metadata for the view.
+     */
     final public function getViewData(): array
     {
         return [

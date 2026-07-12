@@ -6,6 +6,10 @@ use App\Models\Taxon;
 use Elemind\FilamentECharts\Widgets\EChartWidget;
 use Illuminate\Support\Collection;
 
+/**
+ * ECharts rose-pie widget displaying the number of species grouped by
+ * kingdom.
+ */
 class SpeciesByKingdomChart extends EChartWidget
 {
     protected static ?string $heading = 'Number of Species by Kingdom';

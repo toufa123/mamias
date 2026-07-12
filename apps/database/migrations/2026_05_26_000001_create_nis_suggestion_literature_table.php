@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the pivot table nis_suggestion_literature for many-to-many relation. */
 return new class extends Migration
 {
     public function up(): void

@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/** Create the settings table for Spatie Laravel Settings. */
 return new class extends Migration
 {
     public function up(): void

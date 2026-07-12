@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/** Seed development users (admin, scientist, public) with their assigned roles. */
 class DeveloperLoginUsersSeeder extends Seeder
 {
     public function run(): void

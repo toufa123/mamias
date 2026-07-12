@@ -3,6 +3,7 @@
 use Clickbar\Magellan\Schema\MagellanSchema;
 use Illuminate\Database\Migrations\Migration;
 
+/** Enable the PostGIS extension for geographic data support. */
 return new class extends Migration
 {
     public function up(): void

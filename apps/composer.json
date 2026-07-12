@@ -19,6 +19,7 @@
     "clcbws/laravel-schema-sentinel": "2.0.0",
     "clickbar/laravel-magellan": "*",
     "cms-multi/filament-clear-cache": "^3.0",
+    "crumbls/layup": "^1.5",
     "daljo25/filament-dependency-manager": "^5.0",
     "daljo25/filament-tabler-icons": "^3.41",
     "defstudio/filament-searchable-input": "^5.0",

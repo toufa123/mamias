@@ -6,6 +6,12 @@ use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
 use App\Enums\Worms_Status;
 
+/**
+ * Helper for comparing and building form-state representations of taxon data.
+ *
+ * Used by TaxonService to compute differences between current form values
+ * and newly fetched WoRMS data, supporting partial updates with notifications.
+ */
 class TaxonStateHelper
 {
     public function __construct(
@@ -31,6 +37,9 @@ class TaxonStateHelper
         return $changedFields;
     }
 
+    /**
+     * Get a human-readable label for a taxon field key.
+     */
     public function getFetchedDataFieldLabel(string $field): string
     {
         $labels = [
@@ -59,6 +68,14 @@ class TaxonStateHelper
         return $labels[$field] ?? ucwords(str_replace('_', ' ', $field));
     }
 
+    /**
+     * Build normalised "current" and "incoming" state arrays for comparison.
+     *
+     * @param  array<string, mixed>  $currentValues
+     * @param  array<string, mixed>  $wormsRecord
+     * @param  array<int, mixed>  $formattedSynonyms
+     * @return array{array<string, mixed>, array<string, mixed>}
+     */
     public function buildFetchedDataStates(array $currentValues, array $wormsRecord, array $formattedSynonyms, ?string $notes, ?string $proposedAcceptedName = null): array
     {
         $wormsStatus = $currentValues['worms_status'] ?? '';
@@ -126,6 +143,9 @@ class TaxonStateHelper
         return [$currentState, $incomingState];
     }
 
+    /**
+     * Format a WoRMS record and its synonyms into a form-friendly state array.
+     */
     public function formatWormsDataForForm(array $record, array $formattedSynonyms): array
     {
         $wormsStatus = $record['status'] ?? '';
