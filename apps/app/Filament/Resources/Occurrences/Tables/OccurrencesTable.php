@@ -132,7 +132,7 @@ class OccurrencesTable
             ->label('Depth')
             ->placeholder('—')
             ->suffix(' m')
-            ->numeric()
+            ->numeric(thousandsSeparator: '')
             ->sortable();
     }
 

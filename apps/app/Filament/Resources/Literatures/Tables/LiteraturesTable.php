@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 
 /**
  * Configures the Filament table for literature records.
@@ -40,7 +41,8 @@ class LiteraturesTable
             ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
+                TableExportQuickHeaderAction::make(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -93,11 +93,75 @@
                     </div>
                 </div>
             </div>
-            <div class="kt-menu-item">
-                    <a class="kt-menu-link lg:py-3.5 border-b border-b-transparent kt-menu-item-active:border-b-mono text-foreground kt-menu-item-hover:text-mono kt-menu-item-active:text-mono kt-menu-item-here:border-b-mono kt-menu-item-here:text-mono"
-                       href="{{ url('pages/resources') }}">
-                        <span class="kt-menu-title font-medium text-foreground text-sm grow-0">Resources</span>
-                    </a>
+            <div class="kt-menu-item" data-kt-menu-item-offset="0,0|lg:-20px, 0"
+                 data-kt-menu-item-offset-rtl="0,0|lg:20px, 0" data-kt-menu-item-overflow="true"
+                 data-kt-menu-item-placement="bottom-start" data-kt-menu-item-placement-rtl="bottom-end"
+                 data-kt-menu-item-toggle="dropdown" data-kt-menu-item-trigger="click|lg:hover">
+                <div class="kt-menu-link lg:py-3.5 border-b border-b-transparent kt-menu-item-active:border-b-mono text-foreground kt-menu-item-hover:text-mono kt-menu-item-active:text-mono kt-menu-item-here:border-b-mono kt-menu-item-here:text-mono">
+                    <span class="kt-menu-title font-medium text-foreground text-sm">Resources</span>
+                    <span class="kt-menu-arrow flex lg:hidden">
+                        <span class="flex kt-menu-item-show:hidden">
+                            <i class="ki-filled ki-plus text-xs text-secondary-foreground"></i>
+                        </span>
+                        <span class="hidden kt-menu-item-show:inline-flex">
+                            <i class="ki-filled ki-minus text-xs text-secondary-foreground"></i>
+                        </span>
+                    </span>
+                </div>
+                <div class="kt-menu-dropdown kt-menu-default py-2.5 w-full max-w-[260px]">
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link" href="{{ url('pages/resources') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-data"></i></span>
+                            <span class="kt-menu-title">Resources</span>
+                        </a>
+                    </div>
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link" href="{{ url('pages/post-2020-sapbio') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
+                            <span class="kt-menu-title">Post-2020 SAPBIO</span>
+                        </a>
+                    </div>
+                    <div class="kt-menu-item" data-kt-menu-item-placement="bottom-start|lg:right-start"
+                         data-kt-menu-item-placement-rtl="bottom-start|lg:left-start" data-kt-menu-item-toggle="dropdown"
+                         data-kt-menu-item-trigger="click|lg:hover">
+                        <div class="kt-menu-link">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
+                            <span class="kt-menu-title">Ballast Water Management</span>
+                            <span class="kt-menu-arrow">
+                                <span class="lg:hidden">
+                                    <span class="flex kt-menu-item-show:hidden">
+                                        <i class="ki-filled ki-plus text-xs text-secondary-foreground"></i>
+                                    </span>
+                                    <span class="hidden kt-menu-item-show:inline-flex">
+                                        <i class="ki-filled ki-minus text-xs text-secondary-foreground"></i>
+                                    </span>
+                                </span>
+                                <span class="hidden lg:inline-flex">
+                                    <i class="ki-filled ki-right text-xs rtl:transform rtl:rotate-180"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="kt-menu-dropdown kt-menu-default w-full max-w-[260px]">
+                            <div class="kt-menu-item">
+                                <a class="kt-menu-link" href="{{ url('pages/ballast-water/strategy') }}" tabindex="0">
+                                    <span class="kt-menu-title">The Mediterranean Ballast Water Management Strategy</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link" href="{{ url('pages/ballast-water/non-indigenous-species') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
+                            <span class="kt-menu-title">Non-indigenous species management</span>
+                        </a>
+                    </div>
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link" href="{{ url('pages/ballast-water/imap') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
+                            <span class="kt-menu-title">IMAP</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- End of Mega Menu -->

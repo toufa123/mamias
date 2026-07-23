@@ -14,6 +14,7 @@ use Filament\Tables\Enums\ColumnManagerLayout;
 use Filament\Tables\Table;
 use Nakanakaii\FilamentCountries\Tables\Columns\CountryColumn;
 use Nakanakaii\FilamentCountries\Tables\Filters\CountryFilter;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 
 /**
  * Configures the Filament table for user records.
@@ -104,7 +105,8 @@ class UsersTable
                         ->modalWidth('3xl'),
                 ]),
             ])
-            ->bulkActions([
+            ->toolbarActions([
+                TableExportQuickHeaderAction::make(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -70,6 +70,7 @@ class NisSuggestionInfolist
                     TextEntry::make('aphia_id')
                         ->label('Aphia ID')
                         ->placeholder('—')
+                        ->numeric(thousandsSeparator: '')
                         ->url(fn (NisSuggestion $record): ?string => $record->aphia_id
                             ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id={$record->aphia_id}"
                             : null)
@@ -82,7 +83,7 @@ class NisSuggestionInfolist
                         ->label('Depth')
                         ->placeholder('—')
                         ->suffix(' m')
-                        ->numeric(),
+                        ->numeric(thousandsSeparator: ''),
                     TextEntry::make('acfor_scale')
                         ->label('Abundance (ACFOR Scale)')
                         ->badge()

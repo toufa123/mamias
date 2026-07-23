@@ -1,0 +1,5 @@
+{
+    "require": {
+        "muazzambuilds/filament-recycle-bin": "^1.0"
+    }
+}

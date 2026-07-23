@@ -51,7 +51,7 @@
 
         <x-slot name="description">
             @if($isRunning)
-                Updating {{ number_format($total) }} {{ Str::plural('species', $total) }} with the latest classification data.
+                Updating {{ $total }} {{ Str::plural('species', $total) }} with the latest classification data.
             @elseif($isCompleted)
                 @php $totals = $progress['totals'] ?? []; @endphp
                 All species have been processed successfully.
@@ -90,7 +90,7 @@
 
                     <div class="flex items-center justify-between text-sm">
                         <span class="font-medium text-primary-600 dark:text-primary-400">
-                            {{ number_format($processed) }} of {{ number_format($total) }} processed
+                            {{ $processed }} of {{ $total }} processed
                         </span>
                         @if(! empty($progress['estimatedTime']))
                             <span class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
@@ -163,7 +163,7 @@
 
         <x-slot name="description">
             @if($easinIsRunning)
-                Looking up EASIN IDs for {{ number_format($easinTotal) }} {{ Str::plural('species', $easinTotal) }}.
+                Looking up EASIN IDs for {{ $easinTotal }} {{ Str::plural('species', $easinTotal) }}.
             @elseif($easinIsCompleted)
                 All species have been processed successfully.
             @elseif($easinIsFailed)
@@ -201,7 +201,7 @@
 
                     <div class="flex items-center justify-between text-sm">
                         <span class="font-medium text-success-600 dark:text-success-400">
-                            {{ number_format($easinProcessed) }} of {{ number_format($easinTotal) }} processed
+                            {{ $easinProcessed }} of {{ $easinTotal }} processed
                         </span>
                         @if(! empty($easinProgress['estimatedTime']))
                             <span class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
@@ -273,11 +273,11 @@
         @if($hasImportResult)
         <div class="grid grid-cols-2 gap-3">
             <div class="rounded-lg bg-success-50 p-3 text-center dark:bg-success-950/30">
-                <p class="text-2xl font-bold text-success-600 dark:text-success-400">{{ number_format($importResult['successful_rows'] ?? 0) }}</p>
+                <p class="text-2xl font-bold text-success-600 dark:text-success-400">{{ $importResult['successful_rows'] ?? 0 }}</p>
                 <p class="text-xs text-success-600/70 dark:text-success-400/70">{{ Str::plural('Row', $importResult['successful_rows'] ?? 0) }} imported</p>
             </div>
             <div class="rounded-lg {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'bg-danger-50 dark:bg-danger-950/30' : 'bg-gray-50 dark:bg-gray-800' }} p-3 text-center">
-                <p class="text-2xl font-bold {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600 dark:text-danger-400' : 'text-gray-400 dark:text-gray-500' }}">{{ number_format($importResult['failed_rows'] ?? 0) }}</p>
+                <p class="text-2xl font-bold {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600 dark:text-danger-400' : 'text-gray-400 dark:text-gray-500' }}">{{ $importResult['failed_rows'] ?? 0 }}</p>
                 <p class="text-xs {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600/70 dark:text-danger-400/70' : 'text-gray-500 dark:text-gray-400/70' }}">Failed</p>
             </div>
         </div>

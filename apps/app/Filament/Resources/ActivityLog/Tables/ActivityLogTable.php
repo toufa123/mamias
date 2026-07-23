@@ -60,6 +60,7 @@ class ActivityLogTable
                     ->width(140),
                 TextColumn::make('subject_id')
                     ->label('Record ID')
+                    ->numeric(thousandsSeparator: '')
                     ->width(80),
                 TextColumn::make('event')
                     ->label('Event type')
@@ -151,6 +152,7 @@ class ActivityLogTable
                     }),
             ])
             ->filtersFormWidth(Width::ExtraLarge)
+            ->toolbarActions([])
             ->poll('30s');
     }
 }

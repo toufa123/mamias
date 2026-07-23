@@ -39,11 +39,15 @@
     "livewire/livewire": "^4.3",
     "lubusin/laravel-decomposer": "^1.4",
     "mantraideas/laravel-env-doctor": "^1.0",
-    "marjose123/filament-lockscreen": "*",
+    "marjose123/filament-lockscreen": "v3.4.1",
+    "martin6363/filament-sidebar-resize": "^1.0",
     "mckenziearts/laravel-notify": "^3.2",
     "nakanakaii/filament-countries": "^1.0",
     "novadaemon/filament-pretty-json": "^4.2",
-    "phpoffice/phpspreadsheet": "^5.7",
+    "occtherapist/advanced-table-export-for-filament": "^1.0.1",
+    "openspout/openspout": "^4.32",
+    "phpoffice/phpspreadsheet": "^5.8",
+    "prodstarter/filament-notification-center": "^1.0",
     "promethys/revive": "*",
     "pxlrbt/filament-environment-indicator": "^3.5",
     "pxlrbt/filament-spotlight": "^2.1",
@@ -52,7 +56,9 @@
     "spatie/laravel-activitylog": "^5.0",
     "spatie/laravel-honeypot": "^4.7",
     "wildside/userstamps": "^4.0",
-    "yousefaman/filament-modal-repeater": "^1.1"
+    "yousefaman/filament-modal-repeater": "^1.1",
+    "zoltantorok/filament-drag-and-scroll": "^1.0",
+    "zvizvi/filament-notifications-tabs": "^0.0.2"
   } ,
   "require-dev": {
     "andreapollastri/checkpoint": "^1.0",

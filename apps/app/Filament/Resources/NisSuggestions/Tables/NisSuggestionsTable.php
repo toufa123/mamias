@@ -24,6 +24,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 
 /**
  * Configures the Filament table for NIS suggestions.
@@ -81,6 +82,7 @@ class NisSuggestionsTable
             ])
             ->recordAction(ViewAction::class)
             ->toolbarActions([
+                TableExportQuickHeaderAction::make(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     RestoreBulkAction::make(),
@@ -122,6 +124,7 @@ class NisSuggestionsTable
         return TextColumn::make('aphia_id')
             ->label('Aphia ID')
             ->placeholder('—')
+            ->numeric(thousandsSeparator: '')
             ->url(fn (NisSuggestion $record): ?string => $record->aphia_id
                 ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id={$record->aphia_id}"
                 : null)

@@ -63,7 +63,7 @@ class OccurrenceInfolist
                         ->label('Depth')
                         ->placeholder('—')
                         ->suffix(' m')
-                        ->numeric(),
+                        ->numeric(thousandsSeparator: ''),
                     TextEntry::make('acfor_scale')
                         ->label('Abundance (ACFOR)')
                         ->badge()

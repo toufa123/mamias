@@ -7,6 +7,8 @@
 @source '../../../../vendor/defstudio/filament-searchable-input/resources/**/*.blade.php';
 @source '../../../../vendor/agencetwogether/filament-alert-box/resources/views/**/*';
 @source '../../../../vendor/wire-elements/**/*.blade.php';
+@source '../../../../vendor/zvizvi/filament-notifications-tabs/resources/views/**/*.blade.php';
+
 
 /* Fix Leaflet 1.9 gray tile issue — mix-blend-mode makes tiles invisible on many browsers */
 .leaflet-container img.leaflet-tile {
@@ -134,6 +136,11 @@
 .it-stepper-btn-decrement:hover,
 .it-stepper-btn-increment:hover {
     background-color: var(--primary-600) !important;
+}
+
+/* ── Footer larger text ────────────────────────────────── */
+.fi-footer {
+    font-size: 1rem !important;
 }
 
 .it-stepper-btn-decrement:disabled,

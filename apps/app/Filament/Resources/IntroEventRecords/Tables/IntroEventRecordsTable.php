@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 
 /**
  * Configures the Filament table for intro event records.
@@ -30,7 +31,7 @@ class IntroEventRecordsTable
                     ->formatStateUsing(fn ($state, $record): string => $state.($record?->taxon?->authority ? ' ('.$record->taxon->authority.')' : '')),
                 TextColumn::make('first_introduction_year')
                     ->label('1st Year of Introduction')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable(),
                 TextColumn::make('first_country')
                     ->label('1st Country of Introduction')
@@ -76,11 +77,11 @@ class IntroEventRecordsTable
                 //                    ->badge()
                 //                    ->searchable(),
                 TextColumn::make('created_by')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_by')
-                    ->numeric()
+                    ->numeric(thousandsSeparator: '')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
@@ -99,6 +100,7 @@ class IntroEventRecordsTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                TableExportQuickHeaderAction::make(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

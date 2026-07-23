@@ -94,6 +94,7 @@ class TaxonInfolist
                             ->label('Aphia ID')
                             ->badge()
                             ->color('info')
+                            ->numeric(thousandsSeparator: '')
                             ->icon('tabler-number')
                             ->placeholder('—')
                             ->url(fn ($state) => $state ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id={$state}" : null)

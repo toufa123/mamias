@@ -12,6 +12,7 @@ use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 
 /**
  * Page for listing taxons.
@@ -129,6 +130,7 @@ class ListTaxons extends ListRecords
             ImportAction::make()
                 ->importer(TaxonImporter::class)
                 ->chunkSize(100),
+            
         ];
     }
 }

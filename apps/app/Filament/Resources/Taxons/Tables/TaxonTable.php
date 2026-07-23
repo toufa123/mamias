@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
+
 
 /**
  * Configures the Filament table for taxon records.
@@ -160,6 +162,7 @@ class TaxonTable
                 ]),
             ])
             ->toolbarActions([
+                TableExportQuickHeaderAction::make()->disablePreview(),
                 BulkActionGroup::make([
                     BulkAction::make('fetch_from_worms')
                         ->label('Fetch from WoRMS')
@@ -294,6 +297,11 @@ class TaxonTable
             ->wrap()
             ->badge()
             ->color(function (mixed $state): string|array|null {
+                if (is_array($state)) {
+                    return collect($state)
+                        ->map(fn ($value) => Environment::fromLabelOrValue($value)?->getColor() ?? 'gray')
+                        ->first();
+                }
                 if ($state instanceof Environment) {
                     $environment = $state;
                 } elseif (is_string($state)) {
@@ -309,6 +317,12 @@ class TaxonTable
                 return $color ?? 'gray';
             })
             ->formatStateUsing(function (mixed $state): string {
+                if (is_array($state)) {
+                    return collect($state)
+                        ->map(fn ($value) => Environment::fromLabelOrValue($value)?->getLabel() ?? (string) $value)
+                        ->implode(', ');
+                }
+
                 if ($state instanceof Environment) {
                     $environment = $state;
                 } elseif (is_string($state)) {
@@ -388,7 +402,7 @@ class TaxonTable
             return '<span class="not-italic">'.$matches[1].'</span>';
         }, $state);
 
-        return "<span class='italic font-serif'>{$formatted}</span>";
+        return "<span class='italic' style=\"font-family: Georgia, 'Times New Roman', Times, serif; font-feature-settings: 'liga'; letter-spacing: -0.01em;\">{$formatted}</span>";
     }
 
     protected static function getScientificNameTooltip(Taxon $record): ?HtmlString
@@ -408,7 +422,7 @@ class TaxonTable
             }, $name);
 
             return new HtmlString(
-                "<span class='italic font-serif'>{$formattedName}</span>".
+                "<span class='italic' style=\"font-family: Georgia, 'Times New Roman', Times, serif; font-feature-settings: 'liga'; letter-spacing: -0.01em;\">{$formattedName}</span>".
                 ($authority !== '' ? " <span class='not-italic'> {$authority}</span>" : '')
             );
         }

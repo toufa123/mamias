@@ -1,6 +1,7 @@
 apps/node_modules
 apps/vendor
 apps/storage/*.key
+apps/storage/app/private/livewire-tmp
 apps/public/storage
 apps/.env
 .git

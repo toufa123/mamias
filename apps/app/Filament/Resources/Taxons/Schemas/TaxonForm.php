@@ -78,7 +78,11 @@ class TaxonForm
                             ->label('LSID')
                             ->maxLength(255)
                             ->columnSpan(6),
-                        TextInput::make('aphia_id')->label('Aphia ID')->numeric()->columnSpan(4)->live(),
+                        TextInput::make('aphia_id')
+                            ->label('Aphia ID')
+                            ->numeric()
+                            ->columnSpan(4)
+                            ->live(),
                         TextInput::make('Easin_id')
                             ->label('EASIN ID')
                             ->helperText(fn ($record) => $record?->Easin_id ? new HtmlString('<a href="https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/'.$record->Easin_id.'" target="_blank" class="text-primary-600 underline">View EASIN Factsheet</a>') : null)

@@ -42,7 +42,7 @@
     <div class="fiwa-summary">
         <div class="fiwa-summary-item">
             <span class="fiwa-label">{{ __('filament-import-wizard::filament-import-wizard.steps.review.total_rows') }}</span>
-            <span class="fiwa-value">{{ number_format($totalRows) }}</span>
+            <span class="fiwa-value">{{ $totalRows }}</span>
         </div>
         <div class="fiwa-summary-item">
             <span class="fiwa-label">{{ __('filament-import-wizard::filament-import-wizard.steps.review.errors') }}</span>

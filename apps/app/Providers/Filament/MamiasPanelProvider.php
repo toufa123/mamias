@@ -36,21 +36,24 @@ use Filament\Support\Enums\Width;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Vite;
-use Illuminate\Support\HtmlString;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\View\View;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
 use lockscreen\FilamentLockscreen\Lockscreen;
+use Martin6363\SidebarResize\SidebarResizePlugin;
+use Promethys\Revive\RevivePlugin;
+use OccTherapist\AdvancedTableExportForFilament\AdvancedTableExportForFilamentPlugin;
+use Prodstarter\FilamentNotificationCenter\FilamentNotificationCenterPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 use YousefAman\ModalRepeater\ModalRepeaterPlugin;
+use Zvizvi\FilamentNotificationsTabs\FilamentNotificationsTabsPlugin;
 
 /**
  * Configures the main MAMIAS Filament administration panel.
@@ -89,6 +92,7 @@ class MamiasPanelProvider extends PanelProvider
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/favicon.png'))
             ->maxContentWidth(Width::Full)
+            ->dragAndScroll()
             ->spa(hasPrefetching: true)
             ->spaUrlExceptions(fn (): array => [
                 url('/mamias'),
@@ -108,6 +112,16 @@ class MamiasPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
+                FilamentNotificationCenterPlugin::make(),
+                AdvancedTableExportForFilamentPlugin::make()
+                    ->maxPdfRows(200)
+                    ->maxExportRows(3000)
+                    ->previewPerPage(25),
+                // ->previewPerPage(25),
+                FilamentNotificationsTabsPlugin::make(),
+                SidebarResizePlugin::make()
+                    ->minWidth(220)
+                    ->maxWidth(480),
                 SpotlightPlugin::make(),
                 RefreshSidebarPlugin::make(),
                 CommandRunnerPlugin::make()
@@ -147,7 +161,11 @@ class MamiasPanelProvider extends PanelProvider
                     ->formPanelWidth('70%')
                     ->emptyPanelView('auth.empty-panel'),
                 EasyFooterPlugin::make()
-                    ->withSentence(new HtmlString('<img src="'.asset('images/sparac.png').'" style="margin-right:.4rem;" alt="Laravel Logo" width="150" height="20"> SPA/RAC'))
+                    ->withSentence('SPA/RAC')
+                    ->withLogo(
+                        path: '/images/sparac.png',
+                        height: 30,
+                    )
                     ->withBorder()
                     ->withLinks([
                         ['title' => 'Legal notice', 'url' => '#'],
@@ -184,6 +202,9 @@ class MamiasPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm' => 2,
                     ]),
+                RevivePlugin::make()
+                    ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
+                    ->navigationGroup('System'),
             ])
             ->colors([
                 'primary' => [
@@ -257,7 +278,6 @@ class MamiasPanelProvider extends PanelProvider
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
                 AuthenticateSession::class,
-                ShareErrorsFromSession::class,
                 PreventRequestForgery::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
@@ -269,7 +289,7 @@ class MamiasPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 'panels::body.start',
-                fn (): View => view('filament.mobile-notice'),
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.mobile-notice'),
             );
     }
 }

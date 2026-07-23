@@ -18,7 +18,7 @@
             @if($queueDriver === 'sync')
                 <div style="text-align: center; padding: 20px;">
                     <p style="color: var(--color-success-500); font-weight: 600;">{{ __('filament-import-wizard::filament-import-wizard.steps.import.imported') }}</p>
-                    <p>{{ number_format($totalRows) }} {{ __('filament-import-wizard::filament-import-wizard.steps.import.imported') }}</p>
+                    <p>{{ $totalRows }} {{ __('filament-import-wizard::filament-import-wizard.steps.import.imported') }}</p>
                 </div>
             @else
                 <p style="text-align: center; color: var(--color-primary-500); font-weight: 500; margin-bottom: 16px;">
@@ -29,9 +29,9 @@
                     <div class="fiwa-progress-fill" style="width: <?php echo $progress; ?>%"></div>
                 </div>
                 <div class="fiwa-progress-stats">
-                    <span>{{ __('filament-import-wizard::filament-import-wizard.steps.import.processed', ['count' => number_format($processedRows)]) }}</span>
-                    <span>{{ __('filament-import-wizard::filament-import-wizard.steps.import.success', ['count' => number_format($successRows)]) }}</span>
-                    <span>{{ __('filament-import-wizard::filament-import-wizard.steps.import.failed', ['count' => number_format($failedRows)]) }}</span>
+                    <span>{{ __('filament-import-wizard::filament-import-wizard.steps.import.processed', ['count' => $processedRows]) }}</span>
+                    <span>{{ __('filament-import-wizard::filament-import-wizard.steps.import.success', ['count' => $successRows]) }}</span>
+                    <span>{{ __('filament-import-wizard::filament-import-wizard.steps.import.failed', ['count' => $failedRows]) }}</span>
                 </div>
             @endif
         </div>
@@ -54,12 +54,12 @@
             @endif
             <div class="fiwa-completed-stats">
                 <div class="fi-stat">
-                    <span class="fiwa-stat-value">{{ number_format($successRows) }}</span>
+                    <span class="fiwa-stat-value">{{ $successRows }}</span>
                     <span class="fiwa-stat-label">imported</span>
                 </div>
                 @if($failedRows > 0)
                     <div class="fi-stat fi-stat-error">
-                        <span class="fiwa-stat-value">{{ number_format($failedRows) }}</span>
+                        <span class="fiwa-stat-value">{{ $failedRows }}</span>
                         <span class="fiwa-stat-label">failed</span>
                         <button type="button" wire:click="downloadErrors" class="fiwa-download-errors">Download errors</button>
                     </div>
