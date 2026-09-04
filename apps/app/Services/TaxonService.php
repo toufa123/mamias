@@ -49,7 +49,7 @@ class TaxonService
                 $taxon->save();
 
                 if ($onProgress) {
-                    $onProgress();
+                    $onProgress($taxon);
                 }
 
                 continue;
@@ -65,7 +65,7 @@ class TaxonService
                 $taxon->save();
 
                 if ($onProgress) {
-                    $onProgress();
+                    $onProgress($taxon);
                 }
 
                 continue;

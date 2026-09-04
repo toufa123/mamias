@@ -5,15 +5,22 @@
     $isCompleted = $status === 'completed';
     $isFailed = $status === 'failed';
 
+    $isCancelled = $status === 'cancelled';
+
     // Syncing is active if the component says so OR if we have data in cache
     $isSyncing = $this->isSyncing || ($progress !== null);
+
+    // Modal is open but the worker hasn't written the first progress record yet.
+    $isPreparing = $isSyncing && ! ($isRunning || $isCompleted || $isFailed || $isCancelled);
 
     $easinProgress = $this->getEasinProgress();
     $easinStatus = $easinProgress['status'] ?? null;
     $easinIsRunning = $easinStatus === 'running';
     $easinIsCompleted = $easinStatus === 'completed';
     $easinIsFailed = $easinStatus === 'failed';
+    $easinIsCancelled = $easinStatus === 'cancelled';
     $isEasinSyncing = $this->isEasinSyncing || ($easinProgress !== null);
+    $easinIsPreparing = $isEasinSyncing && ! ($easinIsRunning || $easinIsCompleted || $easinIsFailed || $easinIsCancelled);
 
     $importResult = $this->getImportResult();
     $hasImportResult = $importResult !== null;
@@ -28,7 +35,6 @@
 @endphp
 
 <div>
-
     {{-- WoRMS sync modal --}}
     <x-filament::modal
         id="worms-sync-progress"
@@ -40,29 +46,62 @@
         width="lg"
     >
         <x-slot name="heading">
-            @if($isRunning)
+            @if ($isRunning)
                 Syncing taxonomy from WoRMS
-            @elseif($isCompleted)
+            @elseif ($isCompleted)
                 Taxonomy sync complete
-            @elseif($isFailed)
+            @elseif ($isFailed)
                 Taxonomy sync failed
+            @elseif ($isCancelled)
+                Sync aborted
+            @elseif ($isPreparing)
+                Starting WoRMS sync…
             @endif
         </x-slot>
 
         <x-slot name="description">
-            @if($isRunning)
+            @if ($isRunning)
                 Updating {{ $total }} {{ Str::plural('species', $total) }} with the latest classification data.
-            @elseif($isCompleted)
+            @elseif ($isCompleted)
                 @php $totals = $progress['totals'] ?? []; @endphp
                 All species have been processed successfully.
-            @elseif($isFailed)
+            @elseif ($isFailed)
                 {{ $progress['error'] ?? 'An unexpected error occurred.' }}
+            @elseif ($isCancelled)
+                {{ $progress['remaining'] ?? 0 }} {{ Str::plural('species', $progress['remaining'] ?? 0) }} were not processed.
+            @elseif ($isPreparing)
+                Your request is queued and will begin in a moment.
             @endif
         </x-slot>
 
-        <div @if($isSyncing) wire:poll.2s @endif>
+        <div @if ($isSyncing) wire:poll.2s @endif>
+            @if ($isPreparing)
+                <div class="space-y-4">
+                    <div
+                        class="pb-track"
+                        data-pb-size="md"
+                        data-pb-shape="pill"
+                        data-pb-color="primary"
+                        data-pb-indeterminate="true"
+                        role="progressbar"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        <div
+                            class="pb-fill"
+                            data-pb-striped="true"
+                            data-pb-animated="true"
+                            data-pb-gradient="true"
+                            data-pb-indeterminate="true"
+                        ></div>
+                    </div>
 
-            @if($isRunning)
+                    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <x-filament::loading-indicator class="h-4 w-4" />
+                        Preparing…
+                    </div>
+                </div>
+            @elseif ($isRunning)
                 <div class="space-y-4">
                     <div
                         class="pb-track"
@@ -89,10 +128,10 @@
                     </div>
 
                     <div class="flex items-center justify-between text-sm">
-                        <span class="font-medium text-primary-600 dark:text-primary-400">
+                        <span class="text-primary-600 dark:text-primary-400 font-medium">
                             {{ $processed }} of {{ $total }} processed
                         </span>
-                        @if(! empty($progress['estimatedTime']))
+                        @if (! empty($progress['estimatedTime']))
                             <span class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                                 <x-tabler-clock class="h-4 w-4" />
                                 ~{{ $progress['estimatedTime'] }} remaining
@@ -101,42 +140,62 @@
                     </div>
                 </div>
 
-            @elseif($isCompleted)
+            @elseif ($isCompleted)
                 @php $totals = $progress['totals'] ?? []; @endphp
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="rounded-lg bg-success-50 p-3 text-center dark:bg-success-950/30">
-                        <p class="text-2xl font-bold text-success-600 dark:text-success-400">{{ $totals['updated'] ?? 0 }}</p>
-                        <p class="text-xs text-success-600/70 dark:text-success-400/70">Updated</p>
+                    <div class="bg-success-50 dark:bg-success-950/30 rounded-lg p-3 text-center">
+                        <p class="text-success-600 dark:text-success-400 text-2xl font-bold">
+                            {{ $totals['updated'] ?? 0 }}
+                        </p>
+                        <p class="text-success-600/70 dark:text-success-400/70 text-xs">Updated</p>
                     </div>
-                    <div class="rounded-lg bg-warning-50 p-3 text-center dark:bg-warning-950/30">
-                        <p class="text-2xl font-bold text-warning-600 dark:text-warning-400">{{ $totals['not_found'] ?? 0 }}</p>
-                        <p class="text-xs text-warning-600/70 dark:text-warning-400/70">Not found</p>
+                    <div class="bg-warning-50 dark:bg-warning-950/30 rounded-lg p-3 text-center">
+                        <p class="text-warning-600 dark:text-warning-400 text-2xl font-bold">
+                            {{ $totals['not_found'] ?? 0 }}
+                        </p>
+                        <p class="text-warning-600/70 dark:text-warning-400/70 text-xs">Not found</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800">
-                        <p class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ $totals['missing_aphia_id'] ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-gray-600 dark:text-gray-400">
+                            {{ $totals['missing_aphia_id'] ?? 0 }}
+                        </p>
                         <p class="text-xs text-gray-500 dark:text-gray-400/70">Missing Aphia ID</p>
                     </div>
                 </div>
 
-            @elseif($isFailed)
-                <div class="rounded-lg bg-danger-50 p-4 dark:bg-danger-950/30">
-                    <p class="text-sm text-danger-700 dark:text-danger-300">
+            @elseif ($isFailed)
+                <div class="bg-danger-50 dark:bg-danger-950/30 rounded-lg p-4">
+                    <p class="text-danger-700 dark:text-danger-300 text-sm">
                         {{ $progress['error'] ?? 'An unexpected error occurred. Please try again.' }}
                     </p>
                 </div>
-            @endif
 
+            @elseif ($isCancelled)
+                <div class="bg-warning-50 dark:bg-warning-950/30 rounded-lg p-4">
+                    <p class="text-warning-700 dark:text-warning-300 text-sm">
+                        Aborted after processing {{ $processed }} of {{ $total }} {{ Str::plural('species', $total) }}.
+                        Records already updated were kept. Resume to process the remaining {{ $progress['remaining'] ?? 0 }}.
+                    </p>
+                </div>
+            @endif
         </div>
 
         <x-slot name="footerActions">
-            @if($isCompleted)
-                <x-filament::button wire:click="dismiss" color="success">
-                    Done
+            @if ($isRunning || $isPreparing)
+                <x-filament::button wire:click="abortWorms" color="danger" :disabled="$abortingWorms">
+                    {{ $abortingWorms ? 'Aborting…' : 'Abort sync' }}
                 </x-filament::button>
-            @elseif($isFailed)
-                <x-filament::button wire:click="dismiss" color="danger">
-                    Dismiss
-                </x-filament::button>
+            @elseif ($isCompleted)
+                <x-filament::button wire:click="dismiss" color="success"> Done </x-filament::button>
+            @elseif ($isFailed)
+                <x-filament::button wire:click="dismiss" color="danger"> Dismiss </x-filament::button>
+            @elseif ($isCancelled)
+                @if (($progress['remaining'] ?? 0) > 0)
+                    <x-filament::button wire:click="resumeWorms" color="primary" icon="tabler-player-play">
+                        Resume
+                    </x-filament::button>
+                @endif
+                <x-filament::button wire:click="dismiss" color="gray"> Close </x-filament::button>
             @endif
         </x-slot>
     </x-filament::modal>
@@ -152,28 +211,61 @@
         width="lg"
     >
         <x-slot name="heading">
-            @if($easinIsRunning)
+            @if ($easinIsRunning)
                 Fetching EASIN IDs
-            @elseif($easinIsCompleted)
+            @elseif ($easinIsCompleted)
                 EASIN fetch complete
-            @elseif($easinIsFailed)
+            @elseif ($easinIsFailed)
                 EASIN fetch failed
+            @elseif ($easinIsCancelled)
+                EASIN fetch aborted
+            @elseif ($easinIsPreparing)
+                Starting EASIN fetch…
             @endif
         </x-slot>
 
         <x-slot name="description">
-            @if($easinIsRunning)
+            @if ($easinIsRunning)
                 Looking up EASIN IDs for {{ $easinTotal }} {{ Str::plural('species', $easinTotal) }}.
-            @elseif($easinIsCompleted)
+            @elseif ($easinIsCompleted)
                 All species have been processed successfully.
-            @elseif($easinIsFailed)
+            @elseif ($easinIsFailed)
                 {{ $easinProgress['error'] ?? 'An unexpected error occurred.' }}
+            @elseif ($easinIsCancelled)
+                {{ $easinProgress['remaining'] ?? 0 }} {{ Str::plural('species', $easinProgress['remaining'] ?? 0) }} were not processed.
+            @elseif ($easinIsPreparing)
+                Your request is queued and will begin in a moment.
             @endif
         </x-slot>
 
-        <div @if($isEasinSyncing) wire:poll.2s @endif>
+        <div @if ($isEasinSyncing) wire:poll.2s @endif>
+            @if ($easinIsPreparing)
+                <div class="space-y-4">
+                    <div
+                        class="pb-track"
+                        data-pb-size="md"
+                        data-pb-shape="pill"
+                        data-pb-color="success"
+                        data-pb-indeterminate="true"
+                        role="progressbar"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        <div
+                            class="pb-fill"
+                            data-pb-striped="true"
+                            data-pb-animated="true"
+                            data-pb-gradient="true"
+                            data-pb-indeterminate="true"
+                        ></div>
+                    </div>
 
-            @if($easinIsRunning)
+                    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <x-filament::loading-indicator class="h-4 w-4" />
+                        Preparing…
+                    </div>
+                </div>
+            @elseif ($easinIsRunning)
                 <div class="space-y-4">
                     <div
                         class="pb-track"
@@ -200,10 +292,10 @@
                     </div>
 
                     <div class="flex items-center justify-between text-sm">
-                        <span class="font-medium text-success-600 dark:text-success-400">
+                        <span class="text-success-600 dark:text-success-400 font-medium">
                             {{ $easinProcessed }} of {{ $easinTotal }} processed
                         </span>
-                        @if(! empty($easinProgress['estimatedTime']))
+                        @if (! empty($easinProgress['estimatedTime']))
                             <span class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                                 <x-tabler-clock class="h-4 w-4" />
                                 ~{{ $easinProgress['estimatedTime'] }} remaining
@@ -212,42 +304,62 @@
                     </div>
                 </div>
 
-            @elseif($easinIsCompleted)
+            @elseif ($easinIsCompleted)
                 @php $easinTotals = $easinProgress['totals'] ?? []; @endphp
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="rounded-lg bg-success-50 p-3 text-center dark:bg-success-950/30">
-                        <p class="text-2xl font-bold text-success-600 dark:text-success-400">{{ $easinTotals['found'] ?? 0 }}</p>
-                        <p class="text-xs text-success-600/70 dark:text-success-400/70">Found</p>
+                    <div class="bg-success-50 dark:bg-success-950/30 rounded-lg p-3 text-center">
+                        <p class="text-success-600 dark:text-success-400 text-2xl font-bold">
+                            {{ $easinTotals['found'] ?? 0 }}
+                        </p>
+                        <p class="text-success-600/70 dark:text-success-400/70 text-xs">Found</p>
                     </div>
-                    <div class="rounded-lg bg-warning-50 p-3 text-center dark:bg-warning-950/30">
-                        <p class="text-2xl font-bold text-warning-600 dark:text-warning-400">{{ $easinTotals['not_found'] ?? 0 }}</p>
-                        <p class="text-xs text-warning-600/70 dark:text-warning-400/70">Not found</p>
+                    <div class="bg-warning-50 dark:bg-warning-950/30 rounded-lg p-3 text-center">
+                        <p class="text-warning-600 dark:text-warning-400 text-2xl font-bold">
+                            {{ $easinTotals['not_found'] ?? 0 }}
+                        </p>
+                        <p class="text-warning-600/70 dark:text-warning-400/70 text-xs">Not found</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800">
-                        <p class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ $easinTotals['skipped'] ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-gray-600 dark:text-gray-400">
+                            {{ $easinTotals['skipped'] ?? 0 }}
+                        </p>
                         <p class="text-xs text-gray-500 dark:text-gray-400/70">Skipped</p>
                     </div>
                 </div>
 
-            @elseif($easinIsFailed)
-                <div class="rounded-lg bg-danger-50 p-4 dark:bg-danger-950/30">
-                    <p class="text-sm text-danger-700 dark:text-danger-300">
+            @elseif ($easinIsFailed)
+                <div class="bg-danger-50 dark:bg-danger-950/30 rounded-lg p-4">
+                    <p class="text-danger-700 dark:text-danger-300 text-sm">
                         {{ $easinProgress['error'] ?? 'An unexpected error occurred. Please try again.' }}
                     </p>
                 </div>
-            @endif
 
+            @elseif ($easinIsCancelled)
+                <div class="bg-warning-50 dark:bg-warning-950/30 rounded-lg p-4">
+                    <p class="text-warning-700 dark:text-warning-300 text-sm">
+                        Aborted after processing {{ $easinProcessed }} of {{ $easinTotal }} {{ Str::plural('species', $easinTotal) }}.
+                        Resume to look up the remaining {{ $easinProgress['remaining'] ?? 0 }}.
+                    </p>
+                </div>
+            @endif
         </div>
 
         <x-slot name="footerActions">
-            @if($easinIsCompleted)
-                <x-filament::button wire:click="dismissEasin" color="success">
-                    Done
+            @if ($easinIsRunning || $easinIsPreparing)
+                <x-filament::button wire:click="abortEasin" color="danger" :disabled="$abortingEasin">
+                    {{ $abortingEasin ? 'Aborting…' : 'Abort fetch' }}
                 </x-filament::button>
-            @elseif($easinIsFailed)
-                <x-filament::button wire:click="dismissEasin" color="danger">
-                    Dismiss
-                </x-filament::button>
+            @elseif ($easinIsCompleted)
+                <x-filament::button wire:click="dismissEasin" color="success"> Done </x-filament::button>
+            @elseif ($easinIsFailed)
+                <x-filament::button wire:click="dismissEasin" color="danger"> Dismiss </x-filament::button>
+            @elseif ($easinIsCancelled)
+                @if (($easinProgress['remaining'] ?? 0) > 0)
+                    <x-filament::button wire:click="resumeEasin" color="primary" icon="tabler-player-play">
+                        Resume
+                    </x-filament::button>
+                @endif
+                <x-filament::button wire:click="dismissEasin" color="gray"> Close </x-filament::button>
             @endif
         </x-slot>
     </x-filament::modal>
@@ -262,31 +374,33 @@
         :close-by-escaping="false"
         width="md"
     >
-        <x-slot name="heading">
-            Import complete
-        </x-slot>
+        <x-slot name="heading">Import complete</x-slot>
 
-        <x-slot name="description">
-            Your data has been imported successfully.
-        </x-slot>
+        <x-slot name="description">Your data has been imported successfully.</x-slot>
 
-        @if($hasImportResult)
-        <div class="grid grid-cols-2 gap-3">
-            <div class="rounded-lg bg-success-50 p-3 text-center dark:bg-success-950/30">
-                <p class="text-2xl font-bold text-success-600 dark:text-success-400">{{ $importResult['successful_rows'] ?? 0 }}</p>
-                <p class="text-xs text-success-600/70 dark:text-success-400/70">{{ Str::plural('Row', $importResult['successful_rows'] ?? 0) }} imported</p>
+        @if ($hasImportResult)
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-success-50 dark:bg-success-950/30 rounded-lg p-3 text-center">
+                    <p class="text-success-600 dark:text-success-400 text-2xl font-bold">
+                        {{ $importResult['successful_rows'] ?? 0 }}
+                    </p>
+                    <p class="text-success-600/70 dark:text-success-400/70 text-xs">
+                        {{ Str::plural('Row', $importResult['successful_rows'] ?? 0) }} imported
+                    </p>
+                </div>
+                <div class="rounded-lg {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'bg-danger-50 dark:bg-danger-950/30' : 'bg-gray-50 dark:bg-gray-800' }} p-3 text-center">
+                    <p class="text-2xl font-bold {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600 dark:text-danger-400' : 'text-gray-400 dark:text-gray-500' }}">
+                        {{ $importResult['failed_rows'] ?? 0 }}
+                    </p>
+                    <p class="text-xs {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600/70 dark:text-danger-400/70' : 'text-gray-500 dark:text-gray-400/70' }}">
+                        Failed
+                    </p>
+                </div>
             </div>
-            <div class="rounded-lg {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'bg-danger-50 dark:bg-danger-950/30' : 'bg-gray-50 dark:bg-gray-800' }} p-3 text-center">
-                <p class="text-2xl font-bold {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600 dark:text-danger-400' : 'text-gray-400 dark:text-gray-500' }}">{{ $importResult['failed_rows'] ?? 0 }}</p>
-                <p class="text-xs {{ ($importResult['failed_rows'] ?? 0) > 0 ? 'text-danger-600/70 dark:text-danger-400/70' : 'text-gray-500 dark:text-gray-400/70' }}">Failed</p>
-            </div>
-        </div>
         @endif
 
         <x-slot name="footerActions">
-            <x-filament::button wire:click="dismissImport" color="success">
-                Done
-            </x-filament::button>
+            <x-filament::button wire:click="dismissImport" color="success"> Done </x-filament::button>
         </x-slot>
     </x-filament::modal>
 
@@ -307,5 +421,4 @@
             @endif
         "
     ></div>
-
 </div>

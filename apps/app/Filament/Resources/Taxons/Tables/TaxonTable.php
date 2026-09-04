@@ -27,14 +27,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
-
 
 /**
  * Configures the Filament table for taxon records.
@@ -83,7 +81,6 @@ class TaxonTable
             ->columnManagerLayout(ColumnManagerLayout::Modal)
             ->columnManagerTriggerAction(fn (Action $action) => $action->slideOver())
             ->filters([
-                TrashedFilter::make(),
                 self::getScientificNameFilter(),
                 self::getKingdomFilter(),
                 self::getPhylumFilter(),

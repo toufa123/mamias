@@ -49,7 +49,7 @@ describe('EstablishmentStatus', function () {
     it('returns all labels', function () {
         expect(EstablishmentStatus::Casual->getLabel())->toBe('Casual')
             ->and(EstablishmentStatus::Invasive->getLabel())->toBe('Invasive')
-            ->and(EstablishmentStatus::RangeExpansion->getLabel())->toBe('Range expansion');
+            ->and(EstablishmentStatus::DataDeficient->getLabel())->toBe('Data Deficient');
     });
 });
 
@@ -84,11 +84,13 @@ describe('NisStatus', function () {
     it('returns all labels', function () {
         expect(NisStatus::NIS->getLabel())->toBe('NIS')
             ->and(NisStatus::Cryptogenic->getLabel())->toBe('Cryptogenic')
-            ->and(NisStatus::Questionable->getLabel())->toBe('Questionable');
+            ->and(NisStatus::Questionable->getLabel())->toBe('Questionable')
+            ->and(NisStatus::RangeExpansion->getLabel())->toBe('Range Expansion');
     });
 
     it('returns descriptions', function () {
-        expect(NisStatus::NIS->getDescription())->toContain('introduced');
+        expect(NisStatus::NIS->getDescription())->toContain('introduced')
+            ->and(NisStatus::RangeExpansion->getDescription())->toContain('expanding');
     });
 });
 

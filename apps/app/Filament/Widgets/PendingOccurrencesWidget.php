@@ -5,7 +5,8 @@ namespace App\Filament\Widgets;
 use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
 use App\Models\Occurrence;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+// use Filament\Widgets\StatsOverviewWidget\Stat;
+use Gsferro\FilamentStatPlusEasy\Widgets\StatPlus as Stat;
 
 /**
  * Stats widget showing the total count of pending occurrences that need

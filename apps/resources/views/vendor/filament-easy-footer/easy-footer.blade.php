@@ -44,11 +44,11 @@
         ])
 >
     <span @class([
-        'flex items-center gap-2' => $isHtmlSentence,
+        'inline-flex items-center gap-1 whitespace-nowrap',
         'w-full' => $footerPosition === 'sidebar' || $footerPosition === 'sidebar.footer'
         ])>&copy; {{ now()->format('Y') }} -
         @if($sentence)
-            <span class="flex items-center gap-2">{{ $sentence }}</span>
+            <span class="inline-flex items-center gap-2">{{ $sentence }}</span>
         @else
             {{ config('filament-easy-footer.app_name') ?? config('app.name') }}
         @endif

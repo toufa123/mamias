@@ -100,6 +100,9 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
     /** Uncertain taxonomic placement (incertae sedis). */
     case incertae_sedis = 'incertae sedis';
 
+    /** Not applicable — species is not in WoRMS; data sourced from GBIF or entered manually. */
+    case not_applicable = 'N/A';
+
     /**
      * Human-readable label for the WoRMS taxonomic status.
      */
@@ -134,6 +137,7 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
             self::nomen_rejiciendum => 'Nomen rejiciendum',
             self::unreplaced_junior_homonym => 'Unreplaced junior homonym',
             self::incertae_sedis => 'Incertae sedis',
+            self::not_applicable => 'N/A',
         };
     }
 
@@ -144,6 +148,7 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::accepted => 'success',
+            self::not_applicable => 'gray',
             self::unaccepted, self::superseded_combination, self::junior_homonym, self::misapplication, self::misspelling_incorrect_subsequent_spelling, self::misspelling_incorrect_original_spelling, self::junior_subjective_synonym, self::junior_objective_synonym, self::nomen_oblitum, self::misspelling, self::unjustified_emendation, self::incorrect_grammatical_agreement, self::unavailable_name, self::superseded_rank, self::nomen_rejiciendum, self::unreplaced_junior_homonym => 'danger',
             self::nomen_dubium, self::nomen_nudum, self::taxon_inquirendum, self::taxonomic_discrepancy, self::unassessed, self::incertae_sedis => 'warning',
             default => 'gray',
@@ -157,6 +162,7 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::accepted => 'tabler-circle-check',
+            self::not_applicable => 'tabler-ban',
             self::unaccepted, self::superseded_combination, self::junior_homonym, self::misapplication, self::misspelling_incorrect_subsequent_spelling, self::misspelling_incorrect_original_spelling, self::junior_subjective_synonym, self::junior_objective_synonym, self::nomen_oblitum, self::misspelling, self::unjustified_emendation, self::incorrect_grammatical_agreement, self::unavailable_name, self::superseded_rank, self::nomen_rejiciendum, self::unreplaced_junior_homonym => 'tabler-circle-x',
             self::nomen_dubium, self::nomen_nudum, self::taxon_inquirendum, self::taxonomic_discrepancy, self::unassessed, self::incertae_sedis => 'tabler-alert-circle',
             default => 'tabler-help-circle',

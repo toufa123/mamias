@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
+use App\Filament\Widgets\ActivityChartWidget;
 use App\Filament\Widgets\CatalogueEnvironmentChart;
 use App\Filament\Widgets\CatalogueStatsWidget;
 use App\Filament\Widgets\PendingOccurrencesTableWidget;
@@ -63,6 +65,14 @@ class Dashboard extends BaseDashboard
                                     ])
                                 ),
                                 Livewire::make(PendingOccurrencesTableWidget::class),
+                            ]),
+                        Tab::make('Activity log')
+                            ->icon('heroicon-o-clock')
+                            ->schema([
+                                Grid::make(2)->schema([
+                                    Livewire::make(ActivityChartWidget::class),
+                                    Livewire::make(LatestActivityWidget::class),
+                                ]),
                             ]),
                     ]),
             ]);

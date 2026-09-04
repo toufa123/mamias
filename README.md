@@ -4,9 +4,13 @@
 <p align="center">
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <a href="#"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version: 1.0.0"></a>
+  <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-8.3+-777BB4.svg?logo=php&logoColor=white" alt="PHP: 8.3+"></a>
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-13.0-FF2D20.svg?logo=laravel&logoColor=white" alt="Laravel: 13.0"></a>
+  <a href="https://filamentphp.com"><img src="https://img.shields.io/badge/Filament-5.0-F1B024.svg?logo=filament&logoColor=white" alt="Filament: 5.0"></a>
+  <a href="https://postgis.net"><img src="https://img.shields.io/badge/PostGIS-336791.svg?logo=postgresql&logoColor=white" alt="PostGIS"></a>
 </p>
 
-<p align="center"><em>Marine Mediterranean Alien Species Database — Laravel 13, Filament 5 &amp; PostGIS.</em></p>
+<p align="center"><em>Marine Mediterranean Alien Species Database</em></p>
 
 ---
 
@@ -65,6 +69,8 @@ User (users)
 | **TaxonResource** | Taxon | MAMIAS Catalogue — species with WoRMS sync, soft deletes |
 | **IntroEventRecordResource** | IntroEventRecord | Introduction events with subregion & pathway records |
 | **LiteratureResource** | Literature | Scientific references with DOI auto-fetch |
+| **OccurrenceResource** | Occurrence | Species occurrence reports — density, extent, single-point location, moderation |
+| **NisSuggestionResource** | NisSuggestion | Public NIS suggestions awaiting review |
 | **UserResource** | User | User management with role assignment |
 
 ### Backend Services
@@ -77,6 +83,7 @@ User (users)
 | `TaxonStateHelper` | Taxon state management utilities |
 | `EasinService` | EASIN (European Alien Species Information Network) integration |
 | `DoiMetadataService` | Crossref DOI metadata resolution for literature |
+| `GbifService` | GBIF occurrence/taxonomy lookups |
 | `WhatsAppService` | GreenAPI WhatsApp phone validation with E.164 fallback |
 | `CapService` | Proof-of-work CAPTCHA token verification via Cap Standalone |
 
@@ -86,21 +93,23 @@ User (users)
 mamias/
 ├── apps/                        # Laravel application
 │   ├── app/
-│   │   ├── Enums/               # 11 enums (NisStatus, Subregion, CbdPathway*, etc.)
+│   │   ├── Enums/               # 18 enums (NisStatus, Subregion, CbdPathway*, Coverage*, etc.)
 │   │   ├── Filament/
-│   │   │   ├── Resources/       # 4 resources (Taxon, IntroEvent, Literature, User)
-│   │   │   ├── Widgets/         # 7 dashboard widgets (stats, charts, WoRMS progress)
+│   │   │   ├── Resources/       # 6 resources (Taxon, IntroEvent, Literature, Occurrence, NisSuggestion, User)
+│   │   │   ├── Widgets/         # 11 dashboard widgets (stats, charts, WoRMS progress)
 │   │   │   └── Pages/           # Dashboard, HealthCheck, BackupManager, Auth/*
-│   │   ├── Models/              # 6 models (User, Taxon, Literature, IntroEventRecord, SubregionRecord, PathwayRecord)
-│   │   └── Services/            # 7 services (Worms, Taxon*, Easin, DOI, WhatsApp)
-│   ├── database/migrations/     # 23 migrations (PostGIS, taxas, literatures, intro events, imports/exports, RBAC, health)
+│   │   ├── Models/              # 8 models (User, Taxon, Literature, IntroEventRecord, SubregionRecord, PathwayRecord, Occurrence, NisSuggestion)
+│   │   └── Services/            # 9 services (Worms, Taxon*, Easin, Gbif, DOI, WhatsApp, Cap)
+│   ├── database/migrations/     # 48 migrations (PostGIS, taxas, literatures, intro events, occurrences, imports/exports, RBAC, health)
 │   ├── resources/               # Blade views & Filament theme
-│   └── tests/                   # 13 test files (Pest PHP — unit + feature)
+│   └── tests/                   # 39 test files (Pest PHP — unit + feature)
 ├── backups/                     # DB backup dumps
 ├── docker-compose.yml           # Development stack (8 services)
 ├── docker-compose.prod.yml      # Production stack
 ├── Dockerfile                   # FrankenPHP optimized image
-├── Makefile                     # Dev/prod lifecycle commands
+├── Makefile                     # Dev/prod lifecycle commands (annotated; drives the menu)
+├── menu.php                     # Interactive picker (laravel/prompts) — preferred
+├── menu.sh                      # Interactive picker fallback (POSIX, no dependencies)
 └── entrypoint.sh                # Container permissions & Filament cache
 ```
 
@@ -112,7 +121,8 @@ mamias/
 
 - Docker & Docker Compose
 - `make` available on your system
-- Ports available: `443` (HTTPS), `54321` (PostGIS), `8026` (Mailpit), `6379` (Redis)
+- Host ports available: `7443` (HTTPS), `5433` (PostGIS), `6380` (Redis), `8026` (Mailpit), `3000` (Cap)
+  - All are bound to `127.0.0.1` only. Keep them below `50000` — Windows/Hyper-V reserves large blocks of the ephemeral range and a container cannot bind a reserved port.
 
 ### Installation
 
@@ -165,22 +175,58 @@ mamias/
 
 *Note: Accept the self-signed certificate on first visit.*
 
+### Interactive Menu
+
+Run `make` with no target and an interactive picker opens — it is the Makefile's
+`.DEFAULT_GOAL`, so a bare `make` never silently fires the first target.
+
+```bash
+make          # interactive picker
+make help     # flat list, no picker
+```
+
+Two renderers back it, and the Makefile picks whichever can run:
+
+| Renderer | Used when | Interface |
+|----------|-----------|-----------|
+| `menu.php` | Preferred — needs `apps/vendor/` and a terminal | [laravel/prompts](https://github.com/laravel/prompts): arrow keys, colours, boxed styling |
+| `menu.sh` | Fallback, when `menu.php` exits `2` (no autoloader, or output is not a TTY) | Dependency-free POSIX numbered menu |
+
+Both read the **Makefile's own annotations**, so neither keeps a second copy of
+the command list — annotate a target and it appears in both:
+
+```make
+##@ Group name           # section header
+target: ## Description   # menu entry
+target: ##! Description  # entry that asks for confirmation before running
+```
+
+Destructive targets carry `##!` and are confirmed before they run — `dev-clean`,
+`dev-kill-ports`, `dev-db-restore`, `dev-db-full-restore`, and `prod-up`.
+
 ### Make Commands
 
-| Command | Description |
-|---------|-------------|
-| `make dev-up` | Start dev stack (build + run) |
-| `make dev-down` | Stop dev stack |
-| `make dev-clean` | Hard reset (containers + volumes) |
-| `make dev-cache` | Rebuild route/view/event/Filament caches |
-| `make dev-clear` | Clear all caches |
-| `make dev-queue` | Start manual queue worker |
-| `make dev-ports` | Diagnose port conflicts |
-| `make dev-db-heal` | Run DB self-heal guard (migrate + seed) |
-| `make dev-db-backup` | Snapshot dev DB (keeps latest 5) |
-| `make dev-db-restore` | Restore from latest snapshot |
-| `make dev-test` | Run tests with automatic DB backup/restore |
-| `make prod-up` | Start production stack |
+Grouped exactly as the menu shows them. ⚠ marks a target that asks for
+confirmation first.
+
+| Group | Command | Description |
+|-------|---------|-------------|
+| **Stack** | `make dev-up` | Start the dev stack (build + up -d) |
+| | `make dev-down` | Stop the dev stack (keeps volumes) |
+| | ⚠ `make dev-clean` | Hard reset — removes containers **and** volumes (drops the database) |
+| **Diagnostics** | `make dev-ports` | Show published ports and Windows reserved ranges |
+| | ⚠ `make dev-kill-ports` | Kill `wslrelay.exe` processes holding ports (Windows last resort) |
+| **Caches** | `make dev-cache` | Rebuild route/view/event/Filament caches |
+| | `make dev-clear` | Clear all caches (fixes stale Filament behaviour) |
+| | `make dev-queue` | Run a queue worker in this terminal (blocks) |
+| **Database** | `make dev-db-heal` | Run the DB self-heal guard (migrate + seed if needed) |
+| | `make dev-db-backup` | Snapshot the dev database (keeps the latest 5) |
+| | `make dev-db-list` | List available snapshots |
+| | ⚠ `make dev-db-restore` | Reload data from a snapshot (truncates tables, keeps schema) |
+| | ⚠ `make dev-db-full-restore` | Full restore — **drops** and recreates every table |
+| **Tests** | `make dev-test` | Run the suite against `mamias_test` (snapshots first, restores after) |
+| **Production** | `make prod-env` | Create and populate `.env.production` interactively |
+| | ⚠ `make prod-up` | Build and start the **production** stack |
 
 ### Running Tests
 
@@ -213,6 +259,8 @@ Use `docker-compose.prod.yml` exclusively in production (never `docker-compose.y
    - `APP_KEY` — generate via `php artisan key:generate --show`
    - `DB_PASSWORD`, `DB_USERNAME` — PostgreSQL credentials
    - Redis password (if exposed)
+   - `CAP_ADMIN_KEY` — admin key for the Cap CAPTCHA server (set before first launch)
+   - `CAP_SITE_KEY`, `CAP_SECRET_KEY` — obtained by provisioning a Cap site key (see **Cap CAPTCHA** below)
    - SMTP and WoRMS API keys as needed
 
 ### Launch
@@ -222,6 +270,37 @@ make prod-up
 # or manually:
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
+
+### Cap CAPTCHA (first deploy only)
+
+The proof-of-work CAPTCHA on the login/registration forms is served by the self-hosted
+`cap` service. In production it is reached by the browser through a **same-origin reverse
+proxy** (`/cap` → `cap:3000`, configured in the app's Caddy directives) and verified
+server-side over the internal Docker network — **no public port is exposed**.
+
+Each Cap server has its own key store, so the production site key is **different from the
+development one** and must be provisioned once:
+
+1. Set `CAP_ADMIN_KEY` in `.env.production` (a strong secret).
+2. Start the Cap services:
+   ```bash
+   docker compose --env-file .env.production -f docker-compose.prod.yml up -d cap cap-valkey
+   ```
+3. Create a site key on the Cap dashboard/API (authenticate with `CAP_ADMIN_KEY`); it
+   returns a **site key** and a **secret key**.
+4. Add them to `.env.production`:
+   ```dotenv
+   CAP_SITE_KEY=<from-dashboard>
+   CAP_SECRET_KEY=<from-dashboard>
+   ```
+5. Recreate the app so it picks up the keys:
+   ```bash
+   docker compose --env-file .env.production -f docker-compose.prod.yml up -d app
+   ```
+
+> `CAP_SITE_KEY`, `CAP_SECRET_KEY`, and `CAP_ADMIN_KEY` are declared **required** in
+> `docker-compose.prod.yml`, so the stack fails fast if they are missing rather than
+> shipping a broken CAPTCHA.
 
 ### Maintenance
 
@@ -235,13 +314,13 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d --bui
 
 | Service | Image | Ports | Purpose |
 |---------|-------|-------|---------|
-| **app** | Custom FrankenPHP | 443 (HTTPS + HTTP/3) | Laravel application server |
+| **app** | Custom FrankenPHP | 7443 → 8443 (HTTPS + HTTP/3) | Laravel application server |
 | **queue** | Same as app | Internal | Background job processing |
-| **db** | kartoza/postgis | 54321 (dev only) | PostgreSQL + PostGIS |
+| **db** | kartoza/postgis | 5433 → 5432 (dev only) | PostgreSQL + PostGIS |
 | **db-backup** | kartoza/pg-backup | — | Automated database backups |
-| **redis** | redis:alpine | 6379 (dev only) | Cache, sessions, queue broker |
+| **redis** | redis:alpine | 6380 → 6379 (dev only) | Cache, sessions, queue broker |
 | **mail** | axllent/mailpit | 8026 (dev only) | SMTP catcher + web UI |
-| **cap** | tiago2/cap | 3000 (dev only) | Proof-of-work CAPTCHA standalone server (`ADMIN_KEY` required) |
+| **cap** | tiago2/cap | 3000 (dev); internal-only in prod (via `/cap` proxy) | Proof-of-work CAPTCHA standalone server (`ADMIN_KEY` required) |
 | **cap-valkey** | valkey/valkey:9-alpine | — | Token storage for Cap |
 
 ---
@@ -267,14 +346,12 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d --bui
   - Introduction event tracking with CBD pathways and EcAp subregions
   - Literature management with DOI integration
   - PostGIS-based geographic data storage
+  - Advanced spatial visualization and mapping
+  - Automated CBD compliance reporting
   - Import/Export infrastructure
   - Dashboard analytics with ECharts
 - **v2.x (Planned):**
-  - Public REST API (OpenAPI documented)
-  - Advanced spatial visualization and mapping
-  - Automated CBD compliance reporting
-  - Darwin Core archive export
-  - Machine learning for invasion risk prediction
+  - 
 
 ---
 
@@ -284,4 +361,4 @@ This project is licensed under the **MIT License**. See [LICENSE](https://openso
 
 ---
 
-<p align="center"><em>Built with Laravel 13 &amp; FrankenPHP — for Mediterranean marine biodiversity science.</em></p>
+<p align="center"><em>Built with Larvel, Filament 5 &amp; PostGIS — for Mediterranean marine biodiversity science.</em></p>

@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Enums\AcforScale;
+use App\Enums\CoverageMethod;
+use App\Enums\CoverageUnit;
 use App\Enums\Habitat;
 use App\Enums\OccurrenceStatus;
 use App\Models\IntroEventRecord;
@@ -27,6 +29,9 @@ class OccurrenceFactory extends Factory
             'location' => [['lat' => $lat, 'lng' => $lng]],
             'depth' => $this->faker->optional()->randomFloat(2, 0, 500),
             'acfor_scale' => $this->faker->optional()->randomElement(AcforScale::cases())?->value,
+            'coverage_value' => $this->faker->optional()->randomFloat(2, 1, 500),
+            'coverage_unit' => $this->faker->randomElement(CoverageUnit::cases())->value,
+            'coverage_method' => $this->faker->randomElement(CoverageMethod::cases())->value,
             'habitats' => $this->faker->optional()->randomElements(Habitat::cases(), 2),
             'photo_paths' => null,
             'notes' => $this->faker->optional()->sentence(),

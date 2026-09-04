@@ -65,7 +65,18 @@ class OccurrenceInfolist
                         ->suffix(' m')
                         ->numeric(thousandsSeparator: ''),
                     TextEntry::make('acfor_scale')
-                        ->label('Abundance (ACFOR)')
+                        ->label('Abundance (density)')
+                        ->badge()
+                        ->placeholder('—'),
+                    TextEntry::make('coverage_value')
+                        ->label('Extent')
+                        ->placeholder('—')
+                        ->formatStateUsing(fn (Occurrence $record): ?string => $record->coverage_value === null
+                            ? null
+                            : rtrim(rtrim(number_format($record->coverage_value, 2, '.', ' '), '0'), '.')
+                                .' '.($record->coverage_unit?->getSuffix() ?? '')),
+                    TextEntry::make('coverage_method')
+                        ->label('Estimated / Measured')
                         ->badge()
                         ->placeholder('—'),
                     TextEntry::make('introEventRecord.first_introduction_year')

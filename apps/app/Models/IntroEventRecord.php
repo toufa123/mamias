@@ -105,12 +105,4 @@ class IntroEventRecord extends Model
     {
         return $this->hasMany(Occurrence::class, 'intro_event_record_id');
     }
-
-    /**
-     * EICAT impact assessments for this introduction event.
-     */
-    public function eicatAssessments(): HasMany
-    {
-        return $this->hasMany(EicatAssessment::class);
-    }
 }

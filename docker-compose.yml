@@ -83,11 +83,24 @@ services :
       PGID : "${GID:-1000}"
 
       # ── SSL / Domain ───────────────────────────────────────────────
+      # The stack is deliberately hostname-agnostic. CADDY_*_SERVER_ADDRESS are
+      # bare schemes with no host, so Caddy serves ANY Host header — 127.0.0.1,
+      # localhost, mamias.local, dev.mamias.org, whatever you point at it. Do
+      # not put a hostname in them; that would pin the stack to one name again.
       SSL_MODE : "full"
-      SERVER_NAME : "mamias.local"
-      CADDY_HTTP_SERVER_ADDRESS : "http://mamias.local"
-      CADDY_HTTPS_SERVER_ADDRESS : "https://mamias.local"
-      CADDY_AUTO_HTTPS : "on"
+      CADDY_HTTP_SERVER_ADDRESS : "http://"
+      CADDY_HTTPS_SERVER_ADDRESS : "https://"
+      CADDY_AUTO_HTTPS : "off"
+
+      # Not referenced by the image's Caddyfile — kept only as a container label.
+      # Changing it does NOT change which hostnames are served.
+      SERVER_NAME : "${SERVER_NAME:-localhost}"
+
+      # Names baked into the self-signed certificate (see ssl-sans.sh). The one
+      # genuinely host-bound piece of the stack: add any hostname you browse to,
+      # or the browser will reject the certificate. IP literals are detected and
+      # emitted as IP: SANs automatically.
+      DEV_SSL_HOSTNAMES : "${DEV_SSL_HOSTNAMES:-localhost,127.0.0.1,::1,mamias.local,*.mamias.local,dev.mamias.org,host.docker.internal}"
 
       # ── Caddy / FrankenPHP ─────────────────────────────────────────
       CADDY_SERVER_ROOT : "/var/www/html/public"
@@ -104,8 +117,15 @@ services :
           X-XSS-Protection        "1; mode=block"
           Referrer-Policy         "strict-origin-when-cross-origin"
           Permissions-Policy      "geolocation=(), microphone=(), camera=()"
-          Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:3000 https://cdn.jsdelivr.net blob:; frame-ancestors 'self'"
+          Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cdn.jsdelivr.net blob:; frame-ancestors 'self'"
           -Server
+        }
+
+        # Same-origin reverse proxy for the Cap CAPTCHA server. The browser calls
+        # /cap/{siteKey}/challenge on the app's own origin (HTTPS, no mixed content);
+        # handle_path strips the /cap prefix before forwarding to the cap container.
+        handle_path /cap/* {
+          reverse_proxy cap:3000
         }
 
       # ── PHP INI ────────────────────────────────────────────────────
@@ -144,7 +164,11 @@ services :
       # ── Laravel application ───────────────────────────────────────
       APP_ENV : "local"
       APP_DEBUG : "true"
-      APP_URL : "https://mamias.local"
+      # Only used where there is no incoming request to derive the host from —
+      # queued mail, notifications, artisan. Live web requests build URLs from
+      # the actual Host header (trustProxies in bootstrap/app.php forwards it),
+      # so browsing under a different name still produces correct links.
+      APP_URL : "${APP_URL:-https://localhost:7443}"
       APP_KEY : "${APP_KEY:-}"
 
       DB_CONNECTION : "pgsql"
@@ -160,7 +184,7 @@ services :
       MAIL_USERNAME : ""
       MAIL_PASSWORD : ""
       MAIL_ENCRYPTION : ""
-      MAIL_FROM_ADDRESS : "no-reply@mamias.local"
+      MAIL_FROM_ADDRESS : "${MAIL_FROM_ADDRESS:-no-reply@localhost}"
       MAIL_FROM_NAME: "${name:-mamias}"
 
       REDIS_HOST : "redis"
@@ -168,6 +192,11 @@ services :
       CACHE_STORE : "redis"
       SESSION_DRIVER : "redis"
       QUEUE_CONNECTION : "redis"
+
+      CAP_SITE_KEY: "${CAP_SITE_KEY:?CAP_SITE_KEY is required — set it in root .env}"
+      CAP_SECRET_KEY: "${CAP_SECRET_KEY:?CAP_SECRET_KEY is required — set it in root .env}"
+      CAP_PUBLIC_URL: "/cap"
+      CAP_INTERNAL_URL: "http://cap:3000"
 
       DOCKER_DB_CONTAINER: "${name:-mamias}_db"
       DOCKER_BACKUP_CONTAINER: "${name:-mamias}_db_backup"
@@ -209,7 +238,11 @@ services :
 
       APP_ENV : "local"
       APP_DEBUG : "true"
-      APP_URL : "https://mamias.local"
+      # Only used where there is no incoming request to derive the host from —
+      # queued mail, notifications, artisan. Live web requests build URLs from
+      # the actual Host header (trustProxies in bootstrap/app.php forwards it),
+      # so browsing under a different name still produces correct links.
+      APP_URL : "${APP_URL:-https://localhost:7443}"
       APP_KEY : "${APP_KEY:-}"
 
       DB_CONNECTION : "pgsql"
@@ -225,19 +258,46 @@ services :
       MAIL_USERNAME : ""
       MAIL_PASSWORD : ""
       MAIL_ENCRYPTION : ""
-      MAIL_FROM_ADDRESS : "no-reply@mamias.local"
+      MAIL_FROM_ADDRESS : "${MAIL_FROM_ADDRESS:-no-reply@localhost}"
       MAIL_FROM_NAME: "${name:-mamias}"
 
       REDIS_HOST : "redis"
       REDIS_PORT : "6379"
-      CACHE_STORE : "redis"
-      SESSION_DRIVER : "redis"
       QUEUE_CONNECTION : "redis"
+      # Must match the app service so cache-backed progress (WoRMS/EASIN fetch)
+      # written by jobs here is readable by the web app. Without this the worker
+      # falls back to the file store and progress never reaches the browser.
+      CACHE_STORE : "redis"
 
       STARTUP_DB_GUARD : "false"
       STARTUP_DB_GUARD_SEED : "false"
 
-    command : [ "php", "artisan", "queue:work", "--sleep=3", "--tries=3" ]
+      # The entrypoint waits for the bind mount to appear before starting.
+      # Docker Desktop / WSL2 can take well over the 30s default to propagate
+      # ./apps into a second container, which used to abort startup.
+      ENTRYPOINT_FS_TIMEOUT : "120"
+
+    # Dev uses queue:listen (not queue:work) so it reloads the app per job and
+    # picks up job/service code changes without a worker restart. Production
+    # (docker-compose.prod.yml) stays on queue:work for performance.
+    command : [ "php", "artisan", "queue:listen", "--sleep=3", "--tries=3" ]
+
+    # The base image ships a healthcheck that curls Caddy on :8080. This
+    # container never starts Caddy (the entrypoint execs artisan directly), so
+    # that check always failed and the container sat "unhealthy" while working
+    # fine. Replace it: the worker process must be alive AND Redis — its job
+    # broker — must be reachable. The [q] bracket stops pgrep from matching
+    # the healthcheck's own shell.
+    healthcheck :
+      test :
+        - "CMD-SHELL"
+        - >-
+          pgrep -f 'artisan [q]ueue:(work|listen)' >/dev/null
+          && php -r 'exit((new Redis)->connect(getenv("REDIS_HOST") ?: "redis", (int) (getenv("REDIS_PORT") ?: 6379), 2) ? 0 : 1);'
+      interval : 30s
+      timeout : 10s
+      retries : 3
+      start_period : 60s
 
     restart : unless-stopped
 
@@ -247,7 +307,9 @@ services :
     image : kartoza/postgis:latest
     container_name: "${name:-mamias}_db"
     ports :
-      - "127.0.0.1:${DB_FORWARD_PORT:-54321}:5432"
+      # Default kept below 50000 — Windows/Hyper-V reserves large blocks of the
+      # ephemeral range, and a host port inside one cannot be bound.
+      - "127.0.0.1:${DB_FORWARD_PORT:-5433}:5432"
     env_file :
       - .env
     environment :

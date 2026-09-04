@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Casts\CoordinatesCast;
 use App\Enums\AcforScale;
+use App\Enums\CoverageMethod;
+use App\Enums\CoverageUnit;
 use App\Enums\OccurrenceStatus;
 use App\Models\Traits\HasSpatialLocation;
 use Clickbar\Magellan\Data\Geometries\Point;
@@ -28,6 +30,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property array|null $location
  * @property float|null $depth
  * @property AcforScale|null $acfor_scale
+ * @property float|null $coverage_value
+ * @property CoverageUnit|null $coverage_unit
+ * @property CoverageMethod|null $coverage_method
  * @property array|null $habitats
  * @property array|null $photo_paths
  * @property string|null $notes
@@ -48,6 +53,9 @@ use Spatie\Activitylog\Support\LogOptions;
     'location_point',
     'depth',
     'acfor_scale',
+    'coverage_value',
+    'coverage_unit',
+    'coverage_method',
     'habitats',
     'photo_paths',
     'notes',
@@ -65,6 +73,9 @@ class Occurrence extends Model
             'location' => CoordinatesCast::class,
             'depth' => 'float',
             'acfor_scale' => AcforScale::class,
+            'coverage_value' => 'float',
+            'coverage_unit' => CoverageUnit::class,
+            'coverage_method' => CoverageMethod::class,
             'habitats' => 'array',
             'photo_paths' => 'array',
             'observed_at' => 'datetime',

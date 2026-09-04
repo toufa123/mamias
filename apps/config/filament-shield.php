@@ -72,7 +72,22 @@ return [
     'super_admin' => [
         'enabled' => true,
         'name' => 'super_admin',
-        'define_via_gate' => false,
+
+        /*
+         * false (the default, and what runs in dev/production): super_admin is a
+         * plain role that must hold every permission row, as created by
+         * `php artisan shield:generate`.
+         *
+         * phpunit.xml flips this to true. RefreshDatabase truncates the
+         * permissions table between tests, so a super_admin would otherwise hold
+         * nothing and every panel test 403s — and the Livewire component then
+         * fails to mount, producing a cascade of confusing "mountedActions on
+         * null" errors far from the real cause. With the gate enabled, Shield
+         * registers a Gate::before that grants the role everything, matching the
+         * intent of the seeded production permissions without regenerating
+         * thousands of rows for each test.
+         */
+        'define_via_gate' => env('SHIELD_SUPER_ADMIN_VIA_GATE', false),
         'intercept_gate' => 'before',
     ],
 

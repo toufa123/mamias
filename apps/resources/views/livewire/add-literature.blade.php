@@ -1,10 +1,12 @@
 @section('title', 'Add Bibliographic Reference')
 
 @section('breadcrumbs')
-    {{ Breadcrumbs::for('add-literature', function ($trail) {
-        $trail->parent('home');
-        $trail->push('Add Bibliographic Reference', route('add-literature'));
-    }) }}
+    {{
+        Breadcrumbs::for('add-literature', function ($trail) {
+            $trail->parent('home');
+            $trail->push('Add Bibliographic Reference', route('add-literature'));
+        })
+    }}
     {{ Breadcrumbs::render('add-literature') }}
 @endsection
 
@@ -18,9 +20,7 @@
             <x-filament::button type="button" tag="a" href="{{ route('profile') }}" color="gray" variant="ghost">
                 Cancel
             </x-filament::button>
-            <x-filament::button type="submit" size="lg" color="primary">
-                Add Reference
-            </x-filament::button>
+            <x-filament::button type="submit" size="lg" color="primary"> Add Reference </x-filament::button>
         </div>
     </form>
 

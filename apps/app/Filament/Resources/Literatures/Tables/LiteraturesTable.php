@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Literatures\Tables;
 
+use App\Enums\LiteratureStatus;
+use App\Models\Literature;
 use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -39,6 +42,8 @@ class LiteraturesTable
                 //
             ])
             ->recordActions([
+                self::getApproveAction(),
+                self::getRejectAction(),
                 EditAction::make(),
             ])
             ->toolbarActions([
@@ -47,6 +52,35 @@ class LiteraturesTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Moves a pending reference to approved.
+     *
+     * Only shown while the record is still pending, so an already-decided
+     * reference cannot be flipped from the table.
+     */
+    public static function getApproveAction(): Action
+    {
+        return Action::make('approve')
+            ->icon(TablerIcon::Check)
+            ->color('success')
+            ->requiresConfirmation()
+            ->visible(fn (Literature $record): bool => $record->status === LiteratureStatus::PENDING)
+            ->action(fn (Literature $record) => $record->update(['status' => LiteratureStatus::APPROVED]));
+    }
+
+    /**
+     * Moves a pending reference to rejected.
+     */
+    public static function getRejectAction(): Action
+    {
+        return Action::make('reject')
+            ->icon(TablerIcon::X)
+            ->color('danger')
+            ->requiresConfirmation()
+            ->visible(fn (Literature $record): bool => $record->status === LiteratureStatus::PENDING)
+            ->action(fn (Literature $record) => $record->update(['status' => LiteratureStatus::REJECTED]));
     }
 
     /**

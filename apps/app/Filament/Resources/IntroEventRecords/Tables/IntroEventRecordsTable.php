@@ -23,7 +23,7 @@ class IntroEventRecordsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with(['taxon', 'literature', 'eicatAssessments']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['taxon', 'literature']))
             ->columns([
                 TextColumn::make('taxon.scientificname')
                     ->label('Taxon')
@@ -55,19 +55,6 @@ class IntroEventRecordsTable
                     ->badge()
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('eicat_category')
-                    ->label('EICAT Impact')
-                    ->state(fn ($record) => $record->eicatAssessments->pluck('category')->unique()->sort()->first())
-                    ->formatStateUsing(fn ($state) => $state?->getLabel())
-                    ->badge()
-                    ->color(fn ($state) => $state?->getColor())
-                    ->icon(fn ($state) => $state?->getIcon())
-                    ->sortable()
-                    ->toggleable(),
-                TextColumn::make('eicat_mechanisms')
-                    ->label('EICAT Mechanisms')
-                    ->state(fn ($record) => $record->eicatAssessments->pluck('mechanism')->unique()->implode(', '))
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('literature.short_ref')
                     ->label('Citation')
                     ->searchable()

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
 use App\Enums\Subregion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,7 +23,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int $id
  * @property int $intro_event_id
  * @property Subregion $subregion
- * @property NisStatus $nis_status
+ * @property NisStatus|null $nis_status
+ * @property EstablishmentStatus|null $establishment_status
  * @property int|null $first_arrival_year
  * @property string|null $notes
  * @property Carbon|null $created_at
@@ -32,7 +34,7 @@ use Spatie\Activitylog\Support\LogOptions;
  *
  * @method BelongsTo introEvent()
  */
-#[Fillable(['intro_event_id', 'subregion', 'nis_status', 'first_arrival_year', 'notes'])]
+#[Fillable(['intro_event_id', 'subregion', 'nis_status', 'establishment_status', 'first_arrival_year', 'notes'])]
 class SubregionRecord extends Model
 {
     use HasFactory, LogsActivity, Userstamps;
@@ -61,6 +63,7 @@ class SubregionRecord extends Model
         return [
             'subregion' => Subregion::class,
             'nis_status' => NisStatus::class,
+            'establishment_status' => EstablishmentStatus::class,
         ];
     }
 }

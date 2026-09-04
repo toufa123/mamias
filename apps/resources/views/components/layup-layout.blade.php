@@ -5,7 +5,7 @@
 @endsection
 
 @section('breadcrumbs')
-    @if(isset($layupPage))
+    @if (isset($layupPage))
         {{ Breadcrumbs::render('layup.page.show', $layupPage) }}
     @else
         {{ Breadcrumbs::render('home') }}

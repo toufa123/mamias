@@ -41,32 +41,42 @@ class FetchEasinIdsJob implements ShouldQueue
         $startTime = microtime(true);
         $processed = 0;
         $totals = ['found' => 0, 'not_found' => 0, 'skipped' => 0];
+        $processedIds = [];
+        $cancelled = false;
+
+        // A resumed/new run must not inherit a stale abort request.
+        $this->clearCancellation();
 
         $this->updateProgress($processed, $total, $startTime);
 
         try {
             Taxon::whereIn('id', $this->taxonIds)
-                ->chunkById(50, function (Collection $chunk) use ($easinService, &$totals, &$processed, $total, $startTime): void {
+                ->chunkById(50, function (Collection $chunk) use ($easinService, &$totals, &$processed, &$processedIds, &$cancelled, $total, $startTime): bool {
                     foreach ($chunk as $taxon) {
+                        if ($this->isCancellationRequested()) {
+                            $cancelled = true;
+
+                            return false; // stop; unprocessed taxa are left for resume
+                        }
+
                         if (! $taxon->scientificname) {
                             $totals['skipped']++;
-                            $processed++;
-                            $this->updateProgress($processed, $total, $startTime);
-
-                            continue;
-                        }
-
-                        $easinId = $easinService->fetchEasinId($taxon->scientificname);
-                        if ($easinId) {
-                            $taxon->update(['Easin_id' => $easinId]);
-                            $totals['found']++;
                         } else {
-                            $totals['not_found']++;
+                            $easinId = $easinService->fetchEasinId($taxon->scientificname);
+                            if ($easinId) {
+                                $taxon->update(['Easin_id' => $easinId]);
+                                $totals['found']++;
+                            } else {
+                                $totals['not_found']++;
+                            }
                         }
 
+                        $processedIds[] = $taxon->id;
                         $processed++;
                         $this->updateProgress($processed, $total, $startTime);
                     }
+
+                    return true;
                 });
         } catch (\Throwable $e) {
             Log::error("FetchEasinIdsJob failed: {$e->getMessage()}");
@@ -81,6 +91,24 @@ class FetchEasinIdsJob implements ShouldQueue
             ]);
 
             throw $e;
+        }
+
+        if ($cancelled) {
+            $remainingIds = array_values(array_diff($this->taxonIds, $processedIds));
+
+            $this->clearCancellation();
+            $this->setProgress([
+                'status' => 'cancelled',
+                'processed' => $processed,
+                'total' => $total,
+                'percentage' => $total > 0 ? round(($processed / $total) * 100) : 0,
+                'estimatedTime' => '',
+                'remaining' => count($remainingIds),
+                'remaining_ids' => $remainingIds,
+                'totals' => $totals,
+            ]);
+
+            return;
         }
 
         $this->setProgress([

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Filament\Pages\Auth\EmailVerificationPrompt;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
@@ -32,9 +33,12 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Size;
+use Filament\Support\Enums\VerticalAlignment;
 use Filament\Support\Enums\Width;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Icons\Heroicon;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -44,14 +48,19 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Vite;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
+use LaBoiteACode\DependencyGraph\DependencyGraphPlugin;
+use LaBoiteACode\FilamentLogsExplorer\FilamentLogsExplorerPlugin;
 use lockscreen\FilamentLockscreen\Lockscreen;
 use Martin6363\SidebarResize\SidebarResizePlugin;
-use Promethys\Revive\RevivePlugin;
 use OccTherapist\AdvancedTableExportForFilament\AdvancedTableExportForFilamentPlugin;
 use Prodstarter\FilamentNotificationCenter\FilamentNotificationCenterPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use Vaslv\FilamentAppVersion\AppVersionPlugin;
+use Vaslv\FilamentAppVersion\Resolvers\ConfigVersionResolver;
+use Vaslv\FilamentAppVersion\Resolvers\FileVersionResolver;
+use Vaslv\FilamentAppVersion\Resolvers\GitVersionResolver;
 use YousefAman\ModalRepeater\ModalRepeaterPlugin;
 use Zvizvi\FilamentNotificationsTabs\FilamentNotificationsTabsPlugin;
 
@@ -87,7 +96,7 @@ class MamiasPanelProvider extends PanelProvider
             ->path('mamias')
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
-            ->brandName('Filament Demo')
+            ->brandName('MAMIAS Web Application')
             ->brandLogo(asset('images/mamias.png'))
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/favicon.png'))
@@ -112,6 +121,43 @@ class MamiasPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
+                // Version sources, highest priority first. See
+                // config/filament-app-version.php — keep the two chains in step.
+                //   1. APP_VERSION, frozen into the config at config:cache time
+                //   2. a VERSION file written into the image by the build
+                //   3. the short commit SHA — host-side dev only: .git sits at
+                //      the repo root, one level above the Laravel app
+                AppVersionPlugin::make()
+                    ->resolvers([
+                        ConfigVersionResolver::make('filament-app-version.version'),
+                        FileVersionResolver::make(base_path('VERSION')),
+                        GitVersionResolver::make(base_path('../.git')),
+                    ])
+                    ->fallback('dev')
+                    ->prefix('v')
+                    ->badge()
+                    // ->neutral()
+                    ->size(Size::Small)
+                    ->verticalAlignment(VerticalAlignment::Center)
+                    ->renderHooks([
+                        PanelsRenderHook::TOPBAR_LOGO_AFTER,
+                        PanelsRenderHook::SIDEBAR_LOGO_AFTER,
+                    ])
+                    ->tooltip(fn (): string => __('Application version')),
+
+                DependencyGraphPlugin::make()
+                    ->visible(fn () => app()->environment('local') || auth()->user()?->hasRole('super_admin'))
+                    ->navigationLabel('Architecture')
+                    ->navigationIcon('heroicon-o-share')
+                    ->activeNavigationIcon('heroicon-s-share')
+                    ->navigationGroup('System')      // string, enum or closure
+                    // ->navigationSort(30)
+                    // ->navigationParentItem('Tooling')
+                    ->navigationBadge(fn (): string => 'beta'),
+                // ->registerNavigation(false)               // keep the route, hide the menu entry
+                // ->slug('architecture-map')
+                // ->cluster(\App\Filament\Clusters\Developer::class)
+                // ->maxContentWidth(Width::SevenExtraLarge),
                 FilamentNotificationCenterPlugin::make(),
                 AdvancedTableExportForFilamentPlugin::make()
                     ->maxPdfRows(200)
@@ -150,9 +196,9 @@ class MamiasPanelProvider extends PanelProvider
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->environment('local'))
                     ->users([
-                        'Admin' => 'atef.ouerghi@spa-rac.org',
-                        'Scientist' => 'scientist@mamias.local',
-                        'Public User' => 'atef.ouerghi@gmail.com',
+                        'Admin' => config('services.dev_login.admin_email'),
+                        'Scientist' => config('services.dev_login.scientist_email'),
+                        'Public User' => config('services.dev_login.public_email'),
                     ]),
                 AuthUIEnhancerPlugin::make()
                     ->showEmptyPanelOnMobile(true)
@@ -202,8 +248,17 @@ class MamiasPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm' => 2,
                     ]),
-                RevivePlugin::make()
-                    ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
+                FilamentLogsExplorerPlugin::make()
+                    ->navigationLabel('Application logs')
+                    ->navigationIcon('heroicon-o-bug-ant')
+                    ->activeNavigationIcon('heroicon-s-bug-ant')
+                    ->navigationGroup('System')
+                    ->channels(['daily', 'single'])
+                    ->excludeChannels(['emergency'])
+                    ->expandStacks()
+                    ->filesPerChannel(20)
+                    ->discoverUntrackedFiles(directory: storage_path('logs')),
+                ActivityLogPlugin::make()
                     ->navigationGroup('System'),
             ])
             ->colors([

@@ -41,6 +41,13 @@ services:
           -Server
         }
 
+        # Same-origin reverse proxy for the Cap CAPTCHA server. The browser calls
+        # /cap/{siteKey}/challenge on the app's own origin; handle_path strips the
+        # /cap prefix before forwarding to the internal cap container.
+        handle_path /cap/* {
+          reverse_proxy cap:3000
+        }
+
       # Trust Plesk's nginx proxy so Laravel reads X-Forwarded-Proto/Host
       # and generates https:// URLs (prevents redirect loops / mixed content).
       # The app port is bound to loopback only, so the proxy is the sole caller.
@@ -73,6 +80,13 @@ services:
       CACHE_STORE: "redis"
       SESSION_DRIVER: "redis"
       QUEUE_CONNECTION: "redis"
+
+      # CAPTCHA (Cap standalone). Widget served same-origin via the /cap reverse
+      # proxy above; verified server-side over the internal Docker network.
+      CAP_SITE_KEY: "${CAP_SITE_KEY:?CAP_SITE_KEY is required — set it in .env.production}"
+      CAP_SECRET_KEY: "${CAP_SECRET_KEY:?CAP_SECRET_KEY is required — set it in .env.production}"
+      CAP_PUBLIC_URL: "/cap"
+      CAP_INTERNAL_URL: "http://cap:3000"
 
       # Sessions/cookies
       SESSION_SECURE_COOKIE: "true"
@@ -173,6 +187,22 @@ services:
 
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-jobs=1000", "--max-time=3600"]
 
+    # The base image's healthcheck curls Caddy on :8080, which this container
+    # never starts (the entrypoint execs artisan directly). Replace it: the
+    # worker process must be alive AND Redis — its job broker — must be
+    # reachable. The [q] bracket stops pgrep from matching its own shell.
+    # retries x interval must exceed the restart gap after --max-time expiry.
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - >-
+          pgrep -f 'artisan [q]ueue:(work|listen)' >/dev/null
+          && php -r 'exit((new Redis)->connect(getenv("REDIS_HOST") ?: "redis", (int) (getenv("REDIS_PORT") ?: 6379), 2) ? 0 : 1);'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -270,6 +300,59 @@ services:
     networks:
       - app_net
 
+  # ── Cap Standalone (proof-of-work CAPTCHA) ────────────────────────
+  # Internal-only: reached by the browser through the app's /cap reverse proxy
+  # and by the app server-side at http://cap:3000. No public port is exposed.
+  #
+  # FIRST DEPLOY (one-time) — each Cap server has its own key store, so the prod
+  # site key differs from dev and must be provisioned once:
+  #   1. Set CAP_ADMIN_KEY in .env.production.
+  #   2. docker compose --env-file .env.production -f docker-compose.prod.yml up -d cap cap-valkey
+  #   3. Create a site key via the Cap dashboard/API (auth: CAP_ADMIN_KEY).
+  #   4. Put the returned keys in .env.production as CAP_SITE_KEY / CAP_SECRET_KEY.
+  #   5. Recreate the app:  docker compose --env-file .env.production -f docker-compose.prod.yml up -d app
+  cap:
+    image: "${CAP_IMAGE:-tiago2/cap:latest}"
+    container_name: "${NAME:-mamias}_cap"
+    environment:
+      ADMIN_KEY: "${CAP_ADMIN_KEY:?CAP_ADMIN_KEY is required — set it in .env.production}"
+      REDIS_URL: "redis://cap-valkey:6379"
+    depends_on:
+      cap-valkey:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
+  cap-valkey:
+    image: "${VALKEY_IMAGE:-valkey/valkey:9-alpine}"
+    container_name: "${NAME:-mamias}_cap_valkey"
+    command: valkey-server --save 60 1 --loglevel warning --maxmemory-policy noeviction
+    volumes:
+      - cap_valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
 volumes:
   db_data:
     name: "${NAME:-mamias}_data_prod"
@@ -277,6 +360,8 @@ volumes:
     name: "${NAME:-mamias}_redis_prod"
   backups:
     name: "${NAME:-mamias}_backups_prod"
+  cap_valkey_data:
+    name: "${NAME:-mamias}_cap_valkey_prod"
 
 networks:
   app_net:

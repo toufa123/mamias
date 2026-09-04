@@ -27,7 +27,7 @@ it('creates a subregion record with correct casts', function () {
 
 it('belongs to an intro event record', function () {
     $introEvent = IntroEventRecord::factory()->create();
-    $record = SubregionRecord::factory()->for($introEvent)->create();
+    $record = SubregionRecord::factory()->for($introEvent, 'introEvent')->create();
 
     expect($record->introEvent)->not->toBeNull()
         ->and($record->introEvent->id)->toBe($introEvent->id);

@@ -4,6 +4,7 @@ use App\Livewire\MyReferences;
 use App\Livewire\MySpeciesReports;
 use App\Livewire\MySuggestions;
 use App\Livewire\PublicProfile;
+use Crumbls\Layup\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use Lubusin\Decomposer\Controllers\DecomposerController;
 
@@ -14,9 +15,14 @@ Route::get('/email-verification/prompt', function () {
     return redirect()->route('filament.mamias.auth.email-verification.prompt');
 })->name('verification.notice');
 
-Route::permanentRedirect('/', '/pages/home')->name('home');
+// Site root serves the Layup "home" page (config: layup.pages.default_slug = 'home').
+// Named 'home' so the shared layout, navbar, and breadcrumbs can resolve route('home').
+Route::get('/', PageController::class)->name('home');
 
-Route::permanentRedirect('/about', '/pages/about')->name('about');
+// Named 'about' for the navbar/breadcrumbs; served by the Layup "about" page.
+Route::get('/about', PageController::class)
+    ->defaults('slug', 'about')
+    ->name('about');
 
 Route::get('/profile', PublicProfile::class)
     ->middleware(['auth', 'verified'])

@@ -13,6 +13,7 @@ use Filament\Auth\Http\Responses\Contracts\EmailVerificationResponse as EmailVer
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse as RegistrationResponseContract;
 use Filament\Support\Facades\FilamentColor;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -75,6 +76,17 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         Livewire::component('filament-import-wizard', ImportWizard::class);
+
+        // Embed the MAMIAS logo inline (CID "mamias-logo", referenced by the mail
+        // header) so it renders reliably without depending on a publicly reachable
+        // asset URL and isn't blocked as a remote image by mail clients.
+        Event::listen(MessageSending::class, function (MessageSending $event): void {
+            $logo = public_path('images/mamias.png');
+
+            if (is_file($logo)) {
+                $event->message->embedFromPath($logo, 'mamias-logo');
+            }
+        });
 
         Event::listen(ImportCompleted::class, TaxonImportCompletedListener::class);
 

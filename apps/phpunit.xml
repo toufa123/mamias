@@ -24,12 +24,43 @@
         <env name="BCRYPT_ROUNDS" value="4" force="true"/>
         <env name="BROADCAST_CONNECTION" value="null" force="true"/>
         <env name="CACHE_STORE" value="array" force="true"/>
+        <!--
+            Tests run against the dedicated PostgreSQL database "mamias_test" (NOT sqlite —
+            the app relies on PostGIS types that sqlite cannot express).
+
+            The dev container exports a real DB_DATABASE=mamias_db env var, which lands in
+            $_SERVER. Laravel's env reader checks $_SERVER before $_ENV/putenv, so <env> alone
+            loses and tests would run against the dev database. Pin the name in $_SERVER too.
+            Tests\TestCase::setUpTraits() refuses to run against any database not ending
+            in "_test", so a regression here aborts instead of wiping the dev data.
+
+            Host, port and credentials are deliberately NOT overridden: they must follow
+            whatever context the suite runs in — db:5432 inside the container, 127.0.0.1:5433
+            from the host — and any value hardcoded here is silently ignored anyway, because
+            the container's real values already occupy $_SERVER.
+        -->
+        <server name="DB_DATABASE" value="mamias_test"/>
         <env name="DB_CONNECTION" value="pgsql" force="true"/>
-        <env name="DB_HOST" value="db" force="true"/>
-        <env name="DB_PORT" value="5432" force="true"/>
         <env name="DB_DATABASE" value="mamias_test" force="true"/>
-        <env name="DB_USERNAME" value="admin_mamias" force="true"/>
-        <env name="DB_PASSWORD" value="admin_251205" force="true"/>
+
+        <!--
+            Blank the CAPTCHA credentials so CapService::isConfigured() is false and
+            verifyToken() takes its local/testing bypass. Otherwise every form-submission
+            test fails on a cap_token validation error, and the suite depends on a
+            reachable cap container.
+        -->
+        <env name="CAP_SITE_KEY" value="" force="true"/>
+        <env name="CAP_SECRET_KEY" value="" force="true"/>
+        <server name="CAP_SITE_KEY" value=""/>
+        <server name="CAP_SECRET_KEY" value=""/>
+
+        <!--
+            Grant the super_admin role its access via Shield's Gate::before instead of
+            explicit permission rows: RefreshDatabase truncates those between tests.
+            See the comment in config/filament-shield.php.
+        -->
+        <env name="SHIELD_SUPER_ADMIN_VIA_GATE" value="true" force="true"/>
+        <server name="SHIELD_SUPER_ADMIN_VIA_GATE" value="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

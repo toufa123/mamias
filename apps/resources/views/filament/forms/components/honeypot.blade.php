@@ -6,7 +6,7 @@
     $validFromTimestamp = $getValidFromTimestamp();
 @endphp
 
-@if($isEnabled)
+@if ($isEnabled)
     <div id="{{ $unrandomizedName }}_wrap" style="display: none" aria-hidden="true" x-ignore>
         <input
             id="{{ $honeypotName }}"

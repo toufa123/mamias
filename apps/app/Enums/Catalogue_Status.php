@@ -26,6 +26,9 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
     /** No data was available from WoRMS for this entry. */
     case no_data_from_worms = 'no data from WORMS';
 
+    /** Accepted via GBIF or manual entry — species is not in WoRMS. */
+    case manual_entry = 'manual entry';
+
     /**
      * Human-readable label for the catalogue status.
      */
@@ -36,6 +39,7 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
             self::checked_not_accepted => 'Checked & not accepted',
             self::not_checked => 'Not checked Yet',
             self::no_data_from_worms => 'No data from WORMS',
+            self::manual_entry => 'Checked & accepted (GBIF)',
         };
     }
 
@@ -49,6 +53,7 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
             self::checked_not_accepted => 'danger',
             self::not_checked => 'danger',
             self::no_data_from_worms => 'danger',
+            self::manual_entry => 'success',
         };
     }
 
@@ -62,6 +67,7 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
             self::checked_not_accepted => 'tabler-circle-x',
             self::not_checked => 'tabler-clock',
             self::no_data_from_worms => 'tabler-database-x',
+            self::manual_entry => 'tabler-pencil',
         };
     }
 

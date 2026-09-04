@@ -3,12 +3,9 @@
 namespace App\Filament\Resources\IntroEventRecords\Schemas;
 
 use App\Enums\AcforScale;
-use App\Enums\AssessmentScale;
 use App\Enums\CbdPathwayCategory;
 use App\Enums\CbdPathwaySubcategory;
 use App\Enums\DataQuality;
-use App\Enums\EicatCategory;
-use App\Enums\EicatMechanism;
 use App\Enums\EstablishmentStatus;
 use App\Enums\Habitat;
 use App\Enums\NisStatus;
@@ -19,7 +16,6 @@ use App\Filament\Forms\MultipleMarkersMapPicker;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Forms\Components\Component;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -152,7 +148,8 @@ class IntroEventRecordForm
                                             ->step(1)
                                             ->default(now()->year)
                                             ->columnSpan(1)
-                                            ->extraAttributes(['class' => 'max-w-28']),
+                                            ->extraAttributes(['style' => 'display:flex; justify-content:center;'])
+                                            ->extraInputAttributes(['style' => 'width:5rem; min-width:0; flex:none; text-align:center;']),
                                     ])
                                     ->columns(5),
                             ]),
@@ -208,64 +205,7 @@ class IntroEventRecordForm
                         Tab::make('Occurrences')
                             ->icon('tabler-map-pin')
                             ->schema(static::occurrenceSchema()),
-                        Tab::make('EICAT Impact')
-                            ->icon('tabler-alert-triangle')
-                            ->schema([
-                                Repeater::make('eicatAssessments')
-                                    ->hiddenLabel()
-                                    ->table([
-                                        TableColumn::make('Category'),
-                                        TableColumn::make('Mechanism'),
-                                        TableColumn::make('Confidence'),
-                                        TableColumn::make('Literature'),
-                                    ])
-                                    ->addActionLabel('Add EICAT Assessment')
-                                    ->compact()
-                                    ->minItems(0)
-                                    ->maxItems(10)
-                                    ->relationship()
-                                    ->schema([
-                                        Select::make('category')
-                                            ->label('Impact Category')
-                                            ->options(EicatCategory::class)
-                                            ->placeholder('Select category')
-                                            ->required()
-                                            ->columnSpan(1),
-                                        Select::make('mechanism')
-                                            ->label('Impact Mechanism')
-                                            ->options(EicatMechanism::class)
-                                            ->placeholder('Select mechanism')
-                                            ->required()
-                                            ->columnSpan(1),
-                                        Select::make('confidence')
-                                            ->label('Confidence')
-                                            ->options(DataQuality::class)
-                                            ->default('medium')
-                                            ->columnSpan(1),
-                                        Select::make('assessment_scale')
-                                            ->label('Assessment Scale')
-                                            ->options(AssessmentScale::class)
-                                            ->placeholder('Select scale')
-                                            ->helperText('Geographic scope of this assessment')
-                                            ->columnSpan(1),
-                                        Select::make('literature_id')
-                                            ->label('Supporting Literature')
-                                            ->relationship('literature', 'short_ref')
-                                            ->searchable()
-                                            ->preload()
-                                            ->columnSpan(1),
-                                        Textarea::make('rationale')
-                                            ->label('Rationale')
-                                            ->placeholder('Describe the evidence and justification for this assessment...')
-                                            ->rows(3)
-                                            ->columnSpanFull(),
-                                        DatePicker::make('assessed_at')
-                                            ->label('Assessment Date')
-                                            ->default(now())
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(5),
-                            ]),
+
                     ]),
             ]);
     }
@@ -286,60 +226,78 @@ class IntroEventRecordForm
                 ->schema([
                     Hidden::make('user_id')
                         ->default(fn (): int => auth()->id()),
-                    Grid::make(['default' => 1, 'md' => 2, 'lg' => 4])->schema([
-                        Stepper::make('depth')
-                            ->label('Depth (m)')
-                            ->minValue(0)
-                            ->maxValue(11000)
-                            ->step(1),
-                        Select::make('acfor_scale')
-                            ->label('Abundance (ACFOR)')
-                            ->options(AcforScale::class)
-                            ->native(false)
-                            ->placeholder('Select ACFOR scale'),
-                        Select::make('habitats')
-                            ->label('Habitats')
-                            ->multiple()
-                            ->options(Habitat::class)
-                            ->native(false)
-                            ->placeholder('Select habitats'),
-                        DateTimePicker::make('observed_at')
-                            ->label('Date & Time of Observation')
-                            ->required()
-                            ->default(now())
-                            ->seconds(false)
-                            ->displayFormat('Y-m-d H:i'),
-                    ])->columnSpanFull(),
-                    MultipleMarkersMapPicker::make('location')
-                        ->hiddenLabel()
-                        ->height(250)
-                        ->center([36, 14])
-                        ->zoom(5)
-                        ->tileLayersUrl(TileLayer::OpenStreetMap)
-                        ->pickMarker(fn (Marker $marker) => $marker->red())
-                        ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])
-                        ->columnSpanFull(),
-                    FileUpload::make('photo_paths')
-                        ->label('Photos')
-                        ->panelLayout('grid')
-                        ->loadingIndicatorPosition('left')
-                        ->panelAspectRatio('8:1')
-                        ->removeUploadedFileButtonPosition('right')
-                        ->uploadButtonPosition('left')
-                        ->uploadProgressIndicatorPosition('left')
-                        ->multiple()
-                        ->image()
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                        ->disk('public')
-                        ->directory('occurrences/photos')
-                        ->visibility('public')
-                        ->maxSize(5120)
-                        ->imagePreviewHeight('40')
-                        ->columnSpanFull(),
-                    Textarea::make('notes')
-                        ->label('Notes')
-                        ->rows(3)
-                        ->columnSpanFull(),
+                    Tabs::make()
+                        ->columnSpanFull()
+                        ->tabs([
+                            Tab::make('Details')
+                                ->icon('tabler-info-circle')
+                                ->schema([
+                                    Grid::make(['default' => 1, 'md' => 2, 'lg' => 4])->schema([
+                                        Stepper::make('depth')
+                                            ->label('Depth (m)')
+                                            ->minValue(0)
+                                            ->maxValue(11000)
+                                            ->step(1),
+                                        Select::make('acfor_scale')
+                                            ->label('Abundance (ACFOR)')
+                                            ->options(AcforScale::class)
+                                            ->native(false)
+                                            ->placeholder('Select ACFOR scale'),
+                                        Select::make('habitats')
+                                            ->label('Habitats')
+                                            ->multiple()
+                                            ->options(Habitat::class)
+                                            ->native(false)
+                                            ->placeholder('Select habitats'),
+                                        DateTimePicker::make('observed_at')
+                                            ->label('Date & Time of Observation')
+                                            ->required()
+                                            ->default(now())
+                                            ->seconds(false)
+                                            ->displayFormat('Y-m-d H:i'),
+                                    ]),
+                                ]),
+                            Tab::make('Map')
+                                ->icon('tabler-map-pin')
+                                ->schema([
+                                    MultipleMarkersMapPicker::make('location')
+                                        ->hiddenLabel()
+                                        ->height(300)
+                                        ->center([36, 14])
+                                        ->zoom(5)
+                                        ->tileLayersUrl(TileLayer::OpenStreetMap)
+                                        ->pickMarker(fn (Marker $marker) => $marker->red())
+                                        ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);']),
+                                ]),
+                            Tab::make('Photos')
+                                ->icon('tabler-photo')
+                                ->schema([
+                                    FileUpload::make('photo_paths')
+                                        ->hiddenLabel()
+                                        ->panelLayout('grid')
+                                        ->loadingIndicatorPosition('left')
+                                        ->panelAspectRatio('8:1')
+                                        ->removeUploadedFileButtonPosition('right')
+                                        ->uploadButtonPosition('left')
+                                        ->uploadProgressIndicatorPosition('left')
+                                        ->multiple()
+                                        ->image()
+                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                        ->disk('public')
+                                        ->directory('occurrences/photos')
+                                        ->visibility('public')
+                                        ->maxSize(5120)
+                                        ->imagePreviewHeight('80'),
+                                ]),
+                            Tab::make('Notes')
+                                ->icon('tabler-notes')
+                                ->schema([
+                                    Textarea::make('notes')
+                                        ->hiddenLabel()
+                                        ->rows(5)
+                                        ->columnSpanFull(),
+                                ]),
+                        ]),
                 ]),
         ];
     }

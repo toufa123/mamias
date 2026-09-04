@@ -22,10 +22,17 @@ class CapField extends Field
     /**
      * Builds the CAPTCHA API endpoint URL from the configured public
      * URL and site key.
+     *
+     * Stays relative by default ("/cap/{siteKey}/") so the widget resolves it
+     * against whichever origin the page was served from, keeping the CAPTCHA
+     * working under any hostname.
      */
     public function getApiEndpoint(): string
     {
-        $publicUrl = config('services.cap.public_url', 'http://localhost:3000');
+        // `?:` rather than a config() default: the key is always defined by
+        // config/services.php, so the default never fires — but an empty
+        // CAP_PUBLIC_URL would otherwise yield a bare "/{siteKey}/".
+        $publicUrl = rtrim((string) (config('services.cap.public_url') ?: '/cap'), '/');
         $siteKey = config('services.cap.site_key', '');
 
         return "{$publicUrl}/{$siteKey}/";

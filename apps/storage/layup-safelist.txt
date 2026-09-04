@@ -1,6 +1,7 @@
 container
 flex
 flex-wrap
+gap-0
 hidden
 lg:block
 lg:hidden

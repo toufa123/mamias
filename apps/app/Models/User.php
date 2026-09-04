@@ -51,6 +51,7 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -228,6 +229,21 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
             'subregions' => 'array',
             'countries' => 'array',
         ];
+    }
+
+    /**
+     * Coerce has_whatsapp to a real boolean on assignment.
+     *
+     * The column is NOT NULL DEFAULT false, but Eloquent's "boolean" cast lets
+     * null through untouched. The user form only sets this field as a side
+     * effect of the phone-number lookup, so saving a user without a phone sent
+     * a literal null and the insert failed on the not-null constraint.
+     */
+    protected function hasWhatsapp(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value): bool => (bool) $value,
+        );
     }
 
     public function literatures(): HasMany

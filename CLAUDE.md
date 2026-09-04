@@ -17,9 +17,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Environment
 
-- DB_HOST should match the Docker service name (not 127.0.0.1) when running inside containers — fix root config issues before falling back to reseeding.
-- Pint, psql, artisan all run via Docker — if Docker is unavailable, surface that immediately rather than retrying.
+**Service hostnames differ by where the code runs. Do not "fix" one context by breaking the other.**
+
+- Containers get `DB_HOST=db` / `REDIS_HOST=redis` from the `environment:` block in `docker-compose.yml`. That block always wins: Laravel's dotenv is immutable and never overwrites an already-set environment variable, so `apps/.env` is *ignored* inside containers.
+- `apps/.env` is therefore only ever read by host-side runs (artisan/tests from the WSL shell, IDE runners). It must point at `127.0.0.1` plus the **host-published** ports — currently `5433` for Postgres and `6380` for Redis. Setting it to `db`/`redis` makes every host-side artisan call fail at boot: the cookie-consent provider calls `Cache::rememberForever()` during `boot()`, so it dies before any command runs.
+- **The stack is hostname-agnostic — keep it that way.** `CADDY_HTTP_SERVER_ADDRESS`/`CADDY_HTTPS_SERVER_ADDRESS` are bare schemes with no host, so Caddy serves any `Host`: `127.0.0.1`, `localhost`, `mamias.local`, `dev.mamias.org`, anything. Putting a hostname in them re-pins the stack to one name. `SERVER_NAME` is *not* referenced by the image's Caddyfile and changes nothing. Live requests build URLs from the request host (`trustProxies` forwards `X-Forwarded-Host`); `APP_URL` only matters where there is no request (queued mail, notifications, artisan).
+- Two things do stay host-bound, both overridable from the root `.env`: `DEV_SSL_HOSTNAMES` (names baked into the self-signed cert by `ssl-sans.sh` — add any hostname you browse to) and `APP_URL`. Browser-facing URLs in app code must stay root-relative — `CAP_PUBLIC_URL=/cap` is proxied by Caddy to the cap container, so an absolute value there breaks the CAPTCHA under every other hostname.
+- Host port choice: keep published ports **below 50000**. Windows/Hyper-V reserves large blocks of the ephemeral range (`netsh interface ipv4 show excludedportrange protocol=tcp`); the old `54321` landed inside one and the db container could no longer bind it.
+- To tell which context an error came from, check the paths in the stack trace: `/var/www/html/...` is the container, `/home/toufa/...` is the host.
+- Fix root config issues before falling back to reseeding.
+- Pint, psql, artisan normally run via Docker — if Docker is unavailable, surface that immediately rather than retrying.
 - After `composer require` restarts containers, volume mounts may need to be re-verified.
+- The queue container runs artisan directly and never starts Caddy, so it cannot use the base image's HTTP healthcheck — `docker-compose.yml` overrides it with a worker-process + Redis probe. Don't remove that override; the container will read "unhealthy" while working fine.
 
 ## Repository layout
 
@@ -87,7 +96,10 @@ Reuse this static configurator pattern for all new resources.
 
 ## Testing
 
-- Test DB is **SQLite in-memory** (`apps/phpunit.xml`); app runtime is PostgreSQL/PostGIS — watch for dialect differences
+- Test DB is the dedicated PostgreSQL database **`mamias_test`** (`apps/phpunit.xml`) — the same engine as runtime, because the schema uses PostGIS types SQLite cannot express. Only the database *name* is pinned; host/port/credentials follow the environment, so the suite runs both in the container and from the host.
+- `Tests\TestCase::setUpTraits()` aborts if the active database name does not end in `_test`, so a misconfiguration can never wipe the dev data.
+- `tests/Pest.php` applies `RefreshDatabase` (transaction per test) and seeds a baseline: roles, developer-login users, Layup home/about pages. **Attach `beforeEach` to the `pest()` chain** — a bare top-level `beforeEach()` in `Pest.php` is silently never executed.
+- `phpunit.xml` blanks `CAP_SITE_KEY`/`CAP_SECRET_KEY` so the CAPTCHA takes its local/testing bypass, and sets `SHIELD_SUPER_ADMIN_VIA_GATE=true` so `super_admin` passes authorization via `Gate::before` rather than permission rows that `RefreshDatabase` truncates.
 - Always `actingAs(User::factory()->create())` before testing Filament panel pages
 - Create tests: `php artisan make:test --pest SomeName` (no suite prefix in name)
 - Run: `php artisan test --compact` or `--filter=name`

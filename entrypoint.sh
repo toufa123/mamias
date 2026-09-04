@@ -22,8 +22,13 @@ APP_DIR="${APP_BASE_DIR:-/var/www/html}"
 CHECK_DIR="${CADDY_SERVER_ROOT:-${APP_DIR}/public}"
 CHECK_FILE="${CHECK_DIR}/index.php"
 
-echo "[entrypoint] Waiting for ${CHECK_FILE} to become visible..."
-MAX_RETRIES=30
+# Docker Desktop / WSL2 can be slow to propagate a bind mount into a freshly
+# started container — especially on a daemon restart, where depends_on ordering
+# no longer applies and every container races for the same mount. Override with
+# ENTRYPOINT_FS_TIMEOUT (seconds) per service.
+MAX_RETRIES="${ENTRYPOINT_FS_TIMEOUT:-120}"
+
+echo "[entrypoint] Waiting for ${CHECK_FILE} to become visible (timeout ${MAX_RETRIES}s)..."
 RETRY_COUNT=0
 while [ ! -f "${CHECK_FILE}" ]; do
     RETRY_COUNT=$((RETRY_COUNT + 1))

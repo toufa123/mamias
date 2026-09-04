@@ -98,7 +98,6 @@ class Literature extends Model
         try {
             $driver = DB::getDriverName();
             $column = 'code';
-            $start = 7;
 
             if ($driver === 'mysql' || $driver === 'mariadb') {
                 $query = self::where($column, 'regexp', '^mamias[0-9]{6}$');
@@ -106,12 +105,21 @@ class Literature extends Model
                 $query = self::where($column, 'like', 'mamias%');
             }
 
+            /*
+             * The offset is inlined rather than bound. As a placeholder it
+             * arrives untyped, and PostgreSQL then resolves SUBSTRING(code, $1)
+             * to the *regex* overload substring(text from pattern) instead of
+             * substring(text from int). Every row cast to NULL, the ordering
+             * became arbitrary, and this method kept returning first_row + 1 —
+             * handing out a duplicate code as soon as a second record existed.
+             * 7 is the fixed length of the "mamias" prefix plus one.
+             */
             if ($driver === 'pgsql') {
-                $query->orderByRaw('CAST(SUBSTRING(code, ?) AS INTEGER) DESC', [$start]);
+                $query->orderByRaw('CAST(SUBSTRING(code FROM 7) AS INTEGER) DESC');
             } elseif ($driver === 'sqlite') {
-                $query->orderByRaw('CAST(SUBSTR(code, ?) AS INTEGER) DESC', [$start]);
+                $query->orderByRaw('CAST(SUBSTR(code, 7) AS INTEGER) DESC');
             } else {
-                $query->orderByRaw('CAST(SUBSTRING(code, ?) AS UNSIGNED) DESC', [$start]);
+                $query->orderByRaw('CAST(SUBSTRING(code, 7) AS UNSIGNED) DESC');
             }
 
             $lastRecord = $query->lockForUpdate()->first();
@@ -135,6 +143,11 @@ class Literature extends Model
     {
         return [
             'type' => LiteratureType::class,
+            // Without this the attribute stays a raw string, so every
+            // `$record->status === LiteratureStatus::PENDING` comparison — the
+            // approve/reject visibility rules included — silently evaluates
+            // false. The class docblock already declares it as the enum.
+            'status' => LiteratureStatus::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

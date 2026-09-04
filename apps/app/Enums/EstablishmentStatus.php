@@ -39,7 +39,6 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
     case Vagrant = 'Vagrant';
 
     /** Range expansion — native range expanding into new areas. */
-    case RangeExpansion = 'Range expansion';
 
     /**
      * Human-readable label for the establishment status.
@@ -63,7 +62,7 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
             self::Excluded => 'danger',
             self::Questionable => 'warning',
             self::Vagrant => 'info',
-            self::RangeExpansion => 'info',
+
         };
     }
 
@@ -81,7 +80,7 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
             self::Excluded => 'tabler-x',
             self::Questionable => 'tabler-help-circle',
             self::Vagrant => 'tabler-plane-arrival',
-            self::RangeExpansion => 'tabler-arrows-maximize',
+
         };
     }
 }

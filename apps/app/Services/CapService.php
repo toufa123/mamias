@@ -36,14 +36,17 @@ class CapService
 
     /**
      * Verify a CAPTCHA token against the internal CAP service.
-     * In local environment, returns true if CAP is not configured.
+     * In local and testing environments, returns true if CAP is not configured.
      *
-     * @throws RuntimeException When not in local environment and credentials are missing.
+     * @throws RuntimeException When outside local/testing and credentials are missing.
      */
     public function verifyToken(?string $token): bool
     {
         if (! $this->isConfigured()) {
-            if (app()->environment('local')) {
+            // "testing" is bypassed alongside "local" so the suite never depends
+            // on a reachable cap container. phpunit.xml blanks the keys to get
+            // here; without this branch every form submission test would throw.
+            if (app()->environment('local', 'testing')) {
                 logger()->warning('CAPTCHA verification bypassed: CAP_SITE_KEY or CAP_SECRET_KEY not configured.');
 
                 return true;
@@ -57,6 +60,9 @@ class CapService
         }
 
         try {
+            // Cap standalone's /siteverify expects { secret, response } where "response"
+            // is the widget token (format "siteKey:id:sig") and "secret" is verified
+            // against the site key's stored argon2 hash. See cap src/siteverify.js.
             $response = Http::timeout(10)
                 ->post("{$this->internalUrl}/{$this->siteKey}/siteverify", [
                     'secret' => $this->secretKey,

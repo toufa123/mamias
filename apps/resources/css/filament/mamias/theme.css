@@ -8,6 +8,7 @@
 @source '../../../../vendor/agencetwogether/filament-alert-box/resources/views/**/*';
 @source '../../../../vendor/wire-elements/**/*.blade.php';
 @source '../../../../vendor/zvizvi/filament-notifications-tabs/resources/views/**/*.blade.php';
+@source '../../../../vendor/vitisstudio/filament-choosable-chips/resources/views';
 
 
 /* Fix Leaflet 1.9 gray tile issue — mix-blend-mode makes tiles invisible on many browsers */

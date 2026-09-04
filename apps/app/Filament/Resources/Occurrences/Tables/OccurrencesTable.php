@@ -142,7 +142,7 @@ class OccurrencesTable
     public static function getAcforScaleColumn(): TextColumn
     {
         return TextColumn::make('acfor_scale')
-            ->label('Abundance (ACFOR)')
+            ->label('Abundance (density)')
             ->badge()
             ->sortable()
             ->placeholder('—');

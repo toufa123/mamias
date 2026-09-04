@@ -38,6 +38,31 @@ trait TracksJobProgress
         Cache::put($cacheKey, $data, now()->addHour());
     }
 
+    /**
+     * Whether the user has requested this sync be aborted. Checked at chunk
+     * boundaries so the job can stop cooperatively.
+     */
+    private function isCancellationRequested(): bool
+    {
+        return $this->userId !== null && (bool) Cache::get($this->cancelKey());
+    }
+
+    /**
+     * Clear any stale cancellation flag so a fresh (or resumed) run is not
+     * killed immediately by a leftover request.
+     */
+    private function clearCancellation(): void
+    {
+        if ($this->userId !== null) {
+            Cache::forget($this->cancelKey());
+        }
+    }
+
+    private function cancelKey(): string
+    {
+        return str_replace('-progress-', '-cancel-', static::PROGRESS_CACHE_PREFIX).$this->userId;
+    }
+
     private static function formatDuration(float $seconds): string
     {
         if ($seconds < 60) {

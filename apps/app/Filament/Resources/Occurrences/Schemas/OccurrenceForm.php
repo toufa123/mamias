@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Occurrences\Schemas;
 
 use App\Enums\AcforScale;
+use App\Enums\CoverageMethod;
+use App\Enums\CoverageUnit;
 use App\Enums\Habitat;
 use App\Filament\Forms\Components\CountrySelectWithMedPriority;
-use App\Filament\Forms\MultipleMarkersMapPicker;
+use App\Filament\Forms\SinglePointMapPicker;
 use App\Models\IntroEventRecord;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
@@ -14,12 +16,14 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
 
 /**
@@ -56,7 +60,7 @@ class OccurrenceForm
                     ->getSearchResultsUsing(fn (string $search, Get $get): array => self::searchSpecies($search, $get))
                     ->getOptionLabelUsing(fn (mixed $value): ?string => self::getSpeciesLabel($value))
                     ->live()
-                    ->afterStateUpdated(fn (Set $set, mixed $state) => self::populateKingdom($set, $state))
+                    ->afterStateUpdated(fn (Get $get, Set $set, mixed $state) => self::populateKingdom($get, $set, $state))
                     ->hintIcon('tabler-fish')
                     ->placeholder('Type at least 3 characters to search…'),
                 Stepper::make('depth')
@@ -64,11 +68,23 @@ class OccurrenceForm
                     ->minValue(0)
                     ->maxValue(11000)
                     ->step(1),
+
+                // Second row: what was seen.
+                //
+                // Density and extent answer two different questions, so the
+                // labels have to keep them apart: ACFOR is how tightly packed
+                // the species is where it was found, extent is how much of it
+                // there is in total. They also sit on separate rows for that
+                // reason — the whole extent group is the third row.
                 Select::make('acfor_scale')
-                    ->label('Abundance (ACFOR Scale)')
+                    ->label('Abundance (density)')
                     ->options(fn (Get $get): array => self::getAcforOptions($get('kingdom')))
                     ->native(false)
                     ->live()
+                    ->hintIcon(
+                        Heroicon::OutlinedQuestionMarkCircle,
+                        tooltip: 'ACFOR scale — how tightly packed the species is where you found it.',
+                    )
                     ->placeholder('Select ACFOR scale'),
                 Select::make('habitats')
                     ->label('Habitats')
@@ -82,15 +98,54 @@ class OccurrenceForm
                     ->default(now())
                     ->seconds(false)
                     ->displayFormat('Y-m-d H:i'),
+
+                // Third row: the extent figure, its unit, and how it was taken.
+                TextInput::make('coverage_value')
+                    ->label('Extent (area or count)')
+                    ->numeric()
+                    ->minValue(0)
+                    ->step('any')
+                    ->live(onBlur: true)
+                    ->suffix(fn (Get $get): ?string => self::getCoverageSuffix($get('coverage_unit')))
+                    ->hintIcon(
+                        Heroicon::OutlinedQuestionMarkCircle,
+                        tooltip: 'How much there is in total: area covered in m², or number of individuals.',
+                    ),
+                Select::make('coverage_unit')
+                    ->label('Extent Unit')
+                    ->options(CoverageUnit::class)
+                    ->native(false)
+                    ->live()
+                    ->requiredWith('coverage_value')
+                    ->placeholder('Select unit'),
+                Select::make('coverage_method')
+                    ->label('Estimated or Measured')
+                    ->options(CoverageMethod::class)
+                    ->native(false)
+                    ->requiredWith('coverage_value')
+                    ->placeholder('How was it obtained?'),
             ])->columnSpanFull(),
             Tabs::make('Details')
                 ->columnSpanFull()
+                // The three panels have very different natural heights — the
+                // map, a photo grid, a textarea — so the modal resized on every
+                // tab switch. A floor on the container keeps the box steady;
+                // the tallest panel (Location) sets it, so this tracks the map
+                // height above it.
+                //
+                // On the container, not on each Tab: Filament merges a Tab's
+                // extraAttributes into its strip button as well as its panel, so
+                // a height there stretches the tab strip itself.
+                ->extraAttributes(['style' => 'min-height: 26rem;'])
                 ->tabs([
                     Tab::make('Location')
                         ->schema([
-                            MultipleMarkersMapPicker::make('location')
+                            // One observation, one point: click the map to place
+                            // the pin, click again to move it.
+                            SinglePointMapPicker::make('location')
                                 ->hiddenLabel()
-                                ->height(400)
+                                ->helperText('Click the map to place the observation point. Clicking again moves it.')
+                                ->height(280)
                                 ->center([36, 14])
                                 ->zoom(5)
                                 ->tileLayersUrl(TileLayer::OpenStreetMap)
@@ -122,11 +177,29 @@ class OccurrenceForm
                         ->schema([
                             Textarea::make('notes')
                                 ->label('Notes')
-                                ->rows(5)
+                                ->rows(4)
                                 ->columnSpanFull(),
                         ]),
                 ]),
         ];
+    }
+
+    /**
+     * Suffix shown inside the coverage input, following the selected unit.
+     *
+     * The state arrives as a raw string on first render and as a CoverageUnit
+     * once the Select has hydrated its enum options, so both are accepted.
+     *
+     * @param  mixed  $unit  The current `coverage_unit` form state.
+     * @return string|null The unit suffix (m² / ind.), or null when no unit is picked.
+     */
+    public static function getCoverageSuffix(mixed $unit): ?string
+    {
+        if ($unit instanceof CoverageUnit) {
+            return $unit->getSuffix();
+        }
+
+        return is_string($unit) ? CoverageUnit::tryFrom($unit)?->getSuffix() : null;
     }
 
     /**
@@ -178,10 +251,14 @@ class OccurrenceForm
     }
 
     /**
+     * Resolves the selected species' kingdom and, from it, the unit the extent
+     * is most likely to be recorded in.
+     *
+     * @param  Get  $get  The reactive form state getter.
      * @param  Set  $set  The form state setter utility.
      * @param  mixed  $state  The selected intro event record ID.
      */
-    public static function populateKingdom(Set $set, mixed $state): void
+    public static function populateKingdom(Get $get, Set $set, mixed $state): void
     {
         if (! $state) {
             $set('kingdom', null);
@@ -190,12 +267,42 @@ class OccurrenceForm
         }
 
         $ie = IntroEventRecord::with('taxon')->find($state);
+        $kingdom = $ie?->taxon?->kingdom;
 
-        if ($ie && $ie->taxon) {
-            $set('kingdom', $ie->taxon->kingdom);
-        } else {
-            $set('kingdom', null);
+        $set('kingdom', $kingdom);
+        self::defaultCoverageUnit($get, $set, $kingdom);
+    }
+
+    /**
+     * Pre-selects the extent unit that matches the kingdom — area for plants
+     * and algae, a head count for everything else.
+     *
+     * Only fills an empty unit: once a reporter has picked one it is their
+     * call, and re-picking the species must not quietly overwrite it.
+     *
+     * @param  Get  $get  The reactive form state getter.
+     * @param  Set  $set  The form state setter utility.
+     * @param  string|null  $kingdom  The selected species' kingdom.
+     */
+    public static function defaultCoverageUnit(Get $get, Set $set, ?string $kingdom): void
+    {
+        if ($kingdom === null || filled($get('coverage_unit'))) {
+            return;
         }
+
+        $set('coverage_unit', self::isPlantKingdom($kingdom)
+            ? CoverageUnit::SQUARE_METRES->value
+            : CoverageUnit::INDIVIDUALS->value);
+    }
+
+    /**
+     * Whether the kingdom is recorded as cover rather than as a head count.
+     *
+     * @param  string|null  $kingdom  The kingdom (e.g. "Plantae", "Chromista") or null.
+     */
+    public static function isPlantKingdom(?string $kingdom): bool
+    {
+        return in_array($kingdom, ['Plantae', 'Chromista'], true);
     }
 
     /**
@@ -220,8 +327,8 @@ class OccurrenceForm
             return '';
         }
 
-        $isPlant = in_array($kingdom, ['Plantae', 'Chromista'], true);
-
-        return ' — '.($isPlant ? $scale->getPlantDescription() : $scale->getAnimalDescription());
+        return ' — '.(self::isPlantKingdom($kingdom)
+            ? $scale->getPlantDescription()
+            : $scale->getAnimalDescription());
     }
 }

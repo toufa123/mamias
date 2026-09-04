@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\LiteratureStatus;
 use App\Enums\LiteratureType;
 use App\Models\Literature;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -27,5 +28,20 @@ class LiteratureFactory extends Factory
             'doi' => $this->faker->optional()->numerify('10.####/####'),
             'link' => $this->faker->optional()->url(),
         ];
+    }
+
+    public function pending(): static
+    {
+        return $this->state(fn () => ['status' => LiteratureStatus::PENDING]);
+    }
+
+    public function approved(): static
+    {
+        return $this->state(fn () => ['status' => LiteratureStatus::APPROVED]);
+    }
+
+    public function rejected(): static
+    {
+        return $this->state(fn () => ['status' => LiteratureStatus::REJECTED]);
     }
 }

@@ -12,8 +12,10 @@ use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
@@ -137,5 +139,27 @@ class Register extends BaseRegister
         $user->assignRole('user');
 
         return $user;
+    }
+
+    /**
+     * Sends the email-verification link, then shows an on-screen confirmation
+     * that the link was emailed. The notification carries over the redirect and
+     * is displayed on the email-verification prompt page.
+     */
+    protected function sendEmailVerificationNotification(Model $user): void
+    {
+        parent::sendEmailVerificationNotification($user);
+
+        if (! $user instanceof MustVerifyEmail || $user->hasVerifiedEmail()) {
+            return;
+        }
+
+        Notification::make()
+            ->title(__('Verification link sent'))
+            ->body(__('We have emailed a verification link to :email. Please check your inbox to activate your account.', [
+                'email' => $user->getAttribute('email'),
+            ]))
+            ->success()
+            ->send();
     }
 }

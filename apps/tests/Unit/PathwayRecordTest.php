@@ -18,21 +18,21 @@ it('creates a pathway record with correct casts', function () {
     $this->actingAs($user);
 
     $record = PathwayRecord::factory()->create([
-        'category' => CbdPathwayCategory::RELEASE,
-        'subcategory' => CbdPathwaySubcategory::AQUACULTURE,
+        'category' => CbdPathwayCategory::ReleaseIntoNature,
+        'subcategory' => CbdPathwaySubcategory::Release_1_1,
         'pathway_type' => PathwayType::Primary,
-        'uncertainty' => DataQuality::HIGH,
+        'uncertainty' => DataQuality::High,
     ]);
 
-    expect($record->category)->toBe(CbdPathwayCategory::RELEASE)
-        ->and($record->subcategory)->toBe(CbdPathwaySubcategory::AQUACULTURE)
+    expect($record->category)->toBe(CbdPathwayCategory::ReleaseIntoNature)
+        ->and($record->subcategory)->toBe(CbdPathwaySubcategory::Release_1_1)
         ->and($record->pathway_type)->toBe(PathwayType::Primary)
-        ->and($record->uncertainty)->toBe(DataQuality::HIGH);
+        ->and($record->uncertainty)->toBe(DataQuality::High);
 });
 
 it('belongs to an intro event record', function () {
     $introEvent = IntroEventRecord::factory()->create();
-    $record = PathwayRecord::factory()->for($introEvent)->create();
+    $record = PathwayRecord::factory()->for($introEvent, 'introEvent')->create();
 
     expect($record->introEvent)->not->toBeNull()
         ->and($record->introEvent->id)->toBe($introEvent->id);

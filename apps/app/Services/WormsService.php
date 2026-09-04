@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Http;
  * Provides methods to fetch taxonomic records, search species, retrieve synonyms,
  * and populate/persist taxon data from WoRMS into the local Taxon model.
  * Uses caching (24h TTL) to minimise API calls.
+ *
+ * The public API is deliberately non-final: this service is bound in the
+ * container and swapped for a fake in tests (`app()->instance(...)`, Mockery,
+ * `createMock`). Marking a public method `final` silently defeats those doubles
+ * — Mockery leaves the real method in place, so the fake reaches the network —
+ * and makes a subclass fake fatal outright. Internals stay final.
  */
 class WormsService
 {
@@ -40,7 +46,7 @@ class WormsService
      * We start from Biota (AphiaID 1) and recursively (or selectively)
      * find children that are Phyla.
      */
-    final public function getPhyla(): array
+    public function getPhyla(): array
     {
         return Cache::remember('worms_phyla_grouped_v2', 86400, function () {
             $groupedPhyla = [];
@@ -65,7 +71,7 @@ class WormsService
     /**
      * Fetch a single AphiaRecord by AphiaID.
      */
-    final public function getRecordByAphiaID(int $aphiaId): ?array
+    public function getRecordByAphiaID(int $aphiaId): ?array
     {
         $response = $this->wormsRequest("{$this->baseUrl}/AphiaRecordByAphiaID/{$aphiaId}");
 
@@ -119,7 +125,7 @@ class WormsService
     /**
      * Fetch synonyms by AphiaID from WoRMS.
      */
-    final public function getSynonyms(int $aphiaId): array
+    public function getSynonyms(int $aphiaId): array
     {
         $response = $this->wormsRequest("{$this->baseUrl}/AphiaSynonymsByAphiaID/{$aphiaId}");
 
@@ -188,7 +194,7 @@ class WormsService
     /**
      * Populate a Taxon model with data from WoRMS.
      */
-    final public function populateTaxonFromWorms(Taxon $taxon, array $data): void
+    public function populateTaxonFromWorms(Taxon $taxon, array $data): void
     {
         $data = $this->handleUnacceptedName($taxon, $data);
 
@@ -207,7 +213,7 @@ class WormsService
     /**
      * Fetch and expand synonyms for a given Taxon.
      */
-    final public function expandSynonyms(Taxon $taxon, bool $persist = true): int
+    public function expandSynonyms(Taxon $taxon, bool $persist = true): int
     {
         $aphiaId = $taxon->aphia_id;
         if (! $aphiaId) {

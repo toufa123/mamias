@@ -12,3 +12,31 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* ── Stepper ───────────────────────────────────────────────
+   filament-stepper ships amber buttons. The panel theme already
+   recolours them, but public pages (the occurrence report modal on
+   /my-species-reports) load this stylesheet instead, so the same rules
+   have to live here. The literal is the panel's primary-500, used only
+   when Filament has not injected its variables outside a panel. */
+.it-stepper-btn-decrement,
+.it-stepper-btn-increment {
+    @apply text-white;
+    background-color: var(--primary-500, #00899d) !important;
+}
+
+.it-stepper-btn-decrement:hover,
+.it-stepper-btn-increment:hover {
+    background-color: var(--primary-600, #007a8c) !important;
+}
+
+.it-stepper-btn-decrement:disabled,
+.it-stepper-btn-increment:disabled {
+    background-color: var(--primary-300, #85ccd9) !important;
+    opacity: 0.6;
+}
+
+.it-stepper-input:focus {
+    border-color: var(--primary-500, #00899d) !important;
+    --tw-ring-color: var(--primary-500, #00899d) !important;
+}

@@ -60,7 +60,7 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
             ->color('primary')
             ->size('lg')
             ->modalHeading('Report a New Species Occurrence')
-            ->modalWidth(Width::SevenExtraLarge)
+            ->modalWidth(Width::FiveExtraLarge)
             ->schema(OccurrenceForm::getComponents())
             ->action(function (array $data): void {
                 Occurrence::create([
@@ -85,7 +85,7 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
             ->color('gray')
             ->visible(fn (Occurrence $record): bool => $record->status === OccurrenceStatus::PENDING)
             ->modalHeading('Edit Occurrence')
-            ->modalWidth(Width::SevenExtraLarge)
+            ->modalWidth(Width::FiveExtraLarge)
             ->schema(OccurrenceForm::getComponents())
             ->fillForm(fn (Occurrence $record): array => $record->toArray())
             ->action(function (Occurrence $record, array $data): void {

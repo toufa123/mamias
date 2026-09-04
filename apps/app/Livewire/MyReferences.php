@@ -13,6 +13,7 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -90,10 +91,13 @@ class MyReferences extends Component implements HasActions, HasForms, HasTable
                     'status' => LiteratureStatus::PENDING,
                 ]);
 
-                notify()
+                // Filament's own notification, not the notify() helper: this runs
+                // inside a Filament modal action, so the feedback belongs in the
+                // panel's notification channel (and is what assertNotified sees).
+                Notification::make()
                     ->success()
                     ->title('Reference submitted')
-                    ->message('Your reference has been submitted for review.')
+                    ->body('Your reference has been submitted for review.')
                     ->send();
             });
     }

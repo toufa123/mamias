@@ -1,7 +1,6 @@
 {
     "agents": [
         "claude_code",
-        "copilot",
         "junie",
         "antigravity",
         "opencode",
@@ -15,16 +14,19 @@
         "filament/filament",
         "fruitcake/laravel-debugbar",
         "jeffersongoncalves/filament-refresh-sidebar",
-        "laramint/laravel-brain"
+        "alizharb/filament-activity-log",
+        "spatie/laravel-activitylog",
+        "albertoarena/laravel-truss"
     ],
     "sail": false,
     "skills": [
+        "infer-conventions",
         "laravel-best-practices",
+        "testing-best-practices",
         "livewire-development",
-        "pest-testing",
         "tailwindcss-development",
         "filament-refresh-sidebar-development",
-        "debug-using-debugbar",
-        "laravel-brain"
+        "truss-schema",
+        "debug-using-debugbar"
     ]
 }

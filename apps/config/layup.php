@@ -271,7 +271,7 @@ return [
         'table' => 'layup_pages',
         'model' => Page::class,
         'enabled' => true,
-        'default_slug' => null,
+        'default_slug' => 'home',
 
         /*
         | Maximum nesting depth for parent → child page chains. Used by the
@@ -315,7 +315,7 @@ return [
         // only values that activate auto-exclusion of Filament panel paths and
         // framework routes. Other values (including null) are treated as a
         // literal prefix with no auto-exclusion.
-        'prefix' => 'pages',
+        'prefix' => '/',
 
         'middleware' => ['web'],
         'domain' => null,
@@ -334,7 +334,25 @@ return [
 
         // Additional paths to exclude from the root-mount catch-all.
         // Only applied when 'prefix' is '' or '/'.
-        'excluded_paths' => [],
+        //
+        // Layup mounts a "{slug}" catch-all at the site root, and its service
+        // provider registers it BEFORE routes/web.php. Laravel matches in
+        // registration order, so without these entries the catch-all swallows
+        // every top-level route this app declares and returns 404 (there is no
+        // Layup page with that slug) instead of running the real route. The
+        // package already excludes Filament panel paths and framework routes
+        // automatically; only our own top-level segments need listing here.
+        //
+        // Keep in sync with the top-level paths in routes/web.php.
+        'excluded_paths' => [
+            'login',
+            'email-verification',
+            'about',
+            'profile',
+            'references',
+            'my-species-reports',
+            'my-suggestions',
+        ],
     ],
 
     /*

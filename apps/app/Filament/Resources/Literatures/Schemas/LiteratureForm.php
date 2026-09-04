@@ -7,6 +7,7 @@ use App\Models\Literature;
 use App\Services\DoiMetadataService;
 use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
 use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -48,6 +49,7 @@ class LiteratureForm
                 self::getTypeField(),
                 self::getFullRefField(),
                 self::getLinkField(),
+                self::getFilePathField(),
             ])
             ->compact()
             ->columns(4)
@@ -199,6 +201,33 @@ class LiteratureForm
             ->maxLength(2048)
             ->placeholder('https://doi.org/...')
             ->nullable()
+            ->columnSpanFull();
+    }
+
+    /**
+     * The attached PDF.
+     *
+     * The literatures table has always had a nullable file_path column and the
+     * tables render a file column for it, but the form had no field to populate
+     * it. Hidden when viewing a record that has no attachment, so the view modal
+     * does not show an empty upload control.
+     *
+     * @return FileUpload The PDF upload field.
+     */
+    public static function getFilePathField(): FileUpload
+    {
+        return FileUpload::make('file_path')
+            ->label('PDF')
+            ->disk('public')
+            ->directory('literatures')
+            // Filament defaults uploads to private visibility.
+            ->visibility('public')
+            ->acceptedFileTypes(['application/pdf'])
+            ->maxSize(10240)
+            ->downloadable()
+            ->openable()
+            ->nullable()
+            ->visible(fn (string $operation, ?Literature $record): bool => $operation !== 'view' || filled($record?->file_path))
             ->columnSpanFull();
     }
 }

@@ -1,6 +1,11 @@
 <?php
 
 use Database\Seeders\DeveloperLoginUsersSeeder;
+use Database\Seeders\LayupAboutPageSeeder;
+use Database\Seeders\LayupHomePageSeeder;
+use Database\Seeders\RolesSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 /*
@@ -14,16 +19,56 @@ use Tests\TestCase;
 |
 */
 
+/*
+ * RefreshDatabase wraps every test in a transaction that is rolled back afterwards
+ * (migrating only once per run). Without it nothing was undone between tests, so
+ * anything writing a uniquely-constrained column — Literature codes, Taxon scientific
+ * names — collided with rows left behind by earlier tests and the suite failed in
+ * cascades that had nothing to do with the code under test.
+ *
+ * Applied to Unit as well: those files opt into TestCase individually, and several of
+ * them touch the database despite the directory name.
+ */
+/**
+ * Baseline every test starts from, restoring what RefreshDatabase truncated.
+ *
+ * Must be attached to the pest() chain below — a bare top-level beforeEach() in
+ * this file is silently never executed, which is how the suite ended up running
+ * with no roles and no Layup pages at all.
+ */
+$seedBaseline = function (): void {
+    // Not every file under tests/Unit binds Tests\TestCase — the stock Pest
+    // ExampleTest extends plain PHPUnit and has no seed()/database at all.
+    if (! method_exists($this, 'seed')) {
+        return;
+    }
+
+    // RolesSeeder first: DeveloperLoginUsersSeeder calls syncRoles(), which throws
+    // "There is no role named `super_admin`" if the roles were rolled back with
+    // everything else. Spatie caches its lookups, so the cache has to be dropped
+    // afterwards or the freshly inserted rows stay invisible to this test.
+    $this->seed(RolesSeeder::class);
+    $this->seed(DeveloperLoginUsersSeeder::class);
+
+    // "/" and "/about" are served by Layup out of the layup_pages table, which
+    // RefreshDatabase truncates — without these the site root 404s in tests.
+    $this->seed(LayupHomePageSeeder::class);
+    $this->seed(LayupAboutPageSeeder::class);
+
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+};
+
 pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->beforeEach($seedBaseline)
     ->in('Feature');
 
-beforeEach(function () {
-    $this->seed(DeveloperLoginUsersSeeder::class);
-});
-
-afterEach(function () {
-    $this->seed(DeveloperLoginUsersSeeder::class);
-});
+// Unit files bind Tests\TestCase themselves and Pest rejects binding it twice,
+// so attach only the trait here. Several of them touch the database despite the
+// directory name, and the ones that don't are unaffected by an unused transaction.
+pest()->use(RefreshDatabase::class)
+    ->beforeEach($seedBaseline)
+    ->in('Unit');
 
 /*
 |--------------------------------------------------------------------------

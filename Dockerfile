@@ -78,6 +78,11 @@ ENV APP_KEY=""
 # ── Entrypoint wrapper ────────────────────────────────────────────────
 COPY --chmod=755 entrypoint.sh /usr/local/bin/docker-entrypoint-laravel
 
+# ── Multi-SAN self-signed certificate ─────────────────────────────────
+# Numbered 6- so it runs right after the base image's 5-generate-ssl.sh and
+# replaces its SAN-less /CN=localhost certificate. See ssl-sans.sh.
+COPY --chmod=755 ssl-sans.sh /etc/entrypoint.d/6-ssl-sans.sh
+
 # ── Override entrypoint ───────────────────────────────────────────────
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint-laravel"]
 

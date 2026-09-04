@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\SyncCancelledException;
 use App\Jobs\Concerns\TracksJobProgress;
 use App\Models\Taxon;
 use App\Models\User;
@@ -41,21 +42,34 @@ class FetchTaxaFromWormsJob implements ShouldQueue
         $startTime = microtime(true);
         $processed = 0;
         $totals = ['updated' => 0, 'missing_aphia_id' => 0, 'not_found' => 0];
+        $processedIds = [];
+        $cancelled = false;
+
+        // A resumed/new run must not inherit a stale abort request.
+        $this->clearCancellation();
 
         $this->updateProgress($processed, $total, $startTime);
 
         try {
             Taxon::whereIn('id', $this->taxonIds)
-                ->chunkById(50, function (Collection $chunk) use ($taxonService, &$totals, &$processed, $total, $startTime): void {
-                    $result = $taxonService->refreshFromWorms($chunk, function () use (&$processed, $total, $startTime) {
+                ->chunkById(50, function (Collection $chunk) use ($taxonService, &$totals, &$processed, &$processedIds, $total, $startTime): void {
+                    $result = $taxonService->refreshFromWorms($chunk, function (Taxon $taxon) use (&$processed, &$processedIds, $total, $startTime): void {
                         $processed++;
+                        $processedIds[] = $taxon->id;
                         $this->updateProgress($processed, $total, $startTime);
+
+                        // Abort as soon as the user requests it, mid-chunk.
+                        if ($this->isCancellationRequested()) {
+                            throw new SyncCancelledException;
+                        }
                     });
 
                     $totals['updated'] += $result['updated'];
                     $totals['missing_aphia_id'] += $result['missing_aphia_id'];
                     $totals['not_found'] += $result['not_found'];
                 });
+        } catch (SyncCancelledException) {
+            $cancelled = true;
         } catch (\Throwable $e) {
             Log::error("FetchTaxaFromWormsJob failed: {$e->getMessage()}");
 
@@ -69,6 +83,24 @@ class FetchTaxaFromWormsJob implements ShouldQueue
             ]);
 
             throw $e;
+        }
+
+        if ($cancelled) {
+            $remainingIds = array_values(array_diff($this->taxonIds, $processedIds));
+
+            $this->clearCancellation();
+            $this->setProgress([
+                'status' => 'cancelled',
+                'processed' => $processed,
+                'total' => $total,
+                'percentage' => $total > 0 ? round(($processed / $total) * 100) : 0,
+                'estimatedTime' => '',
+                'remaining' => count($remainingIds),
+                'remaining_ids' => $remainingIds,
+                'totals' => $totals,
+            ]);
+
+            return;
         }
 
         $this->setProgress([

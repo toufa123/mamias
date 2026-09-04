@@ -4,7 +4,7 @@
     $statePath = $getStatePath();
 @endphp
 
-@if($isConfigured)
+@if ($isConfigured)
     <div
         class="w-full"
         x-data="{
@@ -19,10 +19,6 @@
         }"
         x-init="$wire.set('{{ $statePath }}', null)"
     >
-        <cap-widget
-            data-cap-api-endpoint="{{ $apiEndpoint }}"
-            x-on:solve="onSolve"
-            x-on:error="onError"
-        ></cap-widget>
+        <cap-widget data-cap-api-endpoint="{{ $apiEndpoint }}" x-on:solve="onSolve" x-on:error="onError"></cap-widget>
     </div>
 @endif

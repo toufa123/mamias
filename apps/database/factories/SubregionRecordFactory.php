@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
 use App\Enums\Subregion;
 use App\Models\IntroEventRecord;
@@ -23,6 +24,7 @@ class SubregionRecordFactory extends Factory
             'intro_event_id' => IntroEventRecord::factory(),
             'subregion' => fake()->randomElement(Subregion::cases()),
             'nis_status' => fake()->randomElement(NisStatus::cases()),
+            'establishment_status' => fake()->randomElement(EstablishmentStatus::cases()),
             'first_arrival_year' => fake()->year(),
             'notes' => fake()->optional()->sentence(),
         ];

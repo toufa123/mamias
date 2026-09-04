@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Taxons\Pages;
 use App\Enums\Catalogue_Status;
 use App\Filament\Imports\TaxonImporter;
 use App\Filament\Resources\Taxons\TaxonResource;
+use App\Filament\Widgets\ImportProgressWidget;
 use App\Filament\Widgets\WormsFetchProgressWidget;
 use App\Models\Taxon;
 use Filament\Actions\CreateAction;
@@ -12,7 +13,6 @@ use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
-use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 
 /**
  * Page for listing taxons.
@@ -24,6 +24,7 @@ class ListTaxons extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
+            ImportProgressWidget::class,
             WormsFetchProgressWidget::class,
         ];
     }
@@ -51,7 +52,8 @@ class ListTaxons extends ListRecords
         $tabs = [
             'all' => Tab::make('All')
                 ->icon('tabler-list')
-                ->badge(array_sum($countByStatus)),
+                ->badge(array_sum($countByStatus))
+                ->modifyQueryUsing(fn (Builder $query) => $query->withoutTrashed()),
         ];
 
         foreach (Catalogue_Status::cases() as $status) {
@@ -60,7 +62,7 @@ class ListTaxons extends ListRecords
                 ->icon($status->getIcon())
                 ->badgeColor($status->getColor())
                 ->badge($countByStatus[$value] ?? 0)
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('catalogue_status', $value));
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('catalogue_status', $value)->withoutTrashed());
         }
 
         $qualityIssuesCount = Taxon::query()
@@ -79,7 +81,7 @@ class ListTaxons extends ListRecords
                 $q->whereNull('fetched_at')
                     ->orWhere('fetched_at', '<', now()->subDays(90))
                     ->orWhere('catalogue_status', '!=', Catalogue_Status::checked_accepted->value);
-            }));
+            })->withoutTrashed());
 
         $duplicateNames = Taxon::query()
             ->select('scientificname')
@@ -99,10 +101,11 @@ class ListTaxons extends ListRecords
             ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('scientificname', function ($sub) {
                 $sub->select('scientificname')
                     ->from('taxas')
+                    ->whereNull('deleted_at')
                     ->whereNotNull('scientificname')
                     ->groupBy('scientificname')
                     ->havingRaw('COUNT(*) > 1');
-            }));
+            })->withoutTrashed());
 
         $tabs['trashed'] = Tab::make('Trashed')
             ->icon('tabler-trash')
@@ -130,7 +133,7 @@ class ListTaxons extends ListRecords
             ImportAction::make()
                 ->importer(TaxonImporter::class)
                 ->chunkSize(100),
-            
+
         ];
     }
 }

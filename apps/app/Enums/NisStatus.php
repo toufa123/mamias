@@ -24,6 +24,9 @@ enum NisStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     /** Species with unresolved taxonomic status or not verified by experts. */
     case Questionable = 'Questionable';
 
+    /** Species naturally expanding its range into new areas. */
+    case RangeExpansion = 'Range Expansion';
+
     /**
      * Human-readable label for the NIS status.
      */
@@ -41,6 +44,7 @@ enum NisStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::NIS => 'Species introduced outside its native range',
             self::Cryptogenic => 'Species with unknown native range or pathway of introduction',
             self::Questionable => 'Species with unresolved taxonomic status or not verified by experts',
+            self::RangeExpansion => 'Species naturally expanding its range into new areas',
         };
     }
 
@@ -53,6 +57,7 @@ enum NisStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::NIS => 'success',
             self::Cryptogenic => 'warning',
             self::Questionable => 'danger',
+            self::RangeExpansion => 'info',
         };
     }
 
@@ -65,6 +70,7 @@ enum NisStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::NIS => 'tabler-world',
             self::Cryptogenic => 'tabler-help',
             self::Questionable => 'tabler-alert-circle',
+            self::RangeExpansion => 'tabler-arrows-maximize',
         };
     }
 }

@@ -7,7 +7,8 @@ namespace App\Filament\Widgets;
 use App\Enums\Catalogue_Status;
 use App\Models\Taxon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+// use Filament\Widgets\StatsOverviewWidget\Stat;
+use Gsferro\FilamentStatPlusEasy\Widgets\StatPlus as Stat;
 
 /**
  * Stats overview widget showing catalogue totals: total species, accepted,
@@ -66,6 +67,7 @@ class CatalogueStatsWidget extends BaseWidget
         return Stat::make('Total Species in Catalogue', $stats['total'])
             ->description('All species records')
             ->descriptionIcon('tabler-list')
+            ->icon('tabler-list')
             ->chart($this->generateChartData($stats['total']))
             ->color('primary');
     }
@@ -75,6 +77,7 @@ class CatalogueStatsWidget extends BaseWidget
         return Stat::make('Checked & Accepted', $stats['accepted'])
             ->description("{$stats['accepted_percentage']}% of total")
             ->descriptionIcon('tabler-circle-check')
+            ->icon('tabler-circle-check')
             ->chart($this->generateChartData($stats['accepted']))
             ->color('success');
     }
@@ -84,6 +87,7 @@ class CatalogueStatsWidget extends BaseWidget
         return Stat::make('Checked & Not Accepted', $stats['not_accepted'])
             ->description("{$stats['not_accepted_percentage']}% of total")
             ->descriptionIcon('tabler-circle-x')
+            ->icon('tabler-circle-x')
             ->chart($this->generateChartData($stats['not_accepted']))
             ->color('danger');
     }
@@ -93,6 +97,7 @@ class CatalogueStatsWidget extends BaseWidget
         return Stat::make('Not Checked Yet', $stats['not_checked'])
             ->description("{$stats['not_checked_percentage']}% of total")
             ->descriptionIcon('tabler-clock')
+            ->icon('tabler-clock')
             ->chart($this->generateChartData($stats['not_checked']))
             ->color('warning');
     }
