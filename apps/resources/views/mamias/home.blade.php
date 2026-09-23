@@ -51,7 +51,7 @@
     </div>
 
     {{-- Key Features --}}
-    <section id="features" class="bg-white py-20">
+    <section id="features" class="bg-background py-20">
         <div class="kt-container-fixed">
             {{-- Section header --}}
             <div class="mb-14 flex flex-col items-center gap-3 text-center">
@@ -59,8 +59,8 @@
                     href="#features"
                     class="text-primary hover:text-primary/80 border-primary border-b pb-0.5 text-sm font-medium"
                 >Key Features</a>
-                <h2 class="text-3xl font-bold text-gray-900 md:text-4xl">MAMIAS Key Features</h2>
-                <p class="max-w-2xl text-base text-gray-500">
+                <h2 class="text-3xl font-bold text-foreground md:text-4xl">MAMIAS Key Features</h2>
+                <p class="max-w-2xl text-base text-muted-foreground">
                     Our platform provides all the tools you need to monitor, report, and analyse Non-Indigenous Species
                     data across the Mediterranean.
                 </p>
@@ -69,20 +69,20 @@
             {{-- Cards grid --}}
             <div class="features-grid">
                 {{-- Card 1 — Lightning Workflows --}}
-                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
+                <div class="group relative overflow-hidden rounded-none border border-border bg-card p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
                     <div class="mb-6 flex items-start justify-between">
                         <div class="flex size-12 items-center justify-center rounded-full bg-blue-50">
                             <i class="ki-filled ki-flash text-xl text-blue-500"></i>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold text-gray-900">10x faster</div>
-                            <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <div class="text-2xl font-bold text-foreground">10x faster</div>
+                            <div class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Speed Increase
                             </div>
                         </div>
                     </div>
-                    <h3 class="mb-2 text-lg font-bold text-gray-900">Lightning Workflows</h3>
-                    <p class="text-sm leading-relaxed text-gray-500">
+                    <h3 class="mb-2 text-lg font-bold text-foreground">Lightning Workflows</h3>
+                    <p class="text-sm leading-relaxed text-muted-foreground">
                         Supercharge your daily operations with automation that not only saves time, but intelligently
                         adapts to your evolving business routines.
                     </p>
@@ -90,18 +90,18 @@
                 </div>
 
                 {{-- Card 2 — Adaptive Safeguards --}}
-                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
+                <div class="group relative overflow-hidden rounded-none border border-border bg-card p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
                     <div class="mb-6 flex items-start justify-between">
                         <div class="flex size-12 items-center justify-center rounded-full bg-red-50">
                             <i class="ki-filled ki-shield-tick text-xl text-red-400"></i>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold text-gray-900">99.9%</div>
-                            <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase">Uptime</div>
+                            <div class="text-2xl font-bold text-foreground">99.9%</div>
+                            <div class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Uptime</div>
                         </div>
                     </div>
-                    <h3 class="mb-2 text-lg font-bold text-gray-900">Adaptive Safeguards</h3>
-                    <p class="text-sm leading-relaxed text-gray-500">
+                    <h3 class="mb-2 text-lg font-bold text-foreground">Adaptive Safeguards</h3>
+                    <p class="text-sm leading-relaxed text-muted-foreground">
                         Protect your data and streamline processes with real-time AI security, adapting instantly to
                         threats and keeping your operations resilient and confidential.
                     </p>
@@ -109,18 +109,18 @@
                 </div>
 
                 {{-- Card 3 — Smart Team Sync (featured/active) --}}
-                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
+                <div class="group relative overflow-hidden rounded-none border border-border bg-card p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
                     <div class="mb-6 flex items-start justify-between">
                         <div class="flex size-12 items-center justify-center rounded-full bg-[#4cafbf]/10">
                             <i class="ki-filled ki-people text-xl text-[#018d9a]"></i>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold text-gray-900">10k+</div>
-                            <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase">Active Users</div>
+                            <div class="text-2xl font-bold text-foreground">10k+</div>
+                            <div class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Active Users</div>
                         </div>
                     </div>
-                    <h3 class="mb-2 text-lg font-bold text-gray-900">Smart Team Sync</h3>
-                    <p class="text-sm leading-relaxed text-gray-500">
+                    <h3 class="mb-2 text-lg font-bold text-foreground">Smart Team Sync</h3>
+                    <p class="text-sm leading-relaxed text-muted-foreground">
                         Let AI handle the chaos of calendars and meetings — Smart Team Sync coordinates, schedules, and
                         adapts to your team's needs, so you can focus on what matters most.
                     </p>
@@ -128,18 +128,18 @@
                 </div>
 
                 {{-- Card 4 — Predictive Insights --}}
-                <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
+                <div class="group relative overflow-hidden rounded-none border border-border bg-card p-8 transition-all duration-300 hover:border-[#4cafbf] hover:shadow-lg">
                     <div class="mb-6 flex items-start justify-between">
                         <div class="flex size-12 items-center justify-center rounded-full bg-amber-50">
                             <i class="ki-filled ki-graph-up text-xl text-amber-500"></i>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold text-gray-900">25%</div>
-                            <div class="text-xs font-semibold tracking-wider text-gray-400 uppercase">Growth Boost</div>
+                            <div class="text-2xl font-bold text-foreground">25%</div>
+                            <div class="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Growth Boost</div>
                         </div>
                     </div>
-                    <h3 class="mb-2 text-lg font-bold text-gray-900">Predictive Insights</h3>
-                    <p class="text-sm leading-relaxed text-gray-500">
+                    <h3 class="mb-2 text-lg font-bold text-foreground">Predictive Insights</h3>
+                    <p class="text-sm leading-relaxed text-muted-foreground">
                         Reveal hidden trends and forecast outcomes with analytics that learn from your unique data,
                         giving you a competitive edge and actionable clarity.
                     </p>
@@ -150,16 +150,16 @@
     </section>
 
     {{-- CTA Section --}}
-    <section class="bg-gray-50 py-20">
+    <section class="bg-muted py-20">
         <div class="kt-container-fixed">
             <div class="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
                 {{-- Text content --}}
                 <div class="flex-1 text-center lg:text-left">
                     <span class="mb-4 inline-block rounded-full bg-[#018d9a]/10 px-4 py-1.5 text-sm font-medium text-[#018d9a]">Get Started Today</span>
-                    <h2 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
+                    <h2 class="mb-4 text-3xl font-bold text-foreground md:text-4xl">
                         Add observation of Marine Non-Indigenous Species
                     </h2>
-                    <p class="mx-auto mb-8 max-w-lg text-base leading-relaxed text-gray-500 lg:mx-0">
+                    <p class="mx-auto mb-8 max-w-lg text-base leading-relaxed text-muted-foreground lg:mx-0">
                         Join hundreds of researchers and institutions using MAMIAS to monitor, report, and analyse
                         Non-Indigenous Species data — powered by science, built for collaboration.
                     </p>
@@ -195,7 +195,7 @@
                             </a>
                             <a
                                 href="{{ route('filament.mamias.auth.login') }}"
-                                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-[#4cafbf] hover:text-[#018d9a]"
+                                class="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition-all duration-300 hover:border-[#4cafbf] hover:text-[#018d9a]"
                             >
                                 <i class="ki-filled ki-entrance-left text-base"></i>
                                 Sign In
@@ -206,16 +206,16 @@
 
                 {{-- App screenshot --}}
                 <div class="w-full max-w-xl flex-1">
-                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl">
+                    <div class="overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
                         {{-- Browser chrome --}}
-                        <div class="flex items-center gap-2 border-b border-gray-200 bg-gray-100 px-4 py-3">
+                        <div class="flex items-center gap-2 border-b border-border bg-secondary px-4 py-3">
                             <div class="flex gap-1.5">
                                 <span class="block size-3 rounded-full bg-red-400"></span>
                                 <span class="block size-3 rounded-full bg-yellow-400"></span>
                                 <span class="block size-3 rounded-full bg-green-400"></span>
                             </div>
                             <div class="mx-2 flex-1">
-                                <div class="truncate rounded-md border border-gray-200 bg-white px-3 py-1 text-center text-xs text-gray-400">
+                                <div class="truncate rounded-md border border-border bg-card px-3 py-1 text-center text-xs text-muted-foreground">
                                     mamias.org/mamias
                                 </div>
                             </div>

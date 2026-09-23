@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 /**
@@ -13,7 +14,7 @@ use Filament\Support\Contracts\HasLabel;
  * Standard semi-quantitative scale for recording species abundance,
  * with density descriptions for both animal (ind./m²) and plant (% cover) observations.
  */
-enum AcforScale: string implements HasColor, HasLabel
+enum AcforScale: string implements HasColor, HasIcon, HasLabel
 {
     /** Rare — <0.1 ind./m² or <5% cover. */
     case RARE = 'rare';
@@ -50,11 +51,25 @@ enum AcforScale: string implements HasColor, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::RARE => 'gray',
-            self::OCCASIONAL => 'info',
-            self::FREQUENT => 'success',
-            self::COMMON => 'warning',
-            self::ABUNDANT => 'danger',
+            self::RARE => 'primary',
+            self::OCCASIONAL => 'primary',
+            self::FREQUENT => 'primary',
+            self::COMMON => 'primary',
+            self::ABUNDANT => 'primary',
+        };
+    }
+
+    /**
+     * Signal bars carry the step (1–5); the colour is one teal, because a quantity scale is not a status. See DESIGN-SYSTEM.md.
+     */
+    public function getIcon(): ?string
+    {
+        return match ($this) {
+            self::RARE => 'tabler-antenna-bars-1',
+            self::OCCASIONAL => 'tabler-antenna-bars-2',
+            self::FREQUENT => 'tabler-antenna-bars-3',
+            self::COMMON => 'tabler-antenna-bars-4',
+            self::ABUNDANT => 'tabler-antenna-bars-5',
         };
     }
 

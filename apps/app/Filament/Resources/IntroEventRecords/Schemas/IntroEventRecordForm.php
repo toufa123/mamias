@@ -53,7 +53,7 @@ class IntroEventRecordForm
                     ->schema([
                         Grid::make(['default' => 1, 'md' => 3, 'lg' => 5])->schema([
                             Select::make('taxon_id')
-                                ->label('NIS Taxon')
+                                ->label('NIS Scientific Name')
                                 ->relationship('taxon', 'scientificname')
                                 ->getOptionLabelFromRecordUsing(fn ($record) => "<i>{$record->scientificname}</i>".($record->authority ? " ({$record->authority})" : ''))
                                 ->allowHtml()

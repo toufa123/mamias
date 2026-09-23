@@ -23,7 +23,7 @@ class SpeciesByKingdomChart extends EChartWidget
     protected int|string|array $columnSpan = 1;
 
     protected const COLOR_PALETTE = [
-        '#00899d',
+        '#078da0',
         '#10b981',
         '#f59e0b',
         '#F43F5E',
@@ -55,7 +55,7 @@ class SpeciesByKingdomChart extends EChartWidget
                     'center' => ['50%', '55%'],
                     'roseType' => 'area',
                     'itemStyle' => [
-                        'borderRadius' => 8,
+                        'borderRadius' => 0,
                         'borderColor' => '#fff',
                         'borderWidth' => 2,
                     ],
@@ -74,7 +74,7 @@ class SpeciesByKingdomChart extends EChartWidget
                         'label' => [
                             'show' => true,
                             'fontSize' => 14,
-                            'fontWeight' => 'bold',
+                            'fontWeight' => 500,
                         ],
                         'itemStyle' => [
                             'shadowBlur' => 10,

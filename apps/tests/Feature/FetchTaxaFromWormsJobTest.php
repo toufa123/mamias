@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use App\Enums\Catalogue_Status;
+use App\Jobs\FetchEasinIdsJob;
 use App\Jobs\FetchTaxaFromWormsJob;
 use App\Models\Taxon;
 use App\Models\User;
 use App\Services\WormsService;
+use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 
@@ -73,6 +75,24 @@ it('skips cache update when user id is null', function () {
 
     expect(Cache::get('worms-fetch-progress-'))->toBeNull();
 });
+
+it('marks the progress failed and notifies the user when a sync fails permanently', function (string $jobClass, string $progressKey, string $title) {
+    $user = User::factory()->create();
+
+    // A run killed mid-way (timeout, exhausted retries) never reaches handle()'s
+    // catch, so the last progress written is still "running".
+    Cache::put("{$progressKey}{$user->id}", ['status' => 'running', 'processed' => 40, 'total' => 100, 'percentage' => 40], now()->addHour());
+
+    (new $jobClass([1, 2, 3], $user->id))->failed(new MaxAttemptsExceededException('attempted too many times'));
+
+    expect(Cache::get("{$progressKey}{$user->id}"))
+        ->toMatchArray(['status' => 'failed', 'processed' => 40, 'total' => 100, 'error' => 'attempted too many times'])
+        ->and($user->notifications()->count())->toBe(1)
+        ->and($user->notifications()->first()->data['title'])->toBe($title);
+})->with([
+    'WoRMS' => [FetchTaxaFromWormsJob::class, 'worms-fetch-progress-', 'WoRMS sync failed'],
+    'EASIN' => [FetchEasinIdsJob::class, 'easin-fetch-progress-', 'EASIN ID fetch failed'],
+]);
 
 it('provides a static duration estimate', function () {
     expect(FetchTaxaFromWormsJob::estimateDuration(30))->toBe('30 seconds')

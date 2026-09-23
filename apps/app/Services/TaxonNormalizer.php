@@ -148,13 +148,32 @@ class TaxonNormalizer
             return;
         }
 
+        $name = $this->normalizeName($originalName, $taxon->kingdom);
+
+        if ($name !== $originalName) {
+            $this->updateTaxaWithOriginalName($taxon, $name, $originalName);
+        }
+    }
+
+    /**
+     * Apply the catalogue's nomenclature rules to a bare name.
+     *
+     * The same rules normalize() applies to a Taxon, without touching a model,
+     * so any importer that has to find a catalogue taxon from a file spelling
+     * ("Belzebub hanseni ex Lucifer hanseni", "Batophora sp.") reduces it
+     * exactly the way the catalogue reduced it when the taxon was created.
+     * Kingdom-specific rules (subgenus/subspecies formatting) only apply when
+     * a kingdom is given.
+     */
+    final public function normalizeName(string $name, ?string $kingdom = null): string
+    {
         // Sanitize encoding artifacts before any nomenclature processing
-        $name = $this->sanitizeEncodingArtifacts($originalName);
+        $name = $this->sanitizeEncodingArtifacts($name);
 
         // Replace non-breaking spaces and other weird whitespace
         $name = preg_replace('/[\xA0\s]+/u', ' ', trim($name));
 
-        $kingdom = strtolower($taxon->kingdom ?? '');
+        $kingdom = strtolower($kingdom ?? '');
         $isAnimal = ($kingdom === 'animalia');
         $isPlantLike = in_array($kingdom, ['plantae', 'fungi', 'chromista', 'algae'], true);
         $isBacteria = ($kingdom === 'bacteria');
@@ -166,11 +185,7 @@ class TaxonNormalizer
         $name = $this->applyKingdomSpecificRules($name, $isAnimal, $isPlantLike, $isBacteria);
 
         // Final cleanup of multiple spaces
-        $name = preg_replace('/\s+/', ' ', trim($name));
-
-        if ($name !== $originalName) {
-            $this->updateTaxaWithOriginalName($taxon, $name, $originalName);
-        }
+        return preg_replace('/\s+/', ' ', trim($name));
     }
 
     /**

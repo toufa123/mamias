@@ -28,7 +28,7 @@ blockquote {
 }
 
 a {
-    color: #00899d;
+    color: #056273;
 }
 
 a img {
@@ -97,7 +97,7 @@ img {
 }
 
 .header a {
-    color: #00899d;
+    color: #056273;
     font-size: 19px;
     font-weight: bold;
     text-decoration: none;
@@ -222,11 +222,11 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #00899d;
-    border-bottom: 8px solid #00899d;
-    border-left: 18px solid #00899d;
-    border-right: 18px solid #00899d;
-    border-top: 8px solid #00899d;
+    background-color: #056273;
+    border-bottom: 8px solid #056273;
+    border-left: 18px solid #056273;
+    border-right: 18px solid #056273;
+    border-top: 8px solid #056273;
 }
 
 .button-green,
@@ -240,15 +240,15 @@ img {
 
 .button-red,
 .button-error {
-    background-color: #e11d48;
-    border-bottom: 8px solid #e11d48;
-    border-left: 18px solid #e11d48;
-    border-right: 18px solid #e11d48;
-    border-top: 8px solid #e11d48;
+    background-color: #b42318;
+    border-bottom: 8px solid #b42318;
+    border-left: 18px solid #b42318;
+    border-right: 18px solid #b42318;
+    border-top: 8px solid #b42318;
 }
 
 .panel {
-    border-left: #00899d solid 4px;
+    border-left: #078da0 solid 4px;
     margin: 21px 0;
 }
 

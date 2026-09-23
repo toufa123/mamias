@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
+use Kirschbaum\Commentions\Filament\Infolists\Components\CommentsEntry;
 
 /**
  * Configures the Filament infolist schema for NIS suggestions.
@@ -33,6 +34,7 @@ class NisSuggestionInfolist
                 self::getPhotosSection(),
                 self::getDocumentsSection(),
                 self::getReviewSection(),
+                self::getDiscussionSection(),
             ]);
     }
 
@@ -47,7 +49,23 @@ class NisSuggestionInfolist
             self::getPhotosSection(),
             self::getDocumentsSection(),
             self::getReviewSection(),
+            self::getDiscussionSection(),
         ];
+    }
+
+    /**
+     * @return Section The curator discussion thread for this suggestion.
+     */
+    protected static function getDiscussionSection(): Section
+    {
+        return Section::make('Discussion')
+            ->icon('tabler-messages')
+            ->compact()
+            ->schema([
+                CommentsEntry::make('comments')
+                    ->hiddenLabel()
+                    ->columnSpanFull(),
+            ]);
     }
 
     /**
@@ -63,7 +81,8 @@ class NisSuggestionInfolist
                     TextEntry::make('suggested_scientific_name')
                         ->label('Scientific Name')
                         ->html()
-                        ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>'),
+                        // Italic only — no font-serif. See DESIGN-SYSTEM.md.
+                        ->formatStateUsing(fn (string $state): string => "<span class='italic'>".e($state).'</span>'),
                     TextEntry::make('authority')
                         ->label('Authority')
                         ->placeholder('—'),
@@ -216,7 +235,8 @@ class NisSuggestionInfolist
                 TextEntry::make('resubmittedFrom.suggested_scientific_name')
                     ->label('Resubmitted From')
                     ->html()
-                    ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>')
+                    // Italic only — no font-serif. See DESIGN-SYSTEM.md.
+                    ->formatStateUsing(fn (string $state): string => "<span class='italic'>".e($state).'</span>')
                     ->placeholder('—')
                     ->hidden(fn (NisSuggestion $record): bool => $record->resubmitted_from_id === null)
                     ->columnSpanFull(),

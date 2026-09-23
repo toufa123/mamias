@@ -36,15 +36,32 @@ class CatalogueStatsWidget extends BaseWidget
 
     protected function getCatalogueStatistics(): array
     {
-        $totalSpecies = Taxon::count();
-        $checkedAccepted = Taxon::where('catalogue_status', Catalogue_Status::checked_accepted->value)->count();
-        $checkedNotAccepted = Taxon::where('catalogue_status', Catalogue_Status::checked_not_accepted->value)->count();
-        $notChecked = Taxon::where(function ($query) {
-            $query
-                ->whereNull('catalogue_status')
-                ->orWhere('catalogue_status', Catalogue_Status::not_checked->value)
-                ->orWhere('catalogue_status', Catalogue_Status::no_data_from_worms->value);
-        })->count();
+        // One grouped pass over `taxas` instead of four separate COUNT scans.
+        // The buckets are resolved in PHP so the query stays plain `GROUP BY`
+        // rather than a vendor-specific conditional aggregate.
+        // toBase() keeps the model's global scopes (soft deletes included) while
+        // returning raw rows, so the enum cast never runs over a stored value
+        // that no longer maps to a case.
+        $counts = Taxon::query()
+            ->toBase()
+            ->select('catalogue_status')
+            ->selectRaw('count(*) as total')
+            ->groupBy('catalogue_status')
+            ->pluck('total', 'catalogue_status');
+
+        // A null catalogue_status arrives keyed as '', which is what get(null) looks up.
+        $bucket = fn (?string ...$statuses): int => array_sum(
+            array_map(fn (?string $status): int => (int) $counts->get($status, 0), $statuses)
+        );
+
+        $totalSpecies = (int) $counts->sum();
+        $checkedAccepted = $bucket(Catalogue_Status::checked_accepted->value);
+        $checkedNotAccepted = $bucket(Catalogue_Status::checked_not_accepted->value);
+        $notChecked = $bucket(
+            null,
+            Catalogue_Status::not_checked->value,
+            Catalogue_Status::no_data_from_worms->value,
+        );
 
         return [
             'total' => $totalSpecies,

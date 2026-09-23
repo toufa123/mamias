@@ -8,7 +8,10 @@
     $total = (int) ($import->total_rows ?? 0);
     $processed = (int) ($import->processed_rows ?? 0);
     $successful = (int) ($import->successful_rows ?? 0);
-    $failed = $import ? (int) $import->getFailedRowsCount() : 0;
+    $notImported = $import ? (int) $import->getFailedRowsCount() : 0;
+    // Skipped rows are logged as failures, so subtract them to leave real failures.
+    $skipped = $this->getSkippedRowsCount($import);
+    $failed = max(0, $notImported - $skipped);
     $percentage = $total > 0
         ? min(100, (int) round($processed / $total * 100))
         : ($isRunning ? 0 : 100);
@@ -64,22 +67,42 @@
                     </div>
 
                     <div class="text-primary-600 dark:text-primary-400 text-sm font-medium">
-                        {{ number_format($processed) }} of {{ number_format($total) }} {{ Str::plural('row', $total) }} processed
+                        {{ $processed }} of {{ $total }} {{ Str::plural('row', $total) }} processed
                     </div>
                 </div>
             @elseif ($isCompleted)
                 <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-success-50 dark:bg-success-950/30 rounded-lg p-3 text-center">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-success-50 dark:bg-success-950/30 p-3 text-center">
                             <p class="text-success-600 dark:text-success-400 text-2xl font-bold">
-                                {{ number_format($successful) }}
+                                {{ $successful }}
                             </p>
                             <p class="text-success-600/70 dark:text-success-400/70 text-xs">
                                 {{ Str::plural('Row', $successful) }} imported
                             </p>
                         </div>
                         <div @class([
-                            'rounded-lg p-3 text-center',
+                            'p-3 text-center',
+                            'bg-warning-50 dark:bg-warning-950/30' => $skipped > 0,
+                            'bg-gray-50 dark:bg-gray-800' => $skipped === 0,
+                        ])>
+                            <p @class([
+                                'text-2xl font-bold',
+                                'text-warning-600 dark:text-warning-400' => $skipped > 0,
+                                'text-gray-400 dark:text-gray-500' => $skipped === 0,
+                            ])>
+                                {{ $skipped }}
+                            </p>
+                            <p @class([
+                                'text-xs',
+                                'text-warning-600/70 dark:text-warning-400/70' => $skipped > 0,
+                                'text-gray-500 dark:text-gray-400/70' => $skipped === 0,
+                            ])>
+                                Already in database
+                            </p>
+                        </div>
+                        <div @class([
+                            'p-3 text-center',
                             'bg-danger-50 dark:bg-danger-950/30' => $failed > 0,
                             'bg-gray-50 dark:bg-gray-800' => $failed === 0,
                         ])>
@@ -88,7 +111,7 @@
                                 'text-danger-600 dark:text-danger-400' => $failed > 0,
                                 'text-gray-400 dark:text-gray-500' => $failed === 0,
                             ])>
-                                {{ number_format($failed) }}
+                                {{ $failed }}
                             </p>
                             <p @class([
                                 'text-xs',
@@ -100,14 +123,34 @@
                         </div>
                     </div>
 
-                    @if ($failed > 0)
-                        <a
-                            href="{{ route('filament.imports.failed-rows.download', ['import' => $import]) }}"
-                            class="text-primary-600 dark:text-primary-400 inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
-                        >
-                            <x-tabler-download class="h-4 w-4" />
-                            Download failed rows
-                        </a>
+                    @if ($skipped > 0)
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $skipped }} {{ Str::plural('species', $skipped) }}
+                            {{ $skipped === 1 ? 'was' : 'were' }} not imported because the scientific name is
+                            already in the database.
+                        </p>
+                    @endif
+
+                    @if ($notImported > 0)
+                        <div class="flex flex-wrap items-center gap-1.5 text-sm">
+                            <x-tabler-file-spreadsheet class="text-primary-600 dark:text-primary-400 h-4 w-4" />
+                            <span class="text-gray-500 dark:text-gray-400">Download not imported species</span>
+                            <a
+                                href="{{ route('imports.not-imported-rows.download', ['import' => $import, 'format' => 'xlsx']) }}"
+                                target="_blank"
+                                class="text-primary-600 dark:text-primary-400 font-medium hover:underline"
+                            >
+                                Excel
+                            </a>
+                            <span class="text-gray-400 dark:text-gray-500">/</span>
+                            <a
+                                href="{{ route('imports.not-imported-rows.download', ['import' => $import, 'format' => 'csv']) }}"
+                                target="_blank"
+                                class="text-primary-600 dark:text-primary-400 font-medium hover:underline"
+                            >
+                                CSV
+                            </a>
+                        </div>
                     @endif
                 </div>
             @endif

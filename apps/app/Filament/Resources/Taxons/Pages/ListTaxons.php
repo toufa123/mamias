@@ -3,14 +3,15 @@
 namespace App\Filament\Resources\Taxons\Pages;
 
 use App\Enums\Catalogue_Status;
+use App\Filament\Actions\ExcelOrCsvImportAction;
 use App\Filament\Imports\TaxonImporter;
 use App\Filament\Resources\Taxons\TaxonResource;
 use App\Filament\Widgets\ImportProgressWidget;
 use App\Filament\Widgets\WormsFetchProgressWidget;
 use App\Models\Taxon;
 use Filament\Actions\CreateAction;
-use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -44,6 +45,18 @@ class ListTaxons extends ListRecords
         return 'checked_accepted';
     }
 
+    /**
+     * Lets the nine status tabs wrap onto several centred rows instead of
+     * scrolling sideways. Filament's resource tabs render every tab inline in
+     * an `overflow-x: auto` strip with no overflow dropdown, so on a tablet the
+     * later tabs (Duplicates, Trashed) sit off-screen behind a sideways scroll.
+     */
+    public function getTabsContentComponent(): Component
+    {
+        return parent::getTabsContentComponent()
+            ->extraAttributes(['class' => '[&_.fi-tabs]:flex-wrap [&_.fi-tabs]:justify-center [&_.fi-tabs]:gap-y-2']);
+    }
+
     public function getTabs(): array
     {
         $countByStatus = $this->getCatalogueStatusCounts();
@@ -64,24 +77,6 @@ class ListTaxons extends ListRecords
                 ->badge($countByStatus[$value] ?? 0)
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('catalogue_status', $value)->withoutTrashed());
         }
-
-        $qualityIssuesCount = Taxon::query()
-            ->where(function (Builder $q) {
-                $q->whereNull('fetched_at')
-                    ->orWhere('fetched_at', '<', now()->subDays(90))
-                    ->orWhere('catalogue_status', '!=', Catalogue_Status::checked_accepted->value);
-            })
-            ->count();
-
-        $tabs['quality_issues'] = Tab::make('Quality Issues')
-            ->icon('tabler-alert-triangle')
-            ->badgeColor('warning')
-            ->badge($qualityIssuesCount)
-            ->modifyQueryUsing(fn (Builder $query) => $query->where(function (Builder $q) {
-                $q->whereNull('fetched_at')
-                    ->orWhere('fetched_at', '<', now()->subDays(90))
-                    ->orWhere('catalogue_status', '!=', Catalogue_Status::checked_accepted->value);
-            })->withoutTrashed());
 
         $duplicateNames = Taxon::query()
             ->select('scientificname')
@@ -130,7 +125,7 @@ class ListTaxons extends ListRecords
     {
         return [
             CreateAction::make(),
-            ImportAction::make()
+            ExcelOrCsvImportAction::make()
                 ->importer(TaxonImporter::class)
                 ->chunkSize(100),
 

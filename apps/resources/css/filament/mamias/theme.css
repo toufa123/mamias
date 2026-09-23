@@ -9,6 +9,8 @@
 @source '../../../../vendor/wire-elements/**/*.blade.php';
 @source '../../../../vendor/zvizvi/filament-notifications-tabs/resources/views/**/*.blade.php';
 @source '../../../../vendor/vitisstudio/filament-choosable-chips/resources/views';
+@source '../../../../vendor/bezhansalleh/filament-exceptions/resources/views/**/*.blade.php';
+@source '../../../../vendor/kirschbaum-development/commentions/resources/views/**/*.blade.php';
 
 
 /* Fix Leaflet 1.9 gray tile issue — mix-blend-mode makes tiles invisible on many browsers */
@@ -16,10 +18,26 @@
     mix-blend-mode: normal !important;
 }
 
+/* ── Dark mode ──────────────────────────────────────────────────
+   Dark mode pulls two requirements in opposite directions: white button text
+   needs a DARK fill (4.5:1), while the button's edge needs to separate from
+   an already-dark page (3:1). Brightening the fill, which is what this block
+   used to do, satisfies the second and breaks the first — #00899d under white
+   text measures 4.15:1 and fails.
+
+   So the fill stays the same deep teal as light mode (7.08:1 under white) and
+   the edge is drawn with primary-500 instead, which reads 3.35:1 against the
+   gray-800 surface. Text and boundary each get the contrast they need from
+   the token that can actually provide it. */
 .dark {
     --info-500: #3b82f6;
-    --primary-500: #00a8bd; /* Teal plus lumineux en dark mode */
-    --primary-600: #00899d;
+    --primary-500: #078da0; /* the edge, never under text */
+    --primary-600: #056273; /* the fill, 7.08:1 under white */
+    --primary-700: #044e5c;
+}
+
+.dark .fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link) {
+    border-color: var(--primary-500);
 }
 
 :root {
@@ -32,60 +50,103 @@
 }
 
 
-/* ── No rounded corners ───────────────────────────────────────── */
-.fi-card,
-.fi-section,
-.fi-section-content,
-.fi-section-header,
-.fi-badge,
-.fi-btn,
-.fi-btn-color-primary,
-.fi-btn-color-gray,
-.fi-input,
-.fi-input-wrp,
-.fi-select-input,
-.fi-textarea,
-.fi-dropdown-panel,
-.fi-modal-window,
-.fi-ta-table,
-.fi-ta-row,
-.fi-ta-cell,
-.fi-pagination-item,
-.fi-tabs,
-.fi-tabs-item,
-.fi-fo-field-wrp,
-.fi-wi-stats-overview-stat {
-    border-radius: 0 !important;
+/* ── No rounded corners ─────────────────────────────────────────
+   Filament 5 compiles every `rounded-*` utility to `border-radius:
+   var(--radius-*)`, with no literal lengths left in the bundle. Zeroing the
+   scale therefore squares off the whole panel — including components no
+   hand-written selector list ever named. This replaces the ~20-selector
+   `!important` list that used to live here, and is why that list is gone
+   rather than extended.
+
+   `rounded-full` is exempt: Tailwind 4 emits `calc(infinity * 1px)` for it,
+   not a token. Avatars are squared explicitly further down; genuinely round
+   things (spinners, status dots) stay round. */
+@theme {
+    --radius-xs: 0px;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-3xl: 0px;
+    --radius-4xl: 0px;
 }
 
-/* ── No borders ───────────────────────────────────────── */
-.fi-card,
+/* The sea-cast grey ramp is NOT here. Filament maps --color-gray-* onto
+   --gray-*, which it injects at runtime from the panel's colors() array, so a
+   @theme block would only repaint the utilities and leave every rule that
+   reads var(--gray-*) on the old slate. The ramp lives in
+   MamiasPanelProvider::panel(); `@apply border-gray-200` below resolves
+   through it. */
+
+/* ── The hairline ───────────────────────────────────────────────
+   There used to be a `border: none !important` block here, listing the same
+   selectors again. It is deliberately gone: structure in this system is
+   carried by a 1px rule rather than by shadow, so removing borders removed
+   the only thing separating a table from the page behind it.
+
+   Panels get the rule and nothing else — no ring, no shadow. */
+.fi-ta-ctn,
+.fi-sc-section,
 .fi-section,
-.fi-section-content,
-.fi-section-header,
-.fi-badge,
-.fi-btn,
-.fi-btn-color-primary,
-.fi-btn-color-gray,
-.fi-input,
-.fi-input-wrp,
-.fi-select-input,
-.fi-textarea,
+.fi-card,
 .fi-dropdown-panel,
 .fi-modal-window,
-.fi-ta-table,
-.fi-ta-row,
-.fi-ta-cell,
-.fi-pagination-item,
-.fi-tabs,
-.fi-tabs-item,
-.fi-fo-field-wrp,
 .fi-wi-stats-overview-stat {
-    border: none !important;
+    @apply border border-gray-200 bg-white shadow-none dark:border-gray-700 dark:bg-gray-800;
 }
 
-.fi-ta-ctn {
-    @apply bg-white dark:bg-gray-800 border border-primary-700 dark:border-gray-700 rounded-none;
+/* A widget with a $heading renders its content inside a section, so on the
+   dashboard the hairline landed twice — once on the group, once on every stat
+   card — and it read as a box inside a box. The rule is: whatever already
+   carries a border is the thing that gets it, and the group around it does
+   not. The heading keeps its position; only the frame goes.
+
+   Same reasoning applies to any widget whose content is already framed (a
+   table widget's .fi-ta-ctn, for instance) — add it here rather than removing
+   the card's own border. */
+.fi-wi-stats-overview .fi-section,
+.fi-wi-stats-overview .fi-sc-section,
+.fi-wi-chart .fi-section,
+.fi-wi-chart .fi-sc-section {
+    @apply border-0 bg-transparent shadow-none ring-0;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────
+   Filament computes a solid button's fill server-side per colour, so there
+   is no stylesheet rule to re-point — the fill has to be stated here. It
+   reads --primary-600 (the ramp in MamiasPanelProvider), which is the step
+   that clears 4.5:1 under white text. */
+.fi-btn {
+    @apply font-medium shadow-none;
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link) {
+    background-color: var(--primary-600);
+    border: 1px solid var(--primary-600);
+    color: #fff;
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link):hover {
+    background-color: var(--primary-700);
+    border-color: var(--primary-700);
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link) > .fi-icon {
+    color: #fff;
+}
+
+/* One filled button per view: everything else is an outline or a hairline,
+   destructive included. A second fill cancels the first. */
+.fi-btn.fi-outlined {
+    @apply border border-gray-900 bg-white text-gray-900 shadow-none dark:border-gray-300 dark:bg-transparent dark:text-gray-100;
+}
+
+.fi-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 0 0 4px var(--primary-500);
 }
 
 .fi-ta-ctn .py-4 {
@@ -102,17 +163,20 @@
     border-collapse: collapse;
 }
 
+/* Rows are separated by the soft hairline, not by Filament's default divide
+   utility — one weight lighter than the frame around the table, so the outer
+   edge still reads as the boundary. This replaces a `border-bottom: none`
+   rule (and a duplicated `divide-none`) that left rows running together. */
 .fi-ta-cell {
+    border-bottom: 1px solid var(--color-gray-100) !important;
+}
+
+.fi-ta-table > tbody > tr:last-child .fi-ta-cell {
     border-bottom: none !important;
 }
 
-.fi-ta-table > tbody {
-    @apply divide-none
-}
-
-
-.fi-ta-table > tbody {
-    @apply divide-none
+.fi-ta-header-cell {
+    @apply border-b border-gray-200 bg-gray-50 text-gray-600 dark:bg-gray-900;
 }
 
 .fi-ta-text {
@@ -130,13 +194,14 @@
 /* ── Stepper ───────────────────────────────────────────── */
 .it-stepper-btn-decrement,
 .it-stepper-btn-increment {
+    /* 600, not 500: these carry a white glyph. */
     @apply text-white;
-    background-color: var(--primary-500) !important;
+    background-color: var(--primary-600) !important;
 }
 
 .it-stepper-btn-decrement:hover,
 .it-stepper-btn-increment:hover {
-    background-color: var(--primary-600) !important;
+    background-color: var(--primary-700) !important;
 }
 
 /* ── Footer larger text ────────────────────────────────── */

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# =============================================================================
+#  `mamias` — shorthand for the interactive command picker (same as `make menu`).
+#
+#  Tries the php-school/cli-menu + laravel/prompts picker first (menu.php);
+#  falls back to the dependency-free POSIX menu (menu.sh) when it can't render
+#  (vendor/ missing, or no real terminal) — menu.php signals that with exit 2.
+# =============================================================================
+set -uo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+php menu.php
+if [ $? -eq 2 ]; then
+    bash menu.sh
+fi

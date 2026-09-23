@@ -55,8 +55,8 @@ enum OccurrenceStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::PENDING => 'warning',
-            self::APPROVED => 'success',
+            self::PENDING => 'gray',
+            self::APPROVED => 'verified',
             self::REJECTED => 'danger',
         };
     }

@@ -135,3 +135,46 @@ it('deletes a taxon via the delete header action', function () {
 
     $this->assertSoftDeleted('taxas', ['id' => $taxon->id]);
 });
+
+// Duplicate handling on a not-checked-yet record
+
+it('offers to delete a not-checked taxon instead of saving a duplicate name', function () {
+    // The typed name is unique, but the normalizer rewrites "Guttulina sp." to
+    // "Guttulina" on save — which the unique rule on the field never sees.
+    Taxon::factory()->create(['scientificname' => 'Guttulina']);
+    $duplicate = Taxon::withoutEvents(fn () => Taxon::factory()->create([
+        'scientificname' => 'Guttulina sp.',
+        'catalogue_status' => Catalogue_Status::not_checked,
+    ]));
+
+    livewire(EditTaxon::class, ['record' => $duplicate->id])
+        ->fillForm(['notes' => 'Reviewing'])
+        ->call('save')
+        ->assertNotified('That species is already in the database');
+
+    expect($duplicate->fresh()->scientificname)->toBe('Guttulina sp.');
+});
+
+it('deletes the duplicate when the curator takes the offered action', function () {
+    Taxon::factory()->create(['scientificname' => 'Caulerpa cylindracea']);
+    $duplicate = Taxon::factory()->create(['catalogue_status' => Catalogue_Status::not_checked]);
+
+    livewire(EditTaxon::class, ['record' => $duplicate->id])
+        ->call('deleteDuplicateTaxon');
+
+    $this->assertSoftDeleted('taxas', ['id' => $duplicate->id]);
+});
+
+it('lets a checked taxon save without the duplicate offer', function () {
+    $taxon = Taxon::factory()->create([
+        'scientificname' => 'Percnon gibbesi',
+        'catalogue_status' => Catalogue_Status::checked_accepted,
+    ]);
+
+    livewire(EditTaxon::class, ['record' => $taxon->id])
+        ->fillForm(['notes' => 'Reviewed'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($taxon->fresh()->notes)->toBe('Reviewed');
+});

@@ -43,8 +43,8 @@ enum DataQuality: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::NA => 'gray',
-            self::High => 'success',
-            self::Medium => 'warning',
+            self::High => 'primary',
+            self::Medium => 'gray',
             self::Low => 'danger',
         };
     }

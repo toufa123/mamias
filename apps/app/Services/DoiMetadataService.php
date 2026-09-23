@@ -21,7 +21,9 @@ class DoiMetadataService
      */
     final public function fetchFromCrossref(string $doi): ?array
     {
-        return Cache::remember("doi_{$doi}", now()->addDay(), function () use ($doi) {
+        // Hashed like the other lookup services: a raw DOI carries `/` and `.`,
+        // which are not safe as-is in a cache key on every store driver.
+        return Cache::remember('doi_'.md5($doi), now()->addDay(), function () use ($doi) {
             $response = Http::timeout(10)->get('https://api.crossref.org/works/'.rawurlencode($doi));
 
             if (! $response->successful()) {

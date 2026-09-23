@@ -24,6 +24,8 @@ class TaxonService
     ) {}
 
     /**
+     * @param  (callable(Taxon): void)|null  $onProgress  Called once per processed taxon, on every
+     *                                                    outcome (not found, unchanged, updated), with that taxon.
      * @return array{updated:int, missing_aphia_id:int, not_found:int}
      */
     final public function refreshFromWorms(Collection $records, ?callable $onProgress = null): array
@@ -75,7 +77,7 @@ class TaxonService
             $updated++;
 
             if ($onProgress) {
-                $onProgress();
+                $onProgress($taxon);
             }
         }
 

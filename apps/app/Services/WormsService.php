@@ -123,6 +123,39 @@ class WormsService
     }
 
     /**
+     * Resolve a provided name to the accepted WoRMS name and AphiaID it stands
+     * for, so synonyms and superseded names collapse onto one identity. Cached
+     * per name for a day: imports look the same name up across chunks.
+     *
+     * @return array{name: ?string, aphia_id: ?int}
+     */
+    public function getAcceptedIdentity(string $name): array
+    {
+        return Cache::remember(
+            'worms_v2.accepted.'.md5($name),
+            now()->addDay(),
+            function () use ($name): array {
+                $record = $this->getRecordByName($name);
+
+                if (! $record) {
+                    return ['name' => null, 'aphia_id' => null];
+                }
+
+                $isAccepted = ($record['status'] ?? null) === 'accepted';
+
+                return [
+                    'name' => $isAccepted
+                        ? ($record['scientificname'] ?? null)
+                        : ($record['valid_name'] ?? $record['scientificname'] ?? null),
+                    'aphia_id' => $isAccepted
+                        ? ($record['AphiaID'] ?? null)
+                        : ($record['valid_AphiaID'] ?? $record['AphiaID'] ?? null),
+                ];
+            },
+        );
+    }
+
+    /**
      * Fetch synonyms by AphiaID from WoRMS.
      */
     public function getSynonyms(int $aphiaId): array

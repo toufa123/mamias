@@ -54,14 +54,14 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::Casual => 'warning',
-            self::Established => 'success',
+            self::Casual => 'casual',
+            self::Established => 'established',
             self::Unknown => 'gray',
-            self::Invasive => 'danger',
+            self::Invasive => 'invasive',
             self::DataDeficient => 'gray',
-            self::Excluded => 'danger',
-            self::Questionable => 'warning',
-            self::Vagrant => 'info',
+            self::Excluded => 'gray',
+            self::Questionable => 'gray',
+            self::Vagrant => 'casual',
 
         };
     }

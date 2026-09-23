@@ -23,10 +23,12 @@
         "infer-conventions",
         "laravel-best-practices",
         "testing-best-practices",
+        "mcp-development",
         "livewire-development",
         "tailwindcss-development",
-        "filament-refresh-sidebar-development",
         "truss-schema",
+        "filament-development",
+        "filament-refresh-sidebar-development",
         "debug-using-debugbar"
     ]
 }

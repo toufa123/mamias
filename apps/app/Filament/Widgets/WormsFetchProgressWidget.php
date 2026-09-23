@@ -26,8 +26,6 @@ class WormsFetchProgressWidget extends Widget
 
     public bool $isEasinSyncing = false;
 
-    public bool $importRefreshTriggered = false;
-
     public bool $abortingWorms = false;
 
     public bool $abortingEasin = false;
@@ -88,27 +86,6 @@ class WormsFetchProgressWidget extends Widget
         }
 
         return $progress;
-    }
-
-    /**
-     * Checks for a completed taxon import result in cache. Dispatches
-     * import-completed and open-modal events when a fresh result is found.
-     */
-    public function getImportResult(): ?array
-    {
-        $result = Cache::get('taxon-import-completed-'.(auth()->id() ?? $this->userId));
-
-        if ($result && ! $this->importRefreshTriggered) {
-            $this->importRefreshTriggered = true;
-            $this->dispatch('import-completed');
-            $this->dispatch('open-modal', id: 'import-result');
-        }
-
-        if (! $result) {
-            $this->importRefreshTriggered = false;
-        }
-
-        return $result;
     }
 
     /**
@@ -202,18 +179,6 @@ class WormsFetchProgressWidget extends Widget
         $this->isEasinSyncing = false;
         $this->abortingEasin = false;
         $this->dispatch('close-modal', id: 'easin-sync-progress');
-        $this->dispatch('worms-fetch-completed');
-    }
-
-    /**
-     * Clears the import result cache, resets the trigger flag, hides the
-     * modal, and dispatches the worms-fetch-completed event.
-     */
-    public function dismissImport(): void
-    {
-        Cache::forget('taxon-import-completed-'.(auth()->id() ?? $this->userId));
-        $this->importRefreshTriggered = false;
-        $this->dispatch('close-modal', id: 'import-result');
         $this->dispatch('worms-fetch-completed');
     }
 }

@@ -23,10 +23,10 @@ class CatalogueEnvironmentChart extends EChartWidget
     protected int|string|array $columnSpan = 1;
 
     protected const ENV_COLORS = [
-        'marine' => '#00899d',
+        'marine' => '#078da0',
         'freshwater' => '#10B981',
         'brackish' => '#F59E0B',
-        'terrestrial' => '#64748B',
+        'terrestrial' => '#5f7783',
     ];
 
     protected function getOptions(): array
@@ -34,13 +34,16 @@ class CatalogueEnvironmentChart extends EChartWidget
         $data = [];
 
         foreach (Environment::cases() as $env) {
+            // One count per case, but `environments` is jsonb with a GIN index
+            // (taxas_environments_gin), so each is an index scan rather than the
+            // full-table cast a varchar column forced.
             $count = Taxon::whereJsonContains('environments', $env->value)->count();
 
             if ($count > 0) {
                 $data[] = [
                     'value' => $count,
                     'name' => $env->getLabel(),
-                    'itemStyle' => ['color' => self::ENV_COLORS[$env->value] ?? '#64748B'],
+                    'itemStyle' => ['color' => self::ENV_COLORS[$env->value] ?? '#5f7783'],
                 ];
             }
         }
@@ -62,7 +65,7 @@ class CatalogueEnvironmentChart extends EChartWidget
                     'center' => ['55%', '50%'],
                     'avoidLabelOverlap' => true,
                     'itemStyle' => [
-                        'borderRadius' => 6,
+                        'borderRadius' => 0,
                         'borderColor' => '#fff',
                         'borderWidth' => 2,
                     ],
@@ -81,7 +84,7 @@ class CatalogueEnvironmentChart extends EChartWidget
                         'label' => [
                             'show' => true,
                             'fontSize' => 14,
-                            'fontWeight' => 'bold',
+                            'fontWeight' => 500,
                         ],
                         'itemStyle' => [
                             'shadowBlur' => 10,

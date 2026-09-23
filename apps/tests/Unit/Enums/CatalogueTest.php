@@ -16,10 +16,10 @@ it('returns all catalogue status labels', function () {
 });
 
 it('returns all catalogue status colors', function () {
-    expect(Catalogue_Status::checked_accepted->getColor())->toBe('success')
+    expect(Catalogue_Status::checked_accepted->getColor())->toBe('verified')
         ->and(Catalogue_Status::checked_not_accepted->getColor())->toBe('danger')
-        ->and(Catalogue_Status::not_checked->getColor())->toBe('danger')
-        ->and(Catalogue_Status::no_data_from_worms->getColor())->toBe('danger');
+        ->and(Catalogue_Status::not_checked->getColor())->toBe('gray')
+        ->and(Catalogue_Status::no_data_from_worms->getColor())->toBe('gray');
 });
 
 it('returns all catalogue status icons', function () {

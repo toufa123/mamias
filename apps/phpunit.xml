@@ -61,9 +61,21 @@
         -->
         <env name="SHIELD_SUPER_ADMIN_VIA_GATE" value="true" force="true"/>
         <server name="SHIELD_SUPER_ADMIN_VIA_GATE" value="true"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
+        <!--
+            The container's environment block sets these to redis/smtp, and
+            that value lands in $_SERVER, which Laravel's env() reads before
+            $_ENV. So <env force="true"> alone does not win: each needs a
+            matching <server> as well (same as SHIELD_SUPER_ADMIN_VIA_GATE).
+            Without both, queued jobs from tests went to the dev Redis queue
+            and the dev worker ran them against mamias_db, and test mail went
+            to the dev Mailpit.
+        -->
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <server name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <server name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+        <server name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>

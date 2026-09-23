@@ -22,11 +22,11 @@ class PhylumByKingdomChart extends EChartWidget
     protected int|string|array $columnSpan = 'full';
 
     protected const PHYLUM_COLORS = [
-        '#00899d', '#10b981', '#f59e0b', '#F43F5E',
+        '#078da0', '#10b981', '#f59e0b', '#F43F5E',
         '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
         '#ef4444', '#14b8a6', '#a855f7', '#f97316',
         '#6366f1', '#22c55e', '#e11d48', '#0ea5e9',
-        '#d946ef', '#facc15', '#64748b', '#fb923c',
+        '#d946ef', '#facc15', '#5f7783', '#fb923c',
     ];
 
     protected function getOptions(): array
@@ -45,13 +45,16 @@ class PhylumByKingdomChart extends EChartWidget
         $kingdoms = $taxa->pluck('kingdom')->unique()->values();
         $phyla = $taxa->pluck('phylum')->unique()->values();
 
+        // Keyed once; the nested loop below would otherwise rescan the whole
+        // result set for every kingdom/phylum pair.
+        $totals = $taxa->keyBy(fn ($row): string => $row->kingdom.'|'.$row->phylum);
+
         $series = [];
         foreach ($phyla as $index => $phylum) {
             $data = [];
 
             foreach ($kingdoms as $kingdom) {
-                $row = $taxa->where('kingdom', $kingdom)->firstWhere('phylum', $phylum);
-                $data[] = $row ? $row->total : 0;
+                $data[] = (int) ($totals->get($kingdom.'|'.$phylum)?->total ?? 0);
             }
 
             $series[] = [
@@ -61,7 +64,7 @@ class PhylumByKingdomChart extends EChartWidget
                 'data' => $data,
                 'itemStyle' => [
                     'color' => self::PHYLUM_COLORS[$index % count(self::PHYLUM_COLORS)],
-                    'borderRadius' => [0, 0, 0, 0],
+                    'borderRadius' => 0,
                 ],
                 'emphasis' => [
                     'itemStyle' => [
@@ -73,7 +76,7 @@ class PhylumByKingdomChart extends EChartWidget
                     'show' => true,
                     'position' => 'inside',
                     'fontSize' => 10,
-                    'fontWeight' => 'bold',
+                    'fontWeight' => 500,
                     'formatter' => '{c}',
                 ],
             ];
@@ -86,9 +89,9 @@ class PhylumByKingdomChart extends EChartWidget
                 'trigger' => 'axis',
                 'axisPointer' => ['type' => 'shadow'],
                 'backgroundColor' => 'rgba(255, 255, 255, 0.95)',
-                'borderColor' => '#00899d',
+                'borderColor' => '#078da0',
                 'borderWidth' => 1,
-                'textStyle' => ['color' => '#333'],
+                'textStyle' => ['color' => '#0e2630'],
             ],
             'legend' => [
                 'type' => 'scroll',
@@ -107,12 +110,12 @@ class PhylumByKingdomChart extends EChartWidget
                 'name' => 'Species Count',
                 'nameTextStyle' => [
                     'fontSize' => 12,
-                    'fontWeight' => 'bold',
-                    'color' => '#374151',
+                    'fontWeight' => 500,
+                    'color' => '#47606b',
                 ],
-                'axisLabel' => ['fontSize' => 11, 'color' => '#6b7280'],
+                'axisLabel' => ['fontSize' => 11, 'color' => '#5f7783'],
                 'splitLine' => [
-                    'lineStyle' => ['color' => '#f3f4f6', 'type' => 'dashed'],
+                    'lineStyle' => ['color' => '#edf3f5', 'type' => 'dashed'],
                 ],
             ],
             'yAxis' => [
@@ -122,11 +125,11 @@ class PhylumByKingdomChart extends EChartWidget
                 'axisLabel' => [
                     'interval' => 0,
                     'fontSize' => 12,
-                    'fontWeight' => 'bold',
-                    'color' => '#374151',
+                    'fontWeight' => 500,
+                    'color' => '#47606b',
                 ],
                 'axisLine' => [
-                    'lineStyle' => ['color' => '#e5e7eb', 'width' => 2],
+                    'lineStyle' => ['color' => '#d8e3e8', 'width' => 2],
                 ],
             ],
             'series' => $series,

@@ -6,11 +6,11 @@ use App\Jobs\Concerns\TracksJobProgress;
 use App\Models\Taxon;
 use App\Models\User;
 use App\Services\EasinService;
+use Filament\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 
 class FetchEasinIdsJob implements ShouldQueue
 {
@@ -128,6 +128,8 @@ class FetchEasinIdsJob implements ShouldQueue
             'user_id' => $this->userId,
             'message' => $exception->getMessage(),
         ]);
+
+        $this->markProgressFailed($exception, count($this->taxonIds));
 
         if ($this->userId) {
             $user = User::find($this->userId);

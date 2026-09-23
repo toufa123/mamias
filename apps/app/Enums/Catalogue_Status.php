@@ -49,11 +49,11 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::checked_accepted => 'success',
+            self::checked_accepted => 'verified',
             self::checked_not_accepted => 'danger',
-            self::not_checked => 'danger',
-            self::no_data_from_worms => 'danger',
-            self::manual_entry => 'success',
+            self::not_checked => 'gray',
+            self::no_data_from_worms => 'gray',
+            self::manual_entry => 'verified',
         };
     }
 

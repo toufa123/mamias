@@ -22,9 +22,11 @@ describe('AbundanceCategory', function () {
             ->and(AbundanceCategory::DOMINANT->getLabel())->toBe('Dominant');
     });
 
-    it('returns all colors', function () {
-        expect(AbundanceCategory::RARE->getColor())->toBe('gray')
-            ->and(AbundanceCategory::DOMINANT->getColor())->toBe('danger');
+    it('returns one colour and steps the icon', function () {
+        expect(AbundanceCategory::RARE->getColor())->toBe('primary')
+            ->and(AbundanceCategory::DOMINANT->getColor())->toBe('primary')
+            ->and(AbundanceCategory::RARE->getIcon())->toBe('tabler-antenna-bars-1')
+            ->and(AbundanceCategory::DOMINANT->getIcon())->toBe('tabler-antenna-bars-5');
     });
 });
 
@@ -114,7 +116,7 @@ describe('Worms_Status', function () {
     });
 
     it('returns all colors for accepted vs unaccepted', function () {
-        expect(Worms_Status::accepted->getColor())->toBe('success')
+        expect(Worms_Status::accepted->getColor())->toBe('verified')
             ->and(Worms_Status::unaccepted->getColor())->toBe('danger');
     });
 

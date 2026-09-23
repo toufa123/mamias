@@ -55,7 +55,8 @@ class OccurrenceInfolist
                     TextEntry::make('introEventRecord.taxon.scientificname')
                         ->label('Scientific Name')
                         ->html()
-                        ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>'),
+                        // Italic only — no font-serif. See DESIGN-SYSTEM.md.
+                        ->formatStateUsing(fn (string $state): string => "<span class='italic'>".e($state).'</span>'),
                     TextEntry::make('introEventRecord.taxon.authority')
                         ->label('Authority')
                         ->placeholder('—'),

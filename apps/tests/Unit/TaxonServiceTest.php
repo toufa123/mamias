@@ -482,6 +482,33 @@ it('sets catalogue_status to no_data_from_worms in refreshFromWorms when record 
         ->and($taxon->catalogue_status)->toBe(Catalogue_Status::no_data_from_worms);
 });
 
+it('passes the taxon to the progress callback when refreshFromWorms updates it', function () {
+    $taxon = $this->createPartialMock(Taxon::class, ['save']);
+    $taxon->scientificname = 'Ablennes hians';
+
+    $this->service = new TaxonService(
+        $wormsService = $this->createMock(WormsService::class),
+        $this->normalizer,
+        $this->stateHelper,
+        $this->createMock(EasinService::class),
+    );
+
+    // A record back from WoRMS on an unsaved taxon: dirty attributes, so the
+    // updated path — the one that used to call the callback with no argument.
+    $wormsService->method('getRecordByName')->willReturn(['AphiaID' => 126375, 'scientificname' => 'Ablennes hians']);
+
+    $reported = [];
+
+    // Typed like FetchTaxaFromWormsJob's callback, which is what failed.
+    $result = $this->service->refreshFromWorms(new Collection([$taxon]), function (Taxon $processed) use (&$reported): void {
+        $reported[] = $processed;
+    });
+
+    expect($result['updated'])->toBe(1)
+        ->and($reported)->toHaveCount(1)
+        ->and($reported[0])->toBe($taxon);
+});
+
 it('applies a matched taxon name and updates form state', function () {
     $setCalls = [];
     $set = function ($key, $value) use (&$setCalls) {

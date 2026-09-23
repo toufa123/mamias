@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Mattiverse\Userstamps\Traits\Userstamps;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -31,6 +32,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $updated_by
  *
@@ -44,7 +46,7 @@ use Spatie\Activitylog\Support\LogOptions;
 #[Fillable(['taxon_id', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes'])]
 class IntroEventRecord extends Model
 {
-    use HasFactory, LogsActivity, Userstamps;
+    use HasFactory, LogsActivity, SoftDeletes, Userstamps;
 
     protected function casts(): array
     {
@@ -104,5 +106,16 @@ class IntroEventRecord extends Model
     public function occurrences(): HasMany
     {
         return $this->hasMany(Occurrence::class, 'intro_event_record_id');
+    }
+
+    /**
+     * Whether occurrences still point at this event. Their foreign key
+     * restricts deletion, so a permanent delete would fail on the database;
+     * the UI disables it instead. Reads a withCount('occurrences') value when
+     * the query loaded one, so a page of rows costs no extra queries.
+     */
+    public function hasOccurrences(): bool
+    {
+        return ($this->occurrences_count ?? $this->occurrences()->count()) > 0;
     }
 }

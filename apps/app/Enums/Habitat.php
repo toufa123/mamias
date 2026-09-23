@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 /**
@@ -13,7 +14,7 @@ use Filament\Support\Contracts\HasLabel;
  * Describes the predominant benthic substrate or habitat where
  * a species was observed.
  */
-enum Habitat: string implements HasColor, HasLabel
+enum Habitat: string implements HasColor, HasIcon, HasLabel
 {
     /** Seagrass meadow habitat. */
     case SEAGRASS_MEADOWS = 'seagrass_meadows';
@@ -46,10 +47,23 @@ enum Habitat: string implements HasColor, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::SEAGRASS_MEADOWS => 'success',
+            self::SEAGRASS_MEADOWS => 'gray',
             self::ROCKS => 'gray',
-            self::SAND => 'warning',
-            self::UNKNOWN => 'info',
+            self::SAND => 'gray',
+            self::UNKNOWN => 'gray',
+        };
+    }
+
+    /**
+     * The icon names the habitat; the colour stays neutral, because a category is not a status. See DESIGN-SYSTEM.md.
+     */
+    public function getIcon(): ?string
+    {
+        return match ($this) {
+            self::SEAGRASS_MEADOWS => 'tabler-plant-2',
+            self::ROCKS => 'tabler-mountain',
+            self::SAND => 'tabler-beach',
+            self::UNKNOWN => 'tabler-help',
         };
     }
 }

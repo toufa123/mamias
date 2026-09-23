@@ -1,19 +1,28 @@
 <!-- Navbar -->
 <div
-    class="bg-muted border-input border-y [--kt-drawer-enable:true] lg:mb-10 lg:flex lg:items-stretch lg:[--kt-drawer-enable:false]"
+    {{--
+        Layout B: this sits inside the header bar, so it carries no background,
+        no border and no bottom margin of its own — those belonged to the
+        full-width strip it used to be. The drawer attributes are untouched:
+        below lg it is still a slide-in panel.
+    --}}
+    class="[--kt-drawer-enable:true] lg:flex lg:items-stretch lg:[--kt-drawer-enable:false]"
     data-kt-drawer="true"
     data-kt-drawer-class="kt-drawer kt-drawer-start fixed z-10 top-0 bottom-0 w-full me-5 max-w-[250px] p-5 lg:p-0 overflow-auto"
     id="navbar"
 >
     <!-- Container -->
-    <div class="kt-container-fixed gap-2 px-0 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:px-7.5">
+    {{-- No kt-container-fixed here any more: the header's own container
+         already provides the gutter, and nesting two would indent the menu
+         away from the logo. --}}
+    <div class="gap-2 px-0 lg:flex lg:items-center">
         <!-- Mega Menu -->
         <div
             class="kt-menu grow flex-col items-stretch gap-5 lg:grow-0 lg:flex-row lg:gap-7.5"
             data-kt-menu="true"
             id="mega_menu"
         >
-            <div class="kt-menu-item">
+            <div @class(['kt-menu-item', 'active' => request()->routeIs('home')])>
                 <a
                     class="kt-menu-link kt-menu-item-active:border-b-mono text-foreground kt-menu-item-hover:text-mono kt-menu-item-active:text-mono kt-menu-item-here:border-b-mono kt-menu-item-here:text-mono border-b border-b-transparent lg:py-3.5"
                     href="{{ route('home') }}"
@@ -21,7 +30,7 @@
                     <span class="kt-menu-title text-foreground grow-0 text-sm font-medium">Home</span>
                 </a>
             </div>
-            <div class="kt-menu-item">
+            <div @class(['kt-menu-item', 'active' => request()->routeIs('about')])>
                 <a
                     class="kt-menu-link kt-menu-item-active:border-b-mono text-foreground kt-menu-item-hover:text-mono kt-menu-item-active:text-mono kt-menu-item-here:border-b-mono kt-menu-item-here:text-mono border-b border-b-transparent lg:py-3.5"
                     href="{{ route('about') }}"
@@ -30,7 +39,7 @@
                 </a>
             </div>
             <div
-                class="kt-menu-item"
+                @class(['kt-menu-item', 'active' => request()->is('pages/data', 'pages/map', 'pages/dashboard/*')])
                 data-kt-menu-item-offset="0,0|lg:-20px, 0"
                 data-kt-menu-item-offset-rtl="0,0|lg:20px, 0"
                 data-kt-menu-item-overflow="true"
@@ -113,7 +122,10 @@
                 </div>
             </div>
             <div
-                class="kt-menu-item"
+                @class([
+                    'kt-menu-item',
+                    'active' => request()->is('pages/resources', 'pages/post-2020-sapbio', 'pages/ballast-water/*'),
+                ])
                 data-kt-menu-item-offset="0,0|lg:-20px, 0"
                 data-kt-menu-item-offset-rtl="0,0|lg:20px, 0"
                 data-kt-menu-item-overflow="true"

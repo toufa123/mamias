@@ -24,7 +24,8 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 
 /**
  * Configures the Filament table for NIS suggestions.
@@ -82,7 +83,12 @@ class NisSuggestionsTable
             ])
             ->recordAction(ViewAction::class)
             ->toolbarActions([
-                TableExportQuickHeaderAction::make(),
+                FilamentExportHeaderAction::make()
+                    ->formats([ExportFormat::Csv, ExportFormat::Xlsx, ExportFormat::Pdf])
+                    ->defaultFormat(ExportFormat::Xlsx)
+                    ->withFilters()
+                    ->withSearch()
+                    ->withSort(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     RestoreBulkAction::make(),
@@ -102,7 +108,8 @@ class NisSuggestionsTable
             ->searchable()
             ->sortable()
             ->html()
-            ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>');
+            // Italic only — no font-serif. See DESIGN-SYSTEM.md.
+            ->formatStateUsing(fn (string $state): string => "<span class='italic'>".e($state).'</span>');
     }
 
     /**

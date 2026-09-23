@@ -1,0 +1,8 @@
+# Published/minified vendor assets (Filament, Livewire, Vite build) — ~80% of nodes, pure noise
+apps/public/
+# Agent skill/rule copies, not app code
+apps/.agents/
+apps/.claude/
+apps/.junie/
+apps/.github/
+apps/.understand-anything/

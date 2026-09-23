@@ -6,7 +6,6 @@ use App\Filament\Imports\TaxonImporter;
 use App\Models\User;
 use Filament\Actions\Imports\Events\ImportCompleted;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
-use Illuminate\Support\Facades\Cache;
 
 class TaxonImportCompletedListener
 {
@@ -18,20 +17,11 @@ class TaxonImportCompletedListener
             return;
         }
 
-        $userId = $import->user_id;
+        $user = $import->user_id ? User::find($import->user_id) : null;
 
-        if ($userId) {
-            Cache::put("taxon-import-completed-{$userId}", [
-                'successful_rows' => $import->successful_rows,
-                'failed_rows' => $import->getFailedRowsCount(),
-                'completed_at' => now()->toIso8601String(),
-            ], now()->addMinutes(5));
-
-            // Broadcast to trigger table refresh and notification polling in Filament
-            $user = User::find($userId);
-            if ($user) {
-                event(new DatabaseNotificationsSent($user));
-            }
+        // Broadcast to trigger table refresh and notification polling in Filament
+        if ($user) {
+            event(new DatabaseNotificationsSent($user));
         }
     }
 }

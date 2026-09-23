@@ -9,8 +9,258 @@
 @source '../../storage/layup-safelist.txt';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    /* Geist stands in for Cloudflare's STK Bureau, which is a commercial
+       licence we do not hold — same low-contrast wide-aperture grotesque,
+       openly licensed. Loaded in app.blade.php; if STK Bureau is ever
+       licensed, only the @font-face source changes, not these tokens. */
+    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Mono is not decoration: it carries anything a reader copies or compares
+       column-to-column — AphiaIDs, coordinates, counts, dates, file sizes. */
+    --font-mono: 'Geist Mono', ui-monospace, 'Courier New', monospace;
+}
+
+/* ── MAMIAS brand palette ──────────────────────────────────────
+   Mirrors the panel palette in MamiasPanelProvider::panel() — keep the two
+   in step. Filament injects --primary-* inside the panel only, so public
+   pages need their own tokens; these are the same values by another name.
+
+   Public-site colour must come from here rather than literal hex, because
+   the alternative is hex scattered through Layup CMS content, where nobody
+   can find it when the brand changes. */
+:root {
+    /* Two teals, two jobs — see DESIGN-SYSTEM.md. 500 is the logo colour and
+       never carries text: borders, focus rings, icons, the active-tab rule,
+       where 3:1 is enough. 600 is the fill under white text, where 4.5:1 is
+       not optional — white on 500 measures 4.15:1 and fails, on 600 it is
+       7.08:1. Anything that puts white on teal, or teal text on white, uses
+       600. Values sampled from public/images/Logoweb.png. */
+    --mamias-teal-300: #6fc3d0;
+    --mamias-teal-400: #29a3b7;
+    --mamias-teal-500: #078da0; /* exact teal of the logo — decoration only */
+    --mamias-teal-600: #056273; /* action fill / teal text — 7.08:1 */
+    --mamias-teal-700: #044e5c;
+
+    --mamias-blue-500: #005f98; /* blue of the logo */
+    --mamias-blue-700: #003d61;
+    --mamias-blue-800: #003070; /* deep blue of the logo */
+
+    --mamias-ink: #00353d;
+    --mamias-danger: #b42318; /* one red: the panel's danger = the invasive ramp */
+
+    /* Overlays used on top of the brand gradients. */
+    --mamias-on-brand: #fff;
+    --mamias-on-brand-muted: rgb(255 255 255 / 0.72);
+    --mamias-on-brand-faint: rgb(255 255 255 / 0.2);
+    --mamias-on-brand-veil: rgb(255 255 255 / 0.12);
+}
+
+/* Make "primary" mean MAMIAS teal on the public site.
+   Keenthemes' styles.css ships --primary / --color-primary as Tailwind's
+   default blue (oklch(62.3% .214 259.815)) and is loaded AFTER this file, so
+   an ordinary :root block here would lose the cascade on equal specificity.
+   html:root outranks plain :root, which re-points the token without editing
+   or reordering the vendor bundle.
+
+   This is deliberately global: every `text-primary` / `bg-primary` /
+   `border-primary` utility and every Keenthemes component that reads the
+   token now renders brand teal instead of blue. */
+html:root {
+    /* ── Square corners ────────────────────────────────────────
+       Keenthemes derives every rounded-* utility from --radius. Zeroing the
+       scale here removes every curve on the public site in one place; the
+       derived --radius-sm/md would otherwise compute to negative lengths,
+       which browsers drop rather than clamp, so each step is pinned.
+
+       Radius does not change with the theme, so it stays on the shared
+       selector rather than being written twice below. */
+    --radius: 0px;
+    --radius-xs: 0px;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+}
+
+/* ── Light / dark ──────────────────────────────────────────────
+   The theme split is `:not(.dark)` / `.dark` rather than a plain block plus
+   a `.dark` override, and that is load-bearing. Keenthemes ships its own
+   `.dark { --background: … }` block in styles.css; `.dark` scores (0,1,0)
+   and a plain `html:root` scores (0,1,1), so the light values used to win
+   the cascade *in dark mode too* — the site had a theme switch that moved
+   nothing but the handful of `dark:` utilities written into the markup.
+   Both selectors here score (0,2,1), so each one outranks the vendor block
+   in its own mode. Keep the `:not(.dark)` — dropping it re-pins the site
+   to light.
+
+   The theme class is written onto <html> by the boot script in
+   app.blade.php. */
+html:root:not(.dark) {
+    /* teal-600, not 500: this token is read by `bg-primary` (white text on
+       teal) *and* `text-primary` (teal text on white). Only 600 clears 4.5:1
+       in both directions. */
+    --color-primary: var(--mamias-teal-600);
+    --primary: var(--mamias-teal-600);
+    --color-primary-foreground: var(--mamias-on-brand);
+    --primary-foreground: var(--mamias-on-brand);
+
+    /* ── Sea-cast neutrals ─────────────────────────────────────
+       Keenthemes ships a zinc ramp. These are the same steps pulled toward
+       the logo's blue so that greys sit beside the teal without going muddy.
+       Structure on this site is carried by the 1px hairline (--border), not
+       by shadow — hence no shadow tokens here. */
+    --background: #ffffff;
+    --foreground: #0e2630;
+    --card: #ffffff;
+    --card-foreground: #0e2630;
+    --muted: #f7fafb;
+    --muted-foreground: #5f7783; /* 4.9:1 on white — captions stay readable */
+    --secondary: #edf3f5;
+    --secondary-foreground: #0e2630;
+    --accent: #f2f8f9;
+    --accent-foreground: #0e2630;
+    --border: #d8e3e8;
+    --input: #d8e3e8;
+    --ring: var(--mamias-teal-500);
+    --mono: #0e2630;
+    --mono-foreground: #ffffff;
+
+    /* Status vocabulary (DESIGN-SYSTEM.md). Mirrors the FilamentColor ramps
+       in AppServiceProvider: text = 600, fill = 50, border = 200. */
+    --status-invasive-text: #b42318;
+    --status-invasive-fill: #feecea;
+    --status-invasive-border: #f5c9c4;
+    --status-established-text: #b45309;
+    --status-established-fill: #ffefd4;
+    --status-established-border: #f3ddb6;
+    --status-casual-text: #00558c;
+    --status-casual-fill: #e3edf5;
+    --status-casual-border: #bfd4e4;
+    --status-verified-text: #1f6b49;
+    --status-verified-fill: #edf8f2;
+    --status-verified-border: #c8e4d6;
+    --status-unresolved-text: #47606b;
+    --status-unresolved-fill: #edf3f5;
+    --status-unresolved-border: #d8e3e8;
+    --status-native-text: #5b4b8a;
+    --status-native-fill: #f0edf7;
+    --status-native-border: #d9d2ea;
+}
+
+/* Dark inverts rule 3 rather than dimming the light ramp. White on teal-400
+   measures 2.99:1 and fails; teal-400 under ink measures 5.64:1. So on dark
+   the fill is the *bright* teal and the text on it is ink — the mirror of
+   "teal-600 fill, white text" rather than a darker version of it. Teal text
+   on a dark surface moves up to teal-300 (8.89:1 on --background).
+
+   The text on that fill is the page ink itself (6.0:1). --mamias-ink is the
+   near miss you would reach for first: it measures 4.45:1 on teal-400. */
+html:root.dark {
+    --color-primary: var(--mamias-teal-400);
+    --primary: var(--mamias-teal-400);
+    --color-primary-foreground: var(--background);
+    --primary-foreground: var(--background);
+
+    /* Same neutrals pulled toward the logo's blue, read from the dark end.
+       --card is the light ramp's ink (#0e2630) promoted to a surface; the
+       page sits one step below it so cards read as raised without a shadow
+       (rule 2 — structure is a hairline). */
+    --background: #08191f;
+    --foreground: #e6f1f4; /* 15.6:1 on --background */
+    --card: #0e2630;
+    --card-foreground: #e6f1f4;
+    --muted: #12303c;
+    --muted-foreground: #94aeb8; /* 7.7:1 on page, 5.95:1 on --muted */
+    --secondary: #16394a;
+    --secondary-foreground: #e6f1f4;
+    --accent: #12303c;
+    --accent-foreground: #e6f1f4;
+    /* Two edges, two jobs, same as the teals. --border is decoration and
+       stays quiet (1.76:1, the same relationship the light hairline has to
+       white). --input outlines a control the user has to find, so it clears
+       3:1 against both the page and a card (3.90 / 3.41). */
+    --border: #204653;
+    --input: #3c7e8d;
+    --ring: var(--mamias-teal-400);
+    --mono: #e6f1f4;
+    --mono-foreground: #08191f;
+
+    /* Status vocabulary, dark: text = 300, fill = 950; the border is mixed
+       from the two because the dark borders are not separately documented. */
+    --status-invasive-text: #ff9e93;
+    --status-invasive-fill: #3a1512;
+    --status-invasive-border: color-mix(in srgb, #ff9e93 30%, #3a1512);
+    --status-established-text: #ffc26b;
+    --status-established-fill: #3a2610;
+    --status-established-border: color-mix(in srgb, #ffc26b 30%, #3a2610);
+    --status-casual-text: #7fc1ef;
+    --status-casual-fill: #0e2c44;
+    --status-casual-border: color-mix(in srgb, #7fc1ef 30%, #0e2c44);
+    --status-verified-text: #79d3a6;
+    --status-verified-fill: #0f2e22;
+    --status-verified-border: color-mix(in srgb, #79d3a6 30%, #0f2e22);
+    --status-unresolved-text: #9fb6c0;
+    --status-unresolved-fill: #1b2e36;
+    --status-unresolved-border: color-mix(in srgb, #9fb6c0 30%, #1b2e36);
+    --status-native-text: #b9a9e8;
+    --status-native-fill: #231b3a;
+    --status-native-border: color-mix(in srgb, #b9a9e8 30%, #231b3a);
+}
+
+/* Active navigation item = brand teal.
+   The navbar markup carries `kt-menu-item-active:text-mono` /
+   `kt-menu-item-here:border-b-mono` variants, which resolve to --color-mono
+   (near-black). MAMIAS wants the brand teal instead. Those Keenthemes rules
+   live in styles.css, which loads after this file, so these selectors are
+   deliberately specific enough to outrank them. */
+html:root #mega_menu .kt-menu-item.active > .kt-menu-link,
+html:root #mega_menu .kt-menu-item.here > .kt-menu-link,
+html:root #mega_menu .kt-menu-item.active > .kt-menu-link .kt-menu-title,
+html:root #mega_menu .kt-menu-item.here > .kt-menu-link .kt-menu-title {
+    /* teal-600: this is text on the muted bar, so it needs 4.5:1. The rule
+       underneath it keeps teal-500, which only has to clear 3:1. */
+    color: var(--mamias-teal-600);
+}
+
+html:root #mega_menu > .kt-menu-item.active > .kt-menu-link,
+html:root #mega_menu > .kt-menu-item.here > .kt-menu-link {
+    border-bottom-color: var(--mamias-teal-500);
+}
+
+/* Same rule read from the dark end: teal-600 is a fill colour there, not a
+   text colour (2.0:1 on the dark bar). Teal-300 carries the text instead —
+   8.9:1 — and teal-400 draws the rule underneath. */
+html:root.dark #mega_menu .kt-menu-item.active > .kt-menu-link,
+html:root.dark #mega_menu .kt-menu-item.here > .kt-menu-link,
+html:root.dark #mega_menu .kt-menu-item.active > .kt-menu-link .kt-menu-title,
+html:root.dark #mega_menu .kt-menu-item.here > .kt-menu-link .kt-menu-title {
+    color: var(--mamias-teal-300);
+}
+
+html:root.dark #mega_menu > .kt-menu-item.active > .kt-menu-link,
+html:root.dark #mega_menu > .kt-menu-item.here > .kt-menu-link {
+    border-bottom-color: var(--mamias-teal-400);
+}
+
+/* ── Outline badge = brand teal ────────────────────────────────
+   The role badge in the user menu is `kt-badge-outline kt-badge-primary`.
+   That pair is the one Keenthemes component that does *not* read --primary:
+   styles.css hardcodes `--color-blue-50/100/700` into it, so re-pointing the
+   token leaves it Tailwind blue while everything else around it is teal.
+   Restated here in brand terms, tinted off the surface so one rule covers
+   both themes' fills. Light carries teal-600 at 6.35:1, dark teal-300 at
+   5.42:1; the edge is decoration and stays a hairline. */
+html:root .kt-badge-outline.kt-badge-primary {
+    border-color: color-mix(in srgb, var(--mamias-teal-500) 30%, var(--background));
+    background-color: color-mix(in srgb, var(--mamias-teal-500) 8%, var(--background));
+    color: var(--mamias-teal-600);
+}
+
+html:root.dark .kt-badge-outline.kt-badge-primary {
+    border-color: color-mix(in srgb, var(--mamias-teal-400) 45%, var(--card));
+    background-color: color-mix(in srgb, var(--mamias-teal-400) 22%, var(--card));
+    color: var(--mamias-teal-300);
 }
 
 /* ── Stepper ───────────────────────────────────────────────
@@ -21,22 +271,462 @@
    when Filament has not injected its variables outside a panel. */
 .it-stepper-btn-decrement,
 .it-stepper-btn-increment {
+    /* 600, not 500: these carry a white glyph. */
     @apply text-white;
-    background-color: var(--primary-500, #00899d) !important;
+    background-color: var(--primary-600, var(--mamias-teal-600)) !important;
 }
 
 .it-stepper-btn-decrement:hover,
 .it-stepper-btn-increment:hover {
-    background-color: var(--primary-600, #007a8c) !important;
+    background-color: var(--primary-700, var(--mamias-teal-700)) !important;
 }
 
 .it-stepper-btn-decrement:disabled,
 .it-stepper-btn-increment:disabled {
-    background-color: var(--primary-300, #85ccd9) !important;
+    background-color: var(--primary-300, var(--mamias-teal-300)) !important;
     opacity: 0.6;
 }
 
 .it-stepper-input:focus {
-    border-color: var(--primary-500, #00899d) !important;
-    --tw-ring-color: var(--primary-500, #00899d) !important;
+    border-color: var(--primary-500, var(--mamias-teal-500)) !important;
+    --tw-ring-color: var(--primary-500, var(--mamias-teal-500)) !important;
+}
+
+/* ── Home carousel ─────────────────────────────────────────────
+   The slider markup and its script live in Layup CMS content
+   (layup_pages.content), not in a Blade file, so these rules have to
+   sit in the site stylesheet rather than a per-page @push('styles').
+   No rules for these classes existed anywhere: the track stayed
+   display:block, so the four slides rendered as stacked full-width
+   bars and the script's translateX() had nothing to slide. */
+.mamias-carousel {
+    /* Single knob for slide height — change this one value. */
+    --mamias-slide-h: 400px;
+
+    position: relative;
+}
+
+.mamias-carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+/* Each slide is exactly one track-width, so the carousel's script — which
+   steps with `translateX(-N * 100%)` against the track's own width — lands
+   squarely on slide N. Don't give the track an explicit width: that would
+   change what the percentage resolves against and desync the stepping. */
+.mamias-slide {
+    flex: 0 0 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--mamias-slide-h);
+}
+
+/* Brand gradients. These live here rather than as inline styles in the CMS
+   content so a palette change is one edit in this file, not four hex pairs
+   buried in layup_pages.content. */
+.mamias-slide-a {
+    background: linear-gradient(135deg, var(--mamias-blue-700) 0%, var(--mamias-blue-500) 100%);
+}
+
+.mamias-slide-b {
+    background: linear-gradient(135deg, var(--mamias-blue-500) 0%, var(--mamias-teal-500) 100%);
+}
+
+.mamias-slide-c {
+    background: linear-gradient(135deg, var(--mamias-teal-500) 0%, var(--mamias-teal-400) 100%);
+}
+
+.mamias-slide-d {
+    background: linear-gradient(135deg, var(--mamias-teal-400) 0%, var(--mamias-blue-700) 100%);
+}
+
+/* Slide content. These are plain classes rather than Tailwind utilities on
+   purpose: the slide markup lives in Layup CMS content, which Tailwind does
+   not scan (storage/layup-safelist.txt only carries Layup's own grid
+   classes), so utilities written there would be purged and silently do
+   nothing. Anything the slides need must be a real rule here. */
+/* Two columns: copy on the left, a visual on the right. */
+.mamias-slide-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 2.5rem;
+    align-items: center;
+    width: 100%;
+    /* Clear of the prev/next buttons, which sit 1rem from each edge. */
+    padding: 1.75rem 3.75rem;
+    max-width: 70rem;
+    color: #fff;
+    text-align: left;
+}
+
+.mamias-slide-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.mamias-slide-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+/* Below ~1000px there isn't room for both inside 400px of height. */
+@media (max-width: 62rem) {
+    .mamias-slide-inner {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .mamias-slide-visual {
+        display: none;
+    }
+}
+
+/* Hero figure (big number + caption) */
+.mamias-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 1.1rem 1.6rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 0;
+    background: rgb(255 255 255 / 0.1);
+    text-align: center;
+}
+
+.mamias-figure-num {
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.mamias-figure-cap {
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.7);
+}
+
+.mamias-figure-sub {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.15rem;
+}
+
+.mamias-figure-sub div {
+    text-align: center;
+}
+
+.mamias-figure-sub strong {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.mamias-figure-sub span {
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.65);
+}
+
+/* Horizontal bar chart */
+.mamias-bars {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.mamias-bars li {
+    display: grid;
+    grid-template-columns: 4.2rem 1fr 2.6rem;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.mamias-bar-track {
+    height: 0.6rem;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.18);
+    overflow: hidden;
+}
+
+.mamias-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.9);
+}
+
+.mamias-bar-val {
+    font-weight: 700;
+    text-align: right;
+}
+
+/* Donut. Masked so the centre shows the slide gradient, not a solid colour. */
+.mamias-ring-wrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+}
+
+.mamias-ring {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: conic-gradient(#fff var(--pct, 0%), rgb(255 255 255 / 0.2) 0);
+    -webkit-mask: radial-gradient(farthest-side, transparent 63%, #000 65%);
+    mask: radial-gradient(farthest-side, transparent 63%, #000 65%);
+}
+
+.mamias-ring-label {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+}
+
+.mamias-ring-label strong {
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.mamias-ring-label span {
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.7);
+}
+
+/* Alert badge */
+.mamias-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgb(255 255 255 / 0.35);
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--mamias-danger) 45%, transparent);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Objective / feature cards */
+.mamias-cards {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.mamias-cards-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.mamias-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 0;
+    background: rgb(255 255 255 / 0.1);
+}
+
+.mamias-card i {
+    font-size: 1.15rem;
+    color: rgb(255 255 255 / 0.9);
+}
+
+.mamias-card strong {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.mamias-card span {
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    color: rgb(255 255 255 / 0.75);
+}
+
+/* Pathway icon strip */
+.mamias-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mamias-icons li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.6rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.1);
+    font-size: 0.6875rem;
+}
+
+.mamias-icons i {
+    font-size: 0.9rem;
+    color: rgb(255 255 255 / 0.85);
+}
+
+/* Logos */
+.mamias-slide-logo {
+    max-height: 3.25rem;
+    width: auto;
+    opacity: 0.95;
+}
+
+.mamias-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.mamias-logo-row img {
+    max-height: 1.9rem;
+    width: auto;
+    opacity: 0.85;
+}
+
+.mamias-slide-kicker {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.65);
+}
+
+.mamias-slide-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.mamias-slide-lead {
+    margin: 0;
+    max-width: 52rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.82);
+}
+
+.mamias-slide-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.5rem;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mamias-slide-points li {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.12);
+    font-size: 0.8125rem;
+    line-height: 1.3;
+}
+
+.mamias-slide-source {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    color: rgb(255 255 255 / 0.6);
+}
+
+.mamias-slide-source a {
+    color: rgb(255 255 255 / 0.88);
+    text-decoration: underline;
+}
+
+@media (max-width: 48rem) {
+    .mamias-slide-inner {
+        padding: 1.5rem;
+    }
+
+    .mamias-slide-title {
+        font-size: 1.15rem;
+    }
+}
+
+.mamias-carousel-btn {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.85);
+    color: var(--mamias-blue-700);
+    transition: background-color 0.2s ease;
+}
+
+.mamias-carousel-btn:hover {
+    background: var(--mamias-on-brand);
+}
+
+.mamias-carousel-prev {
+    left: 1rem;
+}
+
+.mamias-carousel-next {
+    right: 1rem;
+}
+
+.mamias-carousel-dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    gap: 0.5rem;
+    transform: translateX(-50%);
+}
+
+.mamias-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.45);
+    transition: background-color 0.2s ease;
+}
+
+.mamias-dot.active {
+    background: rgb(255 255 255 / 1);
+}
+
+/* The carousel advances itself every 5s, so honour reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+    .mamias-carousel-track {
+        transition: none;
+    }
 }

@@ -7,6 +7,7 @@ use App\Filament\Widgets\ImportProgressWidget;
 use App\Models\User;
 use Filament\Actions\Imports\Models\Import;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Cache;
 
 use function Pest\Livewire\livewire;
 
@@ -15,6 +16,11 @@ beforeEach(function () {
 
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
+
+    // The suite runs against the shared Redis cache (the container's CACHE_STORE
+    // wins over phpunit.xml), so a dismissal cached by an earlier run can hide
+    // the modal from a later test that happens to reuse the same user id.
+    Cache::forget('taxon-import-dismissed-'.$this->user->id);
 });
 
 function makeImport(User $user, array $attributes = []): Import
@@ -59,6 +65,29 @@ test('import progress widget shows the imported and failed summary when complete
         ->assertSee('Import complete')
         ->assertSee('imported')
         ->assertSee('failed');
+});
+
+test('import progress widget separates skipped duplicates and offers the Excel download', function () {
+    $import = makeImport($this->user, [
+        'total_rows' => 10,
+        'processed_rows' => 10,
+        'successful_rows' => 7,
+        'completed_at' => now(),
+    ]);
+
+    $import->failedRows()->createMany([
+        ['data' => ['Scientific Name' => 'Caulerpa cylindracea'], 'validation_error' => TaxonImporter::DUPLICATE_ROW_MESSAGE],
+        ['data' => ['Scientific Name' => 'Percnon gibbesi'], 'validation_error' => TaxonImporter::DUPLICATE_ROW_MESSAGE],
+        ['data' => ['Scientific Name' => ''], 'validation_error' => 'The Scientific Name field is required.'],
+    ]);
+
+    livewire(ImportProgressWidget::class)
+        ->assertOk()
+        ->assertSee('Already in database')
+        ->assertSee('not imported because the scientific name is')
+        ->assertSee('Download not imported species')
+        ->assertSee(route('imports.not-imported-rows.download', ['import' => $import, 'format' => 'xlsx']), escape: false)
+        ->assertSee(route('imports.not-imported-rows.download', ['import' => $import, 'format' => 'csv']), escape: false);
 });
 
 test('a completed import announces itself so the list refreshes', function () {

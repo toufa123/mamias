@@ -2,6 +2,9 @@ apps/node_modules
 apps/vendor
 apps/storage/*.key
 apps/storage/app/private/livewire-tmp
+# Test-run scratch disks. Created inside the container as root, so the
+# host-side build-context sender cannot read them and the build fails.
+apps/storage/framework/testing
 apps/public/storage
 apps/.env
 .git

@@ -1,4 +1,4 @@
-.PHONY: menu help dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-up
+.PHONY: menu help dev-env dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-up
 
 # Recipes here use bash-isms (read -p, [[ ]]). Without this they run under
 # /bin/sh, which is dash on Debian/Ubuntu — where `read -p` is not supported and
@@ -15,22 +15,68 @@ DEV_COMPOSE = docker compose --profile dev -f docker-compose.yml
 PROD_COMPOSE = docker compose --env-file .env.production -f docker-compose.prod.yml
 
 # ── Interactive picker ─────────────────────────────────────────────
-#    Preferred: menu.php, rendered with laravel/prompts — the library behind the
-#    Laravel installer, already a dependency of apps/, so arrow-key navigation
-#    and colours cost no extra install.
+#    Same picker as running `./mamias` directly — that script holds the
+#    menu.php → menu.sh fallback, so it's not duplicated here too.
 #
-#    It exits 2 when it cannot render (vendor/ missing, or output is not a
-#    terminal), and we drop to menu.sh — a dependency-free POSIX numbered menu.
-#
-#    Both read the same "##" annotations below, so a newly annotated target
-#    shows up in whichever one runs.
+#    Both menu.php and menu.sh read the same "##" annotations below, so a
+#    newly annotated target shows up in whichever one runs.
 menu:
-	@php menu.php; \
-	if [ $$? -eq 2 ]; then bash menu.sh; fi
+	@./mamias
 
 # Deliberately unannotated: it would be a pointless entry inside the menu it prints.
 help:
 	@bash menu.sh --list
+
+##@ Setup
+
+# ── Seed .env + apps/.env for local dev ──────────────────────────────
+#    Copies both examples, then writes one shared APP_KEY and one shared
+#    DB_USERNAME/DB_PASSWORD into both — their *.example defaults don't
+#    actually agree with each other (root's is spa_rac_admin, apps/'s is
+#    admin_mamias), which would otherwise leave host-side artisan unable
+#    to authenticate against the container it just provisioned.
+#    DB_HOST/DB_PORT in apps/.env are left exactly as shipped — changing
+#    them to db/redis breaks every host-side artisan call (see CLAUDE.md).
+dev-env: ## Create and populate .env + apps/.env interactively (local dev)
+	@if [ -f .env ]; then \
+		echo "ERROR: .env already exists — refusing to overwrite."; \
+		echo "Edit it directly, or 'rm .env' first to re-seed."; \
+		exit 1; \
+	fi
+	@if [ -f apps/.env ]; then \
+		echo "ERROR: apps/.env already exists — refusing to overwrite."; \
+		echo "Edit it directly, or 'rm apps/.env' first to re-seed."; \
+		exit 1; \
+	fi
+	@if [ ! -f .env.example ] || [ ! -f apps/.env.example ]; then \
+		echo "ERROR: .env.example or apps/.env.example not found."; exit 1; \
+	fi
+	@cp .env.example .env
+	@cp apps/.env.example apps/.env
+	@echo "Seeding .env + apps/.env (press Enter to keep the shown default)..."
+	@read -p "DB_USERNAME [spa_rac_admin]: " V; \
+		V=$${V:-spa_rac_admin}; \
+		sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$$V|" .env; \
+		sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$$V|" apps/.env
+	@read -p "DB_PASSWORD [spa_rac_2026]: " V; \
+		V=$${V:-spa_rac_2026}; \
+		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" .env; \
+		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" apps/.env
+	@KEY="base64:$$(openssl rand -base64 32)"; \
+		sed -i "s|^APP_KEY=.*|APP_KEY=$$KEY|" .env; \
+		sed -i "s|^APP_KEY=.*|APP_KEY=$$KEY|" apps/.env; \
+		echo "  -> generated APP_KEY (same value in both files)"
+	@CAP_ADMIN=$$(grep '^CAP_ADMIN_KEY=' .env | cut -d= -f2-); \
+		CAP_SITE=$$(grep '^CAP_SITE_KEY=' .env | cut -d= -f2-); \
+		CAP_SECRET=$$(grep '^CAP_SECRET_KEY=' .env | cut -d= -f2-); \
+		sed -i "s|^CAP_ADMIN_KEY=.*|CAP_ADMIN_KEY=$$CAP_ADMIN|" apps/.env; \
+		sed -i "s|^CAP_SITE_KEY=.*|CAP_SITE_KEY=$$CAP_SITE|" apps/.env; \
+		sed -i "s|^CAP_SECRET_KEY=.*|CAP_SECRET_KEY=$$CAP_SECRET|" apps/.env; \
+		echo "  -> synced CAP_* keys into apps/.env (its own .example ships them blank)"
+	@echo ""
+	@echo ".env + apps/.env seeded. DB_HOST/DB_PORT in apps/.env are left as shipped"
+	@echo "(127.0.0.1:5433/6380 — the host-published ports; never point them at db/redis)."
+	@echo "Run 'make dev-up' to start the stack."
 
 ##@ Stack
 

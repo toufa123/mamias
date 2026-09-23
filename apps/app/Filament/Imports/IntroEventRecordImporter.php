@@ -18,7 +18,6 @@ use App\Services\WormsService;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
@@ -35,6 +34,13 @@ use Illuminate\Support\Str;
 class IntroEventRecordImporter extends Importer
 {
     protected static ?string $model = IntroEventRecord::class;
+
+    /**
+     * Opens the notes line that lists why a row was flagged needs_review, as
+     * "Label: raw value" pairs joined by "; ". The list page reads it back to
+     * show the reason, so it is defined once here rather than in both places.
+     */
+    public const REVIEW_NOTE_PREFIX = 'Needs review (unresolved on import) — ';
 
     /**
      * Wide-format pathway columns → [CBD category, best-fit subcategory, description].
@@ -122,7 +128,12 @@ class IntroEventRecordImporter extends Importer
                         return null;
                     }
 
-                    return array_values(array_filter(array_map('trim', explode(',', $state))));
+                    // The baseline files separate co-first countries with either
+                    // a comma or a slash ("Lebanon/Syria", "Egypt/France/Italy").
+                    // Splitting on both keeps each country a value of its own, so
+                    // it is counted and filtered individually rather than as one
+                    // combined string.
+                    return array_values(array_filter(array_map('trim', preg_split('#[,/]#', $state))));
                 })
                 ->rules(['nullable']),
 
@@ -207,13 +218,17 @@ class IntroEventRecordImporter extends Importer
     /**
      * Resolves an existing IntroEventRecord by taxon_id, or creates a new instance
      * if none exists (or the taxon could not be resolved).
+     *
+     * Trashed events count: re-importing a baseline must not create a second
+     * event beside the one someone deliberately trashed. The match is updated
+     * in place and stays in the trash until it is restored by hand.
      */
     public function resolveRecord(): IntroEventRecord
     {
         $taxonId = $this->data['taxon_id'] ?? null;
 
         if ($taxonId) {
-            $existing = IntroEventRecord::where('taxon_id', $taxonId)->first();
+            $existing = IntroEventRecord::withTrashed()->where('taxon_id', $taxonId)->first();
 
             if ($existing) {
                 return $existing;
@@ -242,7 +257,7 @@ class IntroEventRecordImporter extends Importer
         }
 
         if ($ambiguousNotes !== []) {
-            $review = 'Needs review (unresolved on import) — '.implode('; ', $ambiguousNotes);
+            $review = self::REVIEW_NOTE_PREFIX.implode('; ', $ambiguousNotes);
 
             $this->record->notes = blank($this->record->notes)
                 ? $review
@@ -250,6 +265,39 @@ class IntroEventRecordImporter extends Importer
         }
 
         $this->record->needs_review = $needsReview;
+
+        $this->recordOriginalName();
+    }
+
+    /**
+     * When the taxon was found under a different name than the file gave —
+     * through the catalogue's normalisation rules or a WoRMS synonym — keep the
+     * file's spelling in the notes, in the same "(original name provided: …)"
+     * form the catalogue writes. Otherwise the "ex …" synonym or "cf."
+     * qualifier the baseline carried would be silently dropped.
+     */
+    private function recordOriginalName(): void
+    {
+        $rawName = $this->rawValue('taxon_id');
+        $taxonId = $this->data['taxon_id'] ?? null;
+
+        if (blank($rawName) || ! $taxonId) {
+            return;
+        }
+
+        $fileName = preg_replace('/\s+/', ' ', trim(app(TaxonNormalizer::class)->sanitizeEncodingArtifacts($rawName)));
+
+        if ($fileName === Taxon::whereKey($taxonId)->value('scientificname')) {
+            return;
+        }
+
+        $note = "(original name provided: {$fileName})";
+
+        if (! str_contains((string) $this->record->notes, $note)) {
+            $this->record->notes = blank($this->record->notes)
+                ? $note
+                : $this->record->notes."\n".$note;
+        }
     }
 
     protected function afterSave(): void
@@ -342,8 +390,11 @@ class IntroEventRecordImporter extends Importer
 
     /**
      * Resolve a scientific name to a local Taxon id. Tries an exact local match
-     * first (the catalogue is already WoRMS-normalised), then falls back to WoRMS
-     * to translate a synonym/misspelling into the accepted name before matching.
+     * first, then the name reduced by the catalogue's own nomenclature rules
+     * (TaxonNormalizer::normalizeName — "X ex Y", "cf.", "aff.", "sp.",
+     * "mis as", "lineage N", trailing authority), since those are the rules
+     * that produced the catalogue entry from the same baseline spelling. Only
+     * then does it fall back to WoRMS to translate a synonym or misspelling.
      * Returns null when unresolved so the row is flagged needs_review.
      */
     private static function resolveTaxonId(?string $state): ?int
@@ -352,7 +403,9 @@ class IntroEventRecordImporter extends Importer
             return null;
         }
 
-        $name = app(TaxonNormalizer::class)->sanitizeEncodingArtifacts($state);
+        $normalizer = app(TaxonNormalizer::class);
+
+        $name = $normalizer->sanitizeEncodingArtifacts($state);
         $name = preg_replace('/\s+/', ' ', trim($name));
 
         if (blank($name)) {
@@ -365,38 +418,26 @@ class IntroEventRecordImporter extends Importer
             return $localId;
         }
 
-        return self::resolveTaxonViaWorms($name);
+        $normalized = $normalizer->normalizeName($name);
+
+        if (filled($normalized) && $normalized !== $name) {
+            $localId = Taxon::where('scientificname', $normalized)->value('id');
+
+            if ($localId) {
+                return $localId;
+            }
+        }
+
+        return self::resolveTaxonViaWorms(filled($normalized) ? $normalized : $name);
     }
 
     /**
      * Ask WoRMS for the accepted name/AphiaID of a provided name, then match a
-     * local Taxon by AphiaID (preferred) or accepted scientific name. Cached per
-     * name to avoid duplicate API calls across import chunks.
+     * local Taxon by AphiaID (preferred) or accepted scientific name.
      */
     private static function resolveTaxonViaWorms(string $name): ?int
     {
-        $accepted = Cache::remember(
-            'worms_v2.accepted.'.md5($name),
-            now()->addDay(),
-            function () use ($name): array {
-                $record = app(WormsService::class)->getRecordByName($name);
-
-                if (! $record) {
-                    return ['name' => null, 'aphia_id' => null];
-                }
-
-                $isAccepted = ($record['status'] ?? null) === 'accepted';
-
-                return [
-                    'name' => $isAccepted
-                        ? ($record['scientificname'] ?? null)
-                        : ($record['valid_name'] ?? $record['scientificname'] ?? null),
-                    'aphia_id' => $isAccepted
-                        ? ($record['AphiaID'] ?? null)
-                        : ($record['valid_AphiaID'] ?? $record['AphiaID'] ?? null),
-                ];
-            },
-        );
+        $accepted = app(WormsService::class)->getAcceptedIdentity($name);
 
         if (! empty($accepted['aphia_id'])) {
             $id = Taxon::where('aphia_id', $accepted['aphia_id'])->value('id');

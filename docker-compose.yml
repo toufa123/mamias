@@ -268,6 +268,11 @@ services :
       # written by jobs here is readable by the web app. Without this the worker
       # falls back to the file store and progress never reaches the browser.
       CACHE_STORE : "redis"
+      # How long Redis waits before handing a still-reserved job out again. It
+      # must outlast the longest job (WoRMS/EASIN fetch: $timeout = 1800), or
+      # a sync still running is re-queued and runs a second time. The 90s
+      # default did exactly that on every catalogue-wide fetch.
+      REDIS_QUEUE_RETRY_AFTER : "1830"
 
       STARTUP_DB_GUARD : "false"
       STARTUP_DB_GUARD_SEED : "false"
@@ -280,7 +285,13 @@ services :
     # Dev uses queue:listen (not queue:work) so it reloads the app per job and
     # picks up job/service code changes without a worker restart. Production
     # (docker-compose.prod.yml) stays on queue:work for performance.
-    command : [ "php", "artisan", "queue:listen", "--sleep=3", "--tries=3" ]
+    #
+    # --timeout matters here: queue:listen runs each job in a child process
+    # and kills it after this many seconds, ignoring the job's own $timeout.
+    # The 60s default killed every catalogue-wide WoRMS/EASIN fetch (~1s per
+    # species) long before it finished. Keep it equal to the longest job's
+    # $timeout and below REDIS_QUEUE_RETRY_AFTER above.
+    command : [ "php", "artisan", "queue:listen", "--sleep=3", "--tries=3", "--timeout=1800" ]
 
     # The base image ships a healthcheck that curls Caddy on :8080. This
     # container never starts Caddy (the entrypoint execs artisan directly), so

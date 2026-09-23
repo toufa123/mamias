@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Models\User;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -12,9 +13,11 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
 use Filament\Tables\Table;
+use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Nakanakaii\FilamentCountries\Tables\Columns\CountryColumn;
 use Nakanakaii\FilamentCountries\Tables\Filters\CountryFilter;
-use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 /**
  * Configures the Filament table for user records.
@@ -41,6 +44,8 @@ class UsersTable
                     ->label('No.'),
                 ImageColumn::make('avatar_url')
                     ->label('Avatar')
+                    ->state(fn (User $record): ?string => $record->getFilamentAvatarUrl())
+                    ->checkFileExistence(false)
                     ->circular(),
                 TextColumn::make('title')
                     ->searchable()->sortable(),
@@ -101,12 +106,22 @@ class UsersTable
                         ) => trim(($record->first_name ?? '').' '.($record->last_name ?? '')) ?: 'User'),
                     EditAction::make()
                         ->modalWidth('7xl'),
+                    // Impersonation swaps the session user, so it must be a
+                    // hard redirect — an SPA navigation would leave the panel
+                    // rendering against the old identity.
+                    Impersonate::make()
+                        ->withoutSpa(),
                     DeleteAction::make()
                         ->modalWidth('3xl'),
                 ]),
             ])
             ->toolbarActions([
-                TableExportQuickHeaderAction::make(),
+                FilamentExportHeaderAction::make()
+                    ->formats([ExportFormat::Csv, ExportFormat::Xlsx, ExportFormat::Pdf])
+                    ->defaultFormat(ExportFormat::Xlsx)
+                    ->withFilters()
+                    ->withSearch()
+                    ->withSort(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

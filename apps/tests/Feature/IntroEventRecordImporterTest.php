@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 use App\Enums\CbdPathwayCategory;
 use App\Enums\CbdPathwaySubcategory;
+use App\Enums\DataQuality;
 use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
+use App\Enums\PathwayType;
 use App\Enums\Subregion;
 use App\Filament\Imports\IntroEventRecordImporter;
+use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
 use App\Filament\Resources\IntroEventRecords\Pages\ListIntroEventRecords;
 use App\Models\IntroEventRecord;
+use App\Models\Occurrence;
 use App\Models\PathwayRecord;
 use App\Models\SubregionRecord;
 use App\Models\Taxon;
 use App\Models\User;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -93,6 +98,210 @@ it('has an import action on the list page', function () {
         ->assertActionExists('import');
 });
 
+it('filters the list page by the NIS status and needs review tabs', function () {
+    $nis = IntroEventRecord::factory()->create([
+        'taxon_id' => $this->taxon->id,
+        'nis_status' => NisStatus::NIS,
+        'needs_review' => false,
+    ]);
+
+    $questionable = IntroEventRecord::factory()->create([
+        'taxon_id' => Taxon::factory()->create()->id,
+        'nis_status' => NisStatus::Questionable,
+        'needs_review' => true,
+    ]);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'NIS'])
+        ->assertCanSeeTableRecords([$nis])
+        ->assertCanNotSeeTableRecords([$questionable]);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'needs_review'])
+        ->assertCanSeeTableRecords([$questionable])
+        ->assertCanNotSeeTableRecords([$nis]);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'all'])
+        ->assertCanSeeTableRecords([$nis, $questionable]);
+});
+
+it('filters the list page by year, country, establishment status and related enums', function () {
+    $early = IntroEventRecord::factory()->create([
+        'taxon_id' => $this->taxon->id,
+        'first_introduction_year' => 1950,
+        'first_country' => ['Israel', 'Syria'],
+        'establishment_status' => EstablishmentStatus::Established,
+    ]);
+
+    $late = IntroEventRecord::factory()->create([
+        'taxon_id' => Taxon::factory()->create()->id,
+        'first_introduction_year' => 2018,
+        'first_country' => ['Malta'],
+        'establishment_status' => EstablishmentStatus::Casual,
+    ]);
+
+    SubregionRecord::factory()->create(['intro_event_id' => $early->id, 'subregion' => Subregion::WMED]);
+    SubregionRecord::factory()->create(['intro_event_id' => $late->id, 'subregion' => Subregion::EMED]);
+
+    PathwayRecord::factory()->create([
+        'intro_event_id' => $early->id,
+        'category' => CbdPathwayCategory::Corridor,
+        'subcategory' => CbdPathwaySubcategory::Corridor_5_1,
+        'pathway_type' => PathwayType::Primary,
+        'uncertainty' => DataQuality::NA,
+    ]);
+
+    $only = fn (array $filters, IntroEventRecord $kept, IntroEventRecord $dropped) => livewire(ListIntroEventRecords::class)
+        ->filterTable(...$filters)
+        ->assertCanSeeTableRecords([$kept])
+        ->assertCanNotSeeTableRecords([$dropped]);
+
+    $only(['first_introduction_year', ['years' => [2000, 2018]]], $late, $early);
+    $only(['first_country', ['Syria']], $early, $late);
+    $only(['establishment_status', [EstablishmentStatus::Casual]], $late, $early);
+    $only(['subregion', [Subregion::WMED]], $early, $late);
+    $only(['pathway_category', [CbdPathwayCategory::Corridor]], $early, $late);
+    $only(['pathway_type', [PathwayType::Primary]], $early, $late);
+    $only(['pathway_uncertainty', [DataQuality::NA]], $early, $late);
+    $only(['pathway_subcategory', [CbdPathwaySubcategory::Corridor_5_1]], $early, $late);
+});
+
+it('narrows the pathway subcategory options to the selected CBD category', function () {
+    $subcategoriesFor = fn (array $categories): array => array_keys(
+        livewire(ListIntroEventRecords::class)
+            ->filterTable('pathway_category', $categories)
+            ->instance()
+            ->getTable()
+            ->getFilter('pathway_subcategory')
+            ->getOptions()
+    );
+
+    expect($subcategoriesFor([CbdPathwayCategory::Corridor]))->toBe(['5.1', '5.2'])
+        ->and($subcategoriesFor([CbdPathwayCategory::Corridor, CbdPathwayCategory::Unaided]))->toBe(['5.1', '5.2', '6.1', '6.2'])
+        ->and($subcategoriesFor([]))->toHaveCount(count(CbdPathwaySubcategory::cases()));
+});
+
+it('shows the number of intro events, excluding trashed ones, as the menu badge', function () {
+    IntroEventRecord::factory()->count(2)->create(['taxon_id' => $this->taxon->id]);
+    IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id])->delete();
+
+    expect(IntroEventRecordResource::getNavigationBadge())->toBe('2');
+});
+
+it('opens an intro event in the view modal', function () {
+    $record = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id]);
+
+    livewire(ListIntroEventRecords::class)
+        ->mountAction(TestAction::make('view')->table($record))
+        ->assertHasNoActionErrors()
+        ->assertSee('Caulerpa cylindracea');
+});
+
+it('moves a deleted intro event to the trash and restores it with its details intact', function () {
+    $record = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id]);
+    $subregion = SubregionRecord::factory()->create(['intro_event_id' => $record->id]);
+
+    livewire(ListIntroEventRecords::class)
+        ->callAction(TestAction::make('delete')->table($record));
+
+    $this->assertSoftDeleted($record);
+    expect(SubregionRecord::find($subregion->id))->not->toBeNull();
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'all'])
+        ->assertCanNotSeeTableRecords([$record]);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'trashed'])
+        ->assertCanSeeTableRecords([$record])
+        ->callAction(TestAction::make('restore')->table($record));
+
+    $this->assertNotSoftDeleted($record);
+});
+
+it('permanently deletes a trashed intro event together with its subregion and pathway rows', function () {
+    $record = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id]);
+    $subregion = SubregionRecord::factory()->create(['intro_event_id' => $record->id]);
+    $pathway = PathwayRecord::factory()->create(['intro_event_id' => $record->id]);
+    $record->delete();
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'trashed'])
+        ->callAction(TestAction::make('forceDelete')->table($record));
+
+    expect(IntroEventRecord::withTrashed()->find($record->id))->toBeNull()
+        ->and(SubregionRecord::find($subregion->id))->toBeNull()
+        ->and(PathwayRecord::find($pathway->id))->toBeNull();
+});
+
+it('does not permanently delete an intro event that still has occurrences', function () {
+    $record = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id]);
+    Occurrence::factory()->create(['intro_event_record_id' => $record->id]);
+    $record->delete();
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'trashed'])
+        ->assertActionDisabled(TestAction::make('forceDelete')->table($record))
+        ->callAction(TestAction::make('forceDelete')->table($record));
+
+    expect(IntroEventRecord::withTrashed()->find($record->id))->not->toBeNull();
+});
+
+it('updates a trashed event on re-import instead of creating a second one', function () {
+    $trashed = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id]);
+    $trashed->delete();
+
+    $importer = makeImporter(
+        columnMap: ['taxon_id' => 'Species'],
+        options: [],
+        record: new IntroEventRecord,
+        data: ['taxon_id' => $this->taxon->id],
+    );
+
+    expect($importer->resolveRecord()->is($trashed))->toBeTrue();
+});
+
+it('shows the review reason only on the needs review tab', function () {
+    $flagged = IntroEventRecord::factory()->create([
+        'taxon_id' => $this->taxon->id,
+        'needs_review' => true,
+        'notes' => "Galil, 2007\n".IntroEventRecordImporter::REVIEW_NOTE_PREFIX.'First Introduction Year: 1965-67; NIS Status: xx',
+    ]);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'needs_review'])
+        ->assertTableColumnVisible('review_reason')
+        ->assertTableColumnStateSet('review_reason', ['First Introduction Year: 1965-67', 'NIS Status: xx'], $flagged);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'all'])
+        ->assertTableColumnHidden('review_reason');
+});
+
+it('lists intro event records in alphabetical order of scientific name', function () {
+    $records = collect(['Zostera noltei', 'Caulerpa taxifolia', 'Mnemiopsis leidyi'])
+        ->mapWithKeys(fn (string $name): array => [$name => IntroEventRecord::factory()->create([
+            'taxon_id' => Taxon::factory()->create(['scientificname' => $name])->id,
+        ])]);
+
+    livewire(ListIntroEventRecords::class)
+        ->assertCanSeeTableRecords([
+            $records['Caulerpa taxifolia'],
+            $records['Mnemiopsis leidyi'],
+            $records['Zostera noltei'],
+        ], inOrder: true);
+});
+
+it('keeps records with an unknown year while the year slider spans the full range', function () {
+    $dated = IntroEventRecord::factory()->create([
+        'taxon_id' => $this->taxon->id,
+        'first_introduction_year' => 1950,
+    ]);
+
+    $undated = IntroEventRecord::factory()->create([
+        'taxon_id' => Taxon::factory()->create()->id,
+        'first_introduction_year' => null,
+    ]);
+
+    // A slider always reports a value, so handles at both ends must mean
+    // "no filter" rather than a between() that would drop the null year.
+    livewire(ListIntroEventRecords::class)
+        ->filterTable('first_introduction_year', ['years' => [1950, 1950]])
+        ->assertCanSeeTableRecords([$dated, $undated]);
+});
+
 // --- Taxon resolution ---
 
 it('resolves taxon_id from scientific name', function () {
@@ -104,6 +313,40 @@ it('resolves taxon_id after stripping Excel encoding artifacts from the name', f
     $nameWithArtifacts = "\xEF\xBB\xBFCaulerpa\xC2\xA0cylindracea";
 
     expect(castColumn('taxon_id', $nameWithArtifacts))->toBe($this->taxon->id);
+});
+
+it('resolves taxon_id through the catalogue normalisation rules without calling WoRMS', function (string $fileName, string $catalogueName) {
+    // Http::preventStrayRequests() in beforeEach fails the test if WoRMS is hit.
+    $taxon = Taxon::factory()->create(['scientificname' => $catalogueName]);
+
+    expect(castColumn('taxon_id', $fileName))->toBe($taxon->id);
+})->with([
+    'ex synonym' => ['Belzebub hanseni ex Lucifer hanseni', 'Belzebub hanseni'],
+    'mis as' => ['Livoneca redmanii mis as Anilocra leptosoma', 'Livoneca redmanii'],
+    'cf.' => ['Chrysaora cf. achlyos', 'Chrysaora achlyos'],
+    'cfr' => ['Acanthurus cfr gahhm', 'Acanthurus gahhm'],
+    'aff.' => ['Isognomon aff. australicus', 'Isognomon australicus'],
+    'sp.' => ['Batophora sp.', 'Batophora'],
+    'lineage' => ['Asparagopsis taxiformis lineage 2', 'Asparagopsis taxiformis'],
+]);
+
+it('keeps the file spelling in notes when the taxon was found under another name', function () {
+    $taxon = Taxon::factory()->create(['scientificname' => 'Belzebub hanseni']);
+    $record = new IntroEventRecord(['notes' => 'Galil, 2007']);
+
+    $importer = makeImporter(
+        columnMap: ['taxon_id' => 'Species'],
+        options: [],
+        record: $record,
+        data: ['taxon_id' => $taxon->id],
+        originalData: ['Species' => 'Belzebub hanseni ex Lucifer hanseni'],
+    );
+
+    (fn () => $this->afterFill())->call($importer);
+    (fn () => $this->afterFill())->call($importer);
+
+    expect($record->notes)->toBe("Galil, 2007\n(original name provided: Belzebub hanseni ex Lucifer hanseni)")
+        ->and($record->needs_review)->toBeFalse();
 });
 
 it('returns null for unknown scientific name when WoRMS has no match', function () {
@@ -200,6 +443,11 @@ it('returns null for ambiguous or out-of-range years', function () {
 
 it('casts comma-separated countries to array', function () {
     expect(castColumn('first_country', 'France, Spain, Italy'))->toBe(['France', 'Spain', 'Italy']);
+});
+
+it('casts slash-separated countries to array', function () {
+    expect(castColumn('first_country', 'Egypt/France/Italy'))->toBe(['Egypt', 'France', 'Italy']);
+    expect(castColumn('first_country', 'Lebanon/Syria'))->toBe(['Lebanon', 'Syria']);
 });
 
 it('returns null for blank country', function () {

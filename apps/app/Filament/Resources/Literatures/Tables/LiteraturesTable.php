@@ -12,7 +12,8 @@ use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 
 /**
  * Configures the Filament table for literature records.
@@ -47,7 +48,12 @@ class LiteraturesTable
                 EditAction::make(),
             ])
             ->toolbarActions([
-                TableExportQuickHeaderAction::make(),
+                FilamentExportHeaderAction::make()
+                    ->formats([ExportFormat::Csv, ExportFormat::Xlsx, ExportFormat::Pdf])
+                    ->defaultFormat(ExportFormat::Xlsx)
+                    ->withFilters()
+                    ->withSearch()
+                    ->withSort(),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

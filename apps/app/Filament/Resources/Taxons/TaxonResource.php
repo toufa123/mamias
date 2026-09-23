@@ -10,6 +10,7 @@ use App\Filament\Resources\Taxons\Schemas\TaxonInfolist;
 use App\Filament\Resources\Taxons\Tables\TaxonTable;
 use App\Models\Taxon;
 use BackedEnum;
+use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -28,7 +29,13 @@ class TaxonResource extends Resource
 {
     protected static ?string $model = Taxon::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'tabler-fish';
+    /* Checklist plutôt que Fish : le catalogue couvre algues, mollusques et
+       arthropodes autant que des poissons, et son état se lit en « checked /
+       not checked » — ce que dit exactement cette icône. Volontairement
+       différente du livre de LitteratureResource, qui est dans le même
+       groupe de navigation. Enum plutôt que chaîne, comme les autres
+       ressources. */
+    protected static string|BackedEnum|null $navigationIcon = TablerIcon::Checklist;
 
     protected static ?string $modelLabel = 'NIS Taxon';
 
@@ -37,6 +44,20 @@ class TaxonResource extends Resource
     protected static ?string $navigationLabel = 'MAMIAS Catalogue ';
 
     protected static string|null|\UnitEnum $navigationGroup = 'MAMIAS database';
+
+    /**
+     * Species in the catalogue, trashed ones excluded — the same figure as the
+     * list's All tab. Cast because the badge is ?string and count() is an int.
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Species in the catalogue';
+    }
 
     /**
      * Configure the form schema for the resource.

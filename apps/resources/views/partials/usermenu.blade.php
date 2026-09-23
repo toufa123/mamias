@@ -20,7 +20,7 @@
                                 alt="{{ Auth::user()?->getFilamentName() ?? 'Avatar' }}"
                             />
                         </div>
-                        <span class="absolute -bottom-0.5 -end-0.5 block size-3 rounded-full border-2 border-white {{ $isSpecial ? 'bg-green-500' : 'bg-gray-400' }}"></span>
+                        <span class="absolute -bottom-0.5 -end-0.5 block size-3 rounded-full border-2 border-white {{ $isSpecial ? 'bg-[var(--ring)]' : 'bg-muted-foreground' }}"></span>
                     </button>
                     <div class="kt-dropdown-menu w-[265px]" data-kt-dropdown-menu="true">
                         <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5">
@@ -33,7 +33,7 @@
                                             alt="{{ Auth::user()?->getFilamentName() ?? 'Avatar' }}"
                                         />
                                     </div>
-                                    <span class="absolute -bottom-0.5 -end-0.5 block size-3.5 rounded-full border-2 border-white {{ $isSpecial ? 'bg-green-500' : 'bg-gray-400' }}"></span>
+                                    <span class="absolute -bottom-0.5 -end-0.5 block size-3.5 rounded-full border-2 border-white {{ $isSpecial ? 'bg-[var(--ring)]' : 'bg-muted-foreground' }}"></span>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
                                     <span class="text-foreground text-sm leading-none font-semibold">

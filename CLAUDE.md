@@ -29,6 +29,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Pint, psql, artisan normally run via Docker — if Docker is unavailable, surface that immediately rather than retrying.
 - After `composer require` restarts containers, volume mounts may need to be re-verified.
 - The queue container runs artisan directly and never starts Caddy, so it cannot use the base image's HTTP healthcheck — `docker-compose.yml` overrides it with a worker-process + Redis probe. Don't remove that override; the container will read "unhealthy" while working fine.
+- **Run `php artisan make:*` as `www-data`, not root.** `docker compose exec app …` runs as root, so generated files land `root:root` while the rest of the tree is `www-data` (uid 1000 = the host user). The host then cannot edit them — writes fail with `EPERM` over the `\\WSL$` share. Use `docker compose --profile dev exec -u www-data app php artisan make:…`, or `chown -R www-data:www-data` the generated paths afterwards.
+- **Translations live in `apps/lang/`, and `apps/resources/lang/` must not exist.** `Application::bindPathsInContainer()` picks `resources/lang` whenever that directory is present and only falls back to `lang/` when it is absent — so an empty `resources/lang/` (a package publishing to the pre-Laravel-9 location will create one) silently orphans every file in `lang/`. Nothing errors: package defaults keep resolving, app overrides are ignored, and a key that exists *only* in an override renders as its raw dotted name in the UI. If you see something like `filament-actions::import.modal.actions.download_example_xlsx.label` on screen, check `app('translation.loader')` paths before touching the lang file — it is almost certainly right. `useLangPath()` exists on `Application` but not on the `ApplicationBuilder`, so there is nothing to pin in `bootstrap/app.php`; keeping `resources/lang/` deleted is the fix.
 
 ## Repository layout
 
@@ -67,8 +69,30 @@ From inside `apps/` (if running locally without Docker):
 ```bash
 composer run dev    # serve + queue:listen + pail + npm run dev (concurrent)
 composer run test   # clear config cache + run pest
-npm run build       # production asset build
 ```
+
+### Asset builds — container only, and cache views first
+
+```bash
+docker compose --profile dev exec app php artisan view:cache
+docker compose --profile dev exec app npm run build
+```
+
+**Never run `npm install` / `npm run build` from the Windows side.** `node_modules`
+is bind-mounted, and npm installs the platform's native binaries into it. A
+Windows install leaves `node_modules/@rolldown/binding-win32-x64-msvc` and no
+Linux binding, which breaks the build *inside the container* two ways: the
+`.bin/vite` shim loses its exec bit (`sh: 1: vite: Permission denied`) and
+rolldown cannot load `@rolldown/binding-linux-x64-gnu`. Both failures exit
+non-zero but leave `public/build` intact, so the site silently keeps serving the
+previous bundle and nothing appears to change. If it happens, recover with
+`docker compose --profile dev exec app npm ci`.
+
+**`view:cache` before `npm run build`.** `resources/css/app.css` has
+`@source '../../storage/framework/views/*.php'`, so Tailwind scans compiled
+Blade to find classes that only exist in vendor and Layup CMS output. Building
+after a `view:clear` silently purges them — the bundle drops from ~108 kB to
+~80 kB and utilities go missing on pages nobody rebuilt.
 
 ## Architecture
 

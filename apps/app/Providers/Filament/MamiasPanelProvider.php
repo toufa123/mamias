@@ -8,14 +8,17 @@ use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
 use App\Filament\Pages\ComposerDependencies;
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\FileManager;
 use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Pages\NpmDependencies;
 use App\Filament\Widgets\MamiasInfoWidget;
 use App\Http\Middleware\RedirectIfNotPanelUser;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
+use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
+use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Crumbls\Layup\LayupPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin;
@@ -23,7 +26,7 @@ use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 use Elemind\FilamentECharts\FilamentEChartsPlugin;
 use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
-use Filament\FontProviders\GoogleFontProvider;
+use Filament\FontProviders\BunnyFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -52,11 +55,12 @@ use LaBoiteACode\DependencyGraph\DependencyGraphPlugin;
 use LaBoiteACode\FilamentLogsExplorer\FilamentLogsExplorerPlugin;
 use lockscreen\FilamentLockscreen\Lockscreen;
 use Martin6363\SidebarResize\SidebarResizePlugin;
-use OccTherapist\AdvancedTableExportForFilament\AdvancedTableExportForFilamentPlugin;
 use Prodstarter\FilamentNotificationCenter\FilamentNotificationCenterPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use Syofyanzuhad\ConnectionIndicator\ConnectionIndicatorPlugin;
+use UniFileManager\FilamentFileManager\FilamentFileManagerPlugin;
 use Vaslv\FilamentAppVersion\AppVersionPlugin;
 use Vaslv\FilamentAppVersion\Resolvers\ConfigVersionResolver;
 use Vaslv\FilamentAppVersion\Resolvers\FileVersionResolver;
@@ -81,7 +85,6 @@ class MamiasPanelProvider extends PanelProvider
         FilamentAsset::register([
             Js::make('app-scripts', Vite::asset('resources/js/app.js')),
         ]);
-
     }
 
     /**
@@ -115,7 +118,6 @@ class MamiasPanelProvider extends PanelProvider
             ->databaseTransactions()
             ->databaseNotifications()
             ->viteTheme('resources/css/filament/mamias/theme.css')
-            ->font('Roboto', provider: GoogleFontProvider::class)
             ->login(Login::class)
             ->registration(Register::class)
             ->passwordReset()
@@ -159,11 +161,6 @@ class MamiasPanelProvider extends PanelProvider
                 // ->cluster(\App\Filament\Clusters\Developer::class)
                 // ->maxContentWidth(Width::SevenExtraLarge),
                 FilamentNotificationCenterPlugin::make(),
-                AdvancedTableExportForFilamentPlugin::make()
-                    ->maxPdfRows(200)
-                    ->maxExportRows(3000)
-                    ->previewPerPage(25),
-                // ->previewPerPage(25),
                 FilamentNotificationsTabsPlugin::make(),
                 SidebarResizePlugin::make()
                     ->minWidth(220)
@@ -184,6 +181,7 @@ class MamiasPanelProvider extends PanelProvider
                         default => Color::Hex('#018d9a'),
                     })
                     ->showDebugModeWarningInProduction(),
+                ConnectionIndicatorPlugin::make(),
                 Lockscreen::make()
                     ->usingCustomTableColumns('email',
                         'password') // Use custom table columns. Default:  email, password.
@@ -260,23 +258,79 @@ class MamiasPanelProvider extends PanelProvider
                     ->discoverUntrackedFiles(directory: storage_path('logs')),
                 ActivityLogPlugin::make()
                     ->navigationGroup('System'),
+                // Structured, searchable exception records with request and
+                // stack context. FilamentLogsExplorerPlugin above only tails
+                // the raw log files, so a thrown exception is prose there.
+                FilamentExceptionsPlugin::make()
+                    ->navigationGroup('System')
+                    ->navigationLabel('Exceptions')
+                    ->navigationIcon('heroicon-o-exclamation-triangle')
+                    ->activeNavigationIcon('heroicon-s-exclamation-triangle'),
+                // The Taxon/IntroEventRecord importers and the WoRMS and GBIF
+                // fetches all run on the queue container. The progress widgets
+                // only cover a run in flight; this is the durable record.
+                FilamentJobsMonitorPlugin::make()
+                    ->navigationGroup('System')
+                    ->navigationIcon('heroicon-o-cpu-chip')
+                    ->navigationCountBadge(),
+                FilamentFileManagerPlugin::make()
+                    ->page(FileManager::class)
+                    ->navigationLabel('File Manager')
+                    ->navigationIcon('heroicon-o-folder-open')
+                    ->navigationGroup('System'),
             ])
+            /* Même typographie que le site public — voir DESIGN-SYSTEM.md.
+               Sans ces deux lignes le panneau garde l'Inter de Filament et
+               diverge visuellement du site.
+
+               Provider explicite des deux côtés : `font()` ne réécrit le
+               provider que si l'argument est non-null, donc un précédent
+               ->font(..., provider: GoogleFontProvider::class) restait collé
+               et servait le sans depuis Google pendant que le mono venait de
+               Bunny — deux CDN pour une seule typographie. Bunny est le miroir
+               RGPD de Google Fonts, et c'est aussi ce que charge le site
+               public (app.blade.php). */
+            ->font('Geist', provider: BunnyFontProvider::class)
+            ->monoFont('Geist Mono', provider: BunnyFontProvider::class)
             ->colors([
+                /* Teal du logo, échantillonné sur public/images/Logoweb.png.
+                   Deux nuances, deux rôles — voir DESIGN-SYSTEM.md :
+                   500 ne porte jamais de texte (bordures, anneaux de focus,
+                   icônes : 3:1 suffit) ; 600 est le fond des boutons pleins
+                   sous du blanc et doit tenir 4.5:1 — il mesure 7.08:1. */
                 'primary' => [
-                    50 => '#f0f9fb',
-                    100 => '#d9f0f4',
-                    200 => '#b7e2ea',
-                    300 => '#85ccd9',
-                    400 => '#4cafbf',
-                    500 => '#00899d', // ← Teal exact du logo
-                    600 => '#007a8c',
-                    700 => '#006b7a', // ← Survol actif
-                    800 => '#005f6b',
-                    900 => '#004e59',
-                    950 => '#00353d',
+                    50 => '#eaf6f8',
+                    100 => '#d3edf1',
+                    200 => '#a9dbe3',
+                    300 => '#6fc3d0',
+                    400 => '#29a3b7',
+                    500 => '#078da0', // ← Teal exact du logo
+                    600 => '#056273', // ← Fond plein sous texte blanc, 7.08:1
+                    700 => '#044e5c', // ← Survol actif
+                    800 => '#033b46',
+                    900 => '#022c35',
+                    950 => '#011e24',
                 ],
-                'gray' => Color::Slate, // ou un slate légèrement teinté
-                'danger' => Color::Rose,
+                /* Slate tiré vers le bleu du logo : les gris s'assoient à côté
+                   du teal sans virer au boueux. C'est la seule source des
+                   --gray-* (Filament les injecte au runtime), donc un
+                   @theme dans theme.css ne suffirait pas. 200 est le filet
+                   de 1px qui porte toute la structure ; 500 est le plancher
+                   du texte discret, à 4.9:1 sur blanc. */
+                'gray' => [
+                    50 => '#f7fafb',
+                    100 => '#edf3f5',
+                    200 => '#d8e3e8', // ← Le filet
+                    300 => '#bfd0d8',
+                    400 => '#9fb4be',
+                    500 => '#5f7783', // ← Texte discret, 4.9:1
+                    600 => '#47606b',
+                    700 => '#2b4652',
+                    800 => '#1a333f',
+                    900 => '#0e2630', // ← L'encre
+                    950 => '#08191f',
+                ],
+                // 'danger' is registered in AppServiceProvider (the invasive ramp).
                 'info' => [
                     50 => '#eff6ff',
                     100 => '#dbeafe',
@@ -345,6 +399,14 @@ class MamiasPanelProvider extends PanelProvider
             ->renderHook(
                 'panels::body.start',
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.mobile-notice'),
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.public-site-link'),
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.public-site-link'),
             );
     }
 }

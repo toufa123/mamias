@@ -179,6 +179,12 @@ services:
       CACHE_STORE: "redis"
       SESSION_DRIVER: "redis"
       QUEUE_CONNECTION: "redis"
+      # How long Redis waits before handing a still-reserved job out again. It
+      # must outlast the longest job (WoRMS/EASIN fetch: $timeout = 1800), or
+      # a catalogue-wide sync still running is re-queued and runs a second
+      # time. Laravel's default is 90s. queue:work already honours the job's
+      # own $timeout, so no --timeout is needed on the command below.
+      REDIS_QUEUE_RETRY_AFTER: "1830"
 
       DEBUGBAR_ENABLED: "false"
 

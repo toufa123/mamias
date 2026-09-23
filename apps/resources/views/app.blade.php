@@ -28,13 +28,36 @@
     <link href="{{ asset('img/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png" />
     <link href="{{ asset('img/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png" />
     <link href="{{ asset('img/favicon.ico') }}" rel="shortcut icon" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    {{--
+        Geist / Geist Mono — see DESIGN-SYSTEM.md. This replaces a Roboto link
+        that nothing on the site used: --font-sans asked for 'Instrument Sans',
+        which was never loaded, so every page actually rendered in the OS font
+        while still paying for a Roboto download.
+
+        Weights are deliberately few. Hierarchy comes from size and from
+        negative tracking on the large sizes, not from bolding.
+    --}}
+    <link href="https://fonts.bunny.net/css?family=geist:300,400,500,600|geist-mono:400,500&display=swap" rel="stylesheet" />
     <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet" />
-    @vite(['resources/css/app.css'])
-    <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" />
 
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
     @filamentStyles
+
+    {{--
+        The public site's own stylesheets must load AFTER @filamentStyles.
+
+        @filamentStyles emits every registered Filament plugin's CSS onto this
+        public layout — 20+ files. Several of those are full Tailwind builds
+        that ship bare, unscoped utilities in the `utilities` cascade layer: a
+        plain `.flex-col` with no media query, for instance. Loading them after
+        the site's own CSS let such a rule beat the navbar's `lg:flex-row` and
+        collapse the whole menu into a stacked column at every viewport.
+
+        Keep these two in this relative order: app.css defines --font-sans, so
+        swapping it past styles.css would change the site font.
+    --}}
+    @vite(['resources/css/app.css'])
+    <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" />
     @livewireStyles
     @stack('styles')
     @stack('head')
@@ -45,10 +68,10 @@
             display: none !important;
         }
         .notify .border-green-500 {
-            border-color: #00899d !important;
+            border-color: var(--mamias-teal-500) !important;
         }
         .notify .text-green-400 {
-            color: #00899d !important;
+            color: var(--mamias-teal-600) !important;
         }
     </style>
     <style>
@@ -93,7 +116,11 @@
     flash of the wrong variant.
 --}}
 <body @class([
-    'light antialiased flex flex-col min-h-screen text-base text-foreground bg-background [--header-height:78px]',
+    {{-- Layout B: header and mega menu are one 64px bar, not 78px + a strip. --}}
+    {{-- No theme class here: the script below writes `light` or `dark` onto
+         <html>, which is what the token blocks in app.css key off. A `light`
+         class pinned on <body> only contradicts it. --}}
+    'antialiased flex flex-col min-h-screen text-base text-foreground bg-background [--header-height:64px]',
     'is-authenticated' => auth()->check(),
     'is-guest' => ! auth()->check(),
     'is-staff' => (bool) auth()->user()?->hasAnyRole(['super_admin', 'scientist', 'admin']),
@@ -127,58 +154,65 @@
         <header
             class="bg-background flex h-(--header-height) shrink-0 items-center transition-[height]"
             data-kt-sticky="true"
-            data-kt-sticky-class="transition-[height] fixed z-10 top-0 left-0 right-0 shadow-xs backdrop-blur-md bg-background/70 border border-border"
+            data-kt-sticky-class="transition-[height] fixed z-10 top-0 left-0 right-0 backdrop-blur-md bg-background/70 border border-border"
             data-kt-sticky-name="header"
             data-kt-sticky-offset="100px"
             id="header"
         >
             <!-- Container -->
-            <div class="kt-container-fixed flex items-center gap-2.5 lg:justify-between">
+            <div class="kt-container-fixed flex items-center gap-4">
                 <!-- Logo -->
-                <div class="flex grow items-center gap-1 lg:w-[400px] lg:grow-0">
+                <div class="flex shrink-0 items-center gap-1">
                     <button class="kt-btn kt-btn-icon kt-btn-ghost -ms-2.5 lg:hidden" data-kt-drawer-toggle="#navbar">
                         <i class="ki-filled ki-menu"></i>
                     </button>
-                    <div class="flex items-center gap-2">
-                        <a class="flex shrink-0 items-center" href="{{ route('home') }}">
-                            <img class="w-mamias shrink-0 dark:hidden" src="{{ asset('images/Logoweb.png') }}" />
-                            <img
-                                class="w-mamias hidden shrink-0 dark:inline-block"
-                                src="{{ asset('images/mamias_b.png') }}"
-                            />
-                        </a>
-                    </div>
-                    <!-- Navs -->
-                    <div class="hidden items-center lg:flex">
-                        <div class="border-border mx-4 h-5 border-e"></div>
-                        <h3 class="text-mono hidden text-lg font-medium md:block">MAMIAS</h3>
-                    </div>
-                    <!-- End of Navs -->
+                    <a class="flex shrink-0 items-center" href="{{ route('home') }}">
+                        <img class="h-[47px] w-auto shrink-0 dark:hidden" src="{{ asset('images/Logoweb.png') }}" />
+                        <img
+                            class="hidden h-[47px] w-auto shrink-0 dark:inline-block"
+                            src="{{ asset('images/mamias_b.png') }}"
+                        />
+                    </a>
                 </div>
                 <!-- End of Logo -->
 
+                <div class="border-border hidden h-5 shrink-0 border-e lg:block"></div>
+
+                {{--
+                    The mega menu now lives inside the bar rather than in its
+                    own strip below it. On mobile it is still the drawer that
+                    the button above toggles — the partial keeps its #navbar id
+                    and data-kt-drawer-* attributes, which is what KTDrawer
+                    binds to.
+                --}}
+                @include('partials.navbar')
+
                 <!-- Topbar -->
-                @include('partials.usermenu')
+                <div class="ms-auto flex shrink-0 items-center">
+                    @include('partials.usermenu')
+                </div>
                 <!-- End of Topbar -->
             </div>
             <!-- End of Container -->
         </header>
         <!-- End of Header -->
 
-        <!-- Navbar -->
-        @include('partials.navbar')
-        <!-- End of Navbar -->
-
         <!-- Wrapper Container -->
         <div class="container-fixed flex w-full grow px-0">
             <!-- Content -->
             <x-notify::notify />
             <main class="flex grow flex-col" id="content" role="content">
-                <!-- Toolbar -->
-                <div class="mb-5 lg:mb-7.5">
-                    <div class="kt-container-fixed flex flex-wrap items-center justify-between gap-5">
+                {{--
+                    Page head (Layout B). The old toolbar sat on plain paper
+                    directly under the menu strip; with the strip gone, this
+                    tinted band is what separates the bar from the content and
+                    gives the page title somewhere to sit. Breadcrumbs move to
+                    the right so the title owns the left edge.
+                --}}
+                <div class="bg-muted border-border mb-5 border-b lg:mb-7.5">
+                    <div class="kt-container-fixed flex flex-wrap items-end justify-between gap-5 py-7">
                         <div class="flex flex-col flex-wrap items-start justify-center gap-1 lg:gap-2">
-                            <h1 class="text-mono text-lg font-medium">
+                            <h1 class="text-mono text-2xl font-medium tracking-tight">
                                 @hasSection('title')
                                     @yield('title')
                                 @elseif (isset($pageTitle))
@@ -274,7 +308,11 @@
     <script src="{{ asset('assets/vendors/ktui/ktui.min.js') }}"></script>
     <script src="{{ asset('assets/js/widgets/general.js') }}"></script>
     <script>
-        document.addEventListener('livewire:navigated', () => {
+        // KTUI does not self-initialise here, so the navbar's dropdowns only
+        // work once this runs. It used to be bound to `livewire:navigated`
+        // alone, which never fires on a first page load — so on a cold visit
+        // the mega menu had no behaviour at all.
+        const initKtui = () => {
             if (window.KTMenu && typeof KTMenu.init === 'function') {
                 KTMenu.init();
             }
@@ -288,7 +326,11 @@
             } else if (window.KTDrawer && typeof KTDrawer.init === 'function') {
                 KTDrawer.init();
             }
-        });
+        };
+
+        // This script sits at the end of <body>, so the menu markup is parsed.
+        initKtui();
+        document.addEventListener('livewire:navigated', initKtui);
     </script>
     <!-- End of Scripts -->
 </body>

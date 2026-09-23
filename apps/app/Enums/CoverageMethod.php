@@ -50,8 +50,8 @@ enum CoverageMethod: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::ESTIMATED => 'warning',
-            self::MEASURED => 'success',
+            self::ESTIMATED => 'gray',
+            self::MEASURED => 'primary',
         };
     }
 }

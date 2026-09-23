@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: "8.5"
+  PHP_EXTENSIONS: soap, intl, bcmath, redis, gd, pdo_pgsql, pgsql
+
+jobs:
+  lint:
+    name: Pint (style)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: apps/vendor
+          key: composer-${{ hashFiles('apps/composer.lock') }}
+
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - run: vendor/bin/pint --test
+
+  test:
+    name: Pest (mamias_test on PostGIS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps
+    # Same image family as dev/prod (docker-compose.yml, docker-compose.prod.yml) —
+    # the app relies on PostGIS types that plain postgres/sqlite cannot express.
+    services:
+      postgres:
+        image: kartoza/postgis:17-3.5
+        env:
+          POSTGRES_DB: mamias_test
+          POSTGRES_USER: mamias
+          POSTGRES_PASS: mamias_ci
+          POSTGRES_PASSWORD: mamias_ci
+          POSTGRES_MULTIPLE_EXTENSIONS: postgis
+          ALLOW_IP_RANGE: 0.0.0.0/0
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mamias -d mamias_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: apps/vendor
+          key: composer-${{ hashFiles('apps/composer.lock') }}
+
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - run: cp .env.example .env && php artisan key:generate
+
+      # phpunit.xml already forces DB_CONNECTION/DB_DATABASE (mamias_test) and
+      # the app-behaviour env (CACHE_STORE=array, QUEUE_CONNECTION=sync,
+      # CAP_SITE_KEY="", SHIELD_SUPER_ADMIN_VIA_GATE=true, etc). Only the
+      # connection coordinates for *this* Postgres service are ours to set —
+      # Laravel's dotenv is immutable, so these real env vars win over .env.
+      - run: php artisan test --compact
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: "5432"
+          DB_USERNAME: mamias
+          DB_PASSWORD: mamias_ci
+
+  docker-build:
+    name: Docker image builds (prod target)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # Validates the same Dockerfile + build args docker-compose.prod.yml uses.
+      # Catches a broken image (Composer, npm/Vite, PHP extensions) before it
+      # ever reaches `make prod-up` on the server — today that's the first
+      # place a bad build would be discovered.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          build-args: |
+            APP_BUILD=prod
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

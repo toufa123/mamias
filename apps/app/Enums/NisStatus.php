@@ -54,10 +54,10 @@ enum NisStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::NIS => 'success',
-            self::Cryptogenic => 'warning',
-            self::Questionable => 'danger',
-            self::RangeExpansion => 'info',
+            self::NIS => 'primary',
+            self::Cryptogenic => 'gray',
+            self::Questionable => 'gray',
+            self::RangeExpansion => 'native',
         };
     }
 

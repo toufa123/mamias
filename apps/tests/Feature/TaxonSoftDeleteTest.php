@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 use App\Filament\Resources\Taxons\Pages\ListTaxons;
 use App\Filament\Resources\Taxons\TaxonResource;
+use App\Models\IntroEventRecord;
 use App\Models\Taxon;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
 use Spatie\Permission\Models\Role;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('mamias'));
@@ -105,4 +109,43 @@ test('soft delete sets deleted_by when authenticated', function () {
     $taxon->delete();
 
     expect($taxon->fresh()?->deleted_by)->toBe($user->id);
+});
+
+test('the catalogue menu badge counts species, excluding trashed ones', function () {
+    Taxon::factory()->count(3)->create();
+    Taxon::factory()->create()->delete();
+
+    expect(TaxonResource::getNavigationBadge())->toBe('3');
+});
+
+test('trashing a species with introduction events warns that they remain', function () {
+    $taxon = Taxon::factory()->create();
+    IntroEventRecord::factory()->count(2)->create(['taxon_id' => $taxon->id]);
+
+    livewire(ListTaxons::class, ['activeTab' => 'all'])
+        ->callAction(TestAction::make('delete')->table($taxon))
+        ->assertNotified('Species has introduction events');
+
+    expect(IntroEventRecord::where('taxon_id', $taxon->id)->count())->toBe(2);
+});
+
+test('force deleting a species reports the introduction events deleted with it', function () {
+    $taxon = Taxon::factory()->create();
+    IntroEventRecord::factory()->create(['taxon_id' => $taxon->id])->delete();
+    $taxon->delete();
+
+    livewire(ListTaxons::class, ['activeTab' => 'trashed'])
+        ->callAction(TestAction::make('forceDelete')->table($taxon))
+        ->assertNotified('Introduction events deleted');
+
+    // The cascade takes trashed events too, which is why they are counted.
+    expect(IntroEventRecord::withTrashed()->where('taxon_id', $taxon->id)->exists())->toBeFalse();
+});
+
+test('deleting a species without introduction events sends no warning', function () {
+    $taxon = Taxon::factory()->create();
+
+    livewire(ListTaxons::class, ['activeTab' => 'all'])
+        ->callAction(TestAction::make('delete')->table($taxon))
+        ->assertNotNotified('Species has introduction events');
 });

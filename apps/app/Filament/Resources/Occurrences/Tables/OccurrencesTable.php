@@ -83,7 +83,10 @@ class OccurrencesTable
             ->searchable()
             ->sortable()
             ->html()
-            ->formatStateUsing(fn (string $state): string => "<span class='italic font-serif'>".e($state).'</span>');
+            // Italic only, no font-serif — a species name keeps the panel's own
+            // face (Geist) and is distinguished by slant alone. See
+            // DESIGN-SYSTEM.md.
+            ->formatStateUsing(fn (string $state): string => "<span class='italic'>".e($state).'</span>');
     }
 
     /**

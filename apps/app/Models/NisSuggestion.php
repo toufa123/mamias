@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Kirschbaum\Commentions\Contracts\Commentable;
+use Kirschbaum\Commentions\HasComments;
 use Mattiverse\Userstamps\Traits\Userstamps;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -77,9 +79,9 @@ use Spatie\Activitylog\Support\LogOptions;
     'taxon_id',
     'resubmitted_from_id',
 ])]
-class NisSuggestion extends Model
+class NisSuggestion extends Model implements Commentable
 {
-    use HasFactory, HasSpatialLocation, LogsActivity, SoftDeletes, Userstamps;
+    use HasComments, HasFactory, HasSpatialLocation, LogsActivity, SoftDeletes, Userstamps;
 
     protected function casts(): array
     {

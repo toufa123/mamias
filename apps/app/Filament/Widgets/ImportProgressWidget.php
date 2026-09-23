@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Imports\TaxonImporter;
 use Filament\Actions\Imports\Models\Import;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Cache;
@@ -86,6 +87,23 @@ class ImportProgressWidget extends Widget
             $this->completionAnnounced = true;
             $this->dispatch('import-completed'); // ListTaxons listens → $refresh
         }
+    }
+
+    /**
+     * How many rows of a finished taxon import were skipped because the
+     * scientific name was already in the catalogue. Zero for other importers.
+     */
+    public function getSkippedRowsCount(?Import $import): int
+    {
+        if ($import === null || $import->completed_at === null) {
+            return 0;
+        }
+
+        if ($import->importer !== TaxonImporter::class) {
+            return 0;
+        }
+
+        return TaxonImporter::getSkippedRowsCount($import);
     }
 
     /**

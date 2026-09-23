@@ -35,12 +35,12 @@ class SpeciesByPhylumChart extends EChartWidget
                 'trigger' => 'axis',
                 'axisPointer' => [
                     'type' => 'shadow',
-                    'shadowStyle' => ['color' => 'rgba(0, 137, 157, 0.1)'],
+                    'shadowStyle' => ['color' => 'rgba(7, 141, 160, 0.1)'],
                 ],
                 'backgroundColor' => 'rgba(255, 255, 255, 0.95)',
-                'borderColor' => '#00899d',
+                'borderColor' => '#078da0',
                 'borderWidth' => 1,
-                'textStyle' => ['color' => '#333'],
+                'textStyle' => ['color' => '#0e2630'],
             ],
             'grid' => [
                 'left' => '20%',
@@ -56,21 +56,21 @@ class SpeciesByPhylumChart extends EChartWidget
                 'nameGap' => 35,
                 'nameTextStyle' => [
                     'fontSize' => 13,
-                    'fontWeight' => 'bold',
-                    'color' => '#374151',
+                    'fontWeight' => 500,
+                    'color' => '#47606b',
                 ],
                 'axisLine' => [
                     'show' => true,
-                    'lineStyle' => ['color' => '#e5e7eb', 'width' => 2],
+                    'lineStyle' => ['color' => '#d8e3e8', 'width' => 2],
                 ],
                 'axisTick' => ['show' => false],
                 'axisLabel' => [
                     'fontSize' => 11,
-                    'color' => '#6b7280',
+                    'color' => '#5f7783',
                     'fontWeight' => '500',
                 ],
                 'splitLine' => [
-                    'lineStyle' => ['color' => '#f3f4f6', 'type' => 'dashed'],
+                    'lineStyle' => ['color' => '#edf3f5', 'type' => 'dashed'],
                 ],
             ],
             'yAxis' => [
@@ -78,13 +78,13 @@ class SpeciesByPhylumChart extends EChartWidget
                 'data' => $phyla,
                 'axisTick' => ['alignWithLabel' => true, 'show' => false],
                 'axisLine' => [
-                    'lineStyle' => ['color' => '#e5e7eb', 'width' => 2],
+                    'lineStyle' => ['color' => '#d8e3e8', 'width' => 2],
                 ],
                 'axisLabel' => [
                     'interval' => 0,
                     'fontSize' => 12,
                     'fontWeight' => '500',
-                    'color' => '#374151',
+                    'color' => '#47606b',
                     'margin' => 10,
                 ],
             ],
@@ -102,18 +102,18 @@ class SpeciesByPhylumChart extends EChartWidget
                             'x2' => 1,
                             'y2' => 0,
                             'colorStops' => [
-                                ['offset' => 0, 'color' => '#00899d'],
-                                ['offset' => 1, 'color' => '#00d4e6'],
+                                ['offset' => 0, 'color' => '#078da0'],
+                                ['offset' => 1, 'color' => '#6fc3d0'],
                             ],
                         ],
-                        'borderRadius' => [0, 4, 4, 0],
+                        'borderRadius' => 0,
                     ],
                     'label' => [
                         'show' => true,
                         'position' => 'right',
                         'fontSize' => 11,
-                        'fontWeight' => 'bold',
-                        'color' => '#00899d',
+                        'fontWeight' => 500,
+                        'color' => '#056273',
                         'formatter' => '{c}',
                     ],
                     'emphasis' => [

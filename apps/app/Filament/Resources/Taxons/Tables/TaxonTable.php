@@ -32,7 +32,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
-use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
+use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 
 /**
  * Configures the Filament table for taxon records.
@@ -40,6 +41,11 @@ use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAc
  * catalogue status, rank, kingdom, phylum, LSID, environments,
  * fetch/creation/update timestamps, and creator/editor columns
  * with WoRMS sync, duplicate detection, and bulk fetch actions.
+ *
+ * Columns drop out by breakpoint so the row fits without sideways scrolling:
+ * ID, scientific name and both statuses always show; rank, Aphia ID and
+ * environment join from `lg` (tablet landscape); EASIN ID, kingdom and phylum
+ * only from `xl` (desktop).
  */
 class TaxonTable
 {
@@ -61,9 +67,9 @@ class TaxonTable
             ->striped()
             ->columns([
                 self::getIdColumn(),
+                self::getScientificNameColumn(),
                 self::getAphiaIdColumn(),
                 self::getEasinIdColumn(),
-                self::getScientificNameColumn(),
                 self::getWormsStatusColumn(),
                 self::getCatalogueStatusColumn(),
                 self::getRankColumn(),
@@ -159,7 +165,12 @@ class TaxonTable
                 ]),
             ])
             ->toolbarActions([
-                TableExportQuickHeaderAction::make()->disablePreview(),
+                FilamentExportHeaderAction::make()
+                    ->formats([ExportFormat::Csv, ExportFormat::Xlsx, ExportFormat::Pdf])
+                    ->defaultFormat(ExportFormat::Xlsx)
+                    ->withFilters()
+                    ->withSearch()
+                    ->withSort(),
                 BulkActionGroup::make([
                     BulkAction::make('fetch_from_worms')
                         ->label('Fetch from WoRMS')
@@ -223,6 +234,7 @@ class TaxonTable
             ->label('Aphia ID')
             ->icon(TablerIcon::Link)
             ->sortable()
+            ->visibleFrom('lg')
             ->url(fn ($record) => $record->url)
             ->openUrlInNewTab();
     }
@@ -233,6 +245,7 @@ class TaxonTable
             ->label('EASIN ID')
             ->icon(TablerIcon::Link)
             ->sortable()
+            ->visibleFrom('xl')
             ->url(fn ($record) => $record->Easin_id ? "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/{$record->Easin_id}" : null)
             ->openUrlInNewTab();
     }
@@ -241,7 +254,9 @@ class TaxonTable
     {
         return TextColumn::make('scientificname')
             ->label('Scientific Name')
+            ->wrapHeader()
             ->sortable()
+            ->wrap()
             ->html()
             ->formatStateUsing(fn ($state, $record) => self::formatScientificName($state, $record->rank))
             ->tooltip(fn ($record) => self::getScientificNameTooltip($record));
@@ -251,6 +266,7 @@ class TaxonTable
     {
         return TextColumn::make('worms_status')
             ->label('WoRMS Status')
+            ->wrapHeader()
             ->badge()
             ->sortable()
             ->searchable();
@@ -260,23 +276,24 @@ class TaxonTable
     {
         return TextColumn::make('catalogue_status')
             ->label('Catalogue Status')
+            ->wrapHeader()
             ->badge()
             ->sortable();
     }
 
     protected static function getRankColumn(): TextColumn
     {
-        return TextColumn::make('rank')->label('Rank')->sortable();
+        return TextColumn::make('rank')->label('Rank')->sortable()->visibleFrom('lg');
     }
 
     protected static function getKingdomColumn(): TextColumn
     {
-        return TextColumn::make('kingdom')->label('Kingdom')->sortable();
+        return TextColumn::make('kingdom')->label('Kingdom')->sortable()->visibleFrom('xl');
     }
 
     protected static function getPhylumColumn(): TextColumn
     {
-        return TextColumn::make('phylum')->label('Phylum')->sortable();
+        return TextColumn::make('phylum')->label('Phylum')->sortable()->visibleFrom('xl');
     }
 
     protected static function getLsidColumn(): TextColumn
@@ -292,6 +309,7 @@ class TaxonTable
         return TextColumn::make('environments')
             ->label('Environment')
             ->wrap()
+            ->visibleFrom('lg')
             ->badge()
             ->color(function (mixed $state): string|array|null {
                 if (is_array($state)) {
@@ -399,7 +417,12 @@ class TaxonTable
             return '<span class="not-italic">'.$matches[1].'</span>';
         }, $state);
 
-        return "<span class='italic' style=\"font-family: Georgia, 'Times New Roman', Times, serif; font-feature-settings: 'liga'; letter-spacing: -0.01em;\">{$formatted}</span>";
+        // Italic only — the name inherits the panel's own face (Geist). It used
+        // to carry an inline Georgia/Times stack, which made species names the
+        // one serif in an otherwise sans interface and pinned them to a font
+        // the design system does not load. See DESIGN-SYSTEM.md: a species name
+        // is italic at whatever size its context uses, nothing more.
+        return "<span class='italic'>{$formatted}</span>";
     }
 
     protected static function getScientificNameTooltip(Taxon $record): ?HtmlString
@@ -418,8 +441,10 @@ class TaxonTable
                 return '<span class="not-italic">'.$matches[1].'</span>';
             }, $name);
 
+            // Italic only, same as the column — a tooltip is not a different
+            // typographic context. See DESIGN-SYSTEM.md.
             return new HtmlString(
-                "<span class='italic' style=\"font-family: Georgia, 'Times New Roman', Times, serif; font-feature-settings: 'liga'; letter-spacing: -0.01em;\">{$formattedName}</span>".
+                "<span class='italic'>{$formattedName}</span>".
                 ($authority !== '' ? " <span class='not-italic'> {$authority}</span>" : '')
             );
         }

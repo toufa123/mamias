@@ -33,7 +33,7 @@
   - `make dev-queue`
 - App container entrypoint preps permissions and runs `php artisan filament:cache-components`; stale Filament behavior is often cache-related (`entrypoint.sh`).
 - Test command in container: `docker compose --profile dev exec app php artisan test`.
-- Test environment uses in-memory SQLite (`apps/phpunit.xml`), while app runtime uses PostgreSQL/PostGIS; watch for DB-specific query differences.
+- Test environment uses a dedicated PostgreSQL/PostGIS database, `mamias_test` (`apps/phpunit.xml`) — not SQLite, since the schema uses PostGIS types SQLite can't express.
 - Frontend assets are Vite-based, including panel theme `resources/css/filament/mamias/theme.css` (`apps/vite.config.js`).
 - CMS (crumbls/layup): static pages managed via Filament panel at `Content management > Pages`, rendered at `/pages/{slug}`. Config in `apps/config/layup.php`. Public layout wrapper: `apps/resources/views/components/layup-layout.blade.php`. Custom widgets go in `apps/app/Layup/Widgets/` (auto-discovered). Run `php artisan layup:safelist` after adding pages with new Tailwind classes. Frontend container classes use the `kt-container-fixed` preset.
 

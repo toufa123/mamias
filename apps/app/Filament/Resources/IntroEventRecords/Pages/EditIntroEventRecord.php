@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Resources\IntroEventRecords\Pages;
 
 use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
+use App\Models\IntroEventRecord;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -20,6 +23,12 @@ class EditIntroEventRecord extends EditRecord
     {
         return [
             DeleteAction::make(),
+            ForceDeleteAction::make()
+                ->disabled(fn (IntroEventRecord $record): bool => $record->hasOccurrences())
+                ->tooltip(fn (IntroEventRecord $record): ?string => $record->hasOccurrences()
+                    ? 'Has occurrences. Delete or reassign them first.'
+                    : null),
+            RestoreAction::make(),
         ];
     }
 

@@ -39,6 +39,32 @@ trait TracksJobProgress
     }
 
     /**
+     * Record a permanent failure for the progress widget, keeping whatever
+     * progress the run had reached.
+     *
+     * handle() marks its own exceptions as failed, but a timeout or exhausted
+     * retries go straight to the job's failed() without passing through it.
+     * Without this the widget never learns the run is over and shows it as
+     * starting indefinitely.
+     */
+    private function markProgressFailed(\Throwable $exception, int $total): void
+    {
+        if ($this->userId === null) {
+            return;
+        }
+
+        $this->setProgress([
+            'processed' => 0,
+            'total' => $total,
+            'percentage' => 0,
+            ...(Cache::get(static::PROGRESS_CACHE_PREFIX.$this->userId) ?? []),
+            'status' => 'failed',
+            'estimatedTime' => '',
+            'error' => $exception->getMessage(),
+        ]);
+    }
+
+    /**
      * Whether the user has requested this sync be aborted. Checked at chunk
      * boundaries so the job can stop cooperatively.
      */

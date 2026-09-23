@@ -15,6 +15,8 @@ use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 /**
  * Filament resource for managing introduction event records (NIS introductions).
@@ -27,7 +29,11 @@ class IntroEventRecordResource extends Resource
 {
     protected static ?string $model = IntroEventRecord::class;
 
-    protected static string|BackedEnum|null $navigationIcon = TablerIcon::CalendarEvent;
+    /* MapPin plutôt que CalendarEvent : un événement d'introduction est
+       d'abord un lieu (sous-région, coordonnées), la date n'étant qu'un de
+       ses attributs. L'icône calendrier le rangeait mentalement avec les
+       agendas. */
+    protected static string|BackedEnum|null $navigationIcon = TablerIcon::MapPin;
 
     protected static ?string $modelLabel = 'Intro Event';
 
@@ -40,6 +46,20 @@ class IntroEventRecordResource extends Resource
     protected static string|null|\UnitEnum $navigationGroup = 'MAMIAS database';
 
     protected static ?string $recordTitleAttribute = 'NIS Data';
+
+    /**
+     * Introduction events, trashed ones excluded — the same figure as the
+     * list's All tab. Cast because the badge is ?string and count() is an int.
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Introduction events';
+    }
 
     /**
      * Configure the form schema for the resource.
@@ -67,6 +87,18 @@ class IntroEventRecordResource extends Resource
         return [
             OccurrencesRelationManager::class,
         ];
+    }
+
+    /**
+     * Get the route binding query, including soft-deleted records, so a
+     * trashed event can still be opened and restored from its edit page.
+     */
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 
     /**

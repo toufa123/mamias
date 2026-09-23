@@ -147,10 +147,10 @@ enum Worms_Status: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::accepted => 'success',
+            self::accepted => 'verified',
             self::not_applicable => 'gray',
             self::unaccepted, self::superseded_combination, self::junior_homonym, self::misapplication, self::misspelling_incorrect_subsequent_spelling, self::misspelling_incorrect_original_spelling, self::junior_subjective_synonym, self::junior_objective_synonym, self::nomen_oblitum, self::misspelling, self::unjustified_emendation, self::incorrect_grammatical_agreement, self::unavailable_name, self::superseded_rank, self::nomen_rejiciendum, self::unreplaced_junior_homonym => 'danger',
-            self::nomen_dubium, self::nomen_nudum, self::taxon_inquirendum, self::taxonomic_discrepancy, self::unassessed, self::incertae_sedis => 'warning',
+            self::nomen_dubium, self::nomen_nudum, self::taxon_inquirendum, self::taxonomic_discrepancy, self::unassessed, self::incertae_sedis => 'gray',
             default => 'gray',
         };
     }

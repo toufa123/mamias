@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DownloadNotImportedRows;
 use App\Livewire\MyReferences;
 use App\Livewire\MySpeciesReports;
 use App\Livewire\MySuggestions;
@@ -39,6 +40,13 @@ Route::get('/my-species-reports', MySpeciesReports::class)
 Route::get('/my-suggestions', MySuggestions::class)
     ->middleware(['auth', 'verified'])
     ->name('suggestions');
+
+// Excel/CSV of the rows an import did not create (skipped duplicates + failures).
+// The controller checks that the signed-in user owns the import.
+Route::get('mamias/imports/{import}/not-imported-rows.{format}', DownloadNotImportedRows::class)
+    ->whereIn('format', ['xlsx', 'csv'])
+    ->middleware('auth')
+    ->name('imports.not-imported-rows.download');
 
 Route::get('mamias/decompose', [DecomposerController::class, 'index'])
     ->middleware(['auth', 'role:super_admin'])
