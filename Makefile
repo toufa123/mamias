@@ -1,4 +1,4 @@
-.PHONY: menu help dev-env dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-up
+.PHONY: menu help dev-env dev-keys dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-keys prod-up
 
 # Recipes here use bash-isms (read -p, [[ ]]). Without this they run under
 # /bin/sh, which is dash on Debian/Ubuntu — where `read -p` is not supported and
@@ -12,7 +12,14 @@ SHELL := /bin/bash
 export
 
 DEV_COMPOSE = docker compose --profile dev -f docker-compose.yml
-PROD_COMPOSE = docker compose --env-file .env.production -f docker-compose.prod.yml
+
+# Every name the dev .env defines. The `export` above hands them all to every
+# recipe, and compose gives the shell environment precedence over --env-file,
+# so on a machine that also has a dev .env a production command would take
+# DB_PASSWORD, APP_KEY, CAP_* ... from it instead of .env.production. `env -u`
+# strips them for the production commands only.
+DEV_ENV_VARS := $(shell grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' .env 2>/dev/null | tr -d '=')
+PROD_COMPOSE = env $(addprefix -u ,$(DEV_ENV_VARS)) docker compose --env-file .env.production -f docker-compose.prod.yml
 
 # ── Interactive picker ─────────────────────────────────────────────
 #    Same picker as running `./mamias` directly — that script holds the
@@ -30,11 +37,12 @@ help:
 ##@ Setup
 
 # ── Seed .env + apps/.env for local dev ──────────────────────────────
-#    Copies both examples, then writes one shared APP_KEY and one shared
-#    DB_USERNAME/DB_PASSWORD into both — their *.example defaults don't
-#    actually agree with each other (root's is spa_rac_admin, apps/'s is
-#    admin_mamias), which would otherwise leave host-side artisan unable
-#    to authenticate against the container it just provisioned.
+#    Copies both examples, then writes one shared DB_USERNAME/DB_PASSWORD
+#    into both — their *.example defaults don't actually agree with each
+#    other (root's is spa_rac_admin, apps/'s is admin_mamias), which would
+#    otherwise leave host-side artisan unable to authenticate against the
+#    container it just provisioned. APP_KEY and the Cap keys are then set up
+#    by env-keys.sh (same as `make dev-keys`), shared across both files.
 #    DB_HOST/DB_PORT in apps/.env are left exactly as shipped — changing
 #    them to db/redis breaks every host-side artisan call (see CLAUDE.md).
 dev-env: ## Create and populate .env + apps/.env interactively (local dev)
@@ -62,21 +70,18 @@ dev-env: ## Create and populate .env + apps/.env interactively (local dev)
 		V=$${V:-spa_rac_2026}; \
 		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" .env; \
 		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" apps/.env
-	@KEY="base64:$$(openssl rand -base64 32)"; \
-		sed -i "s|^APP_KEY=.*|APP_KEY=$$KEY|" .env; \
-		sed -i "s|^APP_KEY=.*|APP_KEY=$$KEY|" apps/.env; \
-		echo "  -> generated APP_KEY (same value in both files)"
-	@CAP_ADMIN=$$(grep '^CAP_ADMIN_KEY=' .env | cut -d= -f2-); \
-		CAP_SITE=$$(grep '^CAP_SITE_KEY=' .env | cut -d= -f2-); \
-		CAP_SECRET=$$(grep '^CAP_SECRET_KEY=' .env | cut -d= -f2-); \
-		sed -i "s|^CAP_ADMIN_KEY=.*|CAP_ADMIN_KEY=$$CAP_ADMIN|" apps/.env; \
-		sed -i "s|^CAP_SITE_KEY=.*|CAP_SITE_KEY=$$CAP_SITE|" apps/.env; \
-		sed -i "s|^CAP_SECRET_KEY=.*|CAP_SECRET_KEY=$$CAP_SECRET|" apps/.env; \
-		echo "  -> synced CAP_* keys into apps/.env (its own .example ships them blank)"
+	@bash env-keys.sh dev
 	@echo ""
 	@echo ".env + apps/.env seeded. DB_HOST/DB_PORT in apps/.env are left as shipped"
 	@echo "(127.0.0.1:5433/6380 — the host-published ports; never point them at db/redis)."
 	@echo "Run 'make dev-up' to start the stack."
+
+# ── APP_KEY + Cap CAPTCHA keys, on an existing setup ─────────────────
+#    Re-runnable: keeps every value already set unless you choose to replace
+#    it. The Cap site key is issued by the dev Cap server through its API, so
+#    no trip to the dashboard is needed. See env-keys.sh.
+dev-keys: ## Set up APP_KEY and Cap CAPTCHA keys interactively (local dev)
+	@bash env-keys.sh dev
 
 ##@ Stack
 
@@ -240,8 +245,9 @@ dev-test: dev-db-backup ## Run the suite against mamias_test (snapshots first, r
 # ── Seed .env.production for a first-time production deploy ─────────
 #    Copies the example, then fills in SERVER_NAME, APP_URL and the DB /
 #    Redis credentials. A blank password answer auto-generates a strong
-#    random secret. APP_KEY is generated locally (no container needed).
-#    Requires openssl (present on Debian/Plesk by default).
+#    random secret. APP_KEY and the Cap keys are then set up by env-keys.sh
+#    (same as `make prod-keys`), which asks the production Cap server to
+#    issue the site key. Requires openssl (present on Debian/Plesk by default).
 ##@ Production
 
 prod-env: ## Create and populate .env.production interactively
@@ -269,11 +275,17 @@ prod-env: ## Create and populate .env.production interactively
 	@read -p "REDIS_PASSWORD (blank = auto-generate): " V; \
 		[ -z "$$V" ] && { V=$$(openssl rand -hex 24); echo "  -> generated REDIS_PASSWORD"; }; \
 		sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD=$$V|" .env.production
-	@KEY="base64:$$(openssl rand -base64 32)"; \
-		sed -i "s|^APP_KEY=.*|APP_KEY=$$KEY|" .env.production; \
-		echo "  -> generated APP_KEY"
+	@bash env-keys.sh prod
 	@echo ""
 	@echo ".env.production seeded. Still set MAIL_* to real SMTP values, then run 'make prod-up'."
+
+# ── APP_KEY + Cap CAPTCHA keys, on an existing .env.production ───────
+#    Re-runnable: keeps every value already set unless you choose to replace
+#    it. Run it on the production host — the site key must come from the
+#    production Cap server, which it starts and calls from inside its
+#    container (production Cap publishes no port). See env-keys.sh.
+prod-keys: ## Set up APP_KEY and Cap CAPTCHA keys interactively (production)
+	@bash env-keys.sh prod
 
 prod-up: ##! Build and start the PRODUCTION stack
 	@if [ ! -f .env.production ]; then \

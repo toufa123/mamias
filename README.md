@@ -132,33 +132,29 @@ mamias/
    cd mamias
    ```
 
-2. **Prepare environment:**
+2. **Prepare environment (interactive):**
    ```bash
-   cp .env.example .env && cp apps/.env.example apps/.env
+   make dev-env
    ```
-   Then edit `.env` and `apps/.env` and replace all `CHANGE_ME_*` values.
+   Creates `.env` and `apps/.env`, asks for the database credentials, generates
+   `APP_KEY`, and sets up the Cap CAPTCHA keys (next step) — the same menu entry is
+   available from plain `make`.
 
 3. **Start the stack:**
    ```bash
    make dev-up
    ```
 
-4. **Configure Cap CAPTCHA (first run only):**
+4. **Cap CAPTCHA keys:**
    Cap is a self-hosted proof-of-work CAPTCHA that protects login and registration forms.
-   After starting the stack:
+   `make dev-env` already configures it: it generates `CAP_ADMIN_KEY` and has your local
+   Cap server issue `CAP_SITE_KEY` / `CAP_SECRET_KEY` through its API — no dashboard step.
+   To set or rotate them later on an existing setup:
    ```bash
-   # 1. Open the Cap dashboard
-   open http://localhost:3000
-
-    # 2. Log in with the ADMIN_KEY from your root .env (CAP_ADMIN_KEY)
-    # 3. Create a site key, copy the site key and secret key
-    # 4. Add them to your root .env:
-    #      CAP_SITE_KEY=<from-dashboard>
-    #      CAP_SECRET_KEY=<from-dashboard>
-    # 5. Restart the app:
-   docker compose --profile dev restart app
+   make dev-keys
    ```
-   Cap is optional — without it configured, authentication falls back to the existing honeypot protection only.
+   A site key only works with the Cap server that issued it, so each machine gets its own.
+   The stack refuses to start while any of the three is empty.
 
 4. **Configure local domain:**
    Add `mamias.local` to your hosts file:
@@ -251,17 +247,17 @@ docker compose --profile dev exec app vendor/bin/pint --dirty --format agent
 
 Use `docker-compose.prod.yml` exclusively in production (never `docker-compose.yml`).
 
-1. **Environment files:**
-   - Root: `.env` (Docker variables)
-   - `apps/`: `.env.production` (Laravel config)
+1. **Environment file:** `.env.production` at the repository root, created interactively
+   on the production host with:
+   ```bash
+   make prod-env
+   ```
 
-2. **Required secrets:**
-   - `APP_KEY` — generate via `php artisan key:generate --show`
-   - `DB_PASSWORD`, `DB_USERNAME` — PostgreSQL credentials
-   - Redis password (if exposed)
-   - `CAP_ADMIN_KEY` — admin key for the Cap CAPTCHA server (set before first launch)
-   - `CAP_SITE_KEY`, `CAP_SECRET_KEY` — obtained by provisioning a Cap site key (see **Cap CAPTCHA** below)
-   - SMTP and WoRMS API keys as needed
+2. **Required secrets** (all but SMTP are set by `make prod-env`):
+   - `APP_KEY` — generated
+   - `DB_PASSWORD`, `DB_USERNAME`, Redis password — asked for (blank = generated)
+   - `CAP_ADMIN_KEY`, `CAP_SITE_KEY`, `CAP_SECRET_KEY` — see **Cap CAPTCHA** below
+   - SMTP and WoRMS API keys as needed — edit `.env.production` directly
 
 ### Launch
 
@@ -279,28 +275,24 @@ proxy** (`/cap` → `cap:3000`, configured in the app's Caddy directives) and ve
 server-side over the internal Docker network — **no public port is exposed**.
 
 Each Cap server has its own key store, so the production site key is **different from the
-development one** and must be provisioned once:
+development one** and must be issued by the production Cap server. `make prod-env` does
+this; to set or rotate the keys later, run on the **production host**:
 
-1. Set `CAP_ADMIN_KEY` in `.env.production` (a strong secret).
-2. Start the Cap services:
-   ```bash
-   docker compose --env-file .env.production -f docker-compose.prod.yml up -d cap cap-valkey
-   ```
-3. Create a site key on the Cap dashboard/API (authenticate with `CAP_ADMIN_KEY`); it
-   returns a **site key** and a **secret key**.
-4. Add them to `.env.production`:
-   ```dotenv
-   CAP_SITE_KEY=<from-dashboard>
-   CAP_SECRET_KEY=<from-dashboard>
-   ```
-5. Recreate the app so it picks up the keys:
-   ```bash
-   docker compose --env-file .env.production -f docker-compose.prod.yml up -d app
-   ```
+```bash
+make prod-keys
+make prod-up
+```
+
+`prod-keys` generates `CAP_ADMIN_KEY` (or takes yours), starts `cap` + `cap-valkey`, and
+asks the production Cap server for a site key through its API — called from inside the
+`cap` container, since no Cap port is published. It writes `CAP_SITE_KEY` and
+`CAP_SECRET_KEY` to `.env.production` without printing them. You can also paste a key
+from the Cap dashboard instead.
 
 > `CAP_SITE_KEY`, `CAP_SECRET_KEY`, and `CAP_ADMIN_KEY` are declared **required** in
-> `docker-compose.prod.yml`, so the stack fails fast if they are missing rather than
-> shipping a broken CAPTCHA.
+> `docker-compose.prod.yml`, so the stack fails fast while any is empty rather than
+> shipping a broken CAPTCHA. That check alone would also block starting Cap to issue the
+> first key; `prod-keys` works around it for that one step.
 
 ### Maintenance
 
