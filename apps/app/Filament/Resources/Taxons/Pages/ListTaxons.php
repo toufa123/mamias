@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Taxons\Pages;
 use App\Enums\Catalogue_Status;
 use App\Filament\Actions\ExcelOrCsvImportAction;
 use App\Filament\Imports\TaxonImporter;
+use App\Filament\Resources\Literatures\LiteratureGuide;
 use App\Filament\Resources\Taxons\TaxonResource;
 use App\Filament\Widgets\ImportProgressWidget;
 use App\Filament\Widgets\WormsFetchProgressWidget;
@@ -102,6 +103,20 @@ class ListTaxons extends ListRecords
                     ->havingRaw('COUNT(*) > 1');
             })->withoutTrashed());
 
+        $tabs['rename'] = Tab::make('Name to update')
+            ->icon('tabler-arrow-right-circle')
+            ->badgeColor('warning')
+            ->badge(Taxon::whereNotNull('proposed_accepted_name')->count())
+            ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('proposed_accepted_name')->withoutTrashed());
+
+        // Several first records for one species, typically after a merge:
+        // the earliest year and first country need reconciling.
+        $tabs['reconcile'] = Tab::make('First records to reconcile')
+            ->icon('tabler-git-merge')
+            ->badgeColor('warning')
+            ->badge(Taxon::has('introEvents', '>', 1)->count())
+            ->modifyQueryUsing(fn (Builder $query) => $query->has('introEvents', '>', 1)->withoutTrashed());
+
         $tabs['trashed'] = Tab::make('Trashed')
             ->icon('tabler-trash')
             ->badgeColor('danger')
@@ -124,6 +139,7 @@ class ListTaxons extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            LiteratureGuide::action('taxa', 'MAMIAS catalogue guide'),
             CreateAction::make(),
             ExcelOrCsvImportAction::make()
                 ->importer(TaxonImporter::class)

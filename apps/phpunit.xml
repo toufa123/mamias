@@ -76,6 +76,12 @@
         <server name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
         <server name="SESSION_DRIVER" value="array"/>
+        <!--
+            Same trap for the cache: without the <server> twin the suite ran on
+            the dev Redis cache, so login rate-limit counters and cached service
+            responses leaked between tests and across runs.
+        -->
+        <server name="CACHE_STORE" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>

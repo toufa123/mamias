@@ -7,20 +7,22 @@ use App\Filament\Auth\Responses\LoginResponse;
 use App\Filament\Auth\Responses\RegistrationResponse;
 use App\Listeners\LogRoleChangeListener;
 use App\Listeners\TaxonImportCompletedListener;
-use App\Livewire\ImportWizard;
 use App\Models\User;
 use App\Services\TaxonMatcher;
+use App\Support\MamiasNavigationManager;
 use Filament\Actions\Imports\Events\ImportCompleted;
 use Filament\Auth\Http\Responses\Contracts\EmailVerificationResponse as EmailVerificationResponseContract;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse as RegistrationResponseContract;
+use Filament\Navigation\NavigationManager;
 use Filament\Support\Facades\FilamentColor;
+use Heyosseus\Vacuum\Vacuum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 use Spatie\Health\Checks\Checks\CacheCheck;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
@@ -39,8 +41,8 @@ use Spatie\Permission\Events\RoleDetachedEvent;
  * Core service provider for the MAMIAS application.
  *
  * Registers custom Filament auth responses, IDE helper debugbar
- * (local only), application-wide colour palette, Livewire components,
- * event listeners, and server health checks.
+ * (local only), application-wide colour palette, event listeners, and
+ * server health checks.
  */
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,6 +54,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(LoginResponseContract::class, LoginResponse::class);
         $this->app->bind(RegistrationResponseContract::class, RegistrationResponse::class);
         $this->app->bind(EmailVerificationResponseContract::class, EmailVerificationResponse::class);
+
+        // Re-homes Vacuum under System and limits System to super_admin; scoped
+        // like Filament's own binding so each request builds a fresh sidebar.
+        $this->app->scoped(NavigationManager::class, fn (): NavigationManager => new MamiasNavigationManager);
 
         // Singleton because it indexes the whole catalogue (accepted names
         // plus every recorded synonym) on first use. An import resolves a
@@ -139,9 +145,15 @@ class AppServiceProvider extends ServiceProvider
                 400 => '#9886c9', 500 => '#7a68ae', 600 => '#5b4b8a', 700 => '#4a3d72',
                 800 => '#3b3159', 900 => '#2e2645', 950 => '#231b3a',
             ],
+            // Same sea-cast grey as MamiasPanelProvider::panel(). Without it,
+            // Filament on public pages fell back to stock zinc, so neutral
+            // badges ("Unresolved", categories) drifted from the panel's.
+            'gray' => [
+                50 => '#f7fafb', 100 => '#edf3f5', 200 => '#d8e3e8', 300 => '#bfd0d8',
+                400 => '#9fb4be', 500 => '#5f7783', 600 => '#47606b', 700 => '#2b4652',
+                800 => '#1a333f', 900 => '#0e2630', 950 => '#08191f',
+            ],
         ]);
-
-        Livewire::component('filament-import-wizard', ImportWizard::class);
 
         // Embed the MAMIAS logo inline (CID "mamias-logo", referenced by the mail
         // header) so it renders reliably without depending on a publicly reachable
@@ -160,6 +172,10 @@ class AppServiceProvider extends ServiceProvider
         // checks $user->can('manageFileManager'), which resolves through this
         // gate — the package requires this exact ability name.
         Gate::define('manageFileManager', fn (User $user): bool => $user->hasRole('super_admin'));
+
+        // heyosseus/vacuum exposes the database shape and query statistics;
+        // outside `local` it refuses everyone unless this callback allows.
+        Vacuum::auth(fn (Request $request): bool => $request->user()?->hasRole('super_admin') === true);
 
         Event::listen(
             [RoleAttachedEvent::class, RoleDetachedEvent::class, PermissionAttachedEvent::class, PermissionDetachedEvent::class],

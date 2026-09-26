@@ -28,7 +28,7 @@ It serves researchers, taxonomists, and marine biologists tracking NIS taxonomy,
 - **Dashboard Analytics** — Statistical widgets (species counts, kingdom/phylum/environment distribution charts) via Filament ECharts.
 - **Bot Protection** — Proof-of-work CAPTCHA on login and registration via self-hosted Cap Standalone, alongside honeypot spam protection.
 - **Import/Export** — Bulk data operations via Excel/CSV with session-based import tracking and error reporting.
-- **User Management** — Multi-role RBAC (super_admin, panel_user, user) via Spatie Permission & Filament Shield.
+- **User Management** — Multi-role RBAC (super_admin, scientist, user) via Spatie Permission & Filament Shield.
 - **System Health** — Real-time health checks, backup management, and command runner from the admin panel.
 
 For the full Software Requirements Specification, see **[requirements.md](requirements.md)**.
@@ -41,7 +41,7 @@ For the full Software Requirements Specification, see **[requirements.md](requir
 | **Admin Panel**  | Filament 5.0           | [![Filament: 5.0](https://img.shields.io/badge/Filament-5.0-F1B024.svg?logo=filament)](https://filamentphp.com) |
 | **Database**     | PostgreSQL + PostGIS   | [![PostGIS](https://img.shields.io/badge/PostGIS-336791.svg?logo=postgresql)](https://postgis.net) |
 | **Cache/Queue**  | Redis 7+               | [![Redis: 7+](https://img.shields.io/badge/Redis-7+-DC382D.svg?logo=redis)](https://redis.io) |
-| **Frontend**     | Vite 8 + Tailwind CSS 4.2 + DaisyUI 5 | [![Vite: 8.0](https://img.shields.io/badge/Vite-8.0-646CFF.svg?logo=vite)](https://vitejs.dev) [![Tailwind CSS: 4.2](https://img.shields.io/badge/Tailwind_CSS-4.2-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com) |
+| **Frontend**     | Vite 8 + Tailwind CSS 4.3 | [![Vite: 8.0](https://img.shields.io/badge/Vite-8.0-646CFF.svg?logo=vite)](https://vitejs.dev) [![Tailwind CSS: 4.2](https://img.shields.io/badge/Tailwind_CSS-4.2-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com) |
 | **Runtime**      | Docker + FrankenPHP    | [![Docker](https://img.shields.io/badge/Docker-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com) |
 
 ## Architecture
@@ -59,7 +59,7 @@ Taxon (taxas)
 
 User (users)
 └── Profile fields (title, phone, WhatsApp, country, taxonomic area, subregions, bio)
-└── Roles: super_admin | panel_user | user (Spatie)
+└── Roles: super_admin | scientist | user (Spatie)
 ```
 
 ### Filament Resources

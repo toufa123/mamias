@@ -18,6 +18,7 @@ use App\Models\PathwayRecord;
 use App\Models\SubregionRecord;
 use App\Models\Taxon;
 use App\Models\User;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\Models\Import;
 use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
@@ -38,7 +39,6 @@ beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('mamias'));
 
     Role::findOrCreate('super_admin', 'web');
-    Role::findOrCreate('panel_user', 'web');
     Role::findOrCreate('user', 'web');
 
     $this->user = User::factory()->create();
@@ -121,6 +121,19 @@ it('filters the list page by the NIS status and needs review tabs', function () 
 
     livewire(ListIntroEventRecords::class, ['activeTab' => 'all'])
         ->assertCanSeeTableRecords([$nis, $questionable]);
+});
+
+it('lists only EASIN-flagged events on the pathway check tab, with the reason', function () {
+    $clean = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id]);
+    $flagged = IntroEventRecord::factory()->create([
+        'taxon_id' => Taxon::factory()->create()->id,
+        'pathway_check' => 'different vs EASIN R1',
+    ]);
+
+    livewire(ListIntroEventRecords::class, ['activeTab' => 'pathway_check'])
+        ->assertCanSeeTableRecords([$flagged])
+        ->assertCanNotSeeTableRecords([$clean])
+        ->assertSee('different vs EASIN R1');
 });
 
 it('filters the list page by year, country, establishment status and related enums', function () {
@@ -519,6 +532,19 @@ it('does not flag needs_review when watched values resolve cleanly', function ()
     (fn () => $this->afterFill())->call($importer);
 
     expect($record->needs_review)->toBeFalse();
+});
+
+it('fails the row instead of inserting a null taxon when the species is unmatched', function () {
+    $importer = makeImporter(
+        columnMap: ['taxon_id' => 'Species'],
+        options: [],
+        record: new IntroEventRecord,
+        data: ['taxon_id' => null],
+        originalData: ['Species' => 'Apounurs sigani'],
+    );
+
+    expect(fn () => (fn () => $this->beforeSave())->call($importer))
+        ->toThrow(RowImportFailedException::class, 'Apounurs sigani');
 });
 
 // --- SubregionRecord creation in afterSave ---

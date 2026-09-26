@@ -1,0 +1,1279 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function is_array\(\) with array\<int, array\{lat\: float, lng\: float\}\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Casts/CoordinatesCast.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{lat\: float, lng\: float\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Casts/CoordinatesCast.php
+
+		-
+			message: '#^Offset ''lat'' on array\{lat\: float, lng\: float\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Casts/CoordinatesCast.php
+
+		-
+			message: '#^Offset ''lng'' on array\{lat\: float, lng\: float\} in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: app/Casts/CoordinatesCast.php
+
+		-
+			message: '#^Method App\\Enums\\AbundanceCategory\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AbundanceCategory.php
+
+		-
+			message: '#^Method App\\Enums\\AbundanceCategory\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AbundanceCategory.php
+
+		-
+			message: '#^Method App\\Enums\\AbundanceCategory\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AbundanceCategory.php
+
+		-
+			message: '#^Method App\\Enums\\AbundanceCategory\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AbundanceCategory.php
+
+		-
+			message: '#^Method App\\Enums\\AcforScale\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AcforScale.php
+
+		-
+			message: '#^Method App\\Enums\\AcforScale\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AcforScale.php
+
+		-
+			message: '#^Method App\\Enums\\AcforScale\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AcforScale.php
+
+		-
+			message: '#^Method App\\Enums\\AcforScale\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/AcforScale.php
+
+		-
+			message: '#^Method App\\Enums\\Catalogue_Status\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Catalogue_Status.php
+
+		-
+			message: '#^Method App\\Enums\\Catalogue_Status\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Catalogue_Status.php
+
+		-
+			message: '#^Method App\\Enums\\Catalogue_Status\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Catalogue_Status.php
+
+		-
+			message: '#^Method App\\Enums\\CbdPathwayCategory\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CbdPathwayCategory.php
+
+		-
+			message: '#^Method App\\Enums\\CbdPathwaySubcategory\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CbdPathwaySubcategory.php
+
+		-
+			message: '#^Method App\\Enums\\CoverageMethod\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CoverageMethod.php
+
+		-
+			message: '#^Method App\\Enums\\CoverageMethod\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CoverageMethod.php
+
+		-
+			message: '#^Method App\\Enums\\CoverageMethod\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CoverageMethod.php
+
+		-
+			message: '#^Method App\\Enums\\CoverageMethod\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CoverageMethod.php
+
+		-
+			message: '#^Method App\\Enums\\CoverageUnit\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/CoverageUnit.php
+
+		-
+			message: '#^Method App\\Enums\\DataQuality\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/DataQuality.php
+
+		-
+			message: '#^Method App\\Enums\\DataQuality\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/DataQuality.php
+
+		-
+			message: '#^Method App\\Enums\\DataQuality\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/DataQuality.php
+
+		-
+			message: '#^Method App\\Enums\\DataQuality\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/DataQuality.php
+
+		-
+			message: '#^Method App\\Enums\\Environment\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Environment.php
+
+		-
+			message: '#^Method App\\Enums\\Environment\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Environment.php
+
+		-
+			message: '#^Method App\\Enums\\Environment\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Environment.php
+
+		-
+			message: '#^Method App\\Enums\\Environment\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Environment.php
+
+		-
+			message: '#^Method App\\Enums\\EstablishmentStatus\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/EstablishmentStatus.php
+
+		-
+			message: '#^Method App\\Enums\\EstablishmentStatus\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/EstablishmentStatus.php
+
+		-
+			message: '#^Method App\\Enums\\EstablishmentStatus\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/EstablishmentStatus.php
+
+		-
+			message: '#^Method App\\Enums\\EstablishmentStatus\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/EstablishmentStatus.php
+
+		-
+			message: '#^Method App\\Enums\\Habitat\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Habitat.php
+
+		-
+			message: '#^Method App\\Enums\\Habitat\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Habitat.php
+
+		-
+			message: '#^Method App\\Enums\\Habitat\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Habitat.php
+
+		-
+			message: '#^Method App\\Enums\\Habitat\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Habitat.php
+
+		-
+			message: '#^Method App\\Enums\\LiteratureStatus\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/LiteratureStatus.php
+
+		-
+			message: '#^Method App\\Enums\\LiteratureStatus\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/LiteratureStatus.php
+
+		-
+			message: '#^Method App\\Enums\\LiteratureStatus\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/LiteratureStatus.php
+
+		-
+			message: '#^Method App\\Enums\\LiteratureStatus\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/LiteratureStatus.php
+
+		-
+			message: '#^Method App\\Enums\\LiteratureType\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/LiteratureType.php
+
+		-
+			message: '#^Method App\\Enums\\LiteratureType\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/LiteratureType.php
+
+		-
+			message: '#^Method App\\Enums\\NisStatus\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/NisStatus.php
+
+		-
+			message: '#^Method App\\Enums\\NisStatus\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/NisStatus.php
+
+		-
+			message: '#^Method App\\Enums\\NisStatus\:\:getDescription\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/NisStatus.php
+
+		-
+			message: '#^Method App\\Enums\\NisStatus\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/NisStatus.php
+
+		-
+			message: '#^Method App\\Enums\\NisStatus\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/NisStatus.php
+
+		-
+			message: '#^Method App\\Enums\\OccurrenceStatus\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/OccurrenceStatus.php
+
+		-
+			message: '#^Method App\\Enums\\OccurrenceStatus\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/OccurrenceStatus.php
+
+		-
+			message: '#^Method App\\Enums\\OccurrenceStatus\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/OccurrenceStatus.php
+
+		-
+			message: '#^Method App\\Enums\\OccurrenceStatus\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/OccurrenceStatus.php
+
+		-
+			message: '#^Method App\\Enums\\PathwayType\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/PathwayType.php
+
+		-
+			message: '#^Method App\\Enums\\Subregion\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Subregion.php
+
+		-
+			message: '#^Method App\\Enums\\Subregion\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Subregion.php
+
+		-
+			message: '#^Method App\\Enums\\Subregion\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Subregion.php
+
+		-
+			message: '#^Method App\\Enums\\Subregion\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Subregion.php
+
+		-
+			message: '#^Method App\\Enums\\Worms_Status\:\:getColor\(\) never returns array\<string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Worms_Status.php
+
+		-
+			message: '#^Method App\\Enums\\Worms_Status\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Worms_Status.php
+
+		-
+			message: '#^Method App\\Enums\\Worms_Status\:\:getIcon\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Enums/Worms_Status.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model&Kirschbaum\\Commentions\\Contracts\\Commentable\:\:getSubscribers\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Filament/Actions/DiscussionParticipantsAction.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model&Kirschbaum\\Commentions\\Contracts\\Commentable\:\:subscribe\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Actions/DiscussionParticipantsAction.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model&Kirschbaum\\Commentions\\Contracts\\Commentable\:\:unsubscribe\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Actions/DiscussionParticipantsAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Imports/IntroEventRecordImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$needs_review\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/IntroEventRecordImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Filament/Imports/IntroEventRecordImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$taxon_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/IntroEventRecordImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$adria_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cmed_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$emed_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$establishment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$first_introduction_year\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$import_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$proposals\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$review_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$source_sheet\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$taxon_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$wmed_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Imports/PanMediterraneanImporter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:autocomplete\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Pages/Auth/Register.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:assignRole\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Pages/Auth/Register.php
+
+		-
+			message: '#^Method App\\Filament\\Pages\\BackupManager\:\:getBackupFiles\(\) should return array\<int, string\> but returns array\<string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/Pages/BackupManager.php
+
+		-
+			message: '#^Method App\\Filament\\Pages\\BackupManager\:\:runPgRestore\(\) should return Illuminate\\Process\\ProcessResult but returns Illuminate\\Contracts\\Process\\ProcessResult\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/Pages/BackupManager.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid value \(\\Filament\\Resources\\Resource\)\: Unexpected token "\\n \*", expected ''\<'' at offset 129 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/IntroEventRecordResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:onlyTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\IntroEventRecords\\Schemas\\IntroEventRecordForm\:\:occurrenceSchema\(\) has invalid return type Filament\\Forms\\Components\\Component\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\IntroEventRecords\\Schemas\\IntroEventRecordForm\:\:occurrenceSchema\(\) should return array\<Filament\\Forms\\Components\\Component\> but returns array\<int, Filament\\Forms\\Components\\Repeater\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php
+
+		-
+			message: '#^Parameter \#1 \$components of method Filament\\Schemas\\Components\\Component\:\:schema\(\) expects array\<Illuminate\\Contracts\\Support\\Htmlable\|string\>\|Closure\|Filament\\Schemas\\Schema, array\<Filament\\Forms\\Components\\Component\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\IntroEventRecord\:\:\$earliest\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\IntroEventRecord\:\:\$latest\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>earliest" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid value \(\\Filament\\Resources\\Resource\)\: Unexpected token "\\n \*", expected ''\<'' at offset 104 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Filament/Resources/Literatures/LiteratureResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Pages/EditLiterature.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:citationCount\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Pages/EditLiterature.php
+
+		-
+			message: '#^Parameter \#1 \$record of static method App\\Filament\\Actions\\DiscussionParticipantsAction\:\:summary\(\) expects Illuminate\\Database\\Eloquent\\Model&Kirschbaum\\Commentions\\Contracts\\Commentable, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Literatures/Pages/EditLiterature.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Literature\:\:\$unanswered_comments_count\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Tables\\Contracts\\HasTable\:\:replaceMountedAction\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:withUnansweredComments\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:primaryRoleLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:primaryRoleName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Method Filament\\Notifications\\Notification\:\:persistent\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:each\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: mixed, Closure\(App\\Models\\Literature\)\: void given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:filter\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: bool\)\|null, Closure\(App\\Models\\Literature\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Parameter \#1 \$key of method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:partition\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: bool\)\|Illuminate\\Database\\Eloquent\\Model\|string, Closure\(App\\Models\\Literature\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Literatures/Tables/LiteraturesTable.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Filament/Resources/NisSuggestions/Actions/NisSuggestionActions.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid value \(\\Filament\\Resources\\Resource\)\: Unexpected token "\\n \*", expected ''\<'' at offset 117 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Filament/Resources/NisSuggestions/NisSuggestionResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:onlyTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/NisSuggestions/Pages/ListNisSuggestions.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Infolists\\Components\\ImageEntry\:\:imageGallery\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/NisSuggestions/Schemas/NisSuggestionInfolist.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/NisSuggestions/Tables/NisSuggestionsTable.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Filament/Resources/NisSuggestions/Tables/NisSuggestionsTable.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Filament/Resources/Occurrences/Actions/OccurrenceActions.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$kingdom\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceForm.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceForm.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>scientificname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceForm.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Infolists\\Components\\ImageEntry\:\:imageGallery\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceInfolist.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceLocationsMapEntry.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Filament/Resources/Occurrences/Tables/OccurrencesTable.php
+
+		-
+			message: '#^Cannot access property \$catalogue_status on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/Taxons/Pages/EditTaxon.php
+
+		-
+			message: '#^Parameter \#1 \$record of static method App\\Filament\\Actions\\DiscussionParticipantsAction\:\:summary\(\) expects Illuminate\\Database\\Eloquent\\Model&Kirschbaum\\Commentions\\Contracts\\Commentable, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Taxons/Pages/EditTaxon.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:onlyTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/Taxons/Pages/ListTaxons.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:withoutTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: app/Filament/Resources/Taxons/Pages/ListTaxons.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method DefStudio\\SearchableInput\\Forms\\Components\\SearchableInput\:\:onItemSelected\(\) expects \(Closure\(DefStudio\\SearchableInput\\DTO\\SearchResult\)\: void\)\|null, Closure\(DefStudio\\SearchableInput\\DTO\\SearchResult, Filament\\Schemas\\Components\\Utilities\\Set, App\\Services\\TaxonService\)\: void given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Taxons/Schemas/TaxonForm.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/Taxons/Tables/TaxonTable.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Filament/Resources/Taxons/Tables/TaxonTable.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:filter\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: bool\)\|null, Closure\(App\\Models\\Taxon\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Taxons/Tables/TaxonTable.php
+
+		-
+			message: '#^Parameter \#1 \$taxon of method App\\Services\\TaxonService\:\:moveToAcceptedName\(\) expects App\\Models\\Taxon, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/Taxons/Tables/TaxonTable.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Enums\\Catalogue_Status\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Resources/Taxons/Tables/TaxonTable.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Resources/Taxons/Tables/TaxonTable.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid value \(\\Filament\\Resources\\Resource\)\: Unexpected token "\\n \*", expected ''\<'' at offset 111 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Filament/Resources/Taxons/TaxonResource.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid value \(\\Filament\\Resources\\Resource\)\: Unexpected token "\\n \*", expected ''\<'' at offset 100 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: app/Filament/Resources/Users/UserResource.php
+
+		-
+			message: '#^Offset ''brackish''\|''freshwater''\|''marine''\|''terrestrial'' on array\{marine\: ''\#078da0'', freshwater\: ''\#10B981'', brackish\: ''\#F59E0B'', terrestrial\: ''\#5f7783''\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Filament/Widgets/CatalogueEnvironmentChart.php
+
+		-
+			message: '#^Comparison operation "\>" between Carbon\\CarbonInterface and int results in an error\.$#'
+			identifier: greater.invalid
+			count: 1
+			path: app/Filament/Widgets/ImportProgressWidget.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Taxon\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Widgets/PhylumByKingdomChart.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>total" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Widgets/PhylumByKingdomChart.php
+
+		-
+			message: '#^Parameter \#1 \$failedRow of method App\\Http\\Controllers\\DownloadNotImportedRows\:\:toValues\(\) expects Filament\\Actions\\Imports\\Models\\FailedImportRow, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/DownloadNotImportedRows.php
+
+		-
+			message: '#^Unsafe access to private constant App\\Jobs\\FetchEasinIdsJob\:\:PROGRESS_CACHE_PREFIX through static\:\:\.$#'
+			identifier: staticClassAccess.privateConstant
+			count: 3
+			path: app/Jobs/FetchEasinIdsJob.php
+
+		-
+			message: '#^Unsafe access to private constant App\\Jobs\\FetchEasinIdsJob\:\:SECONDS_PER_TAXON through static\:\:\.$#'
+			identifier: staticClassAccess.privateConstant
+			count: 1
+			path: app/Jobs/FetchEasinIdsJob.php
+
+		-
+			message: '#^Unsafe access to private constant App\\Jobs\\FetchTaxaFromWormsJob\:\:PROGRESS_CACHE_PREFIX through static\:\:\.$#'
+			identifier: staticClassAccess.privateConstant
+			count: 3
+			path: app/Jobs/FetchTaxaFromWormsJob.php
+
+		-
+			message: '#^Unsafe access to private constant App\\Jobs\\FetchTaxaFromWormsJob\:\:SECONDS_PER_TAXON through static\:\:\.$#'
+			identifier: staticClassAccess.privateConstant
+			count: 1
+			path: app/Jobs/FetchTaxaFromWormsJob.php
+
+		-
+			message: '#^Match expression does not handle remaining values\: \(class\-string\<Spatie\\Permission\\Events\\PermissionAttachedEvent\>&literal\-string\)\|\(class\-string\<Spatie\\Permission\\Events\\PermissionDetachedEvent\>&literal\-string\)\|\(class\-string\<Spatie\\Permission\\Events\\RoleAttachedEvent\>&literal\-string\)\|\(class\-string\<Spatie\\Permission\\Events\\RoleDetachedEvent\>&literal\-string\)$#'
+			identifier: match.unhandled
+			count: 1
+			path: app/Listeners/LogRoleChangeListener.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter\>\:\:reject\(\) expects bool\|\(callable\(Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter, int\)\: bool\)\|Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter, Closure\(App\\Models\\User\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Listeners/NotifyLiteratureDiscussion.php
+
+		-
+			message: '#^Parameter \#1 \$key of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter\>\:\:unique\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter, int\)\: mixed\)\|string\|null, Closure\(App\\Models\\User\)\: int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Listeners/NotifyLiteratureDiscussion.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Listeners/NotifyTaxonDiscussion.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Listeners/NotifyTaxonDiscussion.php
+
+		-
+			message: '#^Access to an undefined property App\\Livewire\\CreateSuggestion\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/CreateSuggestion.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Livewire/CreateSuggestion.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:primaryRoleLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Livewire/MyReferences.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Occurrence\:\:\$approved\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySpeciesReports.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Occurrence\:\:\$pending\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySpeciesReports.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Occurrence\:\:\$rejected\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySpeciesReports.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Occurrence\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySpeciesReports.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\NisSuggestion\:\:\$approved\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySuggestions.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\NisSuggestion\:\:\$pending\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySuggestions.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\NisSuggestion\:\:\$rejected\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySuggestions.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\NisSuggestion\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/MySuggestions.php
+
+		-
+			message: '#^Access to an undefined property App\\Livewire\\PublicProfile\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Livewire/PublicProfile.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\NisSuggestion\:\:\$location_point\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/NisSuggestion.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Occurrence\:\:\$location_point\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Occurrence.php
+
+		-
+			message: '#^Offset string on string\|null on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Models/StagingIntroEvent.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\StagingIntroEventFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Models/StagingIntroEvent.php
+
+		-
+			message: '#^Type Database\\Factories\\StagingIntroEventFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\StagingIntroEventFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: app/Models/StagingIntroEvent.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:withTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Taxon.php
+
+		-
+			message: '#^PHPDoc tag @return with type array\<string, string\> is incompatible with native type Spatie\\Activitylog\\Support\\LogOptions\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\|Kirschbaum\\Commentions\\Contracts\\Commenter\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/LiteratureCommented.php
+
+		-
+			message: '#^Method App\\Notifications\\LiteratureCommented\:\:literature\(\) should return App\\Models\\Literature but returns Kirschbaum\\Commentions\\Contracts\\Commentable\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Notifications/LiteratureCommented.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/LiteratureCommented.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Notifications/NewLiteratureReferenceNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Notifications/NewLiteratureReferenceNotification.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/OccurrenceApproved.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/OccurrenceRejected.php
+
+		-
+			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:delete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockAuditPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:forceDelete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockAuditPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:replicate\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockAuditPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:restore\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockAuditPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:update\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockAuditPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:view\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockAuditPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:delete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:forceDelete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:replicate\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:restore\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:update\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockPolicy.php
+
+		-
+			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:view\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Policies/ResourceLockPolicy.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Panel\:\:dragAndScroll\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Providers/Filament/MamiasPanelProvider.php
+
+		-
+			message: '#^Parameter \#1 \$disable of method lockscreen\\FilamentLockscreen\\Lockscreen\:\:disableDisplayName\(\) expects bool\|Closure, ''name'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/Filament/MamiasPanelProvider.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$adria_establishment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$adria_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$adria_nis_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$cmed_establishment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$cmed_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$cmed_nis_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$emed_establishment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$emed_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$emed_nis_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$wmed_establishment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$wmed_first_arrival_year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$wmed_nis_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Method App\\Services\\PromoteStagedIntroEvent\:\:promote\(\) should return App\\Models\\IntroEventRecord but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Property App\\Models\\IntroEventRecord\:\:\$establishment_status \(App\\Enums\\EstablishmentStatus\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Property App\\Models\\IntroEventRecord\:\:\$nis_status \(App\\Enums\\NisStatus\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Property App\\Models\\StagingIntroEvent\:\:\$promoted_at \(string\|null\) does not accept Illuminate\\Support\\Carbon\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/PromoteStagedIntroEvent.php
+
+		-
+			message: '#^Call to an undefined method PhpOffice\\PhpSpreadsheet\\Writer\\IWriter\:\:setDelimiter\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/SpreadsheetToCsvConverter.php
+
+		-
+			message: '#^Call to an undefined method PhpOffice\\PhpSpreadsheet\\Writer\\IWriter\:\:setSheetIndex\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/SpreadsheetToCsvConverter.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-list\<string\|null\> and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/SubregionHeaderDisambiguator.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/TaxonNormalizer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:withTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: app/Services/TaxonService.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Services/TaxonService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Enums\\Worms_Status\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/TaxonService.php
+
+		-
+			message: '#^Method App\\Services\\WormsService\:\:wormsRequest\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Services/WormsService.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: bootstrap/app.php
+
+		-
+			message: '#^Class Spatie\\LaravelData\\Data not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/settings.php

@@ -38,6 +38,37 @@ jobs:
 
       - run: vendor/bin/pint --test
 
+  analyse:
+    name: Larastan (static analysis)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: apps/vendor
+          key: composer-${{ hashFiles('apps/composer.lock') }}
+
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      # Larastan boots the app; the cookie-consent provider hits the cache in
+      # boot(), so keep it off Redis (there is no Redis service in this job).
+      # phpstan-baseline.neon holds the pre-existing errors: shrink it, never grow it.
+      - run: composer analyse -- --no-progress
+        env:
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+
   test:
     name: Pest (mamias_test on PostGIS)
     runs-on: ubuntu-latest

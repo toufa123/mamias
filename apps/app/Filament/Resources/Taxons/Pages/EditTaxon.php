@@ -4,7 +4,9 @@ namespace App\Filament\Resources\Taxons\Pages;
 
 use App\Enums\Catalogue_Status;
 use App\Enums\Worms_Status;
+use App\Filament\Actions\DiscussionParticipantsAction;
 use App\Filament\Resources\Taxons\Pages\Concerns\AppliesTaxonMatch;
+use App\Filament\Resources\Taxons\Tables\TaxonTable;
 use App\Filament\Resources\Taxons\TaxonResource;
 use App\Models\Taxon;
 use App\Services\GbifService;
@@ -15,6 +17,8 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\HtmlString;
+use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
 use Livewire\Attributes\On;
 
 /**
@@ -156,6 +160,16 @@ class EditTaxon extends EditRecord
                         ->success()
                         ->send();
                 }),
+            TaxonTable::getMoveToAcceptedNameAction(),
+            TaxonTable::getKeepCurrentNameAction(),
+            TaxonTable::getSendForReviewAction(),
+            TaxonTable::getUndoMoveAction(),
+            CommentsAction::make()
+                ->label('Discussion')
+                ->color('gray')
+                ->modalDescription(fn (): HtmlString => DiscussionParticipantsAction::summary($this->getRecord()))
+                ->disableSidebar(),
+            DiscussionParticipantsAction::make(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

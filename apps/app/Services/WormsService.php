@@ -166,6 +166,55 @@ class WormsService
     }
 
     /**
+     * Distribution records WoRMS holds for a taxon. Cached for a month: they
+     * change slowly and the name check reads them for every proposal.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getDistributions(int $aphiaId): array
+    {
+        return Cache::remember("worms_v2.distributions.{$aphiaId}", now()->addDays(30), fn (): array => $this->processResponse(
+            $this->wormsRequest("{$this->baseUrl}/AphiaDistributionsByAphiaID/{$aphiaId}"),
+        ));
+    }
+
+    /**
+     * The "original description" source WoRMS lists for a taxon, or null.
+     *
+     * A 204 (no sources) is cached like a hit; a failed call is not, so it is
+     * retried on the next run.
+     *
+     * @return array{reference: string, doi: string|null, url: string|null}|null
+     */
+    public function getOriginalDescription(int $aphiaId): ?array
+    {
+        $sources = Cache::get($key = "worms_v2.sources.{$aphiaId}");
+
+        if ($sources === null) {
+            $response = $this->wormsRequest("{$this->baseUrl}/AphiaSourcesByAphiaID/{$aphiaId}");
+
+            if (! $response || $response->failed()) {
+                return null;
+            }
+
+            $sources = $this->processResponse($response);
+            Cache::put($key, $sources, now()->addDays(30));
+        }
+
+        $source = collect($sources)->firstWhere('use', 'original description');
+
+        if (blank($source['reference'] ?? null)) {
+            return null;
+        }
+
+        return [
+            'reference' => trim(strip_tags($source['reference'])),
+            'doi' => $source['doi'] ?? null,
+            'url' => $source['url'] ?? $source['link'] ?? null,
+        ];
+    }
+
+    /**
      * Process WoRMS API response.
      */
     private function processResponse(?Response $response): array
@@ -229,8 +278,6 @@ class WormsService
      */
     public function populateTaxonFromWorms(Taxon $taxon, array $data): void
     {
-        $data = $this->handleUnacceptedName($taxon, $data);
-
         $this->mapTaxonFields($taxon, $data);
 
         // Fetch synonyms automatically without persisting yet.
@@ -284,35 +331,24 @@ class WormsService
     }
 
     /**
-     * Handles unaccepted names by redirecting to the accepted record if available.
+     * The accepted name WoRMS gives for a record that is not itself the
+     * accepted one, or null. WoRMS states the reason in `status` (superseded
+     * combination, misspelling, synonym…), so the test is the valid AphiaID,
+     * not a literal "unaccepted". A difference of subgenus or nominal
+     * subspecies alone does not count: MAMIAS catalogues binomials.
+     *
+     * @param  array<string, mixed>  $record  A WoRMS AphiaRecord.
      */
-    private function handleUnacceptedName(Taxon $taxon, array $data): array
+    public function acceptedNameFor(array $record): ?string
     {
-        if (($data['status'] ?? '') !== 'unaccepted' || empty($data['valid_AphiaID'])) {
-            return $data;
+        $validId = $record['valid_AphiaID'] ?? null;
+        $validName = $record['valid_name'] ?? null;
+
+        if (! $validId || $validId === ($record['AphiaID'] ?? null) || blank($validName)) {
+            return null;
         }
 
-        $acceptedData = $this->getRecordByAphiaID((int) $data['valid_AphiaID']);
-        if (! $acceptedData) {
-            return $data;
-        }
-
-        // Store the current unaccepted name as 'original name provided' in notes
-        $originalName = $data['scientificname'] ?? '';
-        if ($data['authority'] ?? null) {
-            $originalName .= " {$data['authority']}";
-        }
-
-        $note = "Original name provided: {$originalName} (unaccepted)";
-        if ($taxon->notes) {
-            if (! str_contains($taxon->notes, $note)) {
-                $taxon->notes .= "\n".$note;
-            }
-        } else {
-            $taxon->notes = $note;
-        }
-
-        return $acceptedData;
+        return TaxonNormalizer::isSameBinomial($record['scientificname'] ?? '', $validName) ? null : $validName;
     }
 
     /**
@@ -341,7 +377,20 @@ class WormsService
         $taxon->url = $data['url'] ?? $taxon->url;
 
         if (isset($data['status'])) {
-            $taxon->catalogue_status = Catalogue_Status::fromWormsData($data['status']);
+            $taxon->catalogue_status = Catalogue_Status::fromWormsData($data['status'], $data);
+        }
+
+        // A name the team decided not to follow is not proposed again; a
+        // different one later is.
+        $proposed = $this->acceptedNameFor($data);
+        $proposed = $proposed === $taxon->dismissed_accepted_name ? null : $proposed;
+
+        $taxon->proposed_accepted_name = $proposed;
+        $taxon->proposed_accepted_aphia_id = $proposed ? ($data['valid_AphiaID'] ?? null) : null;
+
+        if (! $proposed) {
+            $taxon->name_change_confidence = null;
+            $taxon->name_change_reasons = null;
         }
 
         $taxon->environments = Environment::fromWormsData($data);

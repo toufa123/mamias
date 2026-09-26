@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
-use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
-use App\Filament\Widgets\ActivityChartWidget;
 use App\Filament\Widgets\CatalogueEnvironmentChart;
 use App\Filament\Widgets\CatalogueStatsWidget;
-use App\Filament\Widgets\PendingOccurrencesTableWidget;
-use App\Filament\Widgets\PendingOccurrencesWidget;
+use App\Filament\Widgets\FirstRecordCountriesChart;
+use App\Filament\Widgets\IntroductionPathwaysChart;
+use App\Filament\Widgets\IntroductionsByDecadeChart;
+use App\Filament\Widgets\IntroEventStatsWidget;
 use App\Filament\Widgets\PhylumByKingdomChart;
 use App\Filament\Widgets\SpeciesByKingdomChart;
 use App\Filament\Widgets\SpeciesByPhylumChart;
+use App\Filament\Widgets\SubregionEstablishmentChart;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Livewire;
@@ -22,13 +23,13 @@ use Filament\Schemas\Schema;
 
 /**
  * Custom dashboard page that organises catalogue stats, charts, and
- * pending occurrences into two tabs: "MAMIAS Catalogue" and "MAMIAS Data".
+ * introduction-event widgets into two tabs: "MAMIAS Catalogue" and "MAMIAS Data".
  */
 class Dashboard extends BaseDashboard
 {
     /**
      * Builds the dashboard content with two tabs containing catalogue
-     * stats, charts, and pending occurrences widgets.
+     * stats and charts.
      *
      * @param  Schema  $schema  The Filament schema instance.
      */
@@ -61,18 +62,15 @@ class Dashboard extends BaseDashboard
                             ->schema([
                                 Grid::make(4)->schema(
                                     $this->getWidgetsSchemaComponents([
-                                        PendingOccurrencesWidget::class,
+                                        IntroEventStatsWidget::class,
                                     ])
                                 ),
-                                Livewire::make(PendingOccurrencesTableWidget::class),
-                            ]),
-                        Tab::make('Activity log')
-                            ->icon('heroicon-o-clock')
-                            ->schema([
+                                Livewire::make(IntroductionsByDecadeChart::class),
                                 Grid::make(2)->schema([
-                                    Livewire::make(ActivityChartWidget::class),
-                                    Livewire::make(LatestActivityWidget::class),
+                                    Livewire::make(SubregionEstablishmentChart::class),
+                                    Livewire::make(IntroductionPathwaysChart::class),
                                 ]),
+                                Livewire::make(FirstRecordCountriesChart::class),
                             ]),
                     ]),
             ]);

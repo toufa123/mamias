@@ -169,17 +169,17 @@ HTML;
 <section class="py-20">
     <div class="kt-container-fixed">
         <h2 class="text-3xl font-bold text-center text-gray-900 mb-14">Partners & Contributors</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid md:grid-cols-3 gap-6">
             <div class="rounded-xl border border-gray-200 p-8 text-center bg-white transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                 <div class="size-16 rounded-full bg-[#018d9a]/10 flex items-center justify-center mx-auto mb-4">
-                    <i class="ki-filled ki-building text-2xl text-[#018d9a]"></i>
+                    <i class="ki-filled ki-bank text-2xl text-[#018d9a]"></i>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900">SPA/RAC</h3>
                 <p class="text-sm text-gray-500 mt-1">Regional Activity Centre for Specially Protected Areas</p>
             </div>
             <div class="rounded-xl border border-gray-200 p-8 text-center bg-white transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
                 <div class="size-16 rounded-full bg-[#018d9a]/10 flex items-center justify-center mx-auto mb-4">
-                    <i class="ki-filled ki-globe text-2xl text-[#018d9a]"></i>
+                    <i class="ki-filled ki-map text-2xl text-[#018d9a]"></i>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900">UNEP/MAP</h3>
                 <p class="text-sm text-gray-500 mt-1">United Nations Environment Programme / Mediterranean Action Plan</p>

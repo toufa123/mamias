@@ -214,3 +214,47 @@
     background-color: var(--primary-300, #5eeaff) !important;
     opacity: 0.6;
 }
+
+/* ── Literature guide (resources/docs/literatures.md) ──────────
+   The table of contents is a sunken panel on the hairline; each section
+   starts on the soft rule, and its "#" permalink appears on hover only. */
+.mamias-guide .table-of-contents {
+    @apply border border-gray-200 bg-gray-50 py-3 pe-4;
+}
+
+.mamias-guide h2 {
+    @apply border-t border-gray-100 pt-6 text-xl font-medium;
+    scroll-margin-top: 5rem;
+}
+
+/* Teal text on white is teal-600 (rule 3); two weights, no bold links. */
+.mamias-guide a {
+    color: var(--primary-600);
+    font-weight: 500;
+}
+
+.mamias-guide .heading-permalink {
+    @apply ms-2 text-gray-400 no-underline opacity-0;
+}
+
+.mamias-guide h2:hover .heading-permalink,
+.mamias-guide .heading-permalink:focus-visible {
+    @apply opacity-100;
+}
+
+/* Screenshots sit on the hairline, full width of the text column. */
+.mamias-guide img {
+    @apply my-4 w-full border border-gray-200;
+    height: auto;
+}
+
+/* Two weights: sub-steps are not bolder than their section. fi-prose draws
+   literal backticks around inline code; the mono face already marks it. */
+.mamias-guide h3 {
+    @apply font-medium;
+}
+
+.mamias-guide code::before,
+.mamias-guide code::after {
+    content: none;
+}

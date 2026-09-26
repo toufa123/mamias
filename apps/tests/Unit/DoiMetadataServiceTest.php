@@ -88,3 +88,52 @@ it('handles missing publication date', function () {
     expect($result['short_ref'])->toBe('Lonely, n.d.')
         ->and($result['full_ref'])->toContain('(n.d.)');
 });
+
+it('normalizes pasted DOI forms to the bare lowercase DOI', function (?string $input, ?string $expected) {
+    expect(DoiMetadataService::normalize($input))->toBe($expected);
+})->with([
+    ['10.1234/ABC', '10.1234/abc'],
+    ['https://doi.org/10.1234/abc', '10.1234/abc'],
+    ['http://dx.doi.org/10.1234/abc', '10.1234/abc'],
+    ['  doi: 10.1234/abc ', '10.1234/abc'],
+    ['', null],
+    [null, null],
+]);
+
+it('falls back to the issued date and flags retractions', function () {
+    Http::fake([
+        'api.crossref.org/*' => Http::response([
+            'message' => [
+                'author' => [['family' => 'Solo']],
+                'title' => ['Retracted Study'],
+                'issued' => ['date-parts' => [[2019, 5]]],
+                'type' => 'journal-article',
+                'updated-by' => [['type' => 'retraction', 'DOI' => '10.1234/notice']],
+            ],
+        ], 200),
+    ]);
+
+    $result = (new DoiMetadataService)->fetchFromCrossref('https://doi.org/10.1234/RETRACTED');
+
+    expect($result['year'])->toBe(2019)
+        ->and($result['short_ref'])->toBe('Solo, 2019')
+        ->and($result['is_retracted'])->toBeTrue();
+
+    Http::assertSent(fn ($request) => str_ends_with($request->url(), '/works/10.1234%2Fretracted'));
+});
+
+it('suggests a DOI only when the found title appears in the reference', function () {
+    Http::fake([
+        'api.crossref.org/works?*' => Http::sequence()
+            ->push(['message' => ['items' => [['DOI' => '10.5555/MATCH', 'title' => ['Lessepsian migration of fishes into the Mediterranean']]]]])
+            ->push(['message' => ['items' => [['DOI' => '10.5555/other', 'title' => ['An unrelated paper about coral reef ecology']]]]])
+            ->push(['message' => ['items' => [['DOI' => '10.5555/possessive', 'title' => ['Lessepsian migration of fishes into the Mediterranean’s basin']]]]]),
+    ]);
+
+    $service = new DoiMetadataService;
+    $reference = 'Golani, D. (1998). Lessepsian Migration of Fishes into the Mediterranean basin. Bull. Yale 103.';
+
+    expect($service->searchDoi($reference))->toBe('10.5555/match')
+        ->and($service->searchDoi($reference))->toBeNull()
+        ->and($service->searchDoi($reference))->toBe('10.5555/possessive');
+});

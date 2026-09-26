@@ -56,6 +56,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Kirschbaum\Commentions\Contracts\Commenter;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -135,6 +136,32 @@ class User extends Authenticatable implements Commenter, FilamentUser, HasAvatar
     }
 
     /**
+     * The user's highest role, for labelling someone with more than one.
+     */
+    public function primaryRoleName(): ?string
+    {
+        $roles = $this->getRoleNames();
+
+        return collect(['super_admin', 'scientist', 'user'])
+            ->first(fn (string $role): bool => $roles->contains($role))
+            ?? $roles->first();
+    }
+
+    /**
+     * Readable label of the user's highest role ("Scientist", "Administrator").
+     */
+    public function primaryRoleLabel(): ?string
+    {
+        return match ($role = $this->primaryRoleName()) {
+            'super_admin' => 'Administrator',
+            'scientist' => 'Scientist',
+            'user' => 'Public user',
+            null => null,
+            default => Str::headline($role),
+        };
+    }
+
+    /**
      * Get the user's avatar URL for Filament admin panel.
      *
      * Generates a dynamic avatar using UI Avatars API based on the user's full name.
@@ -172,12 +199,8 @@ class User extends Authenticatable implements Commenter, FilamentUser, HasAvatar
     /**
      * Determine if user can access the Filament admin panel.
      *
-     * Currently allows all authenticated users to access the admin panel.
-     *
-     * Uncomment and customize the admin panel check section to restrict access:
-     *   - Require specific email domain (e.g., @yourdomain.com)
-     *   - Require verified email address (MustVerifyEmail contract)
-     *   - Implement role-based access control
+     * Only super_admin and scientist get in, in every environment. Keep this in
+     * step with RedirectIfNotPanelUser and FilamentAuthRedirect.
      *
      * This implements the FilamentUser contract required by Filament.
      *
@@ -188,10 +211,6 @@ class User extends Authenticatable implements Commenter, FilamentUser, HasAvatar
     {
         if ($panel->getId() !== 'mamias') {
             return false;
-        }
-
-        if (app()->environment('local')) {
-            return true;
         }
 
         return $this->hasAnyRole(['super_admin', 'scientist']);

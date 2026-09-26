@@ -40,7 +40,7 @@ class UserFactory extends Factory
             'has_whatsapp' => true,
             'country' => 'TN',
             'taxonomic_area' => ['Chordata'],
-            'subregions' => ['wmed'],
+            'subregions' => ['WMED'],
             'countries' => ['TN'],
             'bio' => fake()->sentence(),
             'remember_token' => Str::random(10),

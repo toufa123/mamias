@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Laravel + Filament v5 (use v5 API: check class namespaces like `Filament\Resources\Pages\Concerns\Tab`, avoid deprecated methods like `TextColumn::italic`, `Action::columns`, `minCharactersToSearch`)
 - Livewire (do NOT use HtmlString for JS formatters - it cannot be serialized)
-- Tailwind + daisyUI with Vite (ensure `@vite` directive is in layouts; be cautious with Vite 8/Rolldown + daisyUI purging)
+- Tailwind CSS 4 with Vite 8 (ensure `@vite` directive is in layouts). daisyUI is not installed — don't reintroduce it without approval (it stalled on Vite 8/Rolldown before)
 - Docker-based dev environment (Pint, psql, and other tools run inside containers)
 
 ## Working Style
@@ -62,6 +62,8 @@ Run Artisan/tests inside the running container:
 docker compose --profile dev exec app php artisan test --compact
 docker compose --profile dev exec app php artisan test --compact --filter=TestName
 docker compose --profile dev exec app vendor/bin/pint --dirty --format agent
+docker compose --profile dev exec app npm run format    # Prettier (Blade + Tailwind class order) over resources/
+docker compose --profile dev exec app composer analyse   # Larastan level 5; new errors fail, phpstan-baseline.neon holds the old ones
 ```
 
 From inside `apps/` (if running locally without Docker):
@@ -112,7 +114,7 @@ Reuse this static configurator pattern for all new resources.
 
 **Domain model:** `User` is the primary model. Profile fields (taxonomic area, subregions, countries, phone, bio) live directly on `users` table — no separate profile model. `name` is derived from `first_name`/`last_name` in `booted()`; do not duplicate that sync.
 
-**Access control:** Spatie roles (`super_admin`, `panel_user`, `user`). Login redirects super_admin/panel_user to panel, others to `/`. Registration auto-assigns `user` role.
+**Access control:** Spatie roles (`super_admin`, `scientist`, `user`). Login redirects super_admin/scientist to panel, others to `/`. Registration auto-assigns `user` role.
 
 **External services (cached):**
 - `WormsService` — WoRMS taxonomy API, cache prefix `worms_v2.*`

@@ -86,6 +86,11 @@ final class SubregionHeaderDisambiguator
      */
     public function rewriteStream($stream)
     {
+        // From the start: Filament's CSV encoding check reads up to 20 lines
+        // of the upload and leaves the pointer there, which used to empty a
+        // short CSV (no header) and cut the first rows off a long one.
+        rewind($stream);
+
         $buffer = fopen('php://temp', 'r+');
         stream_copy_to_stream($stream, $buffer);
         fclose($stream);

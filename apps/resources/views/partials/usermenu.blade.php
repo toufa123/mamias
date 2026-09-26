@@ -1,7 +1,9 @@
 <div class="flex items-center justify-end gap-2 lg:w-[400px] lg:gap-3.5">
     <div class="me-0.5 flex items-center gap-2">
         @php($role = Auth::user()?->getRoleNames()->first() ?? 'User')
-        @php($isSpecial = Auth::user()?->hasAnyRole(['super_admin', 'panel_user']) ?? false)
+        @php($isSpecial = Auth::user()?->hasAnyRole(['super_admin', 'scientist']) ?? false)
+        {{-- Install / Full screen, right beside the avatar or the Login link. --}}
+        @include('partials.app-controls')
         @if (Route::has('filament.mamias.auth.login'))
             @auth
                 <div
@@ -16,7 +18,7 @@
                         <div class="kt-avatar-image border-primary size-9 overflow-hidden rounded-full border-2">
                             <img
                                 class="size-full object-cover"
-                                src="{{ Auth::user()?->getFilamentAvatarUrl() ?? asset('img/avatar.png') }}"
+                                src="{{ Auth::user()?->getFilamentAvatarUrl() ?? asset('images/avatar.png') }}"
                                 alt="{{ Auth::user()?->getFilamentName() ?? 'Avatar' }}"
                             />
                         </div>
@@ -29,7 +31,7 @@
                                     <div class="kt-avatar-image border-primary size-14 overflow-hidden rounded-full border-2">
                                         <img
                                             class="size-full object-cover"
-                                            src="{{ Auth::user()?->getFilamentAvatarUrl() ?? asset('img/avatar.png') }}"
+                                            src="{{ Auth::user()?->getFilamentAvatarUrl() ?? asset('images/avatar.png') }}"
                                             alt="{{ Auth::user()?->getFilamentName() ?? 'Avatar' }}"
                                         />
                                     </div>

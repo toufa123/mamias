@@ -38,6 +38,7 @@
     "filament/spatie-laravel-settings-plugin": "^5.8",
     "gsferro/filament-stat-plus-easy": "^1.0",
     "harvirsidhu/filament-action-overflow": "^1.1",
+    "heyosseus/vacuum": "^1.2",
     "hryagstn/laravel-scalpel": "^1.9",
     "icetalker/filament-stepper": "^2.0",
     "jeffersongoncalves/filament-action-export": "^3.7",
@@ -73,7 +74,8 @@
     "wildside/userstamps": "^4.0",
     "yousefaman/filament-modal-repeater": "^1.1",
     "zoltantorok/filament-drag-and-scroll": "^1.0",
-    "zvizvi/filament-notifications-tabs": "0.0.3"
+    "zvizvi/filament-notifications-tabs": "0.0.3",
+    "zvizvi/user-fields": "^0.0.7"
   } ,
   "require-dev": {
     "albertoarena/laravel-truss": "*",
@@ -81,8 +83,10 @@
     "baspa/filament-canary": "^1.2",
     "fakerphp/faker": "^1.23",
     "fruitcake/laravel-debugbar": "^4.2",
+    "heyosseus/difflock": "^1.0",
     "laboiteacode/filament-dependency-graph": "^1.1",
     "laramint/laravel-brain": "*",
+    "larastan/larastan": "^3.12",
     "laravel/boost": "*",
     "laravel/doctor": "^0.1.0",
     "laravel/pail": "^1.2.5",
@@ -92,8 +96,7 @@
     "pestphp/pest": "^5.0",
     "pestphp/pest-plugin-laravel": "^5.0",
     "pestphp/pest-plugin-livewire": "^5.0",
-    "php-school/cli-menu": "^4.4",
-    "squizlabs/php_codesniffer": "^4.0"
+    "php-school/cli-menu": "^4.4"
   } ,
   "autoload": {
     "psr-4": {
@@ -123,6 +126,9 @@
     "test": [
       "@php artisan config:clear --ansi" ,
       "@php artisan test"
+    ] ,
+    "analyse": [
+      "phpstan analyse --memory-limit=2G"
     ] ,
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump" ,

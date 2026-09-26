@@ -21,7 +21,6 @@ beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('mamias'));
 
     Role::findOrCreate('super_admin', 'web');
-    Role::findOrCreate('panel_user', 'web');
     Role::findOrCreate('user', 'web');
 
     $this->user = User::factory()->create();

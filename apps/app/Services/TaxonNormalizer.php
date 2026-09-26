@@ -156,6 +156,27 @@ class TaxonNormalizer
     }
 
     /**
+     * Whether two names are the same binomial, ignoring a subgenus in
+     * parentheses and a nominal subspecies ("Paracartia grani grani").
+     * MAMIAS catalogues binomials, so WoRMS's "Penaeus (Marsupenaeus)
+     * japonicus" is not a different name from "Penaeus japonicus".
+     */
+    public static function isSameBinomial(string $name, string $other): bool
+    {
+        $binomial = function (string $value): string {
+            $words = preg_split('/\s+/', trim(preg_replace('/\([^)]*\)/', ' ', $value)));
+
+            if (count($words) === 3 && strcasecmp($words[1], $words[2]) === 0) {
+                array_pop($words);
+            }
+
+            return mb_strtolower(implode(' ', $words));
+        };
+
+        return $binomial($name) === $binomial($other);
+    }
+
+    /**
      * Apply the catalogue's nomenclature rules to a bare name.
      *
      * The same rules normalize() applies to a Taxon, without touching a model,

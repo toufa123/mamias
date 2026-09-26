@@ -55,7 +55,7 @@ it('calls GreenAPI when configured and returns true', function () {
     expect($service->isRegistered('+21650123456'))->toBeTrue();
 
     Http::assertSent(function ($request) {
-        return $request->url() === 'https://api.green-api.com/waInstanceTest123/checkWhatsapp/abc'
+        return $request->url() === 'https://api.green-api.com/waInstancetest123/checkWhatsapp/abc'
             && $request['phoneNumber'] === '21650123456';
     });
 });

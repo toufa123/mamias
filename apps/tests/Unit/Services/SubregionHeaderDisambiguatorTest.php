@@ -72,3 +72,16 @@ it('preserves a semicolon delimiter', function (): void {
         ."Ablennes hians;cas;2018\n"
     );
 });
+
+it('reads the whole upload even when something already read part of it', function (): void {
+    // Filament's CSV encoding check reads the first lines and leaves the
+    // pointer there; a short file then arrived with no header at all.
+    $stream = fopen('php://temp', 'r+');
+    fwrite($stream, "Scientific Name\nMagallana gigas\nPterois miles\n");
+    rewind($stream);
+    fgets($stream);
+    fgets($stream);
+
+    expect(stream_get_contents($this->disambiguator->rewriteStream($stream)))
+        ->toBe("\"Scientific Name\"\nMagallana gigas\nPterois miles\n");
+});

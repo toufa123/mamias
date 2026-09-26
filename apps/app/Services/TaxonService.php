@@ -3,10 +3,18 @@
 namespace App\Services;
 
 use App\Enums\Catalogue_Status;
+use App\Filament\Resources\Taxons\TaxonResource;
+use App\Models\IntroEventRecord;
+use App\Models\NisSuggestion;
 use App\Models\Taxon;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+use Spatie\Activitylog\Models\Activity;
 
 /**
  * High-level service for managing Taxon records and synchronising with WoRMS.
@@ -21,6 +29,7 @@ class TaxonService
         private readonly TaxonNormalizer $taxonNormalizer,
         private readonly TaxonStateHelper $stateHelper,
         private readonly EasinService $easinService,
+        private readonly AcceptedNameConfidence $nameConfidence,
     ) {}
 
     /**
@@ -59,6 +68,10 @@ class TaxonService
 
             $this->wormsService->populateTaxonFromWorms($taxon, $wormsData);
 
+            if ($taxon->proposed_accepted_name && ($taxon->isDirty('proposed_accepted_name') || $taxon->name_change_confidence === null)) {
+                $this->assessProposedName($taxon, $wormsData);
+            }
+
             if (! $taxon->Easin_id) {
                 $taxon->Easin_id = $this->easinService->fetchEasinId($taxon->scientificname);
             }
@@ -86,6 +99,286 @@ class TaxonService
             'missing_aphia_id' => $missingAphiaId,
             'not_found' => $notFound,
         ];
+    }
+
+    /**
+     * Scores how sure we can be that the accepted name WoRMS proposes for this
+     * taxon is the same species (see AcceptedNameConfidence). Clears the score
+     * when nothing is proposed.
+     *
+     * @param  array<string, mixed>  $record  The WoRMS record of the catalogued name.
+     */
+    final public function assessProposedName(Taxon $taxon, array $record): void
+    {
+        $accepted = $taxon->proposed_accepted_aphia_id
+            ? $this->wormsService->getRecordByAphiaID($taxon->proposed_accepted_aphia_id)
+            : null;
+
+        if (! $accepted) {
+            $taxon->name_change_confidence = null;
+            $taxon->name_change_reasons = null;
+
+            return;
+        }
+
+        $assessment = $this->nameConfidence->assess($record, $accepted);
+
+        $taxon->name_change_confidence = $assessment['score'];
+        $taxon->name_change_reasons = $assessment['reasons'];
+    }
+
+    /**
+     * Moves a taxon to the accepted name WoRMS gives for it, and returns the
+     * taxon that now holds its records.
+     *
+     * Each introduction event first keeps the name it was recorded under
+     * (`verbatim_name`). Then, if the accepted taxon is already catalogued,
+     * events, suggestions and the original description move to it and this
+     * taxon is trashed; otherwise this taxon is renamed in place, so every
+     * link follows. The move is logged on the resulting taxon with the score,
+     * the reasons, the curator's note and what undoLastMove() needs.
+     *
+     * @throws RuntimeException When WoRMS gives no other accepted name.
+     */
+    final public function moveToAcceptedName(Taxon $taxon, ?string $note = null): Taxon
+    {
+        $record = $taxon->aphia_id ? $this->wormsService->getRecordByAphiaID($taxon->aphia_id) : null;
+        $accepted = $record && $this->wormsService->acceptedNameFor($record) !== null
+            ? $this->wormsService->getRecordByAphiaID((int) $record['valid_AphiaID'])
+            : null;
+
+        if (! $accepted) {
+            throw new RuntimeException("WoRMS gives no other accepted name for {$taxon->scientificname}.");
+        }
+
+        $oldName = $taxon->scientificname;
+        $reason = $taxon->worms_status?->getLabel() ?? 'not accepted';
+
+        return DB::transaction(function () use ($taxon, $accepted, $oldName, $reason, $note): Taxon {
+            $decision = [
+                'from' => $oldName,
+                'confidence' => $taxon->name_change_confidence,
+                'reasons' => $taxon->name_change_reasons,
+                'note' => filled($note) ? trim($note) : null,
+                'reviewer_id' => $taxon->name_reviewer_id,
+            ];
+
+            $taxon->introEvents()->withTrashed()->whereNull('verbatim_name')->update(['verbatim_name' => $oldName]);
+
+            $target = $this->catalogued($accepted, exceptId: $taxon->getKey());
+
+            if (! $target) {
+                $before = Arr::only($taxon->getAttributes(), self::MOVE_SNAPSHOT);
+
+                $this->wormsService->populateTaxonFromWorms($taxon, $accepted);
+                $taxon->notes = $this->appendNote($taxon->notes, "Previously catalogued as {$oldName} ({$reason}).");
+                $taxon->name_reviewer_id = null;
+                $taxon->save();
+
+                $this->logMove($taxon, $decision + ['to' => $taxon->scientificname, 'undo' => ['renamed' => $before]]);
+
+                return $taxon;
+            }
+
+            $wasTrashed = $target->trashed();
+
+            if ($wasTrashed) {
+                $target->restore();
+            }
+
+            $undo = [
+                'merged_taxon_id' => $taxon->getKey(),
+                'target_was_trashed' => $wasTrashed,
+                'target_before' => Arr::only($target->getAttributes(), ['original_description_id', 'notes']),
+                'merged_before' => Arr::only($taxon->getAttributes(), ['notes', 'name_reviewer_id']),
+                'intro_event_ids' => $taxon->introEvents()->withTrashed()->pluck('id')->all(),
+                'nis_suggestion_ids' => $taxon->nisSuggestions()->withTrashed()->pluck('id')->all(),
+            ];
+
+            $taxon->introEvents()->withTrashed()->update(['taxon_id' => $target->getKey()]);
+            $taxon->nisSuggestions()->withTrashed()->update(['taxon_id' => $target->getKey()]);
+            $target->original_description_id ??= $taxon->original_description_id;
+            $target->notes = $this->appendNote($target->notes, "Records of {$oldName} ({$reason}) merged in.");
+            $target->save();
+
+            $taxon->notes = $this->appendNote($taxon->notes, "Merged into {$target->scientificname}.");
+            $taxon->name_reviewer_id = null;
+            $taxon->save();
+            $taxon->delete();
+
+            $this->logMove($target, $decision + ['to' => $target->scientificname, 'undo' => $undo]);
+
+            return $target;
+        });
+    }
+
+    /**
+     * The catalogued taxon that already holds the proposed accepted name, if
+     * any: moving would then merge into it. Read from the stored proposal,
+     * so it needs no WoRMS call and can run while a dialog renders.
+     */
+    final public function acceptedInCatalogue(Taxon $taxon): ?Taxon
+    {
+        if (! $taxon->proposed_accepted_name) {
+            return null;
+        }
+
+        return ($taxon->proposed_accepted_aphia_id
+            ? Taxon::where('aphia_id', $taxon->proposed_accepted_aphia_id)->whereKeyNot($taxon->getKey())->first()
+            : null) ?? Taxon::findDuplicateOf($taxon->proposed_accepted_name, $taxon->getKey());
+    }
+
+    /**
+     * The team keeps the catalogued name rather than follow WoRMS. The
+     * dismissed name is remembered so the monthly check does not propose it
+     * again; a different accepted name later is proposed as usual.
+     */
+    final public function keepCurrentName(Taxon $taxon, string $reason): void
+    {
+        $dismissed = $taxon->proposed_accepted_name;
+
+        $taxon->fill([
+            'dismissed_accepted_name' => $dismissed,
+            'dismissed_reason' => trim($reason),
+            'proposed_accepted_name' => null,
+            'proposed_accepted_aphia_id' => null,
+            'name_change_confidence' => null,
+            'name_change_reasons' => null,
+            'name_reviewer_id' => null,
+        ])->save();
+
+        activity()
+            ->performedOn($taxon)
+            ->withProperties(['dismissed' => $dismissed, 'reason' => trim($reason)])
+            ->log('kept current name');
+    }
+
+    /**
+     * Asks a scientist to decide on the proposed name: assigns them, opens
+     * the discussion with the question, and notifies them in the panel.
+     */
+    final public function sendForNameReview(Taxon $taxon, User $reviewer, User $sender, ?string $message = null): void
+    {
+        $taxon->update(['name_reviewer_id' => $reviewer->getKey()]);
+
+        $question = "Should {$taxon->scientificname} move to {$taxon->proposed_accepted_name}? "
+            ."Confidence {$taxon->name_change_confidence}% (".AcceptedNameConfidence::band($taxon->name_change_confidence)['label'].').'
+            .(filled($message) ? "\n\n".trim($message) : '');
+
+        $taxon->comment(e($question), $sender);
+
+        // After the question, so it reaches them once (below), not also as a
+        // new message; later replies then reach them as a participant.
+        $taxon->subscribe($reviewer);
+
+        Notification::make()
+            ->title('Name review requested')
+            ->body("{$sender->name} asks you to decide whether {$taxon->scientificname} should move to {$taxon->proposed_accepted_name}.")
+            ->icon('tabler-arrow-right-circle')
+            ->actions([
+                Action::make('open')
+                    ->label('Open the species')
+                    ->url(TaxonResource::getUrl('edit', ['record' => $taxon])),
+            ])
+            ->sendToDatabase($reviewer);
+    }
+
+    /**
+     * The latest move logged on this taxon that has not been undone, or null.
+     */
+    final public function lastUndoableMove(Taxon $taxon): ?Activity
+    {
+        $latest = Activity::query()
+            ->where('subject_type', $taxon->getMorphClass())
+            ->where('subject_id', $taxon->getKey())
+            ->whereIn('description', ['moved to accepted name', 'move undone'])
+            ->latest('id')
+            ->first();
+
+        return $latest?->description === 'moved to accepted name' ? $latest : null;
+    }
+
+    /**
+     * Reverses the latest move on this taxon: restores the previous name and
+     * classification, or, after a merge, sends the records back to the
+     * restored taxon they came from. Events keep their recorded name.
+     * Returns the taxon holding the records afterwards.
+     *
+     * @throws RuntimeException When there is nothing to undo, or the old name is taken.
+     */
+    final public function undoLastMove(Taxon $taxon): Taxon
+    {
+        $move = $this->lastUndoableMove($taxon) ?? throw new RuntimeException("No move to undo on {$taxon->scientificname}.");
+        $undo = $move->properties['undo'];
+
+        return DB::transaction(function () use ($taxon, $move, $undo): Taxon {
+            if (isset($undo['renamed'])) {
+                $before = $undo['renamed'];
+
+                if (Taxon::findDuplicateOf($before['scientificname'], $taxon->getKey())) {
+                    throw new RuntimeException("{$before['scientificname']} is now used by another species; undo it by hand.");
+                }
+
+                // Raw values, as snapshotted: going through the casts would
+                // encode the JSON columns a second time.
+                $taxon->setRawAttributes(array_merge($taxon->getAttributes(), $before));
+                $taxon->save();
+                $result = $taxon;
+            } else {
+                $merged = Taxon::withTrashed()->findOrFail($undo['merged_taxon_id']);
+                $merged->restore();
+                $merged->forceFill($undo['merged_before'])->save();
+
+                IntroEventRecord::withTrashed()->whereKey($undo['intro_event_ids'])->update(['taxon_id' => $merged->getKey()]);
+                NisSuggestion::withTrashed()->whereKey($undo['nis_suggestion_ids'])->update(['taxon_id' => $merged->getKey()]);
+
+                $taxon->forceFill($undo['target_before'])->save();
+
+                if ($undo['target_was_trashed']) {
+                    $taxon->delete();
+                }
+
+                $result = $merged;
+            }
+
+            activity()->performedOn($taxon)->withProperties(['undoes' => $move->getKey()])->log('move undone');
+
+            return $result;
+        });
+    }
+
+    /**
+     * Fields a rename overwrites, kept so it can be undone.
+     */
+    private const MOVE_SNAPSHOT = [
+        'aphia_id', 'url', 'scientificname', 'authority', 'worms_status', 'catalogue_status', 'unacceptreason',
+        'rank', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'lsid', 'is_extinct', 'environments',
+        'synonyms_data', 'fetched_at', 'notes', 'proposed_accepted_name', 'proposed_accepted_aphia_id',
+        'name_change_confidence', 'name_change_reasons', 'name_reviewer_id',
+    ];
+
+    /**
+     * The catalogued taxon for this WoRMS record, other than $exceptId, trashed or not.
+     *
+     * @param  array<string, mixed>  $record
+     */
+    private function catalogued(array $record, int $exceptId): ?Taxon
+    {
+        return Taxon::withTrashed()->where('aphia_id', $record['AphiaID'])->whereKeyNot($exceptId)->first()
+            ?? Taxon::findDuplicateOf($record['scientificname'], $exceptId);
+    }
+
+    /**
+     * @param  array<string, mixed>  $properties
+     */
+    private function logMove(Taxon $taxon, array $properties): void
+    {
+        activity()->performedOn($taxon)->withProperties($properties)->log('moved to accepted name');
+    }
+
+    private function appendNote(?string $notes, string $line): string
+    {
+        return filled($notes) ? rtrim($notes)."\n".$line : $line;
     }
 
     /**
@@ -369,7 +662,7 @@ class TaxonService
             $data['Easin_id'] = $this->easinService->fetchEasinId($data['scientificname'] ?? $scientificName);
         }
 
-        if (($data['status'] ?? null) === 'unaccepted' && ! empty($data['valid_AphiaID'])) {
+        if ($this->wormsService->acceptedNameFor($data) !== null) {
             $proposedAcceptedName = $this->getProposedAcceptedNameFromUnaccepted($data, $useAcceptedNameFromNotes) ?? $proposedAcceptedName;
         }
 

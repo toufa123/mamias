@@ -19,7 +19,6 @@ beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('mamias'));
 
     Role::findOrCreate('super_admin', 'web');
-    Role::findOrCreate('panel_user', 'web');
     Role::findOrCreate('user', 'web');
 
     $this->user = User::factory()->create();
@@ -133,4 +132,48 @@ it('shows pdf field in create mode', function () {
     livewire(MyReferences::class)
         ->mountAction('create')
         ->assertFormFieldVisible('file_path');
+});
+
+it('offers no metadata fetch in the read-only view', function () {
+    $reference = Literature::factory()->create(['created_by' => $this->user->id, 'doi' => '10.1000/view-only']);
+
+    livewire(MyReferences::class)
+        ->loadTable()
+        ->mountTableAction('view', $reference)
+        ->assertMountedActionModalSeeHtml('Open DOI in new tab')
+        ->assertMountedActionModalDontSeeHtml('Fetch metadata');
+});
+
+it('opens the contributor guide in a popup', function () {
+    livewire(MyReferences::class)
+        ->mountAction('guide')
+        ->assertMountedActionModalSee('Step 1: the DOI')
+        ->assertMountedActionModalSeeHtml('/images/docs/references/02-doi-step.png');
+});
+
+it('flags discussion comments until the other side replies', function () {
+    $moderator = User::factory()->create();
+    $reference = Literature::factory()->create(['created_by' => $this->user->id]);
+
+    $unansweredBy = fn (bool $fromSubmitter) => Literature::withUnansweredComments($fromSubmitter)->pluck('id')->all();
+
+    $this->travel(1)->minutes();
+    $reference->comment('Question from the submitter', $this->user);
+    expect($unansweredBy(true))->toBe([$reference->id])
+        ->and($unansweredBy(false))->toBe([]);
+
+    $this->travel(1)->minutes();
+    $reference->comment('Answer from a moderator', $moderator);
+    expect($unansweredBy(true))->toBe([])
+        ->and($unansweredBy(false))->toBe([$reference->id]);
+});
+
+it('filters my references by year', function () {
+    $recent = Literature::factory()->create(['year' => 2014, 'created_by' => $this->user->id]);
+    $older = Literature::factory()->create(['year' => 2009, 'created_by' => $this->user->id]);
+
+    livewire(MyReferences::class)
+        ->filterTable('year', 2014)
+        ->assertCanSeeTableRecords([$recent])
+        ->assertCanNotSeeTableRecords([$older]);
 });

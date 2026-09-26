@@ -67,6 +67,21 @@
    `border-primary` utility and every Keenthemes component that reads the
    token now renders brand teal instead of blue. */
 html:root {
+    /* ── Type ──────────────────────────────────────────────────
+       The @theme block above sets these, but it compiles into @layer theme,
+       and Keenthemes' styles.css (loaded after this file) declares Tailwind's
+       default --font-sans in the same layer — so the site rendered in the
+       system font while Geist downloaded unused. Unlayered html:root wins
+       over any layered declaration regardless of order. */
+    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'Geist Mono', ui-monospace, 'Courier New', monospace;
+    /* Filament's own names for the same families. The panel sets them from
+       ->font()/->monoFont(); on public pages they were undefined, which made
+       `.fi-font-mono` invalid and fall back to the inherited sans. */
+    --font-family: 'Geist';
+    --mono-font-family: 'Geist Mono';
+
     /* ── Square corners ────────────────────────────────────────
        Keenthemes derives every rounded-* utility from --radius. Zeroing the
        scale here removes every curve on the public site in one place; the
@@ -729,4 +744,469 @@ html:root.dark .kt-badge-outline.kt-badge-primary {
     .mamias-carousel-track {
         transition: none;
     }
+}
+
+/* ── Cookie consent = the design system ────────────────────────
+   devrabiul/laravel-cookie-consent links its own style.css *after* this
+   file, so every rule here is prefixed `html:root` to win on specificity
+   rather than on order. Markup is the package view, untouched. Zero radius,
+   hairline structure, the one overlay shadow, and one filled button per
+   view: Accept on the banner, Save in the preferences modal. Every colour
+   is a theme token, so dark mode needs only the hover and link teals. */
+html:root {
+    --cc-overlay-shadow: 0 12px 28px rgb(14 38 48 / 0.12);
+    --cc-teal-text: var(--mamias-teal-600);
+    --cc-fill-hover: var(--mamias-teal-700);
+}
+
+html:root.dark {
+    --cc-teal-text: var(--mamias-teal-300);
+    --cc-fill-hover: var(--mamias-teal-300);
+}
+
+html:root.cookie-disable-interaction body::before {
+    background: rgb(14 38 48 / 0.6);
+}
+
+html:root .cookie-consent-root,
+html:root .cookie-preferences-modal-content {
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: var(--card);
+    box-shadow: var(--cc-overlay-shadow);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+}
+
+html:root .cookie-consent-content-container {
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+html:root .cookie-consent-content-title,
+html:root .cookie-preferences-modal-header h2 {
+    padding: 0 0 0.5rem;
+    color: var(--foreground);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.75rem;
+}
+
+html:root .cookie-consent-content-description,
+html:root .cookie-preferences-modal p {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+    opacity: 1;
+}
+
+/* Buttons: medium, hairline by default. */
+html:root .cookie-consent-button-container button,
+html:root .cookie-preferences-modal-footer button {
+    height: 2.5rem;
+    padding: 0 1rem;
+    border: 1px solid var(--input);
+    border-radius: 0;
+    background: var(--card);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+html:root .cookie-consent-button-container button:hover,
+html:root .cookie-preferences-modal-footer button:hover {
+    border-color: var(--mamias-teal-500);
+    background: var(--muted);
+}
+
+/* The one fill per view. */
+html:root .cookie-consent-button-container .cookie-consent-accept,
+html:root .cookie-preferences-modal-footer .cookie-preferences-save {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+html:root .cookie-consent-button-container .cookie-consent-accept:hover,
+html:root .cookie-preferences-modal-footer .cookie-preferences-save:hover {
+    border-color: var(--cc-fill-hover);
+    background: var(--cc-fill-hover);
+}
+
+/* Preferences is a secondary route, not an action: teal text, no frame. */
+html:root .cookie-consent-button-container button.preferences-btn {
+    border-color: transparent;
+    background: transparent;
+    color: var(--cc-teal-text);
+}
+
+html:root .cookie-consent-button-container button.preferences-btn:hover {
+    border-color: transparent;
+    background: transparent;
+    text-decoration: underline;
+}
+
+html:root .cookie-consent-root button:focus-visible,
+html:root .cookie-preferences-modal button:focus-visible,
+html:root .cookie-consent-link:focus-visible,
+html:root .cookie-toggle input:focus-visible + .cookie-toggle-slider {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+html:root .cookie-consent-links-container {
+    padding: 0.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--muted);
+}
+
+html:root .cookie-consent-links-container a {
+    color: var(--cc-teal-text);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+}
+
+/* Preferences modal. */
+html:root .cookie-preferences-modal-overlay {
+    background-color: rgb(14 38 48 / 0.6);
+}
+
+html:root .cookie-preferences-modal-header,
+html:root .cookie-preferences-modal-footer {
+    padding: 1rem 1.5rem;
+    border-color: var(--border);
+}
+
+html:root .cookie-preferences-modal-header h2 {
+    padding: 0;
+}
+
+html:root .cookie-preferences-modal-close {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted-foreground);
+}
+
+html:root .cookie-preferences-modal-close:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+html:root .cookie-preferences-modal-body {
+    padding: 1.5rem;
+    scrollbar-color: var(--input) transparent;
+}
+
+html:root .cookie-category {
+    border-bottom-color: var(--border);
+}
+
+html:root .cookie-category-header h3 {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.375rem;
+}
+
+/* Toggle: square track and knob — a switch is not genuinely round. */
+html:root .cookie-toggle-slider,
+html:root .cookie-toggle-slider::before {
+    border-radius: 0;
+    box-shadow: none;
+}
+
+html:root .cookie-toggle-slider {
+    border: 1px solid var(--input);
+    background-color: var(--muted);
+}
+
+html:root .cookie-toggle-slider::before {
+    bottom: 1px;
+    left: 1px;
+    background-color: var(--muted-foreground);
+}
+
+html:root .cookie-toggle input:checked + .cookie-toggle-slider {
+    border-color: var(--primary);
+    background-color: var(--primary);
+}
+
+html:root .cookie-toggle input:checked + .cookie-toggle-slider::before {
+    background-color: var(--primary-foreground);
+}
+
+/* Locked (essential): the disabled treatment — readable, plainly inert. */
+html:root .cookie-toggle input:disabled + .cookie-toggle-slider {
+    border-color: var(--border);
+    background-color: var(--secondary);
+}
+
+html:root .cookie-toggle input:disabled + .cookie-toggle-slider::before {
+    background-color: var(--muted-foreground);
+}
+
+/* ── Legal pages (Layup: legal-notice, terms-of-use, cookies-policy) ──
+   The page content is plain semantic HTML inside .mamias-legal, so editors
+   write <h2>/<p>/<ul>/<table> in the page builder and this block gives it
+   the design system: mono eyebrow, section-heading type, hairline section
+   rules, the zero radius, teal links (teal-600 light, teal-300 dark). The
+   page title is the site header's; the content carries no <h1>. */
+/* Full width: the Layup container already supplies the site's side gutter. */
+.mamias-legal {
+    padding: 1.5rem 0 6rem;
+    color: var(--foreground);
+    font-size: 1rem;
+    line-height: 1.625rem;
+}
+
+/* Eyebrow: Geist Mono 11/16, .16em, uppercase, gray-500. */
+.mamias-legal-updated {
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    line-height: 1rem;
+    text-transform: uppercase;
+}
+
+.mamias-legal h2 {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.75rem;
+}
+
+/* The first section sits under the eyebrow, not under another section. */
+.mamias-legal-updated + h2 {
+    margin-top: 1.5rem;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.mamias-legal p,
+.mamias-legal ul,
+.mamias-legal table {
+    margin-top: 1rem;
+}
+
+.mamias-legal ul {
+    padding-left: 1.5rem;
+    list-style: disc;
+}
+
+.mamias-legal li + li {
+    margin-top: 0.5rem;
+}
+
+.mamias-legal a {
+    color: var(--mamias-teal-600);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+html:root.dark .mamias-legal a {
+    color: var(--mamias-teal-300);
+}
+
+.mamias-legal code {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+}
+
+.mamias-legal table {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+}
+
+.mamias-legal th {
+    background: var(--muted);
+    font-weight: 500;
+    text-align: left;
+}
+
+/* Tables: gray-200 frame, gray-50 header, gray-100 between rows. */
+.mamias-legal th,
+.mamias-legal td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: top;
+}
+
+.mamias-legal td {
+    border-top: 1px solid var(--secondary);
+}
+
+.mamias-legal thead th {
+    border-bottom: 1px solid var(--border);
+}
+
+.mamias-legal-note {
+    padding: 0.75rem 1rem;
+    border-left: 2px solid var(--mamias-teal-500);
+    background: var(--muted);
+}
+
+/* Tables scroll inside their own box on a phone rather than widening the page. */
+@media (width < 40rem) {
+    .mamias-legal table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* ── Filament components on public pages ────────────────────────
+   Public Livewire pages (My references, My suggestions…) render Filament
+   tables, buttons and modals, but only the panel loads theme.css, so they
+   arrived with Filament's defaults: a lifted table, an unfilled header, and
+   a primary button whose fill Filament picks server-side (teal-400 under ink
+   in light, teal-600 under white in dark — rule 3 backwards). These are the
+   theme.css rules restated on the site's tokens, so dark mode comes free.
+   Prefixed `html:root` to outrank Filament's stylesheet, as the cookie
+   banner above does. */
+html:root {
+    --fi-overlay-shadow: 0 12px 28px rgb(14 38 48 / 0.12);
+    --fi-primary-hover: var(--mamias-teal-700);
+}
+
+html:root.dark {
+    --fi-primary-hover: var(--mamias-teal-300);
+}
+
+/* Rule 2: structure is the hairline. Tables and sections sit on the page. */
+html:root .fi-ta-ctn,
+html:root .fi-section,
+html:root .fi-sc-section {
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    box-shadow: none;
+}
+
+/* Overlays get the one shadow. */
+html:root .fi-modal-window,
+html:root .fi-dropdown-panel {
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    box-shadow: var(--fi-overlay-shadow);
+}
+
+html:root .fi-ta-table > thead > tr > th {
+    border-bottom: 1px solid var(--border);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+}
+
+html:root .fi-ta-cell {
+    border-bottom: 1px solid var(--secondary);
+}
+
+html:root .fi-ta-table > tbody > tr:last-child .fi-ta-cell {
+    border-bottom: none;
+}
+
+/* Rule 3: the fill is --primary (teal-600 light, teal-400 dark) under
+   --primary-foreground (white light, ink dark). */
+html:root .fi-btn {
+    box-shadow: none;
+}
+
+html:root .fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link) {
+    border: 1px solid var(--primary);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+html:root .fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link):hover {
+    border-color: var(--fi-primary-hover);
+    background-color: var(--fi-primary-hover);
+}
+
+html:root .fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link) > .fi-icon {
+    color: var(--primary-foreground);
+}
+
+/* Rule 4: everything that is not the one fill is a hairline or an outline.
+   Filament draws the grey button's edge as a ring (a box-shadow), which the
+   reset above removes, so it is restated as a border on the control edge. */
+html:root .fi-btn:not(.fi-color):not(.fi-outlined):not(.fi-link),
+html:root .fi-btn.fi-color-gray:not(.fi-outlined):not(.fi-link) {
+    border: 1px solid var(--input);
+}
+
+html:root .fi-btn.fi-outlined {
+    border: 1px solid var(--foreground);
+    background-color: transparent;
+    color: var(--foreground);
+}
+
+html:root .fi-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--background),
+        0 0 0 4px var(--ring);
+}
+
+/* ── Guide popup (resources/docs/references.md) ─────────────────
+   Same treatment as the panel's .mamias-guide in theme.css, on the site
+   tokens: the contents are a sunken panel on the hairline, each section
+   starts on the soft rule, screenshots sit on the hairline, links are the
+   teal that carries text in each theme. */
+html:root .mamias-guide .table-of-contents {
+    border: 1px solid var(--border);
+    background-color: var(--muted);
+    padding-block: 0.75rem;
+    padding-inline-end: 1rem;
+}
+
+html:root .mamias-guide h2 {
+    border-top: 1px solid var(--secondary);
+    padding-top: 1.5rem;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 500;
+    scroll-margin-top: 5rem;
+}
+
+html:root .mamias-guide a {
+    color: var(--cc-teal-text);
+    font-weight: 500;
+}
+
+html:root .mamias-guide .heading-permalink {
+    margin-inline-start: 0.5rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    opacity: 0;
+}
+
+html:root .mamias-guide h2:hover .heading-permalink,
+html:root .mamias-guide .heading-permalink:focus-visible {
+    opacity: 1;
+}
+
+html:root .mamias-guide img {
+    width: 100%;
+    height: auto;
+    margin-block: 1rem;
+    border: 1px solid var(--border);
+}
+
+/* Two weights (DESIGN-SYSTEM.md, Type): sub-steps are not bolder than their
+   section. fi-prose draws literal backticks around inline code; the mono
+   face already marks it. */
+html:root .mamias-guide h3 {
+    font-weight: 500;
+}
+
+html:root .mamias-guide code::before,
+html:root .mamias-guide code::after {
+    content: none;
 }

@@ -19,7 +19,6 @@ beforeEach(function () {
     Role::findOrCreate('super_admin', 'web');
     Role::findOrCreate('scientist', 'web');
     Role::findOrCreate('admin', 'web');
-    Role::findOrCreate('panel_user', 'web');
     Role::findOrCreate('user', 'web');
 });
 
@@ -119,20 +118,6 @@ it('redirects an admin to the public home page after login', function () {
     $this->assertAuthenticatedAs($user);
 });
 
-it('redirects a panel user to the public home page after login', function () {
-    $user = User::factory()->create();
-    $user->assignRole('panel_user');
-
-    Livewire::test(LoginPage::class)
-        ->set('data.email', $user->email)
-        ->set('data.password', 'password')
-        ->call('authenticate')
-        ->assertHasNoErrors()
-        ->assertRedirect(url('/'));
-
-    $this->assertAuthenticatedAs($user);
-});
-
 it('resolves the public home page as the post-login target for a regular user', function () {
     $user = User::factory()->create();
     $user->assignRole('user');
@@ -152,15 +137,6 @@ it('forbids a regular user from accessing the mamias panel', function () {
 it('forbids an admin from accessing the mamias panel', function () {
     $user = User::factory()->create(['email_verified_at' => now()]);
     $user->assignRole('admin');
-
-    $this->actingAs($user)
-        ->get(filament()->getPanel('mamias')->getUrl())
-        ->assertForbidden();
-});
-
-it('forbids a panel user from accessing the mamias panel', function () {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $user->assignRole('panel_user');
 
     $this->actingAs($user)
         ->get(filament()->getPanel('mamias')->getUrl())

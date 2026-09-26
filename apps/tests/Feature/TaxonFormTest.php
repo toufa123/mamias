@@ -20,7 +20,6 @@ beforeEach(function () {
 
     Role::findOrCreate('super_admin', 'web');
     Role::findOrCreate('scientist', 'web');
-    Role::findOrCreate('panel_user', 'web');
     Role::findOrCreate('user', 'web');
 
     $this->user = User::factory()->create();
@@ -36,11 +35,11 @@ it('renders the taxon list page for an authorized user', function () {
 
 it('shows taxon records in the table', function () {
     $taxons = Taxon::factory()->count(3)->create();
-    livewire(ListTaxons::class)->assertCanSeeTableRecords($taxons);
+    livewire(ListTaxons::class)->loadTable()->assertCanSeeTableRecords($taxons);
 });
 
 it('shows no records when the table is empty', function () {
-    livewire(ListTaxons::class)->assertCountTableRecords(0);
+    livewire(ListTaxons::class)->loadTable()->assertCountTableRecords(0);
 });
 
 // Create form

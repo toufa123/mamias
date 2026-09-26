@@ -3,16 +3,22 @@
 namespace App\Models;
 
 use App\Enums\Catalogue_Status;
+use App\Enums\LiteratureStatus;
 use App\Enums\Worms_Status;
 use App\Services\TaxonNormalizer;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Kirschbaum\Commentions\Contracts\Commentable;
+use Kirschbaum\Commentions\HasComments;
 use Mattiverse\Userstamps\Traits\Userstamps;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -52,9 +58,17 @@ use WeakMap;
  * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $updated_by
+ * @property int|null $original_description_id
+ * @property int|null $proposed_accepted_aphia_id
+ * @property int|null $name_change_confidence How sure the proposed accepted name is this species, 0–99
+ * @property array<int, array{label: string, points: int}>|null $name_change_reasons
+ * @property string|null $dismissed_accepted_name A WoRMS accepted name the team chose not to follow
+ * @property string|null $dismissed_reason
+ * @property int|null $name_reviewer_id Scientist asked to decide on the proposed name
  *
  * @method HasMany introEvents()
  * @method HasMany nisSuggestions()
+ * @method BelongsTo originalDescription()
  */
 #[Fillable([
     'aphia_id',
@@ -73,17 +87,24 @@ use WeakMap;
     'genus',
     'lsid',
     'proposed_accepted_name',
+    'proposed_accepted_aphia_id',
+    'name_change_confidence',
+    'name_change_reasons',
+    'dismissed_accepted_name',
+    'dismissed_reason',
+    'name_reviewer_id',
     'is_extinct',
     'environments',
     'synonyms_data',
     'Easin_id',
     'fetched_at',
     'notes',
+    'original_description_id',
 ])]
 #[Table('taxas')]
-class Taxon extends Model
+class Taxon extends Model implements Commentable
 {
-    use HasFactory, LogsActivity, SoftDeletes, Userstamps;
+    use HasComments, HasFactory, LogsActivity, SoftDeletes, Userstamps;
 
     /**
      * Introduction events counted when a delete starts, read back once it has
@@ -172,6 +193,7 @@ class Taxon extends Model
             'worms_status' => Worms_Status::class,
             'catalogue_status' => Catalogue_Status::class,
             'synonyms_data' => 'array',
+            'name_change_reasons' => 'array',
             'fetched_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -187,6 +209,14 @@ class Taxon extends Model
             ->logExcept(['synonyms_data', 'fetched_at']);
     }
 
+    /**
+     * The scientist asked to decide whether to follow the proposed accepted name.
+     */
+    public function nameReviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'name_reviewer_id');
+    }
+
     public function introEvents(): HasMany
     {
         return $this->hasMany(IntroEventRecord::class);
@@ -195,5 +225,51 @@ class Taxon extends Model
     public function nisSuggestions(): HasMany
     {
         return $this->hasMany(NisSuggestion::class);
+    }
+
+    /**
+     * The publication that first described this taxon, as listed by WoRMS.
+     */
+    public function originalDescription(): BelongsTo
+    {
+        return $this->belongsTo(Literature::class, 'original_description_id');
+    }
+
+    /**
+     * Every approved reference for this taxon, oldest first, each with its role.
+     * A reference reached several ways keeps the first role in this order:
+     * original description, first record (intro events), supporting (approved
+     * suggestions).
+     *
+     * Memoized per instance: the references tab reads it several times per render.
+     *
+     * @return Collection<int, array{literature: Literature, role: string}>
+     */
+    public function literatureReferences(): Collection
+    {
+        return once(fn () => $this->queryLiteratureReferences());
+    }
+
+    /**
+     * @return Collection<int, array{literature: Literature, role: string}>
+     */
+    private function queryLiteratureReferences(): Collection
+    {
+        $groups = [
+            'Original description' => Literature::query()->whereKey($this->original_description_id),
+            'First record' => Literature::query()->whereHas('introEvents', fn ($q) => $q->where('taxon_id', $this->id)),
+            'Supporting' => Literature::query()->whereHas('nisSuggestions', fn ($q) => $q
+                ->where('taxon_id', $this->id)
+                ->where('status', LiteratureStatus::APPROVED)),
+        ];
+
+        return collect($groups)
+            ->flatMap(fn (Builder $query, string $role) => $query
+                ->where('status', LiteratureStatus::APPROVED)
+                ->get()
+                ->map(fn (Literature $literature) => ['literature' => $literature, 'role' => $role]))
+            ->unique(fn (array $row) => $row['literature']->id)
+            ->sortBy(fn (array $row) => $row['literature']->year ?? PHP_INT_MAX)
+            ->values();
     }
 }

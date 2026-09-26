@@ -16,6 +16,33 @@ class EasinService
     private string $baseUrl = 'https://easin.jrc.ec.europa.eu/apixg/catxg/term';
 
     /**
+     * The EASIN catalogue entry whose name is exactly $scientificName, or
+     * null. The term search is loose (it also returns other species that
+     * contain the term), hence the exact match.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findSpecies(string $scientificName): ?array
+    {
+        return Cache::remember('easin_species_'.md5($scientificName), 86400, function () use ($scientificName): ?array {
+            try {
+                $response = Http::timeout(10)->get("{$this->baseUrl}/".rawurlencode($scientificName));
+            } catch (\Exception) {
+                return null;
+            }
+
+            $entries = $response->successful() ? $response->json() : null;
+
+            // No match is an object ({"Empty": ...}), not an empty list.
+            if (! is_array($entries) || ! array_is_list($entries)) {
+                return null;
+            }
+
+            return collect($entries)->first(fn ($entry): bool => strcasecmp($entry['Name'] ?? '', $scientificName) === 0);
+        });
+    }
+
+    /**
      * Fetch the EASIN ID for a scientific name from the JRC EASIN API.
      */
     public function fetchEasinId(string $scientificName): ?string
@@ -27,9 +54,20 @@ class EasinService
         $term = rawurlencode($scientificName);
         $url = "{$this->baseUrl}/{$term}";
 
-        return Cache::remember('easin_id_'.md5($scientificName), 86400, function () use ($url) {
+        return Cache::remember('easin_id_'.md5($scientificName), 86400, function () use ($url, $scientificName) {
             try {
                 $response = Http::timeout(10)->get($url);
+
+                // Http::get() does not throw on a 4xx/5xx, so a failed response
+                // never reaches the catch below; log it here instead.
+                if ($response->failed()) {
+                    logger()->error('EASIN API request failed', [
+                        'scientific_name' => $scientificName,
+                        'status' => $response->status(),
+                    ]);
+
+                    return null;
+                }
 
                 if ($response->successful()) {
                     $data = $response->json();

@@ -4,9 +4,14 @@ namespace App\Filament\Resources\Taxons\Tables;
 
 use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
+use App\Filament\Actions\DiscussionParticipantsAction;
+use App\Filament\Resources\Taxons\TaxonResource;
 use App\Jobs\FetchEasinIdsJob;
 use App\Jobs\FetchTaxaFromWormsJob;
 use App\Models\Taxon;
+use App\Models\User;
+use App\Services\AcceptedNameConfidence;
+use App\Services\TaxonService;
 use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -21,7 +26,10 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select as FormSelect;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Components\Html;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
@@ -34,6 +42,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
+use Kirschbaum\Commentions\Filament\Actions\CommentsTableAction;
+use RuntimeException;
+use Zvizvi\UserFields\Components\UserColumn;
+use Zvizvi\UserFields\Components\UserSelect;
 
 /**
  * Configures the Filament table for taxon records.
@@ -58,7 +70,7 @@ class TaxonTable
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query
                 ->withoutGlobalScopes([SoftDeletingScope::class])
-                ->with(['creator', 'editor'])
+                ->with(['creator', 'editor', 'nameReviewer'])
             )
             ->defaultSort('id', 'asc')
             ->extremePaginationLinks()
@@ -68,13 +80,15 @@ class TaxonTable
             ->columns([
                 self::getIdColumn(),
                 self::getScientificNameColumn(),
+                self::getNameChangeConfidenceColumn(),
+                UserColumn::make('nameReviewer')
+                    ->label('Reviewer')
+                    ->placeholder('—')
+                    ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'rename'),
                 self::getAphiaIdColumn(),
                 self::getEasinIdColumn(),
                 self::getWormsStatusColumn(),
                 self::getCatalogueStatusColumn(),
-                self::getRankColumn(),
-                self::getKingdomColumn(),
-                self::getPhylumColumn(),
                 self::getLsidColumn(),
                 self::getEnvironmentsColumn(),
                 self::getFetchedAtColumn(),
@@ -101,6 +115,12 @@ class TaxonTable
                         ->modalWidth('7xl')
                         ->modalHeading(fn ($record) => trim(($record->scientificname ?? '').' '.($record->authority ?? '')) ?: 'Taxon'),
                     EditAction::make(),
+                    self::getMoveToAcceptedNameAction(),
+                    self::getKeepCurrentNameAction(),
+                    self::getSendForReviewAction(),
+                    self::getDiscussionAction(),
+                    DiscussionParticipantsAction::make(),
+                    self::getUndoMoveAction(),
                     Action::make('sync_worms')
                         ->label('Sync WoRMS')
                         ->icon('tabler-cloud-download')
@@ -172,6 +192,7 @@ class TaxonTable
                     ->withSearch()
                     ->withSort(),
                 BulkActionGroup::make([
+                    self::getBulkMoveToAcceptedNameAction(),
                     BulkAction::make('fetch_from_worms')
                         ->label('Fetch from WoRMS')
                         ->icon(TablerIcon::CloudDownload)
@@ -221,6 +242,257 @@ class TaxonTable
             ]);
     }
 
+    /**
+     * Moves a taxon WoRMS no longer accepts to its accepted name (see
+     * TaxonService::moveToAcceptedName()). The dialog shows the confidence
+     * score with its reasons and warns when the move is a merge. A note is
+     * required below "Safe to move". On the edit page it then opens the
+     * taxon that holds the records, which is another one after a merge.
+     */
+    public static function getMoveToAcceptedNameAction(): Action
+    {
+        return Action::make('move_to_accepted_name')
+            ->label('Move to accepted name')
+            ->icon('tabler-arrow-right-circle')
+            ->color('warning')
+            ->visible(fn (Taxon $record): bool => filled($record->proposed_accepted_name) && ! $record->trashed())
+            ->modalHeading(fn (Taxon $record): string => "Move {$record->scientificname} to {$record->proposed_accepted_name}")
+            ->modalWidth('2xl')
+            ->schema(fn (Taxon $record): array => [
+                Html::make(fn (): HtmlString => self::moveSummary($record)),
+                Textarea::make('note')
+                    ->label('Note for the record')
+                    ->placeholder('e.g. Authority checked against Galil 2009.')
+                    ->rows(2)
+                    ->required(fn (): bool => ($record->name_change_confidence ?? 0) < AcceptedNameConfidence::SAFE)
+                    ->helperText(fn (): ?string => ($record->name_change_confidence ?? 0) < AcceptedNameConfidence::SAFE ? 'Required below "Safe to move": say what you checked.' : null),
+            ])
+            ->modalSubmitActionLabel('Move')
+            ->action(function (Taxon $record, array $data, TaxonService $taxonService, $livewire): void {
+                try {
+                    $target = $taxonService->moveToAcceptedName($record, $data['note'] ?? null);
+                } catch (RuntimeException $exception) {
+                    Notification::make()->title('Not moved')->body($exception->getMessage())->danger()->send();
+
+                    return;
+                }
+
+                $reconcile = $target->introEvents()->count() > 1;
+
+                Notification::make()
+                    ->title('Moved to the accepted name')
+                    ->body("Now catalogued as {$target->scientificname}.".($reconcile ? ' It now has several first records to reconcile.' : ''))
+                    ->status($reconcile ? 'warning' : 'success')
+                    ->send();
+
+                if ($livewire instanceof EditRecord) {
+                    $livewire->redirect(TaxonResource::getUrl('edit', ['record' => $target]));
+                }
+            });
+    }
+
+    /**
+     * Keeps the catalogued name instead of following WoRMS, with a required
+     * reason; that WoRMS name is not proposed again.
+     */
+    public static function getKeepCurrentNameAction(): Action
+    {
+        return Action::make('keep_current_name')
+            ->label('Keep current name')
+            ->icon('tabler-lock')
+            ->color('gray')
+            ->visible(fn (Taxon $record): bool => filled($record->proposed_accepted_name) && ! $record->trashed())
+            ->modalHeading(fn (Taxon $record): string => "Keep {$record->scientificname}")
+            ->modalDescription(fn (Taxon $record): string => "WoRMS accepts {$record->proposed_accepted_name}. The catalogue keeps {$record->scientificname}, and this WoRMS name is not proposed again. A different accepted name later will be.")
+            ->schema([
+                Textarea::make('reason')
+                    ->label('Why keep it')
+                    ->placeholder('e.g. Follows the 2023 Mediterranean revision, not yet in WoRMS.')
+                    ->required()
+                    ->rows(3),
+            ])
+            ->modalSubmitActionLabel('Keep')
+            ->action(function (Taxon $record, array $data, TaxonService $taxonService): void {
+                $taxonService->keepCurrentName($record, $data['reason']);
+
+                Notification::make()->title("Keeping {$record->scientificname}")->success()->send();
+            });
+    }
+
+    /**
+     * Asks a scientist to decide; they are notified and the question opens
+     * the taxon's discussion.
+     */
+    public static function getSendForReviewAction(): Action
+    {
+        return Action::make('send_for_name_review')
+            ->label('Send for expert review')
+            ->icon('tabler-user-question')
+            ->color('info')
+            ->visible(fn (Taxon $record): bool => filled($record->proposed_accepted_name) && ! $record->trashed())
+            ->modalHeading(fn (Taxon $record): string => "Ask a scientist about {$record->scientificname}")
+            ->schema([
+                UserSelect::make('reviewer_id')
+                    ->label('Scientist')
+                    ->options(fn (): array => DiscussionParticipantsAction::userOptions(
+                        User::whereHas('roles', fn (Builder $query) => $query->whereIn('name', ['super_admin', 'scientist']))
+                            ->whereKeyNot(auth()->id())
+                            ->get(),
+                    ))
+                    ->default(fn (Taxon $record): ?int => $record->name_reviewer_id)
+                    ->searchable()
+                    ->required(),
+                Textarea::make('message')
+                    ->label('Question (optional)')
+                    ->placeholder('e.g. Does the Levantine population fit N. pinnicola?')
+                    ->rows(3),
+            ])
+            ->modalSubmitActionLabel('Send')
+            ->action(function (Taxon $record, array $data, TaxonService $taxonService): void {
+                $reviewer = User::findOrFail($data['reviewer_id']);
+                $taxonService->sendForNameReview($record, $reviewer, auth()->user(), $data['message'] ?? null);
+
+                Notification::make()->title("Sent to {$reviewer->name}")->body('The question is in the Discussion.')->success()->send();
+            });
+    }
+
+    /**
+     * Reverses the latest move on this taxon (TaxonService::undoLastMove()).
+     */
+    public static function getUndoMoveAction(): Action
+    {
+        return Action::make('undo_name_move')
+            ->label('Undo name move')
+            ->icon('tabler-arrow-back-up')
+            ->color('danger')
+            ->visible(fn (Taxon $record): bool => ! $record->trashed() && app(TaxonService::class)->lastUndoableMove($record) !== null)
+            ->requiresConfirmation()
+            ->modalHeading('Undo the name move')
+            ->modalDescription(function (Taxon $record): string {
+                $move = app(TaxonService::class)->lastUndoableMove($record);
+                $from = $move?->properties['from'] ?? 'the previous name';
+
+                return isset($move?->properties['undo']['merged_taxon_id'])
+                    ? "{$from} is restored and its records move back to it from {$record->scientificname}."
+                    : "{$record->scientificname} goes back to {$from}, with its previous classification. Introduction events keep the name they were recorded under.";
+            })
+            ->action(function (Taxon $record, TaxonService $taxonService, $livewire): void {
+                try {
+                    $result = $taxonService->undoLastMove($record);
+                } catch (RuntimeException $exception) {
+                    Notification::make()->title('Not undone')->body($exception->getMessage())->danger()->send();
+
+                    return;
+                }
+
+                Notification::make()->title('Move undone')->body("Records are under {$result->scientificname} again.")->success()->send();
+
+                if ($livewire instanceof EditRecord) {
+                    $livewire->redirect(TaxonResource::getUrl('edit', ['record' => $result]));
+                }
+            });
+    }
+
+    public static function getDiscussionAction(): CommentsTableAction
+    {
+        return CommentsTableAction::make()
+            ->label('Discussion')
+            ->color('gray')
+            ->modalDescription(fn (Taxon $record): HtmlString => DiscussionParticipantsAction::summary($record))
+            ->disableSidebar();
+    }
+
+    /**
+     * Moves every selected species scoring "Safe to move"; the others need
+     * their own dialog (note, merge warning) and are listed as skipped.
+     */
+    private static function getBulkMoveToAcceptedNameAction(): BulkAction
+    {
+        return BulkAction::make('move_to_accepted_name')
+            ->label('Move to accepted names')
+            ->icon('tabler-arrow-right-circle')
+            ->color('warning')
+            ->requiresConfirmation()
+            ->modalDescription('Each selected species scoring "Safe to move" ('.AcceptedNameConfidence::SAFE.'% or more) is moved to its accepted name. Introduction events keep the name they were recorded under. Lower scores are skipped: move those one by one.')
+            // ponytail: runs in the request, about three WoRMS calls per species; queue it if selections grow past a few dozen.
+            ->action(function (Collection $records, TaxonService $taxonService): void {
+                $moved = 0;
+                $skipped = [];
+
+                foreach ($records->filter(fn (Taxon $taxon): bool => filled($taxon->proposed_accepted_name)) as $taxon) {
+                    if (($taxon->name_change_confidence ?? 0) < AcceptedNameConfidence::SAFE) {
+                        $skipped[] = $taxon->scientificname;
+
+                        continue;
+                    }
+
+                    try {
+                        $taxonService->moveToAcceptedName($taxon);
+                        $moved++;
+                    } catch (RuntimeException) {
+                        $skipped[] = $taxon->scientificname;
+                    }
+                }
+
+                Notification::make()
+                    ->title(trans_choice(':count species moved|:count species moved', $moved))
+                    ->body($skipped ? 'Move these one by one: '.implode(', ', $skipped).'.' : null)
+                    ->status($skipped ? 'warning' : 'success')
+                    ->send();
+            });
+    }
+
+    /**
+     * The confidence score as a badge with its band; reasons on hover.
+     * Shown on the "Name to update" tab.
+     */
+    protected static function getNameChangeConfidenceColumn(): TextColumn
+    {
+        return TextColumn::make('name_change_confidence')
+            ->label('Confidence')
+            ->badge()
+            ->sortable()
+            ->formatStateUsing(fn (?int $state): string => $state === null ? '—' : "{$state}% · ".AcceptedNameConfidence::band($state)['label'])
+            ->color(fn (?int $state): string => AcceptedNameConfidence::band($state)['color'])
+            ->placeholder('Not assessed')
+            ->tooltip(fn (Taxon $record): ?string => collect($record->name_change_reasons)
+                ->map(fn (array $reason): string => sprintf('%+d  %s', $reason['points'], $reason['label']))
+                ->implode("\n") ?: null)
+            ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'rename');
+    }
+
+    /**
+     * Score, reasons and merge warning for the move dialog.
+     */
+    private static function moveSummary(Taxon $taxon): HtmlString
+    {
+        $band = AcceptedNameConfidence::band($taxon->name_change_confidence);
+        $events = $taxon->introEvents()->count();
+        $target = app(TaxonService::class)->acceptedInCatalogue($taxon);
+
+        $reasons = collect($taxon->name_change_reasons)
+            ->map(fn (array $reason): string => '<li><span class="font-mono">'.sprintf('%+d', $reason['points']).'</span> '.e($reason['label']).'</li>')
+            ->implode('');
+
+        $html = '<div class="space-y-3 text-sm">'
+            .'<p><strong>Confidence: '.($taxon->name_change_confidence === null ? 'not assessed' : e($taxon->name_change_confidence.'% · '.$band['label'])).'</strong></p>'
+            .($reasons ? '<ul class="space-y-1">'.$reasons.'</ul>' : '<p>Run "Fetch from WoRMS" to score this proposal.</p>')
+            .'<p>'.e(trans_choice(':count introduction event follows|:count introduction events follow', $events)).', each keeping <em>'.e($taxon->scientificname).'</em> as the name it was recorded under.</p>';
+
+        if ($target) {
+            $targetEvents = $target->introEvents()->count();
+            $html .= '<p class="rounded-md bg-warning-50 p-3 text-warning-700 dark:bg-warning-500/10 dark:text-warning-400">'
+                .'<strong>This is a merge.</strong> <em>'.e($target->scientificname).'</em> is already in the catalogue'
+                .($target->trashed() ? ' (in the trash, it will be restored)' : '')
+                .' with '.e(trans_choice(':count introduction event|:count introduction events', $targetEvents)).'. After merging it will have '.($targetEvents + $events)
+                .', and '.e($taxon->scientificname).' goes to the trash.'
+                .($targetEvents + $events > 1 ? ' The first records will then need reconciling (earliest year, first country).' : '')
+                .'</p>';
+        }
+
+        return new HtmlString($html.'</div>');
+    }
+
     protected static function getIdColumn(): TextColumn
     {
         return TextColumn::make('id')
@@ -259,6 +531,7 @@ class TaxonTable
             ->wrap()
             ->html()
             ->formatStateUsing(fn ($state, $record) => self::formatScientificName($state, $record->rank))
+            ->description(fn (Taxon $record): ?string => $record->proposed_accepted_name ? "WoRMS accepted: {$record->proposed_accepted_name}" : null)
             ->tooltip(fn ($record) => self::getScientificNameTooltip($record));
     }
 
@@ -279,21 +552,6 @@ class TaxonTable
             ->wrapHeader()
             ->badge()
             ->sortable();
-    }
-
-    protected static function getRankColumn(): TextColumn
-    {
-        return TextColumn::make('rank')->label('Rank')->sortable()->visibleFrom('lg');
-    }
-
-    protected static function getKingdomColumn(): TextColumn
-    {
-        return TextColumn::make('kingdom')->label('Kingdom')->sortable()->visibleFrom('xl');
-    }
-
-    protected static function getPhylumColumn(): TextColumn
-    {
-        return TextColumn::make('phylum')->label('Phylum')->sortable()->visibleFrom('xl');
     }
 
     protected static function getLsidColumn(): TextColumn

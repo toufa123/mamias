@@ -12,6 +12,7 @@ use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
@@ -126,6 +127,17 @@ class Login extends BaseLogin
     protected function loginRateLimitKey(string $email): string
     {
         return 'mamias-login:'.sha1(Str::lower($email));
+    }
+
+    /**
+     * This is the site's only sign-in, not just the panel's: /login redirects
+     * here. The parent refuses anyone who cannot enter the panel, which locked
+     * out every public account outside local. Panel pages still enforce
+     * canAccessPanel(), and FilamentAuthRedirect sends everyone else to '/'.
+     */
+    protected function isUserAllowedToAccessPanel(Authenticatable $user): bool
+    {
+        return true;
     }
 
     protected function getRedirectUrl(): string

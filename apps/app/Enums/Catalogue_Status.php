@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Services\TaxonNormalizer;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
@@ -86,10 +87,16 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
      * all others map to "checked & not accepted". Null or empty input returns
      * "no data from WORMS".
      */
-    public static function fromWormsData(Worms_Status|string|null $status): self
+    public static function fromWormsData(Worms_Status|string|null $status, ?array $record = null): self
     {
         if ($status === null || $status === '') {
             return self::no_data_from_worms;
+        }
+
+        // WoRMS's accepted form differs only by subgenus or a nominal
+        // subspecies: the catalogued binomial stands.
+        if ($record !== null && self::acceptedAsBinomial($record)) {
+            return self::checked_accepted;
         }
 
         $statusValue = $status instanceof Worms_Status ? $status->value : $status;
@@ -100,5 +107,19 @@ enum Catalogue_Status: string implements HasColor, HasIcon, HasLabel
         ])
             ? self::checked_accepted
             : self::checked_not_accepted;
+    }
+
+    /**
+     * @param  array<string, mixed>  $record  A WoRMS AphiaRecord.
+     */
+    private static function acceptedAsBinomial(array $record): bool
+    {
+        $validId = $record['valid_AphiaID'] ?? null;
+
+        return $validId !== null
+            && $validId !== ($record['AphiaID'] ?? null)
+            && filled($record['scientificname'] ?? null)
+            && filled($record['valid_name'] ?? null)
+            && TaxonNormalizer::isSameBinomial($record['scientificname'], $record['valid_name']);
     }
 }

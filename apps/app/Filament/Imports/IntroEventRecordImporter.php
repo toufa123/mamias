@@ -15,6 +15,7 @@ use App\Models\SubregionRecord;
 use App\Models\Taxon;
 use App\Services\TaxonNormalizer;
 use App\Services\WormsService;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
@@ -236,6 +237,18 @@ class IntroEventRecordImporter extends Importer
         }
 
         return new IntroEventRecord;
+    }
+
+    /**
+     * taxon_id is NOT NULL, so an unmatched species cannot be saved. Failing the
+     * row here lands it in the failed-rows CSV; letting the insert hit the
+     * constraint would abort the Postgres transaction for the whole chunk.
+     */
+    protected function beforeSave(): void
+    {
+        if (blank($this->record->taxon_id)) {
+            throw new RowImportFailedException('Species not found in the taxa catalogue: '.trim((string) $this->rawValue('taxon_id')));
+        }
     }
 
     protected function afterFill(): void

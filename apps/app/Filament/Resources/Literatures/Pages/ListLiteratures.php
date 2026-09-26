@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Literatures\Pages;
 
+use App\Filament\Resources\Literatures\LiteratureGuide;
 use App\Filament\Resources\Literatures\LiteratureResource;
 use App\Models\Literature;
 use Filament\Actions\CreateAction;
@@ -21,8 +22,19 @@ class ListLiteratures extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            LiteratureGuide::action(),
             CreateAction::make(),
         ];
+    }
+
+    /**
+     * Reviewers land on the queue while it has work in it.
+     */
+    public function getDefaultActiveTab(): string|int|null
+    {
+        return auth()->user()?->hasAnyRole(['super_admin', 'scientist']) && Literature::pendingCount() > 0
+            ? 'pending'
+            : 'all';
     }
 
     public function getTabs(): array
@@ -31,7 +43,7 @@ class ListLiteratures extends ListRecords
             'all' => Tab::make('All'),
             'pending' => Tab::make('Pending Review')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'pending'))
-                ->badge(Literature::where('status', 'pending')->count())
+                ->badge(Literature::pendingCount() ?: null)
                 ->badgeColor('warning'),
             'approved' => Tab::make('Approved')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'approved')),

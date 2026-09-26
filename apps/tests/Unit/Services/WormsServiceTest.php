@@ -125,14 +125,8 @@ it('populates taxon from worms data', function () {
         ->and($taxon->fetched_at)->not->toBeNull();
 });
 
-it('redirects to accepted name when handling unaccepted worms data', function () {
+it('keeps the fetched name and proposes the accepted one for a non-accepted record', function () {
     Http::fake([
-        'marinespecies.org/rest/AphiaRecordByAphiaID/*' => Http::response([
-            'AphiaID' => 200,
-            'scientificname' => 'Testus correctus',
-            'status' => 'accepted',
-            'rank' => 'Species',
-        ], 200),
         'marinespecies.org/rest/AphiaSynonymsByAphiaID/*' => Http::response(null, 204),
     ]);
 
@@ -141,15 +135,19 @@ it('redirects to accepted name when handling unaccepted worms data', function ()
         'AphiaID' => 100,
         'scientificname' => 'Testus wrongus',
         'authority' => 'Jones, 1990',
-        'status' => 'unaccepted',
+        'status' => 'superseded combination',
         'valid_AphiaID' => 200,
+        'valid_name' => 'Testus correctus',
     ];
 
     $this->service->populateTaxonFromWorms($taxon, $data);
 
-    expect($taxon->aphia_id)->toBe(200)
-        ->and($taxon->scientificname)->toBe('Testus correctus')
-        ->and($taxon->notes)->toContain('unaccepted');
+    // Moving to the accepted name is an explicit, reviewed action
+    // (TaxonService::moveToAcceptedName()), never a side effect of a fetch.
+    expect($taxon->aphia_id)->toBe(100)
+        ->and($taxon->scientificname)->toBe('Testus wrongus')
+        ->and($taxon->proposed_accepted_name)->toBe('Testus correctus')
+        ->and($taxon->catalogue_status)->toBe(Catalogue_Status::checked_not_accepted);
 });
 
 it('expands synonyms with filtered fields', function () {

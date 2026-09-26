@@ -121,6 +121,12 @@ class ListIntroEventRecords extends ListRecords
             ->badge(IntroEventRecord::where('needs_review', true)->count())
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('needs_review', true));
 
+        $tabs['pathway_check'] = Tab::make('Pathway check')
+            ->icon('tabler-route')
+            ->badgeColor('warning')
+            ->badge(IntroEventRecord::whereNotNull('pathway_check')->count())
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereNotNull('pathway_check'));
+
         // The other tabs rely on the model's SoftDeletingScope to hide trashed
         // rows; onlyTrashed() lifts that scope for this tab alone.
         $tabs['trashed'] = Tab::make('Trashed')

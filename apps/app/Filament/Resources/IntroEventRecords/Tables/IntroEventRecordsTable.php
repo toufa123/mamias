@@ -32,6 +32,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
+use Nakanakaii\Countries\Countries;
 
 /**
  * Configures the Filament table for intro event records.
@@ -67,7 +68,8 @@ class IntroEventRecordsTable
                     // wrapped separately rather than the whole string slanted.
                     ->formatStateUsing(fn ($state, $record): string => "<span class='italic'>".e((string) $state).'</span>'
                         .($record?->taxon?->authority ? ' ('.e((string) $record->taxon->authority).')' : '')
-                        .($record?->taxon?->trashed() ? ' — species deleted from catalogue' : '')),
+                        .($record?->taxon?->trashed() ? ' — species deleted from catalogue' : ''))
+                    ->description(fn (IntroEventRecord $record): ?string => self::recordedAs($record)),
                 TextColumn::make('first_introduction_year')
                     ->label('1st Year of Introduction')
                     ->wrapHeader()
@@ -81,6 +83,7 @@ class IntroEventRecordsTable
                     ->label('1st Country of Introduction')
                     ->wrapHeader()
                     ->badge()
+                    ->formatStateUsing(fn (?string $state): string => self::countryName($state))
                     ->placeholder('-')
                     ->searchable()
                     ->visibleFrom('lg'),
@@ -104,6 +107,12 @@ class IntroEventRecordsTable
                     ->listWithLineBreaks()
                     ->placeholder('No reason recorded')
                     ->visible(fn ($livewire): bool => $livewire->activeTab === 'needs_review'),
+                TextColumn::make('pathway_check')
+                    ->label('Pathway Check (EASIN)')
+                    ->wrap()
+                    ->formatStateUsing(fn (?string $state): string => nl2br(e((string) $state)))
+                    ->html()
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'pathway_check'),
                 //                TextColumn::make('data_source_type')
                 //                    ->badge()
                 //                    ->searchable(),
@@ -272,6 +281,20 @@ class IntroEventRecordsTable
     }
 
     /**
+     * Full country name for a stored ISO alpha-2 code. Values that are not a
+     * known code (legacy imports) are shown as stored rather than throwing.
+     */
+    protected static function countryName(?string $code): string
+    {
+        static $names = null;
+
+        // Same Türkiye override as CountrySelectWithMedPriority.
+        $names ??= ['TR' => 'Türkiye'] + array_column(Countries::all(), 'name', 'code');
+
+        return $names[$code] ?? (string) $code;
+    }
+
+    /**
      * first_country is a JSON array (a species can arrive in more than one
      * country at once), so it is matched with whereJsonContains rather than a
      * plain where, and the options are unpacked from the stored arrays.
@@ -288,8 +311,8 @@ class IntroEventRecordsTable
                 ->flatten()
                 ->filter()
                 ->unique()
+                ->mapWithKeys(fn (string $country): array => [$country => self::countryName($country)])
                 ->sort()
-                ->mapWithKeys(fn (string $country): array => [$country => $country])
                 ->all())
             ->query(function (Builder $query, array $data): Builder {
                 $values = array_filter($data['values'] ?? []);
@@ -380,5 +403,16 @@ class IntroEventRecordsTable
                     fn (Builder $related): Builder => $related->whereIn($column, $values),
                 );
             });
+    }
+
+    /**
+     * "Recorded as …" when the event was published under a name the species
+     * has since moved from (see TaxonService::moveToAcceptedName()).
+     */
+    public static function recordedAs(?IntroEventRecord $record): ?string
+    {
+        $verbatim = $record?->verbatim_name;
+
+        return $verbatim && $verbatim !== $record->taxon?->scientificname ? "Recorded as {$verbatim}" : null;
     }
 }

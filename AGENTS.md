@@ -10,7 +10,7 @@
 - Main product surface is Filament panel at `/mamias`, not `routes/web.php` (which only serves `welcome`).
 - App boot wires only web/console routes plus health route `/up` (`apps/bootstrap/app.php`).
 - Filament panel configuration is centralized in `apps/app/Providers/Filament/MamiasPanelProvider.php` (plugins, auth flow, theme, middleware, widgets).
-- Role model is core to access flow: `User` uses Spatie roles, login redirects `super_admin`/`panel_user` to panel, others to `/` (`apps/app/Filament/Pages/Auth/Login.php`).
+- Role model is core to access flow: `User` uses Spatie roles, login redirects `super_admin`/`scientist` to panel, others to `/` (`apps/app/Filament/Pages/Auth/Login.php`).
 
 ## Data and service boundaries
 - User profile is the main domain model; extra profile/taxonomy fields are on `users` table (`apps/database/migrations/2026_04_24_000000_add_profile_fields_to_users_table.php`).

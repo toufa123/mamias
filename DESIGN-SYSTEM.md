@@ -287,8 +287,13 @@ on the selected row. Overlays (dropdown, modal, toast) get the one shadow:
 |---|---|
 | `apps/resources/css/app.css` | Public site. Brand ramp, Keenthemes token overrides (`--primary`, `--background`, `--border`, `--radius`…), carousel and CMS-content rules. |
 | `apps/resources/css/filament/mamias/theme.css` | Panel + `fi-*` components. Radius scale, grey ramp, hairlines, button and table rules. |
-| `apps/app/Providers/AppServiceProvider.php` | The status ramps (`invasive`, `established`, `casual`, `verified`, `native`) and `danger`, via `FilamentColor::register` — global, so they reach public Filament tables too. Also a copy of the `primary` ramp for components outside a panel. |
+| `apps/app/Providers/AppServiceProvider.php` | The status ramps (`invasive`, `established`, `casual`, `verified`, `native`) and `danger`, via `FilamentColor::register` — global, so they reach public Filament tables too. Also copies of the `primary` and `gray` ramps for components outside a panel. |
 | `apps/app/Providers/Filament/MamiasPanelProvider.php` | The panel's `primary`, `gray` and `info` ramps. Filament injects these as `--primary-*` / `--gray-*` at runtime, so **the ramps here win over any `@theme` block.** `--color-gray-200` is only an alias for `--gray-200`; redefining the alias repaints the utilities and leaves every `var(--gray-*)` rule on the old value. |
+
+Filament components on public pages (tables, buttons, modals) get the panel's
+`theme.css` rules restated on the site tokens in the last section of `app.css`,
+since only the panel loads `theme.css`. A new `fi-*` rule in one usually
+belongs in the other.
 
 Changing a brand colour means editing the ramp in the panel provider *and*
 `--mamias-teal-*` in `app.css`. They are two copies on purpose — Filament only

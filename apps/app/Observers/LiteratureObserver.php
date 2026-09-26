@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Enums\LiteratureStatus;
 use App\Models\Literature;
-use App\Models\User;
 use App\Notifications\NewLiteratureReferenceNotification;
 use Illuminate\Support\Facades\Notification;
 
@@ -29,15 +29,20 @@ class LiteratureObserver
 
     /**
      * Send a notification to all super admins and scientists after creation.
+     *
+     * A record created already approved (a WoRMS original description linked
+     * by `literature:enrich`) has nothing to review, so nobody is notified.
      */
     public function created(Literature $literature): void
     {
-        $adminsAndScientists = User::whereHas('roles', function ($query) {
-            $query->whereIn('name', ['super_admin', 'scientist']);
-        })->get();
+        if ($literature->status === LiteratureStatus::APPROVED) {
+            return;
+        }
 
-        if ($adminsAndScientists->isNotEmpty()) {
-            Notification::send($adminsAndScientists, new NewLiteratureReferenceNotification($literature));
+        $moderators = Literature::moderators();
+
+        if ($moderators->isNotEmpty()) {
+            Notification::send($moderators, new NewLiteratureReferenceNotification($literature));
         }
     }
 }

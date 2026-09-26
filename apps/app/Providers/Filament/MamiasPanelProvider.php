@@ -43,6 +43,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
+use Heyosseus\Vacuum\Filament\VacuumPlugin;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -102,7 +103,7 @@ class MamiasPanelProvider extends PanelProvider
             ->brandName('MAMIAS Web Application')
             ->brandLogo(asset('images/mamias.png'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('images/favicon.png'))
+            ->favicon(asset('images/favicon-32x32.png'))
             ->maxContentWidth(Width::Full)
             ->dragAndScroll()
             ->spa(hasPrefetching: true)
@@ -210,12 +211,7 @@ class MamiasPanelProvider extends PanelProvider
                         path: '/images/sparac.png',
                         height: 30,
                     )
-                    ->withBorder()
-                    ->withLinks([
-                        ['title' => 'Legal notice', 'url' => '#'],
-                        ['title' => 'Terms of use', 'url' => '#'],
-                        ['title' => 'Cookies policy', 'url' => '#'],
-                    ]),
+                    ->withBorder(),
                 FilamentEChartsPlugin::make(),
                 FilamentClearCachePlugin::make(),
                 FilamentUnsavedChangesModalPlugin::make()
@@ -400,6 +396,25 @@ class MamiasPanelProvider extends PanelProvider
                 'panels::body.start',
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.mobile-notice'),
             )
+            // Installable-app manifest and the Install / Full screen buttons,
+            // shared with the public layout.
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('partials.pwa-head'),
+            )
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('partials.app-controls'),
+            )
+            // Dropped by accident in 8566db5; the view gates itself to panel roles.
+            ->renderHook(
+                PanelsRenderHook::PAGE_START,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.pending-references-alert'),
+            )
+            ->renderHook(
+                PanelsRenderHook::PAGE_START,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.accepted-names-alert'),
+            )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.public-site-link'),
@@ -407,6 +422,10 @@ class MamiasPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.public-site-link'),
-            );
+            )
+            // Vacuum probes the server while the navigation builds and refuses
+            // to query inside an open transaction — which every RefreshDatabase
+            // test is — so registering it under test 500s every panel page.
+            ->plugins(app()->runningUnitTests() ? [] : [VacuumPlugin::make()]);
     }
 }

@@ -69,4 +69,9 @@ return [
         'internal_url' => env('CAP_INTERNAL_URL', 'http://cap:3000'),
     ],
 
+    // Identifies MAMIAS to Crossref's "polite" pool (faster, not throttled with anonymous traffic).
+    'crossref' => [
+        'mailto' => env('CROSSREF_MAILTO', env('MAIL_FROM_ADDRESS')),
+    ],
+
 ];

@@ -24,10 +24,11 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
     <meta content="" property="og:description" />
     <meta content="assets/media/app/og-image.png" property="og:image" />
-    <link href="{{ asset('img/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180" />
-    <link href="{{ asset('img/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png" />
-    <link href="{{ asset('img/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png" />
-    <link href="{{ asset('img/favicon.ico') }}" rel="shortcut icon" />
+    <link href="{{ asset('images/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180" />
+    <link href="{{ asset('images/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png" />
+    <link href="{{ asset('images/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png" />
+    <link href="{{ asset('images/favicon.ico') }}" rel="shortcut icon" />
+    @include('partials.pwa-head')
     {{--
         Geist / Geist Mono — see DESIGN-SYSTEM.md. This replaces a Roboto link
         that nothing on the site used: --font-sans asked for 'Instrument Sans',
@@ -268,11 +269,11 @@
                                     >SPA/RAC.</a>
                             </div>
                             <nav class="text-secondary-foreground order-1 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm font-normal md:order-2">
-                                <a class="hover:text-primary" href="#">Legal notice</a>
-                                <a class="hover:text-primary" href="#">Terme of Use</a>
-                                <a class="hover:text-primary" href="#">Cookies policy</a>
-                                <a class="hover:text-primary" onclick="showHideToggleCookiePreferencesModal()"
-                                    >Change Cookie Preferences</a>
+                                <a class="hover:text-primary" href="{{ url('legal-notice') }}">Legal notice</a>
+                                <a class="hover:text-primary" href="{{ url('terms-of-use') }}">Terms of use</a>
+                                <a class="hover:text-primary" href="{{ url('cookies-policy') }}">Cookies policy</a>
+                                <button type="button" class="hover:text-primary cursor-pointer"
+                                    onclick="showHideToggleCookiePreferencesModal()">Change Cookie Preferences</button>
                                 <a class="hover:text-primary" href="{{ url('sitemap.xml') }}">SiteMap</a>
                             </nav>
                         </div>

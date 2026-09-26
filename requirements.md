@@ -90,7 +90,7 @@ There is no traditional REST API in v1.
 | Role | Description | Access |
 |------|-------------|--------|
 | **super_admin** | Full system management, all permissions | Filament panel + all resources |
-| **panel_user** | Data entry and consultation | Filament panel (scoped permissions via Shield) |
+| **scientist** | Data entry and consultation | Filament panel (scoped permissions via Shield) |
 | **user** | Basic registered user | Public pages only (redirected to `/` on login) |
 
 ### 2.3 Operating Environment
@@ -106,7 +106,7 @@ There is no traditional REST API in v1.
 | Cache/Session/Queue | Redis | 7+ (alpine) |
 | Mail (dev) | Mailpit | Latest |
 | Frontend Build | Vite | 8.0 |
-| CSS Framework | Tailwind CSS + DaisyUI | 4.2+ / 5.5+ |
+| CSS Framework | Tailwind CSS | 4.3+ |
 | Testing | Pest PHP | 4.6 |
 
 ### 2.4 Design & Implementation Constraints
@@ -131,7 +131,7 @@ There is no traditional REST API in v1.
 | FR-USER-03 | Full profile: first_name, last_name, title, phone, has_whatsapp, country, taxonomic_area (JSON), subregions (JSON), countries (JSON), bio | Must | Done |
 | FR-USER-04 | Full name auto-derived from first_name + last_name (`booted()`) | Must | Done |
 | FR-USER-05 | Dynamic avatar via UI Avatars API | Should | Done |
-| FR-USER-06 | RBAC via Spatie Permission + Filament Shield (super_admin, panel_user, user) | Must | Done |
+| FR-USER-06 | RBAC via Spatie Permission + Filament Shield (super_admin, scientist, user) | Must | Done |
 | FR-USER-07 | Developer logins in dev environment | Could | Done |
 | FR-USER-08 | WhatsApp number validation via GreenAPI (WhatsAppService) | Should | Done |
 
@@ -367,7 +367,6 @@ There is no traditional REST API in v1.
 | `vite` | ^8.0.0 | Build tool |
 | `tailwindcss` | ^4.2.4 | CSS framework |
 | `@tailwindcss/vite` | ^4.2.4 | Vite integration |
-| `daisyui` | ^5.5.19 | UI component library |
 | `laravel-vite-plugin` | ^3.0.0 | Laravel/Vite bridge |
 | `concurrently` | ^9.0.1 | Parallel dev processes |
 

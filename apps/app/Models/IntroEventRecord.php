@@ -25,11 +25,13 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int $id
  * @property int $taxon_id
  * @property int|null $literature_id
+ * @property string|null $verbatim_name Name the record was published under, kept across renames
  * @property int|null $first_introduction_year
  * @property array|null $first_country
  * @property NisStatus $nis_status
  * @property EstablishmentStatus $establishment_status
  * @property string|null $notes
+ * @property string|null $pathway_check Pathway disagreement with EASIN; null when nothing to check
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -43,7 +45,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method HasMany occurrences()
  * @method HasMany eicatAssessments()
  */
-#[Fillable(['taxon_id', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes'])]
+#[Fillable(['taxon_id', 'verbatim_name', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes', 'pathway_check'])]
 class IntroEventRecord extends Model
 {
     use HasFactory, LogsActivity, SoftDeletes, Userstamps;

@@ -13,6 +13,8 @@ use App\Enums\PathwayType;
 use App\Enums\Subregion;
 use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Filament\Forms\MultipleMarkersMapPicker;
+use App\Filament\Resources\IntroEventRecords\Tables\IntroEventRecordsTable;
+use App\Models\IntroEventRecord;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Forms\Components\Component;
@@ -60,6 +62,7 @@ class IntroEventRecordForm
                                 ->searchable()
                                 ->preload()
                                 ->required()
+                                ->helperText(fn (?IntroEventRecord $record): ?string => IntroEventRecordsTable::recordedAs($record))
                                 ->columnSpan(['default' => 1, 'md' => 3, 'lg' => 1]),
                             Select::make('nis_status')
                                 ->options(NisStatus::class)
@@ -96,7 +99,6 @@ class IntroEventRecordForm
                     ->schema([
                         Select::make('literature_id')
                             ->relationship('literature', 'short_ref')
-                            ->multiple()
                             ->preload()
                             ->searchable()
                             ->label('Citations / Literature')
@@ -106,6 +108,12 @@ class IntroEventRecordForm
                             ->label('Notes')
                             ->rows(3)
                             ->placeholder('Additional observations or context...')
+                            ->columnSpanFull(),
+                        Textarea::make('pathway_check')
+                            ->label('Pathway check (EASIN)')
+                            ->helperText('Clear once the pathways have been checked.')
+                            ->rows(3)
+                            ->visible(fn (?string $state): bool => filled($state))
                             ->columnSpanFull(),
                     ]),
 
@@ -137,7 +145,7 @@ class IntroEventRecordForm
                                             ->preload()
                                             ->options(Subregion::class)
                                             ->columnSpan(2),
-                                        Select::make('nis_status')
+                                        Select::make('establishment_status')
                                             ->label('Establishment Success')
                                             ->options(EstablishmentStatus::class)
                                             ->columnSpan(2),

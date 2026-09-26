@@ -6,6 +6,7 @@ use App\Enums\Catalogue_Status;
 use App\Enums\Environment;
 use App\Enums\Worms_Status;
 use App\Models\Taxon;
+use App\Services\AcceptedNameConfidence;
 use App\Services\EasinService;
 use App\Services\TaxonNormalizer;
 use App\Services\TaxonService;
@@ -24,6 +25,7 @@ beforeEach(function () {
         $this->normalizer,
         $this->stateHelper,
         $this->createMock(EasinService::class),
+        $this->createMock(AcceptedNameConfidence::class),
     );
 });
 
@@ -374,6 +376,7 @@ it('sets catalogue_status to no_data_from_worms when syncWithWorms fails to find
         $this->normalizer,
         $this->stateHelper,
         $this->createMock(EasinService::class),
+        $this->createMock(AcceptedNameConfidence::class),
     );
 
     $wormsService->method('searchSpecies')->willReturn([]);
@@ -472,6 +475,7 @@ it('sets catalogue_status to no_data_from_worms in refreshFromWorms when record 
         $this->normalizer,
         $this->stateHelper,
         $this->createMock(EasinService::class),
+        $this->createMock(AcceptedNameConfidence::class),
     );
 
     $wormsService->method('getRecordByName')->willReturn([]);
@@ -491,6 +495,7 @@ it('passes the taxon to the progress callback when refreshFromWorms updates it',
         $this->normalizer,
         $this->stateHelper,
         $this->createMock(EasinService::class),
+        $this->createMock(AcceptedNameConfidence::class),
     );
 
     // A record back from WoRMS on an unsaved taxon: dirty attributes, so the
@@ -530,6 +535,7 @@ it('applies a matched taxon name and updates form state', function () {
         $this->normalizer,
         $this->stateHelper,
         $this->createMock(EasinService::class),
+        $this->createMock(AcceptedNameConfidence::class),
     );
 
     $wormsService->method('matchTaxa')->willReturn([

@@ -262,13 +262,15 @@ return [
      * @item link - URL to the policy document
      */
     'policy_links' => [
+        // Root-relative Layup pages (LayupLegalPagesSeeder), so they work under
+        // every hostname; an absolute URL would pin the banner to one host.
         [
-            'text' => 'Privacy Policy',
-            'link' => env('COOKIE_CONSENT_PRIVACY_POLICY_URL', '') ?? url('privacy-policy'),
+            'text' => 'Cookies policy',
+            'link' => env('COOKIE_CONSENT_PRIVACY_POLICY_URL') ?: '/cookies-policy',
         ],
         [
-            'text' => 'Terms and Conditions',
-            'link' => env('COOKIE_CONSENT_TERMS_URL', '') ?? url('terms-and-conditions'),
+            'text' => 'Terms of use',
+            'link' => env('COOKIE_CONSENT_TERMS_URL') ?: '/terms-of-use',
         ],
     ],
 ];

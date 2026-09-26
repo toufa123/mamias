@@ -3,17 +3,23 @@
 namespace App\Filament\Resources\Taxons\Schemas;
 
 use App\Enums\Worms_Status;
+use App\Models\Taxon;
+use Filament\Actions\Action;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Novadaemon\FilamentPrettyJson\Infolist\PrettyJsonEntry;
 
 /**
  * Configures the Filament infolist schema for taxon records.
  * Displays general information, taxonomic classification, synonyms,
- * status and validation, and audit details.
+ * literature references, status and validation, and audit details.
  */
 class TaxonInfolist
 {
@@ -31,6 +37,7 @@ class TaxonInfolist
                     ->tabs([
                         self::getTaxonomicClassificationTab(),
                         self::getSynonymsTab(),
+                        self::getReferencesTab(),
                     ])
                     ->columnSpanFull(),
                 self::getStatusSection(),
@@ -205,6 +212,107 @@ class TaxonInfolist
                     ->hiddenLabel()
                     ->placeholder('No synonyms found in WoRMS.')
                     ->copyable(),
+            ]);
+    }
+
+    /**
+     * Approved literature for the taxon — original description, first records,
+     * supporting references — oldest first, with a BibTeX download of the list.
+     *
+     * @return Tabs\Tab The references tab.
+     */
+    protected static function getReferencesTab(): Tabs\Tab
+    {
+        return Tabs\Tab::make('References')
+            ->icon('tabler-books')
+            ->schema([
+                Actions::make([
+                    Action::make('downloadBibtex')
+                        ->label('Download BibTeX')
+                        ->icon('tabler-download')
+                        ->color('gray')
+                        ->size('sm')
+                        ->visible(fn (Taxon $record): bool => $record->literatureReferences()->isNotEmpty())
+                        ->action(function (Taxon $record) {
+                            $bibtex = $record->literatureReferences()
+                                ->map(fn (array $row) => $row['literature']->toBibtex())
+                                ->implode("\n\n");
+
+                            return response()->streamDownload(
+                                fn () => print ($bibtex."\n"),
+                                Str::slug($record->scientificname ?: 'taxon').'-references.bib',
+                                ['Content-Type' => 'application/x-bibtex'],
+                            );
+                        }),
+                ])->alignEnd(),
+                RepeatableEntry::make('literature_references')
+                    ->hiddenLabel()
+                    ->state(fn (Taxon $record): array => $record->literatureReferences()
+                        ->map(fn (array $row) => [
+                            'role' => $row['role'],
+                            'short_ref' => $row['literature']->short_ref,
+                            'year' => $row['literature']->year,
+                            'full_ref' => $row['literature']->full_ref,
+                            'doi' => $row['literature']->doi,
+                            // The DOI link already points to the publisher.
+                            'link' => $row['literature']->doi ? null : $row['literature']->link,
+                            'pdf' => $row['literature']->file_path ? Storage::disk('public')->url($row['literature']->file_path) : null,
+                            'retracted' => $row['literature']->is_retracted ? 'Retracted' : null,
+                        ])
+                        ->all())
+                    ->placeholder('No approved references are linked to this taxon yet.')
+                    ->contained(false)
+                    ->schema([
+                        Grid::make(12)->schema([
+                            TextEntry::make('short_ref')
+                                ->hiddenLabel()
+                                ->weight('bold')
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+                            TextEntry::make('role')
+                                ->hiddenLabel()
+                                ->badge()
+                                ->color(fn (string $state): string => match ($state) {
+                                    'Original description' => 'info',
+                                    'First record' => 'success',
+                                    default => 'gray',
+                                })
+                                ->columnSpan(['default' => 6, 'md' => 3]),
+                            TextEntry::make('retracted')
+                                ->hiddenLabel()
+                                ->badge()
+                                ->color('danger')
+                                ->icon('tabler-alert-octagon')
+                                ->hidden(fn ($state): bool => blank($state))
+                                ->columnSpan(['default' => 6, 'md' => 2]),
+                            TextEntry::make('full_ref')
+                                ->hiddenLabel()
+                                ->color('gray')
+                                ->columnSpanFull(),
+                            TextEntry::make('doi')
+                                ->hiddenLabel()
+                                ->icon('tabler-link')
+                                ->url(fn ($state): ?string => $state ? "https://doi.org/{$state}" : null)
+                                ->openUrlInNewTab()
+                                ->hidden(fn ($state): bool => blank($state))
+                                ->columnSpan(['default' => 12, 'md' => 6]),
+                            TextEntry::make('link')
+                                ->hiddenLabel()
+                                ->icon('tabler-external-link')
+                                ->formatStateUsing(fn (): string => 'Source')
+                                ->url(fn ($state): ?string => $state)
+                                ->openUrlInNewTab()
+                                ->hidden(fn ($state): bool => blank($state))
+                                ->columnSpan(['default' => 6, 'md' => 3]),
+                            TextEntry::make('pdf')
+                                ->hiddenLabel()
+                                ->icon('tabler-file-type-pdf')
+                                ->formatStateUsing(fn (): string => 'PDF')
+                                ->url(fn ($state): ?string => $state)
+                                ->openUrlInNewTab()
+                                ->hidden(fn ($state): bool => blank($state))
+                                ->columnSpan(['default' => 6, 'md' => 3]),
+                        ]),
+                    ]),
             ]);
     }
 

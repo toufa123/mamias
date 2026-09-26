@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Literatures\Schemas;
 
 use App\Enums\LiteratureType;
+use App\Filament\Resources\Literatures\LiteratureResource;
 use App\Models\Literature;
 use App\Services\DoiMetadataService;
 use Daljo25\FilamentTablerIcons\Enums\TablerIcon;
@@ -12,15 +13,19 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
 /**
  * Configures the Filament form schema for literature records.
  * Provides fields for DOI auto-fetch, code, short/full reference,
- * resource type, and link.
+ * resource type, year, and link. Both the DOI and the full reference point
+ * at an existing record instead of only failing validation.
  */
 class LiteratureForm
 {
@@ -44,16 +49,51 @@ class LiteratureForm
         return Section::make('Bibliographic Reference')
             ->schema([
                 self::getDoiField(),
-                self::getCodeField(),
-                self::getShortRefField(),
-                self::getTypeField(),
-                self::getFullRefField(),
-                self::getLinkField(),
-                self::getFilePathField(),
+                ...self::getDetailFields(),
             ])
             ->compact()
             ->columns(4)
             ->columnSpanFull();
+    }
+
+    /**
+     * DOI-first submission: a DOI fills the details step from Crossref, where
+     * the submitter checks and corrects them. Without a DOI they go straight on.
+     *
+     * @return array<Step>
+     */
+    public static function getSubmissionSteps(): array
+    {
+        return [
+            Step::make('DOI')
+                ->icon('tabler-link')
+                ->description('Fills the details for you')
+                ->schema([
+                    self::getDoiField(),
+                    Text::make('No DOI? Leave it empty and click Next to enter the reference by hand.'),
+                ]),
+            Step::make('Details')
+                ->icon('tabler-book')
+                ->description('Check or complete')
+                ->schema(self::getDetailFields())
+                ->columns(4),
+        ];
+    }
+
+    /**
+     * @return array<Component> Every field but the DOI.
+     */
+    private static function getDetailFields(): array
+    {
+        return [
+            self::getCodeField(),
+            self::getShortRefField(),
+            self::getTypeField(),
+            self::getYearField(),
+            self::getFullRefField(),
+            self::getLinkField(),
+            self::getFilePathField(),
+        ];
     }
 
     /**
@@ -64,21 +104,19 @@ class LiteratureForm
         return TextInput::make('doi')
             ->label('DOI')
             ->unique(ignoreRecord: true)
+            ->validationMessages(['unique' => 'This reference is already in MAMIAS — see the note below the field.'])
+            ->belowContent(fn (?string $state, ?Literature $record): array => self::existingReferenceNote(
+                $state ? Literature::where('doi', DoiMetadataService::normalize($state))->when($record, fn ($query) => $query->whereKeyNot($record->getKey()))->first() : null,
+            ))
             ->live(onBlur: true)
-            ->afterStateUpdated(function (Set $set, $state) {
-                if (empty($state)) {
-                    return;
-                }
+            ->afterStateUpdated(function (Set $set, ?string $state) {
+                $doi = DoiMetadataService::normalize($state);
 
-                $service = app(DoiMetadataService::class);
-                $metadata = $service->fetchFromCrossref($state);
+                // Normalize before validation sees it, so the unique rule
+                // matches a stored DOI pasted as a URL or with "doi:".
+                $set('doi', $doi);
 
-                if ($metadata) {
-                    $set('full_ref', $metadata['full_ref']);
-                    $set('short_ref', $metadata['short_ref']);
-                    $set('type', $metadata['type']->value);
-                    $set('link', $metadata['link']);
-
+                if ($doi && self::fillFromDoi($set, $doi)) {
                     Notification::make()
                         ->title('Metadata fetched automatically')
                         ->success()
@@ -101,8 +139,12 @@ class LiteratureForm
                 Action::make('fetchFromDoi')
                     ->icon('tabler-refresh')
                     ->tooltip('Fetch metadata')
-                    ->action(function (Set $set, $state) {
-                        if (empty($state)) {
+                    // Nothing to fetch into a read-only form (the View modal).
+                    ->hidden(fn (TextInput $component): bool => $component->isDisabled())
+                    ->action(function (Set $set, ?string $state) {
+                        $doi = DoiMetadataService::normalize($state);
+
+                        if (! $doi) {
                             Notification::make()
                                 ->title('Missing DOI')
                                 ->warning()
@@ -111,15 +153,9 @@ class LiteratureForm
                             return;
                         }
 
-                        $service = app(DoiMetadataService::class);
-                        $metadata = $service->fetchFromCrossref($state);
+                        $set('doi', $doi);
 
-                        if ($metadata) {
-                            $set('full_ref', $metadata['full_ref']);
-                            $set('short_ref', $metadata['short_ref']);
-                            $set('type', $metadata['type']->value);
-                            $set('link', $metadata['link']);
-
+                        if (self::fillFromDoi($set, $doi)) {
                             Notification::make()
                                 ->title('Metadata fetched successfully')
                                 ->success()
@@ -132,19 +168,73 @@ class LiteratureForm
                         }
                     }),
             ])
-            ->columnSpan(1);
+            ->columnSpanFull();
     }
 
     /**
-     * @return TextInput The auto-generated code field (disabled, for display only).
+     * "Already in MAMIAS as …" under a field, with a link for those who may
+     * open the record. Empty when there is no match.
+     *
+     * @return array<Component|Action>
+     */
+    private static function existingReferenceNote(?Literature $existing, string $prefix = 'Already in MAMIAS as'): array
+    {
+        if (! $existing) {
+            return [];
+        }
+
+        return [
+            Text::make("{$prefix} {$existing->code} — {$existing->short_ref} ({$existing->status->getLabel()}).")
+                ->color('warning'),
+            Action::make('openExisting'.$existing->getKey())
+                ->label('Open')
+                ->link()
+                ->url(LiteratureResource::getUrl('edit', ['record' => $existing], panel: 'mamias'))
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => LiteratureResource::canEdit($existing)),
+        ];
+    }
+
+    /**
+     * Fill the reference fields from Crossref. Returns false when the DOI is unknown.
+     */
+    private static function fillFromDoi(Set $set, string $doi): bool
+    {
+        $metadata = app(DoiMetadataService::class)->fetchFromCrossref($doi);
+
+        if (! $metadata) {
+            return false;
+        }
+
+        $set('full_ref', $metadata['full_ref']);
+        $set('short_ref', $metadata['short_ref']);
+        $set('type', $metadata['type']->value);
+        $set('link', $metadata['link']);
+        $set('year', $metadata['year']);
+
+        if ($metadata['is_retracted']) {
+            Notification::make()
+                ->title('This article has been retracted')
+                ->body('Crossref lists a retraction notice for this DOI.')
+                ->danger()
+                ->persistent()
+                ->send();
+        }
+
+        return true;
+    }
+
+    /**
+     * @return TextInput The code, shown when viewing only: it is assigned on
+     *                   save, and the edit page carries it in its heading.
      */
     public static function getCodeField(): TextInput
     {
         return TextInput::make('code')
             ->label('Code')
-            ->default(fn () => Literature::generateNextCode())
             ->disabled()
             ->dehydrated(false)
+            ->visibleOn('view')
             ->columnSpan(1);
     }
 
@@ -158,7 +248,7 @@ class LiteratureForm
             ->maxLength(255)
             ->placeholder('Smith et al., 2024')
             ->required()
-            ->columnSpan(1);
+            ->columnSpan(2);
     }
 
     /**
@@ -174,6 +264,20 @@ class LiteratureForm
     }
 
     /**
+     * @return TextInput The publication year, used to order references on species pages.
+     */
+    public static function getYearField(): TextInput
+    {
+        return TextInput::make('year')
+            ->label('Year')
+            ->integer()
+            ->minValue(1700)
+            ->maxValue((int) date('Y') + 1)
+            ->nullable()
+            ->columnSpan(1);
+    }
+
+    /**
      * @return Textarea The full reference textarea with uniqueness validation.
      */
     public static function getFullRefField(): Textarea
@@ -184,9 +288,18 @@ class LiteratureForm
             ->placeholder('Smith, J., Doe, A. (2024). Title. Journal, 15(3), 123-145.')
             ->required()
             ->unique(ignoreRecord: true)
+            ->validationMessages(['unique' => 'This reference is already in MAMIAS.'])
             ->live(onBlur: true)
             ->hintIcon(Heroicon::QuestionMarkCircle,
-                tooltip: 'Real-time validation checks if this title or reference already exists..')
+                tooltip: 'Checked against existing references as you type, including near matches.')
+            // Exact duplicates fail validation; this catches the same paper
+            // typed with other punctuation or casing.
+            ->belowContent(fn (?string $state, string $operation, ?Literature $record): array => $operation === 'view' || mb_strlen((string) $state) < 20
+                ? []
+                : self::existingReferenceNote(
+                    Literature::similarTo($state)->when($record, fn ($query) => $query->whereKeyNot($record->getKey()))->first(),
+                    'Looks like',
+                ))
             ->columnSpanFull();
     }
 

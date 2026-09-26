@@ -24,7 +24,6 @@ beforeEach(function () {
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
     Role::findOrCreate('super_admin', 'web');
-    Role::findOrCreate('panel_user', 'web');
     Role::findOrCreate('user', 'web');
 });
 
@@ -64,7 +63,7 @@ it('serves the mamias login page over http to guests', function () {
 
 it('redirects authenticated panel users away from the login page over http', function () {
     $user = User::factory()->create();
-    $user->assignRole('panel_user');
+    $user->assignRole('scientist');
 
     $this->actingAs($user)
         ->get(route('filament.mamias.auth.login'))
@@ -73,7 +72,7 @@ it('redirects authenticated panel users away from the login page over http', fun
 
 it('logs authenticated panel users out over http', function () {
     $user = User::factory()->create();
-    $user->assignRole('panel_user');
+    $user->assignRole('scientist');
 
     $this->actingAs($user)
         ->withSession(['_token' => 'test-token'])
@@ -205,5 +204,5 @@ it('restores developer-login accounts idempotently via database seeding', functi
         ->and(User::query()->where('email', 'atef.ouerghi@spa-rac.org')->count())->toBe(1)
         ->and(User::query()->where('email', 'atef.ouerghi@gmail.com')->count())->toBe(1)
         ->and($admin?->hasRole('super_admin'))->toBeTrue()
-        ->and($panelUser?->hasRole('panel_user'))->toBeTrue();
+        ->and($panelUser?->hasRole('user'))->toBeTrue();
 });
