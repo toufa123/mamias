@@ -2,216 +2,196 @@
 
 namespace App\Filament\Resources\Taxons\Schemas;
 
+use App\Enums\Catalogue_Status;
 use App\Enums\Worms_Status;
 use App\Models\Taxon;
 use Filament\Actions\Action;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontFamily;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use Novadaemon\FilamentPrettyJson\Infolist\PrettyJsonEntry;
 
 /**
- * Configures the Filament infolist schema for taxon records.
- * Displays general information, taxonomic classification, synonyms,
- * literature references, status and validation, and audit details.
+ * The catalogue's view modal, compact: the classification on one line, the
+ * identifiers and statuses in two rows of four, a warning only when WoRMS disagrees with the name, then tabs for synonyms,
+ * references, and notes & audit, all of one fixed height that scrolls.
  */
 class TaxonInfolist
 {
-    /**
-     * @param  Schema  $schema  The infolist schema to configure.
-     * @return Schema The configured schema instance.
-     */
+    /** WoRMS record page for an Aphia ID. */
+    private const WORMS_URL = 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=';
+
+    private const TAB_HEIGHT = '22rem';
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(['default' => 1, 'md' => 1])
+            ->columns(1)
             ->components([
-                self::getGeneralInformationSection(),
+                self::getClassificationEntry(),
+                self::getDetailsGrid(),
+                self::getNameWarning(),
                 Tabs::make('Taxon Details')
                     ->tabs([
-                        self::getTaxonomicClassificationTab(),
                         self::getSynonymsTab(),
                         self::getReferencesTab(),
+                        self::getNotesTab(),
                     ])
                     ->columnSpanFull(),
-                self::getStatusSection(),
-                self::getAuditSection(),
             ]);
     }
 
     /**
-     * @return Section The general information section with scientific name, WoRMS URL, LSID, Aphia ID, etc.
+     * Kingdom › phylum › class › order › family › genus, the genus in italics,
+     * led by the kingdom's icon.
      */
-    protected static function getGeneralInformationSection(): Section
+    protected static function getClassificationEntry(): TextEntry
     {
-        return Section::make('General Information')
-            ->description('Scientific name, authority, and primary identifiers.')
-            ->icon('tabler-tag')
-            ->columnSpanFull()
-            ->schema([
-                Grid::make(12)
-                    ->schema([
-                        TextEntry::make('scientificname')
-                            ->label('Scientific Name')
-                            ->icon('tabler-dna')
-                            ->placeholder('—')
-                            ->html()
-                            ->formatStateUsing(fn ($state, $record) => trim(
-                                '<div class="flex flex-col gap-1">
-                                    <div class="text-xl font-extrabold italic tracking-tight text-primary-600 dark:text-primary-400">'.e((string) $state).'</div>
-                                </div>'
-                            ))
-                            ->columnSpan(4),
-                        TextEntry::make('url')
-                            ->label('WoRMS URL')
-                            ->url(fn ($state) => $state)
-                            ->openUrlInNewTab()
-                            ->icon('tabler-external-link')
-                            ->iconColor('primary')
-                            ->color('primary')
-                            ->formatStateUsing(fn ($state) => filled($state) ? 'View on WoRMS' : null)
-                            ->placeholder('—')
-                            ->columnSpan(4),
-                        TextEntry::make('lsid')
-                            ->label('LSID')
-                            ->copyable()
-                            ->icon('tabler-fingerprint')
-                            ->placeholder('—')
-                            ->url(fn ($state) => $state ? 'https://www.marinespecies.org/aphia.php?p=taxdetails&id='.last(explode(':', $state)) : null)
-                            ->openUrlInNewTab()
-                            ->columnSpan(4),
-                        TextEntry::make('proposed_accepted_name')
-                            ->label('Proposed Accepted Name')
-                            ->icon('tabler-arrow-right-circle')
-                            ->placeholder('—')
-                            ->html()
-                            ->formatStateUsing(fn ($state) => filled($state) ? "<em>{$state}</em>" : '—')
-                            ->columnSpan(12),
-                        TextEntry::make('authority')
-                            ->label('Authority')
-                            ->placeholder('—')
-                            ->columnSpan(5),
-                        TextEntry::make('aphia_id')
-                            ->label('Aphia ID')
-                            ->badge()
-                            ->color('info')
-                            ->numeric(thousandsSeparator: '')
-                            ->icon('tabler-number')
-                            ->placeholder('—')
-                            ->url(fn ($state) => $state ? "https://www.marinespecies.org/aphia.php?p=taxdetails&id={$state}" : null)
-                            ->openUrlInNewTab()
-                            ->columnSpan(4),
-                        TextEntry::make('is_extinct')
-                            ->label('Extinct')
-                            ->badge()
-                            ->color('danger')
-                            ->icon('tabler-skull')
-                            ->formatStateUsing(fn ($state) => $state ? 'Extinct' : null)
-                            ->visible(fn ($state) => (bool) $state)
-                            ->columnSpan(3),
-                    ]),
-            ]);
+        return TextEntry::make('classification')
+            ->hiddenLabel()
+            ->state(function (Taxon $record): ?HtmlString {
+                $ranks = array_filter([$record->kingdom, $record->phylum, $record->class, $record->order, $record->family]);
+                $path = array_map(fn (string $rank): string => e($rank), $ranks);
+
+                if (filled($record->genus)) {
+                    $path[] = '<em>'.e($record->genus).'</em>';
+                }
+
+                return $path === [] ? null : new HtmlString(implode(' <span class="text-gray-400">›</span> ', $path));
+            })
+            ->color('gray')
+            ->icon(fn (Taxon $record): string => Taxon::kingdomIcon($record->kingdom));
     }
 
     /**
-     * @return Tabs\Tab The taxonomic classification tab with kingdom, phylum, class, order, family, genus, rank, and environment.
+     * Identifiers then statuses, four per row: Aphia ID, EASIN ID, LSID, rank,
+     * environment, WoRMS status, catalogue status and the last WoRMS sync.
      */
-    protected static function getTaxonomicClassificationTab(): Tabs\Tab
+    protected static function getDetailsGrid(): Grid
     {
-        return Tabs\Tab::make('Taxonomic Classification')
-            ->icon('tabler-school')
+        return Grid::make(['default' => 2, 'md' => 4])
             ->schema([
-                Grid::make(6)
-                    ->schema([
-                        TextEntry::make('kingdom')->label('Kingdom')->placeholder('—')->weight('bold'),
-                        TextEntry::make('phylum')->label('Phylum')->placeholder('—')->weight('bold'),
-                        TextEntry::make('class')->label('Class')->placeholder('—')->weight('bold'),
-                        TextEntry::make('order')->label('Order')->placeholder('—')->weight('bold'),
-                        TextEntry::make('family')->label('Family')->placeholder('—')->weight('bold'),
-                        TextEntry::make('genus')->label('Genus')->placeholder('—')->weight('bold'),
-                        TextEntry::make('rank')
-                            ->label('Taxonomic Rank')
-                            ->badge()
-                            ->color('gray')
-                            ->placeholder('—')
-                            ->columnSpan(2),
-                        TextEntry::make('environments')
-                            ->label('Environment')
-                            ->badge()
-                            ->separator(',')
-                            ->placeholder('—')
-                            ->columnSpan(4),
-                    ]),
+                TextEntry::make('aphia_id')
+                    ->label('Aphia ID')
+                    ->icon('tabler-external-link')
+                    ->color('primary')
+                    ->fontFamily(FontFamily::Mono)
+                    ->numeric(thousandsSeparator: '')
+                    ->url(fn ($state): ?string => $state ? self::WORMS_URL.$state : null)
+                    ->openUrlInNewTab()
+                    ->placeholder('Not in WoRMS'),
+                TextEntry::make('Easin_id')
+                    ->label('EASIN ID')
+                    ->icon('tabler-external-link')
+                    ->color('primary')
+                    ->fontFamily(FontFamily::Mono)
+                    ->url(fn ($state): ?string => $state ? "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/{$state}" : null)
+                    ->openUrlInNewTab()
+                    ->placeholder('Not in EASIN'),
+                TextEntry::make('lsid')
+                    ->label('LSID')
+                    ->icon('tabler-copy')
+                    ->copyable()
+                    ->copyableState(fn ($state): ?string => $state)
+                    ->formatStateUsing(fn (): string => 'Copy LSID')
+                    ->tooltip(fn ($state): ?string => $state)
+                    ->placeholder('—'),
+                TextEntry::make('rank')
+                    ->label('Rank')
+                    ->badge()
+                    ->color('gray')
+                    ->placeholder('—'),
+                // A category, not a status: neutral (DESIGN-SYSTEM.md, "Scales and categories").
+                TextEntry::make('environments')
+                    ->label('Environment')
+                    ->badge()
+                    ->color('gray')
+                    ->separator(',')
+                    ->placeholder('—'),
+                TextEntry::make('worms_status')
+                    ->label('WoRMS status')
+                    ->badge()
+                    ->icon(fn ($state) => $state instanceof Worms_Status ? $state->getIcon() : null)
+                    ->placeholder('—'),
+                TextEntry::make('catalogue_status')
+                    ->label('Catalogue status')
+                    ->badge()
+                    ->icon(fn ($state) => $state instanceof Catalogue_Status ? $state->getIcon() : null)
+                    ->placeholder('—'),
+                TextEntry::make('fetched_at')
+                    ->label('Last WoRMS sync')
+                    ->fontFamily(FontFamily::Mono)
+                    ->since()
+                    ->dateTimeTooltip()
+                    ->placeholder('Never'),
             ]);
     }
 
     /**
-     * @return Section The status and validation section with WoRMS status, catalogue status, and timestamps.
+     * Shown only when WoRMS points away from the catalogue name.
      */
-    protected static function getStatusSection(): Section
+    protected static function getNameWarning(): Callout
     {
-        return Section::make('Status & Validation')
-            ->description('WoRMS/Catalogue status and notes.')
-            ->icon('tabler-shield-check')
-            ->collapsible()
-            ->columnSpanFull()
-            ->schema([
-                Grid::make(3)
-                    ->schema([
-                        TextEntry::make('worms_status')
-                            ->label('WoRMS Status')
-                            ->badge()
-                            ->icon(fn ($state) => $state instanceof Worms_Status ? $state->getIcon() : 'tabler-info-circle')
-                            ->placeholder('—'),
-                        TextEntry::make('unacceptreason')
-                            ->label('Unaccept Reason')
-                            ->icon('tabler-alert-triangle')
-                            ->placeholder('—')
-                            ->columnSpan(2),
-                        TextEntry::make('catalogue_status')
-                            ->label('Catalogue Status')
-                            ->badge()
-                            ->placeholder('—')
-                            ->columnSpan(1),
-                        TextEntry::make('fetched_at')
-                            ->label('Last Sync')
-                            ->dateTime()
-                            ->icon('tabler-refresh')
-                            ->placeholder('—')
-                            ->columnSpan(1),
-                        TextEntry::make('updated_at')
-                            ->label('Updated At')
-                            ->dateTime()
-                            ->icon('tabler-calendar-event')
-                            ->placeholder('—')
-                            ->columnSpan(1),
-                        TextEntry::make('notes')
-                            ->label('Notes')
-                            ->icon('tabler-note')
-                            ->placeholder('—')
-                            ->columnSpanFull(),
-                    ]),
-            ]);
+        return Callout::make(fn (Taxon $record): string => filled($record->proposed_accepted_name)
+            ? 'WoRMS proposes another accepted name'
+            : 'WoRMS does not accept this name')
+            ->description(fn (Taxon $record): HtmlString => new HtmlString(implode(' · ', array_filter([
+                filled($record->proposed_accepted_name) ? 'Accepted name: <em>'.e($record->proposed_accepted_name).'</em>' : null,
+                filled($record->unacceptreason) ? 'Reason: '.e($record->unacceptreason) : null,
+            ]))))
+            ->key('name_warning')
+            // Unresolved, not amber: amber is Established, and `warning` is for
+            // actions and notifications only (DESIGN-SYSTEM.md). The icon keeps
+            // the meaning off colour alone.
+            ->color('gray')
+            ->icon('tabler-alert-triangle')
+            ->visible(fn (Taxon $record): bool => filled($record->proposed_accepted_name) || filled($record->unacceptreason));
     }
 
     /**
-     * @return Tabs\Tab The synonyms tab with a pretty-printed JSON viewer of WoRMS synonym data.
+     * WoRMS synonyms as a table: name, authority, status and reason.
      */
     protected static function getSynonymsTab(): Tabs\Tab
     {
         return Tabs\Tab::make('Synonyms')
             ->icon('tabler-list-details')
+            ->badge(fn (Taxon $record): int => count((array) $record->synonyms_data))
             ->schema([
-                PrettyJsonEntry::make('synonyms_data')
-                    ->hiddenLabel()
-                    ->placeholder('No synonyms found in WoRMS.')
-                    ->copyable(),
+                self::scrolling([
+                    RepeatableEntry::make('synonyms')
+                        ->hiddenLabel()
+                        ->state(fn (Taxon $record): array => array_map(fn (array $synonym): array => [
+                            'name' => filled($synonym['AphiaID'] ?? null)
+                                ? '<a href="'.self::WORMS_URL.(int) $synonym['AphiaID'].'" target="_blank" rel="noopener" class="text-primary-600 hover:underline dark:text-primary-400"><em>'.e((string) ($synonym['scientificname'] ?? '')).'</em></a>'
+                                : '<em>'.e((string) ($synonym['scientificname'] ?? '')).'</em>',
+                            'authority' => $synonym['authority'] ?? null,
+                            // The WoRMS status enum, so its colour, icon and label match everywhere else.
+                            'status' => Worms_Status::tryFrom((string) ($synonym['status'] ?? '')) ?? ($synonym['status'] ?? null),
+                            'unacceptreason' => $synonym['unacceptreason'] ?? null,
+                        ], array_values(array_filter((array) $record->synonyms_data, 'is_array'))))
+                        ->placeholder('No synonyms found in WoRMS.')
+                        ->table([
+                            TableColumn::make('Name'),
+                            TableColumn::make('Authority'),
+                            TableColumn::make('Status'),
+                            TableColumn::make('Reason'),
+                        ])
+                        ->schema([
+                            TextEntry::make('name')->html(),
+                            TextEntry::make('authority')->color('gray')->placeholder('—'),
+                            TextEntry::make('status')->badge()->placeholder('—'),
+                            TextEntry::make('unacceptreason')->placeholder('—'),
+                        ]),
+                ]),
             ]);
     }
 
@@ -225,137 +205,137 @@ class TaxonInfolist
     {
         return Tabs\Tab::make('References')
             ->icon('tabler-books')
+            ->badge(fn (Taxon $record): int => $record->literatureReferences()->count())
             ->schema([
-                Actions::make([
-                    Action::make('downloadBibtex')
-                        ->label('Download BibTeX')
-                        ->icon('tabler-download')
-                        ->color('gray')
-                        ->size('sm')
-                        ->visible(fn (Taxon $record): bool => $record->literatureReferences()->isNotEmpty())
-                        ->action(function (Taxon $record) {
-                            $bibtex = $record->literatureReferences()
-                                ->map(fn (array $row) => $row['literature']->toBibtex())
-                                ->implode("\n\n");
+                self::scrolling([
+                    Actions::make([
+                        Action::make('downloadBibtex')
+                            ->label('Download BibTeX')
+                            ->icon('tabler-download')
+                            ->color('gray')
+                            ->size('sm')
+                            ->visible(fn (Taxon $record): bool => $record->literatureReferences()->isNotEmpty())
+                            ->action(function (Taxon $record) {
+                                $bibtex = $record->literatureReferences()
+                                    ->map(fn (array $row) => $row['literature']->toBibtex())
+                                    ->implode("\n\n");
 
-                            return response()->streamDownload(
-                                fn () => print ($bibtex."\n"),
-                                Str::slug($record->scientificname ?: 'taxon').'-references.bib',
-                                ['Content-Type' => 'application/x-bibtex'],
-                            );
-                        }),
-                ])->alignEnd(),
-                RepeatableEntry::make('literature_references')
-                    ->hiddenLabel()
-                    ->state(fn (Taxon $record): array => $record->literatureReferences()
-                        ->map(fn (array $row) => [
-                            'role' => $row['role'],
-                            'short_ref' => $row['literature']->short_ref,
-                            'year' => $row['literature']->year,
-                            'full_ref' => $row['literature']->full_ref,
-                            'doi' => $row['literature']->doi,
-                            // The DOI link already points to the publisher.
-                            'link' => $row['literature']->doi ? null : $row['literature']->link,
-                            'pdf' => $row['literature']->file_path ? Storage::disk('public')->url($row['literature']->file_path) : null,
-                            'retracted' => $row['literature']->is_retracted ? 'Retracted' : null,
-                        ])
-                        ->all())
-                    ->placeholder('No approved references are linked to this taxon yet.')
-                    ->contained(false)
-                    ->schema([
-                        Grid::make(12)->schema([
-                            TextEntry::make('short_ref')
-                                ->hiddenLabel()
-                                ->weight('bold')
-                                ->columnSpan(['default' => 12, 'md' => 4]),
-                            TextEntry::make('role')
-                                ->hiddenLabel()
-                                ->badge()
-                                ->color(fn (string $state): string => match ($state) {
-                                    'Original description' => 'info',
-                                    'First record' => 'success',
-                                    default => 'gray',
-                                })
-                                ->columnSpan(['default' => 6, 'md' => 3]),
-                            TextEntry::make('retracted')
-                                ->hiddenLabel()
-                                ->badge()
-                                ->color('danger')
-                                ->icon('tabler-alert-octagon')
-                                ->hidden(fn ($state): bool => blank($state))
-                                ->columnSpan(['default' => 6, 'md' => 2]),
-                            TextEntry::make('full_ref')
-                                ->hiddenLabel()
-                                ->color('gray')
-                                ->columnSpanFull(),
-                            TextEntry::make('doi')
-                                ->hiddenLabel()
-                                ->icon('tabler-link')
-                                ->url(fn ($state): ?string => $state ? "https://doi.org/{$state}" : null)
-                                ->openUrlInNewTab()
-                                ->hidden(fn ($state): bool => blank($state))
-                                ->columnSpan(['default' => 12, 'md' => 6]),
-                            TextEntry::make('link')
-                                ->hiddenLabel()
-                                ->icon('tabler-external-link')
-                                ->formatStateUsing(fn (): string => 'Source')
-                                ->url(fn ($state): ?string => $state)
-                                ->openUrlInNewTab()
-                                ->hidden(fn ($state): bool => blank($state))
-                                ->columnSpan(['default' => 6, 'md' => 3]),
-                            TextEntry::make('pdf')
-                                ->hiddenLabel()
-                                ->icon('tabler-file-type-pdf')
-                                ->formatStateUsing(fn (): string => 'PDF')
-                                ->url(fn ($state): ?string => $state)
-                                ->openUrlInNewTab()
-                                ->hidden(fn ($state): bool => blank($state))
-                                ->columnSpan(['default' => 6, 'md' => 3]),
+                                return response()->streamDownload(
+                                    fn () => print ($bibtex."\n"),
+                                    Str::slug($record->scientificname ?: 'taxon').'-references.bib',
+                                    ['Content-Type' => 'application/x-bibtex'],
+                                );
+                            }),
+                    ])->alignEnd(),
+                    RepeatableEntry::make('literature_references')
+                        ->hiddenLabel()
+                        ->state(fn (Taxon $record): array => $record->literatureReferences()
+                            ->map(fn (array $row) => [
+                                'role' => $row['role'],
+                                'short_ref' => $row['literature']->short_ref,
+                                'year' => $row['literature']->year,
+                                'full_ref' => $row['literature']->full_ref,
+                                'doi' => $row['literature']->doi,
+                                // The DOI link already points to the publisher.
+                                'link' => $row['literature']->doi ? null : $row['literature']->link,
+                                'pdf' => $row['literature']->file_path ? Storage::disk('public')->url($row['literature']->file_path) : null,
+                                'retracted' => $row['literature']->is_retracted ? 'Retracted' : null,
+                            ])
+                            ->all())
+                        ->placeholder('No approved references are linked to this taxon yet.')
+                        ->contained(false)
+                        ->schema([
+                            Grid::make(12)->schema([
+                                TextEntry::make('short_ref')
+                                    ->hiddenLabel()
+                                    ->weight('bold')
+                                    ->columnSpan(['default' => 12, 'md' => 4]),
+                                TextEntry::make('role')
+                                    ->hiddenLabel()
+                                    ->badge()
+                                    ->color(fn (string $state): string => match ($state) {
+                                        'Original description' => 'info',
+                                        'First record' => 'success',
+                                        default => 'gray',
+                                    })
+                                    ->columnSpan(['default' => 6, 'md' => 3]),
+                                TextEntry::make('retracted')
+                                    ->hiddenLabel()
+                                    ->badge()
+                                    ->color('danger')
+                                    ->icon('tabler-alert-octagon')
+                                    ->hidden(fn ($state): bool => blank($state))
+                                    ->columnSpan(['default' => 6, 'md' => 2]),
+                                TextEntry::make('full_ref')
+                                    ->hiddenLabel()
+                                    ->color('gray')
+                                    ->columnSpanFull(),
+                                TextEntry::make('doi')
+                                    ->hiddenLabel()
+                                    ->icon('tabler-link')
+                                    ->url(fn ($state): ?string => $state ? "https://doi.org/{$state}" : null)
+                                    ->openUrlInNewTab()
+                                    ->hidden(fn ($state): bool => blank($state))
+                                    ->columnSpan(['default' => 12, 'md' => 6]),
+                                TextEntry::make('link')
+                                    ->hiddenLabel()
+                                    ->icon('tabler-external-link')
+                                    ->formatStateUsing(fn (): string => 'Source')
+                                    ->url(fn ($state): ?string => $state)
+                                    ->openUrlInNewTab()
+                                    ->hidden(fn ($state): bool => blank($state))
+                                    ->columnSpan(['default' => 6, 'md' => 3]),
+                                TextEntry::make('pdf')
+                                    ->hiddenLabel()
+                                    ->icon('tabler-file-type-pdf')
+                                    ->formatStateUsing(fn (): string => 'PDF')
+                                    ->url(fn ($state): ?string => $state)
+                                    ->openUrlInNewTab()
+                                    ->hidden(fn ($state): bool => blank($state))
+                                    ->columnSpan(['default' => 6, 'md' => 3]),
+                            ]),
                         ]),
-                    ]),
+                ]),
             ]);
     }
 
     /**
-     * @return Section The audit section with creator, editor, EASIN ID, and timestamps.
+     * One fixed height for every tab's content, scrolling inside it, so the
+     * modal keeps its size whichever tab is open.
+     *
+     * @param  array<int, mixed>  $components
      */
-    protected static function getAuditSection(): Section
+    protected static function scrolling(array $components): Group
     {
-        return Section::make('Audit')
-            ->description('Authorship and timestamps.')
+        return Group::make($components)->extraAttributes(['style' => 'height: '.self::TAB_HEIGHT.'; overflow-y: auto;']);
+    }
+
+    /**
+     * Free-text notes, then who created and last changed the record.
+     */
+    protected static function getNotesTab(): Tabs\Tab
+    {
+        return Tabs\Tab::make('Notes & audit')
             ->icon('tabler-history')
-            ->collapsible()
-            ->collapsed()
-            ->columnSpanFull()
             ->schema([
-                Grid::make(3)
-                    ->schema([
-                        TextEntry::make('creator')
-                            ->label('Created By')
-                            ->icon('tabler-user')
-                            ->placeholder('—')
-                            ->formatStateUsing(fn ($record) => $record?->creator?->getFormattedNameWithRoles()),
-                        TextEntry::make('created_at')
-                            ->label('Created At')
-                            ->dateTime()
-                            ->icon('tabler-calendar-plus')
-                            ->placeholder('—'),
-                        TextEntry::make('Easin_id')
-                            ->label('EASIN ID')
-                            ->icon('tabler-id')
-                            ->placeholder('—')
-                            ->columnSpan(1),
-                        TextEntry::make('editor')
-                            ->label('Updated By')
-                            ->icon('tabler-user-edit')
-                            ->placeholder('—')
-                            ->formatStateUsing(fn ($record) => $record?->editor?->getFormattedNameWithRoles()),
-                        TextEntry::make('updated_at')
-                            ->label('Updated At')
-                            ->dateTime()
-                            ->icon('tabler-calendar-event')
-                            ->placeholder('—'),
-                    ]),
+                self::scrolling([
+                    TextEntry::make('notes')
+                        ->hiddenLabel()
+                        ->placeholder('No notes.'),
+                    Grid::make(['default' => 1, 'md' => 2])
+                        ->schema([
+                            TextEntry::make('created_at')
+                                ->label('Created')
+                                ->dateTime()
+                                ->suffix(fn ($record): string => $record->creator ? ' · '.$record->creator->getFormattedNameWithRoles() : '')
+                                ->placeholder('—'),
+                            TextEntry::make('updated_at')
+                                ->label('Last updated')
+                                ->dateTime()
+                                ->suffix(fn ($record): string => $record->editor ? ' · '.$record->editor->getFormattedNameWithRoles() : '')
+                                ->placeholder('—'),
+                        ]),
+                ]),
             ]);
     }
 }

@@ -7,6 +7,7 @@ use App\Enums\Subregion;
 use App\Filament\Widgets\FirstRecordCountriesChart;
 use App\Filament\Widgets\IntroductionsByDecadeChart;
 use App\Filament\Widgets\SubregionEstablishmentChart;
+use App\Filament\Widgets\SubregionNisMap;
 use App\Models\IntroEventRecord;
 use App\Models\SubregionRecord;
 
@@ -27,7 +28,7 @@ it('keeps empty decades on the axis and marks the incomplete last one', function
 it('stacks statuses that share a colour and sends the rest to other', function () {
     $event = IntroEventRecord::factory()->create();
 
-    foreach ([EstablishmentStatus::Casual, EstablishmentStatus::Vagrant, EstablishmentStatus::Questionable, null] as $status) {
+    foreach ([EstablishmentStatus::Casual, EstablishmentStatus::Vagrant, EstablishmentStatus::Unknown, null] as $status) {
         SubregionRecord::factory()->create([
             'intro_event_id' => $event->id,
             'subregion' => Subregion::EMED,
@@ -52,4 +53,20 @@ it('counts every country of a shared first record', function () {
 
     expect($options['yAxis']['data'])->toBe(['Lebanon', 'Israel'])
         ->and($options['series'][0]['data'])->toBe([1, 2]);
+});
+
+it('maps introduction events per subregion, once each, ignoring deleted events', function () {
+    $event = IntroEventRecord::factory()->create();
+    $sameTaxon = IntroEventRecord::factory()->create(['taxon_id' => $event->taxon_id]);
+    $deleted = IntroEventRecord::factory()->create();
+
+    foreach ([$event, $event, $sameTaxon, $deleted] as $record) {
+        SubregionRecord::factory()->create(['intro_event_id' => $record->id, 'subregion' => Subregion::EMED]);
+    }
+    SubregionRecord::factory()->create(['intro_event_id' => $event->id, 'subregion' => Subregion::ADRIA]);
+    $deleted->delete();
+
+    // Two live events in the EMED (one with a duplicate record); same taxon still counts twice.
+    expect(livewire(SubregionNisMap::class)->instance()->getNisCounts())
+        ->toBe(['WMED' => 0, 'CMED' => 0, 'ADRIA' => 1, 'EMED' => 2]);
 });

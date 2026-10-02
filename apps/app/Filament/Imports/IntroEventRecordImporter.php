@@ -9,12 +9,14 @@ use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
 use App\Enums\PathwayType;
 use App\Enums\Subregion;
+use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Models\IntroEventRecord;
 use App\Models\PathwayRecord;
 use App\Models\SubregionRecord;
 use App\Models\Taxon;
 use App\Services\TaxonNormalizer;
 use App\Services\WormsService;
+use Filament\Actions\Imports\Downloaders\Contracts\Downloader;
 use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
@@ -35,6 +37,11 @@ use Illuminate\Support\Str;
 class IntroEventRecordImporter extends Importer
 {
     protected static ?string $model = IntroEventRecord::class;
+
+    public static function getFailedRowsDownloader(): Downloader
+    {
+        return app(XlsxFailedRowsDownloader::class);
+    }
 
     /**
      * Opens the notes line that lists why a row was flagged needs_review, as
@@ -134,7 +141,12 @@ class IntroEventRecordImporter extends Importer
                     // Splitting on both keeps each country a value of its own, so
                     // it is counted and filtered individually rather than as one
                     // combined string.
-                    return array_values(array_filter(array_map('trim', preg_split('#[,/]#', $state))));
+                    // Each is stored under its MAMIAS name ("Turkey", "TR" → "Türkiye"),
+                    // the form's names; an unrecognised value is kept as given.
+                    return array_values(array_filter(array_map(
+                        fn (string $country): string => CountrySelectWithMedPriority::canonicalName($country) ?? trim($country),
+                        preg_split('#[,/]#', $state),
+                    )));
                 })
                 ->rules(['nullable']),
 
@@ -263,6 +275,17 @@ class IntroEventRecordImporter extends Importer
                 continue;
             }
 
+            // A questionable record in an establishment column is a NIS status,
+            // not an unreadable value: the event's here, the sub-region's in
+            // syncSubregionRecords().
+            if (str_ends_with($columnName, 'establishment_status') && NisStatus::isQuestionableCode($rawValue)) {
+                if ($columnName === 'establishment_status' && in_array($this->record->nis_status, [null, NisStatus::NIS], true)) {
+                    $this->record->nis_status = NisStatus::Questionable;
+                }
+
+                continue;
+            }
+
             if (($this->data[$columnName] ?? null) === null) {
                 $needsReview = true;
                 $ambiguousNotes[] = self::columnLabel($columnName).': '.trim($rawValue);
@@ -329,13 +352,14 @@ class IntroEventRecordImporter extends Importer
         foreach (self::SUBREGION_MAP as [$subregion, $statusKey, $yearKey]) {
             $establishmentStatus = $this->data[$statusKey] ?? null;
             $year = $this->data[$yearKey] ?? null;
+            $questionable = NisStatus::isQuestionableCode($this->rawValue($statusKey)) ? NisStatus::Questionable : null;
 
             $rawYear = $this->rawValue($yearKey);
             $ambiguousYearNote = ($year === null && filled($rawYear))
                 ? 'First arrival year (raw): '.trim($rawYear)
                 : null;
 
-            if ($establishmentStatus === null && $year === null && $ambiguousYearNote === null) {
+            if ($establishmentStatus === null && $year === null && $ambiguousYearNote === null && $questionable === null) {
                 continue;
             }
 
@@ -347,6 +371,7 @@ class IntroEventRecordImporter extends Importer
                 array_filter(
                     [
                         'establishment_status' => $establishmentStatus,
+                        'nis_status' => $questionable,
                         'first_arrival_year' => $year,
                         'notes' => $ambiguousYearNote,
                     ],
@@ -585,8 +610,8 @@ class IntroEventRecordImporter extends Importer
                 'unk' => 'Unknown',
                 'inv' => 'Invasive',
                 'dd' => 'DataDeficient',
-                'qr' => 'Questionable',
-                // No 'rex' here on purpose: range expansion is a NisStatus concept
+                // No questionable codes here: a questionable record is a NIS
+                // status, moved there in afterFill(). No 'rex' here on purpose: range expansion is a NisStatus concept
                 // and EstablishmentStatus has no such case, so the entry could only
                 // ever fall through to null. It stays mapped under NisStatus above.
             ],

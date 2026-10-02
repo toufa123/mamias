@@ -6,10 +6,13 @@ use App\Enums\OccurrenceStatus;
 use App\Filament\Resources\Occurrences\Schemas\OccurrenceForm;
 use App\Filament\Resources\Occurrences\Schemas\OccurrenceInfolist;
 use App\Filament\Resources\Occurrences\Tables\OccurrencesTable;
+use App\Models\Literature;
 use App\Models\Occurrence;
+use App\Notifications\OccurrenceSubmitted;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -20,6 +23,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Livewire\Component;
 
 class MySpeciesReports extends Component implements HasActions, HasForms, HasTable
@@ -46,6 +50,7 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
                     ->modalWidth(Width::SevenExtraLarge)
                     ->schema(OccurrenceInfolist::getComponents()),
                 $this->editAction(),
+                $this->withdrawAction(),
             ])
             ->headerActions([$this->createAction()])
             ->defaultSort('created_at', 'desc');
@@ -63,11 +68,13 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
             ->modalWidth(Width::FiveExtraLarge)
             ->schema(OccurrenceForm::getComponents())
             ->action(function (array $data): void {
-                Occurrence::create([
+                $occurrence = Occurrence::create([
                     ...$data,
                     'user_id' => auth()->id(),
                     'status' => OccurrenceStatus::PENDING,
                 ]);
+
+                $this->notifyModerators($occurrence);
 
                 Notification::make()
                     ->title('Occurrence reported')
@@ -80,22 +87,52 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
     public function editAction(): Action
     {
         return Action::make('edit')
-            ->label('Edit')
-            ->icon('tabler-pencil')
-            ->color('gray')
-            ->visible(fn (Occurrence $record): bool => $record->status === OccurrenceStatus::PENDING)
-            ->modalHeading('Edit Occurrence')
+            ->label(fn (Occurrence $record): string => $record->status === OccurrenceStatus::REJECTED ? 'Revise & resubmit' : 'Edit')
+            ->icon(fn (Occurrence $record): string => $record->status === OccurrenceStatus::REJECTED ? 'tabler-refresh' : 'tabler-pencil')
+            ->color(fn (Occurrence $record): string => $record->status === OccurrenceStatus::REJECTED ? 'warning' : 'gray')
+            ->visible(fn (Occurrence $record): bool => $record->status !== OccurrenceStatus::APPROVED)
+            ->modalHeading(fn (Occurrence $record): string => $record->status === OccurrenceStatus::REJECTED ? 'Revise & resubmit occurrence' : 'Edit Occurrence')
+            ->modalDescription(fn (Occurrence $record): ?string => $record->status === OccurrenceStatus::REJECTED && $record->moderation_notes
+                ? 'Reviewer feedback: '.$record->moderation_notes
+                : null)
+            ->modalSubmitActionLabel(fn (Occurrence $record): string => $record->status === OccurrenceStatus::REJECTED ? 'Resubmit for review' : 'Save changes')
             ->modalWidth(Width::FiveExtraLarge)
             ->schema(OccurrenceForm::getComponents())
             ->fillForm(fn (Occurrence $record): array => $record->toArray())
             ->action(function (Occurrence $record, array $data): void {
-                $record->update($data);
+                $isResubmission = $record->status === OccurrenceStatus::REJECTED;
+
+                // The rejection reason stays on the record so the reviewer sees what was asked for.
+                $record->update([...$data, 'status' => OccurrenceStatus::PENDING]);
+
+                if ($isResubmission) {
+                    $this->notifyModerators($record, isResubmission: true);
+                }
 
                 Notification::make()
-                    ->title('Occurrence updated')
+                    ->title($isResubmission ? 'Occurrence resubmitted' : 'Occurrence updated')
+                    ->body($isResubmission ? 'Your revised report is back in the review queue.' : null)
                     ->success()
                     ->send();
             });
+    }
+
+    public function withdrawAction(): DeleteAction
+    {
+        return DeleteAction::make('withdraw')
+            ->label('Withdraw')
+            ->icon('tabler-trash')
+            ->visible(fn (Occurrence $record): bool => $record->status === OccurrenceStatus::PENDING)
+            ->modalHeading('Withdraw this report?')
+            ->modalDescription('It will be removed from the review queue. This cannot be undone.')
+            ->successNotificationTitle('Report withdrawn');
+    }
+
+    private function notifyModerators(Occurrence $occurrence, bool $isResubmission = false): void
+    {
+        $moderators = Literature::moderators()->reject(fn ($moderator): bool => $moderator->is(auth()->user()));
+
+        NotificationFacade::send($moderators, new OccurrenceSubmitted($occurrence, $isResubmission));
     }
 
     public function getStats(): array

@@ -17,7 +17,6 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\HtmlString;
 use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
 use Livewire\Attributes\On;
 
@@ -164,12 +163,10 @@ class EditTaxon extends EditRecord
             TaxonTable::getKeepCurrentNameAction(),
             TaxonTable::getSendForReviewAction(),
             TaxonTable::getUndoMoveAction(),
-            CommentsAction::make()
+            DiscussionParticipantsAction::inDiscussion(CommentsAction::make()
                 ->label('Discussion')
                 ->color('gray')
-                ->modalDescription(fn (): HtmlString => DiscussionParticipantsAction::summary($this->getRecord()))
-                ->disableSidebar(),
-            DiscussionParticipantsAction::make(),
+                ->disableSidebar()),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

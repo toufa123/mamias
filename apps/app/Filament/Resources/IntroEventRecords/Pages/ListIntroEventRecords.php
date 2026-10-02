@@ -8,12 +8,14 @@ use App\Enums\NisStatus;
 use App\Filament\Actions\ExcelOrCsvImportAction;
 use App\Filament\Imports\IntroEventRecordImporter;
 use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
+use App\Filament\Resources\Literatures\LiteratureGuide;
 use App\Models\IntroEventRecord;
 use App\Services\SpreadsheetToCsvConverter;
 use App\Services\SubregionHeaderDisambiguator;
 use Closure;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use League\Csv\Info as CsvInfo;
@@ -35,6 +37,7 @@ class ListIntroEventRecords extends ListRecords
         $disambiguator = app(SubregionHeaderDisambiguator::class);
 
         return [
+            LiteratureGuide::action('intro-events', 'Introduction events guide'),
             ExcelOrCsvImportAction::make()
                 ->importer(IntroEventRecordImporter::class)
                 ->chunkSize(100)
@@ -85,6 +88,16 @@ class ListIntroEventRecords extends ListRecords
     }
 
     /**
+     * Wraps the tabs onto centred rows instead of an overflowing strip, as on
+     * ListTaxons.
+     */
+    public function getTabsContentComponent(): Component
+    {
+        return parent::getTabsContentComponent()
+            ->extraAttributes(['class' => '[&_.fi-tabs]:flex-wrap [&_.fi-tabs]:justify-center [&_.fi-tabs]:gap-y-2']);
+    }
+
+    /**
      * @return array<string, Tab>
      */
     public function getTabs(): array
@@ -125,7 +138,15 @@ class ListIntroEventRecords extends ListRecords
             ->icon('tabler-route')
             ->badgeColor('warning')
             ->badge(IntroEventRecord::whereNotNull('pathway_check')->count())
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereNotNull('pathway_check'));
+            // The EASIN decision column reads each row's pathways and taxon.
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereNotNull('pathway_check')->with(['pathwayRecords', 'taxon']));
+
+        // Where a settled check goes: its decision stays visible and auditable.
+        $tabs['pathway_checked'] = Tab::make('Pathway checked')
+            ->icon('tabler-route-2')
+            ->badgeColor('success')
+            ->badge(IntroEventRecord::whereNotNull('pathway_checked_at')->count())
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereNotNull('pathway_checked_at')->reorder('pathway_checked_at', 'desc'));
 
         // The other tabs rely on the model's SoftDeletingScope to hide trashed
         // rows; onlyTrashed() lifts that scope for this tab alone.

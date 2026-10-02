@@ -56,6 +56,9 @@ WORKDIR /var/www/html
 COPY --chown=www-data:www-data apps/ /var/www/html/
 
 # ── Install PHP dependencies ─────────────────────────────────────────
+# Parallel Composer downloads have produced 0-byte zips, leaving vendor/
+# full of empty PHP files. Serial downloads install cleanly.
+ENV COMPOSER_MAX_PARALLEL_HTTP=1
 RUN if [ ! -d "vendor" ]; then \
       if [ "$APP_BUILD" = "prod" ]; then \
         composer install --no-dev --optimize-autoloader --no-interaction --no-scripts; \

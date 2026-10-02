@@ -6,15 +6,20 @@
 @endphp
 
 @if ($unanswered->isNotEmpty())
-    @include('filament-alert-box::alert-box', [
-        'preview' => false,
-        'config' => [
-            'style' => 'info',
-            'showIcon' => true,
-            'title' => __('New comments on references'),
-            'content' => '<p>'.__('Submitters are waiting for a reply on:').' '.$unanswered->map(fn ($reference) => '<a href="'.route('filament.mamias.resources.literatures.edit', $reference).'" class="font-bold underline">'.e("{$reference->code} — {$reference->short_ref}").'</a>')->join(', ').'.</p>',
-        ],
-    ])
+    @php
+        $links = $unanswered->mapWithKeys(fn ($reference) => [route('filament.mamias.resources.literatures.edit', $reference) => "{$reference->code} — {$reference->short_ref}"]);
+        $body = '<p>'.__('Submitters are waiting for a reply on:').' '.$links->map(fn ($label, $link) => '<a href="'.$link.'" class="font-bold underline">'.e($label).'</a>')->join(', ').'.</p>';
+        $id = 'banner.reference-comments.'.md5($body);
+
+        // Landing on any of the toast's links counts as dismissing it.
+        if ($links->has(url()->current())) {
+            session()->push('dismissed_banners', $id);
+        }
+
+        if (! in_array($id, session('dismissed_banners', []))) {
+            \Filament\Notifications\Notification::make($id)->info()->persistent()->title(__('New comments on references'))->body($body)->send();
+        }
+    @endphp
 @endif
 
 @if ($pendingCount > 0)

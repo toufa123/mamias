@@ -238,6 +238,12 @@ Both surfaces load from **Bunny** (the GDPR-friendly Google Fonts mirror):
   `->monoFont('Geist Mono', provider: BunnyFontProvider::class)` in
   `MamiasPanelProvider`.
 
+**The CSP must allow Bunny.** `https://fonts.bunny.net` has to be in both
+`style-src` and `font-src` of the Caddy `Content-Security-Policy` header, in
+`docker-compose.yml` and `docker-compose.prod.yml`. Without it the browser blocks
+both stylesheets, nothing errors server-side, and every surface silently falls
+back to system fonts.
+
 **Pass the provider explicitly on both calls.** `Panel::font()` only overwrites
 the provider when that argument is non-null, so an earlier
 `->font(..., provider: GoogleFontProvider::class)` stays sticky: changing just

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Models\IntroEventRecord;
 use App\Models\StagingIntroEvent;
 use App\Models\SubregionRecord;
@@ -108,7 +109,11 @@ final class PromoteStagedIntroEvent
             return null;
         }
 
-        $countries = array_values(array_filter(array_map('trim', explode(',', $country))));
+        // Split and named as the baseline importer does, so both routes store the same names.
+        $countries = array_values(array_filter(array_map(
+            fn (string $name): string => CountrySelectWithMedPriority::canonicalName($name) ?? trim($name),
+            preg_split('#[,/]#', $country),
+        )));
 
         return $countries === [] ? null : $countries;
     }

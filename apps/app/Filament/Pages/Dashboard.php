@@ -14,6 +14,7 @@ use App\Filament\Widgets\PhylumByKingdomChart;
 use App\Filament\Widgets\SpeciesByKingdomChart;
 use App\Filament\Widgets\SpeciesByPhylumChart;
 use App\Filament\Widgets\SubregionEstablishmentChart;
+use App\Filament\Widgets\SubregionNisMap;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Livewire;
@@ -65,12 +66,16 @@ class Dashboard extends BaseDashboard
                                         IntroEventStatsWidget::class,
                                     ])
                                 ),
-                                Livewire::make(IntroductionsByDecadeChart::class),
+                                // Lazy: mounts when the tab first shows it, so its entry animation is seen rather than played while hidden.
+                                Livewire::make(IntroductionsByDecadeChart::class)->lazy(),
                                 Grid::make(2)->schema([
+                                    Livewire::make(SubregionNisMap::class),
                                     Livewire::make(SubregionEstablishmentChart::class),
-                                    Livewire::make(IntroductionPathwaysChart::class),
                                 ]),
-                                Livewire::make(FirstRecordCountriesChart::class),
+                                Grid::make(2)->schema([
+                                    Livewire::make(IntroductionPathwaysChart::class),
+                                    Livewire::make(FirstRecordCountriesChart::class),
+                                ]),
                             ]),
                     ]),
             ]);

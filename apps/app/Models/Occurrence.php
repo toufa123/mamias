@@ -10,6 +10,7 @@ use App\Enums\OccurrenceStatus;
 use App\Models\Traits\HasSpatialLocation;
 use Clickbar\Magellan\Data\Geometries\Point;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $moderation_notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ * @property-read Taxon|null $taxon
  *
  * @method BelongsTo user()
  * @method BelongsTo introEventRecord()
@@ -63,6 +66,8 @@ use Spatie\Activitylog\Support\LogOptions;
     'status',
     'moderation_notes',
 ])]
+// Derived from `location` on save; a PostGIS Point Livewire cannot serialize into form state.
+#[Hidden(['location_point'])]
 class Occurrence extends Model
 {
     use HasFactory, HasSpatialLocation, LogsActivity;

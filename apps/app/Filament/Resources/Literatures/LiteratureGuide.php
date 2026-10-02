@@ -16,7 +16,9 @@ use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
  * of contents), with its screenshots in public/images/docs/<guide>/:
  *
  * - `literatures`: reviewers, on the panel's Literatures resource;
- * - `references`: contributors, on the public "My Bibliographic References".
+ * - `references`: contributors, on the public "My Bibliographic References";
+ * - `taxa`: the MAMIAS catalogue (NIS Taxon list);
+ * - `intro-events`: the Introduction Events list.
  *
  * The screenshots were taken from the dev stack with temporary demo
  * references; retake them when the screens change.

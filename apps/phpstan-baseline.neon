@@ -511,24 +511,6 @@ parameters:
 			path: app/Filament/Resources/IntroEventRecords/Pages/ListIntroEventRecords.php
 
 		-
-			message: '#^Method App\\Filament\\Resources\\IntroEventRecords\\Schemas\\IntroEventRecordForm\:\:occurrenceSchema\(\) has invalid return type Filament\\Forms\\Components\\Component\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php
-
-		-
-			message: '#^Method App\\Filament\\Resources\\IntroEventRecords\\Schemas\\IntroEventRecordForm\:\:occurrenceSchema\(\) should return array\<Filament\\Forms\\Components\\Component\> but returns array\<int, Filament\\Forms\\Components\\Repeater\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php
-
-		-
-			message: '#^Parameter \#1 \$components of method Filament\\Schemas\\Components\\Component\:\:schema\(\) expects array\<Illuminate\\Contracts\\Support\\Htmlable\|string\>\|Closure\|Filament\\Schemas\\Schema, array\<Filament\\Forms\\Components\\Component\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Filament/Resources/IntroEventRecords/Schemas/IntroEventRecordForm.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\IntroEventRecord\:\:\$earliest\.$#'
 			identifier: property.notFound
 			count: 1
@@ -536,12 +518,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Models\\IntroEventRecord\:\:\$latest\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Filament/Resources/IntroEventRecords/Tables/IntroEventRecordsTable.php
@@ -679,24 +655,6 @@ parameters:
 			path: app/Filament/Resources/NisSuggestions/Tables/NisSuggestionsTable.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Filament/Resources/Occurrences/Actions/OccurrenceActions.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$kingdom\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceForm.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceForm.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>scientificname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 2
@@ -709,12 +667,6 @@ parameters:
 			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceInfolist.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceLocationsMapEntry.php
-
-		-
 			message: '#^Left side of && is always true\.$#'
 			identifier: booleanAnd.leftAlwaysTrue
 			count: 1
@@ -723,12 +675,6 @@ parameters:
 		-
 			message: '#^Cannot access property \$catalogue_status on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
 			identifier: property.nonObject
-			count: 1
-			path: app/Filament/Resources/Taxons/Pages/EditTaxon.php
-
-		-
-			message: '#^Parameter \#1 \$record of static method App\\Filament\\Actions\\DiscussionParticipantsAction\:\:summary\(\) expects Illuminate\\Database\\Eloquent\\Model&Kirschbaum\\Commentions\\Contracts\\Commentable, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Filament/Resources/Taxons/Pages/EditTaxon.php
 
@@ -1025,18 +971,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 2
 			path: app/Notifications/NewLiteratureReferenceNotification.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Notifications/OccurrenceApproved.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$scientificname\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Notifications/OccurrenceRejected.php
 
 		-
 			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:delete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'

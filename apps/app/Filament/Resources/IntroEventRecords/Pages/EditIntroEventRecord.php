@@ -32,6 +32,24 @@ class EditIntroEventRecord extends EditRecord
         ];
     }
 
+    /**
+     * Saving is a human having been through the record, which is what the
+     * Needs review tab asks for, so the flag goes with it (as on promotion).
+     * needs_review is not fillable, hence set on the record before update().
+     */
+    protected function beforeSave(): void
+    {
+        $this->record->needs_review = false;
+    }
+
+    /**
+     * Back to the list the record was opened from, e.g. the Needs review tab.
+     */
+    protected function getRedirectUrl(): string
+    {
+        return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+
     public function hasCombinedRelationManagerTabsWithContent(): bool
     {
         return true;

@@ -43,6 +43,27 @@ class EasinService
     }
 
     /**
+     * The EASIN catalogue entry for an EASIN ID (e.g. "R04358"), or null.
+     * Safer than a name lookup when the MAMIAS name is an unaccepted synonym.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findById(string $easinId): ?array
+    {
+        return Cache::remember('easin_entry_'.$easinId, 86400, function () use ($easinId): ?array {
+            try {
+                $response = Http::timeout(10)->get('https://easin.jrc.ec.europa.eu/apixg/catxg/easinid/'.rawurlencode($easinId));
+            } catch (\Exception) {
+                return null;
+            }
+
+            $entries = $response->successful() ? $response->json() : null;
+
+            return is_array($entries) && array_is_list($entries) ? ($entries[0] ?? null) : null;
+        });
+    }
+
+    /**
      * Fetch the EASIN ID for a scientific name from the JRC EASIN API.
      */
     public function fetchEasinId(string $scientificName): ?string

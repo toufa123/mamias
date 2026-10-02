@@ -27,6 +27,8 @@ class OccurrenceRejected extends Notification
             ->when($this->occurrence->moderation_notes, function (MailMessage $mail): MailMessage {
                 return $mail->line('**Reason:** '.$this->occurrence->moderation_notes);
             })
+            ->line('You can revise the report to address this feedback and resubmit it for review.')
+            ->action('Revise my report', route('my-species-reports'))
             ->line('Thank you for your contribution to the MAMIAS database.');
     }
 }

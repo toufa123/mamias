@@ -18,6 +18,9 @@ class SpeciesByKingdomChart extends EChartWidget
 
     protected static bool $isDiscovered = false;
 
+    /** Filament polls widgets every 5s by default; this data only changes on import or edit. */
+    protected ?string $pollingInterval = null;
+
     protected static int $contentHeight = 400;
 
     protected int|string|array $columnSpan = 1;

@@ -15,6 +15,7 @@ use Filament\Auth\Http\Responses\Contracts\EmailVerificationResponse as EmailVer
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse as RegistrationResponseContract;
 use Filament\Navigation\NavigationManager;
+use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Facades\FilamentColor;
 use Heyosseus\Vacuum\Vacuum;
 use Illuminate\Database\Eloquent\Model;
@@ -91,6 +92,16 @@ class AppServiceProvider extends ServiceProvider
                 )
             );
         }
+
+        // Banner toasts (filament/hooks/*-alert) are re-sent on every render; the
+        // toast's close button reaches the server as this event, so remember it.
+        \Livewire\on('call', function ($component, string $method, array $params): void {
+            $id = $params[1]['id'] ?? null;
+
+            if ($component instanceof Notifications && $method === '__dispatch' && $params[0] === 'notificationClosed' && is_string($id) && str_starts_with($id, 'banner.')) {
+                session()->push('dismissed_banners', $id);
+            }
+        });
 
         $invasive = [
             50 => '#feecea', 100 => '#fddcd8', 200 => '#f5c9c4', 300 => '#ff9e93',

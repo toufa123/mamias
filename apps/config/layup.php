@@ -352,6 +352,8 @@ return [
             'references',
             'my-species-reports',
             'my-suggestions',
+            // Package route, requested by CookieConsent::scripts() on every page.
+            'laravel-cookie-consent',
         ],
     ],
 

@@ -112,14 +112,14 @@ class TaxonTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
-                        ->modalWidth('7xl')
-                        ->modalHeading(fn ($record) => trim(($record->scientificname ?? '').' '.($record->authority ?? '')) ?: 'Taxon'),
+                        ->modalWidth('5xl')
+                        // Species name italic, authority upright (DESIGN-SYSTEM.md, Type).
+                        ->modalHeading(fn (Taxon $record): HtmlString => new HtmlString(trim('<em>'.e((string) $record->scientificname).'</em> '.e((string) $record->authority)))),
                     EditAction::make(),
                     self::getMoveToAcceptedNameAction(),
                     self::getKeepCurrentNameAction(),
                     self::getSendForReviewAction(),
                     self::getDiscussionAction(),
-                    DiscussionParticipantsAction::make(),
                     self::getUndoMoveAction(),
                     Action::make('sync_worms')
                         ->label('Sync WoRMS')
@@ -395,11 +395,10 @@ class TaxonTable
 
     public static function getDiscussionAction(): CommentsTableAction
     {
-        return CommentsTableAction::make()
+        return DiscussionParticipantsAction::inDiscussion(CommentsTableAction::make()
             ->label('Discussion')
             ->color('gray')
-            ->modalDescription(fn (Taxon $record): HtmlString => DiscussionParticipantsAction::summary($record))
-            ->disableSidebar();
+            ->disableSidebar());
     }
 
     /**
@@ -531,6 +530,9 @@ class TaxonTable
             ->wrap()
             ->html()
             ->formatStateUsing(fn ($state, $record) => self::formatScientificName($state, $record->rank))
+            // The kingdom at a glance; the tooltip names it.
+            ->icon(fn (Taxon $record): string => Taxon::kingdomIcon($record->kingdom))
+            ->iconColor('gray')
             ->description(fn (Taxon $record): ?string => $record->proposed_accepted_name ? "WoRMS accepted: {$record->proposed_accepted_name}" : null)
             ->tooltip(fn ($record) => self::getScientificNameTooltip($record));
     }
@@ -694,6 +696,9 @@ class TaxonTable
             return null;
         }
 
+        // Names the kingdom icon shown before the name.
+        $kingdom = filled($record->kingdom) ? '<br><span class="not-italic">'.e($record->kingdom).'</span>' : '';
+
         if ($isItalic) {
             $formattedName = preg_replace_callback('/(\'[^\']+\')/', function ($matches) {
                 return '<span class="not-italic">'.$matches[1].'</span>';
@@ -703,11 +708,12 @@ class TaxonTable
             // typographic context. See DESIGN-SYSTEM.md.
             return new HtmlString(
                 "<span class='italic'>{$formattedName}</span>".
-                ($authority !== '' ? " <span class='not-italic'> {$authority}</span>" : '')
+                ($authority !== '' ? " <span class='not-italic'> {$authority}</span>" : '').
+                $kingdom
             );
         }
 
-        return new HtmlString($fullName);
+        return new HtmlString($fullName.$kingdom);
     }
 
     protected static function getScientificNameFilter(): SelectFilter

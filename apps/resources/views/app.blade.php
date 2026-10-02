@@ -42,13 +42,28 @@
     <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet" />
 
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
-    @filamentStyles
+    {{--
+        Only the plugins the public pages render: the My* Livewire pages reuse
+        the Occurrence, NisSuggestion and Literature schemas and tables (maps,
+        stepper, comments, export), and Layup renders the CMS pages. Without a
+        list, @filamentStyles/@filamentScripts emit every panel plugin (logs
+        explorer, file manager, jobs monitor…) — ~1.5 MB this site never uses.
+        A public page that starts using another plugin must add it here and
+        to @filamentScripts below.
+    --}}
+    @filamentStyles([
+        'crumbls/layup',
+        'eduardoribeirodev/filament-leaflet',
+        'filament-stepper',
+        'jeffersongoncalves/filament-action-export',
+        'kirschbaum-development/commentions',
+    ])
 
     {{--
         The public site's own stylesheets must load AFTER @filamentStyles.
 
-        @filamentStyles emits every registered Filament plugin's CSS onto this
-        public layout — 20+ files. Several of those are full Tailwind builds
+        @filamentStyles emits Filament plugin CSS onto this public layout.
+        Several of those are full Tailwind builds
         that ship bare, unscoped utilities in the `utilities` cascade layer: a
         plain `.flex-col` with no media query, for instance. Loading them after
         the site's own CSS let such a rule beat the navbar's `lg:flex-row` and
@@ -164,7 +179,7 @@
             <div class="kt-container-fixed flex items-center gap-4">
                 <!-- Logo -->
                 <div class="flex shrink-0 items-center gap-1">
-                    <button class="kt-btn kt-btn-icon kt-btn-ghost -ms-2.5 lg:hidden" data-kt-drawer-toggle="#navbar">
+                    <button class="kt-btn kt-btn-icon kt-btn-ghost -ms-2.5 lg:hidden" data-kt-drawer-toggle="#navbar" type="button">
                         <i class="ki-filled ki-menu"></i>
                     </button>
                     <a class="flex shrink-0 items-center" href="{{ route('home') }}">
@@ -288,7 +303,17 @@
     <!-- End of Main -->
 
     <!-- Scripts -->
-    @filamentScripts
+    @filamentScripts([
+        'app',
+        'filament/actions',
+        'filament/notifications',
+        'filament/schemas',
+        'filament/support',
+        'filament/tables',
+        'eduardoribeirodev/filament-leaflet',
+        'jeffersongoncalves/filament-action-export',
+        'kirschbaum-development/commentions',
+    ])
     @livewireScripts
     @notifyJs
     {!! CookieConsent::scripts() !!}

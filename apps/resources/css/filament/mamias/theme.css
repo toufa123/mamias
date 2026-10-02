@@ -1,4 +1,5 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import 'jsvectormap/dist/jsvectormap.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
@@ -257,4 +258,73 @@
 .mamias-guide code::before,
 .mamias-guide code::after {
     content: none;
+}
+
+/* ── Responsive tables ─────────────────────────────────────────
+   The table scrolls inside its own frame (.fi-ta-content-ctn is already
+   overflow-x: auto); min-width: 0 stops a wide table from stretching the
+   page grid instead, which is what made the whole view scroll sideways.
+   Nothing here is pinned to a breakpoint, so the layout stays fluid between
+   them. */
+.fi-main,
+.fi-page,
+.fi-ta-ctn {
+    min-width: 0;
+}
+
+.fi-ta-content-ctn {
+    overscroll-behavior-x: contain;
+}
+
+/* Record actions (Filament's default AfterColumns position, the last cell)
+   stay pinned to the right edge while the other columns scroll under them.
+   A sticky cell needs an opaque fill, so it repeats the row's own tint;
+   the hairline on its left marks where scrolled content goes under it. */
+.fi-ta-table {
+    --mamias-sticky-bg: var(--color-white);
+    --mamias-sticky-bg-tint: var(--color-gray-50);
+}
+
+.dark .fi-ta-table {
+    --mamias-sticky-bg: var(--color-gray-800);
+    --mamias-sticky-bg-tint: color-mix(in oklab, var(--color-gray-800), white 5%);
+}
+
+.fi-ta-table > tbody > tr > td.fi-ta-cell:last-child:has(> .fi-ta-actions),
+.fi-ta-table:has(td.fi-ta-cell:last-child > .fi-ta-actions) > thead > tr > th:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    background-color: var(--mamias-sticky-bg);
+    box-shadow: inset 1px 0 0 var(--color-gray-100);
+}
+
+.dark .fi-ta-table > tbody > tr > td.fi-ta-cell:last-child:has(> .fi-ta-actions),
+.dark .fi-ta-table:has(td.fi-ta-cell:last-child > .fi-ta-actions) > thead > tr > th:last-child {
+    box-shadow: inset 1px 0 0 var(--color-gray-700);
+}
+
+/* The header cell keeps the header band's own fill (see .fi-ta-header-cell). */
+.fi-ta-table:has(td.fi-ta-cell:last-child > .fi-ta-actions) > thead > tr > th:last-child {
+    @apply bg-gray-50 dark:bg-gray-900;
+}
+
+.fi-ta-row.fi-striped > td.fi-ta-cell:last-child:has(> .fi-ta-actions),
+.fi-ta-row.fi-clickable:hover > td.fi-ta-cell:last-child:has(> .fi-ta-actions) {
+    background-color: var(--mamias-sticky-bg-tint);
+}
+
+/* Stacked-on-mobile tables turn rows into blocks below sm; there is no
+   column to pin there, so they only stick from sm up. */
+@media (width < 40rem) {
+    .fi-ta-table-stacked-on-mobile td.fi-ta-cell:last-child:has(> .fi-ta-actions) {
+        position: static;
+        box-shadow: none;
+    }
+}
+
+/* Dashboard widgets that share a grid row fill it, so card bottoms line up when one has a subheading. */
+.fi-sc-component > .fi-wi-widget,
+.fi-sc-component > .fi-wi-widget > .fi-section {
+    height: 100%;
 }

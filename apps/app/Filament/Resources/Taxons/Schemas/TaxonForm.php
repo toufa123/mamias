@@ -26,7 +26,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 use Novadaemon\FilamentPrettyJson\Form\PrettyJsonField;
 
 /**
@@ -36,6 +35,14 @@ use Novadaemon\FilamentPrettyJson\Form\PrettyJsonField;
  */
 class TaxonForm
 {
+    /**
+     * Makes the two sections sharing the top row the same height. The form
+     * grid stretches each column, but not the card inside: these attributes
+     * land on the section's wrapper, which fills the column, and as a
+     * one-cell grid it stretches the card to fill it in turn.
+     */
+    private const FILL_COLUMN = ['style' => 'height: 100%; display: grid;'];
+
     /**
      * @param  Schema  $schema  The form schema to configure.
      * @return Schema The configured schema instance.
@@ -60,6 +67,7 @@ class TaxonForm
         return Section::make('General Information')
             ->description('Scientific name, authority, and primary identifiers.')
             ->icon('tabler-tag')
+            ->extraAttributes(self::FILL_COLUMN)
             ->schema([
                 Grid::make(12)
                     ->schema([
@@ -81,12 +89,19 @@ class TaxonForm
                         TextInput::make('aphia_id')
                             ->label('Aphia ID')
                             ->numeric()
-                            ->columnSpan(4)
+                            ->columnSpan(6)
                             ->live(),
                         TextInput::make('Easin_id')
                             ->label('EASIN ID')
-                            ->helperText(fn ($record) => $record?->Easin_id ? new HtmlString('<a href="https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/'.$record->Easin_id.'" target="_blank" class="text-primary-600 underline">View EASIN Factsheet</a>') : null)
                             ->suffixActions([
+                                // Next to the ID rather than as helper text under it, which
+                                // made this field taller than Aphia ID on the same row.
+                                Action::make('view_easin_factsheet')
+                                    ->icon('tabler-external-link')
+                                    ->tooltip('View EASIN factsheet')
+                                    ->url(fn ($get): ?string => filled($get('Easin_id')) ? 'https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/'.rawurlencode((string) $get('Easin_id')) : null)
+                                    ->openUrlInNewTab()
+                                    ->visible(fn ($get): bool => filled($get('Easin_id'))),
                                 Action::make('fetch_easin_id')
                                     ->icon('tabler-refresh')
                                     ->tooltip('Fetch EASIN ID')
@@ -114,8 +129,26 @@ class TaxonForm
                                                 ->send();
                                         }
                                     }),
-                            ])->columnSpan(4),
-                        TextInput::make('proposed_accepted_name')->label('Proposed Accepted Name')->hintIcon('tabler-info-circle', 'Fetched from WoRMS when the status is unaccepted')->columnSpan(4)->disabled()->dehydrated(),
+                            ])->columnSpan(6),
+                        // WoRMS's verdict on the name, side by side: what it accepts
+                        // instead and why. Read-only: every WoRMS sync overwrites both.
+                        // Inputs aligned to the bottom, so a label that wraps on a narrow
+                        // window does not drop its input below the other.
+                        Grid::make(['default' => 1, 'md' => 2])
+                            ->extraAttributes(['style' => 'align-items: end;'])
+                            ->columnSpan(12)
+                            ->schema([
+                                TextInput::make('proposed_accepted_name')
+                                    ->label('WoRMS accepted name')
+                                    ->placeholder('Set by WoRMS if unaccepted')
+                                    ->disabled()
+                                    ->dehydrated(),
+                                TextInput::make('unacceptreason')
+                                    ->label('Unaccept reason')
+                                    ->placeholder('Given by WoRMS with it')
+                                    ->disabled()
+                                    ->dehydrated(),
+                            ]),
                         Toggle::make('is_extinct')
                             ->label('Extinct')
                             ->inline(false)
@@ -209,6 +242,7 @@ class TaxonForm
         return Section::make('Taxonomic Classification')
             ->description('Full taxonomic hierarchy and rank.')
             ->icon('tabler-school')
+            ->extraAttributes(self::FILL_COLUMN)
             ->schema([
                 Grid::make(3)
                     ->schema([
@@ -233,7 +267,7 @@ class TaxonForm
     }
 
     /**
-     * @return Section The status and validation section with WoRMS status, catalogue status, fetch timestamps, and notes.
+     * @return Section The status and validation section with WoRMS status, catalogue status, fetch timestamps, and notes. The WoRMS unaccept reason sits in General Information, with the accepted name.
      */
     protected static function getStatusAndValidationSection(): Section
     {
@@ -248,8 +282,8 @@ class TaxonForm
                 ),
             ])
             ->schema([
-                Grid::make(3)
-                    ->dense()
+                // Two pairs: the two statuses, then the two dates.
+                Grid::make(['default' => 1, 'md' => 2])
                     ->schema([
                         Select::make('worms_status')
                             ->label('WoRMS Status')
@@ -262,22 +296,16 @@ class TaxonForm
                                     $set('catalogue_status', Catalogue_Status::checked_not_accepted->value);
                                 }
                             }),
-                        TextInput::make('unacceptreason')
-                            ->label('Unaccept Reason')
-                            ->columnSpan('2'),
                         Select::make('catalogue_status')
                             ->label('Catalogue Status')
                             ->options(Catalogue_Status::class)
-                            ->live()
-                            ->columnSpan(1),
+                            ->live(),
                         DateTimePicker::make('fetched_at')
                             ->label('First Fetched At')
-                            ->native(false)
-                            ->columnSpan(1),
+                            ->native(false),
                         DateTimePicker::make('updated_at')
                             ->label('Updated At')
-                            ->native(false)
-                            ->columnSpan(1),
+                            ->native(false),
                     ]),
                 Textarea::make('notes')
                     ->label('Notes')

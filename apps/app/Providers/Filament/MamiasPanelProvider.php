@@ -21,6 +21,7 @@ use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Crumbls\Layup\LayupPlugin;
 use Devonab\FilamentEasyFooter\EasyFooterPlugin;
+use Digit7s\FilamentViewWebsite\ViewWebsitePlugin;
 use DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 use Elemind\FilamentECharts\FilamentEChartsPlugin;
@@ -84,7 +85,9 @@ class MamiasPanelProvider extends PanelProvider
     public function boot(): void
     {
         FilamentAsset::register([
-            Js::make('app-scripts', Vite::asset('resources/js/app.js')),
+            // Vite emits ES modules (`import …` from a shared runtime chunk);
+            // as a classic <script> the browser rejects the whole file.
+            Js::make('app-scripts', Vite::asset('resources/js/app.js'))->module(),
         ]);
     }
 
@@ -124,6 +127,9 @@ class MamiasPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification(EmailVerificationPrompt::class)
             ->plugins([
+                ViewWebsitePlugin::make()
+                    ->label('Public site')
+                    ->icon('heroicon-o-globe-alt'),
                 // Version sources, highest priority first. See
                 // config/filament-app-version.php — keep the two chains in step.
                 //   1. APP_VERSION, frozen into the config at config:cache time
@@ -346,11 +352,6 @@ class MamiasPanelProvider extends PanelProvider
 
             ->userMenuItems([
 
-                Action::make('home')
-                    ->label('Public site')
-                    ->url(fn (): string => url('/'))
-                    ->icon(Heroicon::OutlinedHome),
-
                 Action::make('decomposer')
                     ->label('Decomposer')
                     ->url(fn (): string => url('mamias/decompose'))
@@ -396,7 +397,7 @@ class MamiasPanelProvider extends PanelProvider
                 'panels::body.start',
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.mobile-notice'),
             )
-            // Installable-app manifest and the Install / Full screen buttons,
+            // Installable-app manifest and the Install app button,
             // shared with the public layout.
             ->renderHook(
                 PanelsRenderHook::HEAD_END,

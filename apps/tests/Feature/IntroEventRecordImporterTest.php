@@ -362,6 +362,28 @@ it('keeps the file spelling in notes when the taxon was found under another name
         ->and($record->needs_review)->toBeFalse();
 });
 
+it('moves a questionable establishment value to the NIS status, without a review flag', function () {
+    $record = IntroEventRecord::factory()->create(['taxon_id' => $this->taxon->id, 'nis_status' => NisStatus::NIS, 'establishment_status' => null, 'notes' => null]);
+
+    $importer = makeImporter(
+        columnMap: ['establishment_status' => 'ES', 'wmed_establishment_status' => 'WMED ES'],
+        options: [],
+        record: $record,
+        data: ['taxon_id' => $this->taxon->id, 'establishment_status' => null, 'wmed_establishment_status' => null],
+        originalData: ['ES' => 'que', 'WMED ES' => 'QR'],
+    );
+
+    (fn () => $this->afterFill())->call($importer);
+    (fn () => $this->syncSubregionRecords())->call($importer);
+
+    expect($record->nis_status)->toBe(NisStatus::Questionable)
+        ->and($record->needs_review)->toBeFalse()
+        ->and($record->subregionRecords()->sole())
+        ->subregion->toBe(Subregion::WMED)
+        ->nis_status->toBe(NisStatus::Questionable)
+        ->establishment_status->toBeNull();
+});
+
 it('returns null for unknown scientific name when WoRMS has no match', function () {
     Http::fake(['*' => Http::response([], 204)]);
 
@@ -421,7 +443,8 @@ it('resolves establishment status from shorthand and messy values', function () 
     expect(castColumn('establishment_status', 'unk'))->toBe(EstablishmentStatus::Unknown);
     expect(castColumn('establishment_status', 'inv'))->toBe(EstablishmentStatus::Invasive);
     expect(castColumn('establishment_status', 'DD'))->toBe(EstablishmentStatus::DataDeficient);
-    expect(castColumn('establishment_status', 'QR'))->toBe(EstablishmentStatus::Questionable);
+    // A questionable record is a NIS status, not an establishment status.
+    expect(castColumn('establishment_status', 'QR'))->toBeNull();
     // "rex" (range expansion) is a NisStatus value, not an establishment status —
     // EstablishmentStatus has no such case, so it must fall through to null.
     expect(castColumn('establishment_status', 'rex'))->toBeNull();

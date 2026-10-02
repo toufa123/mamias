@@ -9,6 +9,7 @@ use App\Enums\NisStatus;
 use App\Models\StagingIntroEvent;
 use App\Models\Taxon;
 use App\Services\TaxonMatcher;
+use Filament\Actions\Imports\Downloaders\Contracts\Downloader;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
@@ -37,6 +38,11 @@ use Filament\Actions\Imports\Models\Import;
 class PanMediterraneanImporter extends Importer
 {
     protected static ?string $model = StagingIntroEvent::class;
+
+    public static function getFailedRowsDownloader(): Downloader
+    {
+        return app(XlsxFailedRowsDownloader::class);
+    }
 
     /**
      * Raw cell values that produced a null, collected per row.
@@ -153,6 +159,7 @@ class PanMediterraneanImporter extends Importer
             $this->flagUnresolved($establishmentColumn, $subregion->value.' establishment status');
         }
 
+        $this->moveQuestionableRecords();
         $this->deriveMediterraneanYear();
 
         // Recorded as an explicit absence rather than left silent, so the
@@ -168,6 +175,39 @@ class PanMediterraneanImporter extends Importer
         }
 
         $this->record->proposals = $this->rowProposals;
+    }
+
+    /**
+     * The baseline writes "que" in its establishment columns, but a
+     * questionable record is a NIS status (Galanidi et al. 2023). Set it there,
+     * unless a stronger held-out status is already given, and say so in place
+     * of the "could not be read" flag.
+     */
+    protected function moveQuestionableRecords(): void
+    {
+        $pairs = [['establishment_status', 'nis_status']];
+
+        foreach (StagingIntroEvent::SUBREGION_MAP as [, $establishmentColumn, , $nisColumn]) {
+            $pairs[] = [$establishmentColumn, $nisColumn];
+        }
+
+        foreach ($pairs as [$establishmentColumn, $nisColumn]) {
+            $raw = $this->originalData[$this->columnMap[$establishmentColumn] ?? ''] ?? null;
+
+            if (! NisStatus::isQuestionableCode($raw)) {
+                continue;
+            }
+
+            if (in_array($this->record->{$nisColumn}, [null, NisStatus::NIS], true)) {
+                $this->record->{$nisColumn} = NisStatus::Questionable;
+            }
+
+            $this->rowProposals[$establishmentColumn] = [
+                'raw' => trim((string) $raw),
+                'proposed' => null,
+                'reason' => 'A questionable record is a NIS status, not an establishment status: set as the NIS status.',
+            ];
+        }
     }
 
     /**
@@ -324,6 +364,7 @@ class PanMediterraneanImporter extends Importer
             'cryptogenic', 'cry' => NisStatus::Cryptogenic,
             'questionable', 'que' => NisStatus::Questionable,
             'range expansion', 'range-expansion', 'rex' => NisStatus::RangeExpansion,
+            'data deficient', 'dd' => NisStatus::DataDeficient,
             default => null,
         };
     }
@@ -345,7 +386,7 @@ class PanMediterraneanImporter extends Importer
             'casual', 'cas' => EstablishmentStatus::Casual,
             'invasive', 'inv' => EstablishmentStatus::Invasive,
             'unknown', 'unk' => EstablishmentStatus::Unknown,
-            'questionable', 'que' => EstablishmentStatus::Questionable,
+            // "que" here is a questionable record: moved to the NIS status in beforeSave().
             'vagrant', 'vag' => EstablishmentStatus::Vagrant,
             'data deficient', 'dd' => EstablishmentStatus::DataDeficient,
             'excluded', 'exc' => EstablishmentStatus::Excluded,

@@ -87,7 +87,8 @@ describe('NisStatus', function () {
         expect(NisStatus::NIS->getLabel())->toBe('NIS')
             ->and(NisStatus::Cryptogenic->getLabel())->toBe('Cryptogenic')
             ->and(NisStatus::Questionable->getLabel())->toBe('Questionable')
-            ->and(NisStatus::RangeExpansion->getLabel())->toBe('Range Expansion');
+            ->and(NisStatus::RangeExpansion->getLabel())->toBe('Range Expansion')
+            ->and(NisStatus::DataDeficient->getLabel())->toBe('Data Deficient');
     });
 
     it('returns descriptions', function () {

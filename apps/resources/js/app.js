@@ -1,4 +1,86 @@
 import 'cap-widget';
+
+// elemind/filament-echarts watches each chart with a ResizeObserver that calls
+// chart.resize(). An observer always fires once right after observe(), and
+// ECharts' resize() redraws with a zero-duration animation — so every chart's
+// entry animation was cut off after a frame. Drop that first notification for
+// chart elements; real resizes still reach the callback.
+const NativeResizeObserver = window.ResizeObserver;
+window.ResizeObserver = class extends NativeResizeObserver {
+    constructor(callback) {
+        const seen = new WeakSet();
+        super((entries, observer) => {
+            const resized = entries.filter(
+                (entry) =>
+                    !entry.target.classList.contains('filament-echarts-chart-object') ||
+                    seen.has(entry.target) ||
+                    !seen.add(entry.target),
+            );
+            if (resized.length) {
+                callback(resized, observer);
+            }
+        });
+    }
+};
+
+/**
+ * PNG export for the dashboard graphics: the rendered chart (ECharts'
+ * getDataURL, or the rasterised map) under its title, with an optional note
+ * and colour-scale legend, on white. All sizes scale with `pixelRatio` so the
+ * text matches a chart exported at that ratio.
+ *
+ * @param {{src: string, title: string, note?: string|null, scale?: {from: string, to: string, min: number, max: number, label: string}|null, file: string, pixelRatio?: number}} graphic
+ */
+window.mamiasExportPng = async ({ src, title, note = null, scale = null, file, pixelRatio = 2 }) => {
+    const image = new Image();
+    image.src = src;
+    await image.decode();
+
+    const px = (n) => n * pixelRatio;
+    const font = getComputedStyle(document.body).fontFamily;
+    const header = px(20) + px(18) + (note ? px(8) + px(12) : 0) + px(16);
+    const footer = scale ? px(44) : px(16);
+
+    const canvas = Object.assign(document.createElement('canvas'), {
+        width: image.width + px(40),
+        height: header + image.height + footer,
+    });
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.textBaseline = 'top';
+
+    context.fillStyle = '#0e2630';
+    context.font = `600 ${px(18)}px ${font}`;
+    context.fillText(title, px(20), px(20));
+
+    if (note) {
+        context.fillStyle = '#5f7783';
+        context.font = `400 ${px(12)}px ${font}`;
+        context.fillText(note, px(20), px(46));
+    }
+
+    context.drawImage(image, px(20), header);
+
+    if (scale) {
+        const top = header + image.height + px(16);
+        const gradient = context.createLinearGradient(px(56), 0, px(216), 0);
+        gradient.addColorStop(0, scale.from);
+        gradient.addColorStop(1, scale.to);
+
+        context.fillStyle = '#47606b';
+        context.font = `400 ${px(12)}px ${font}`;
+        context.textAlign = 'right';
+        context.fillText(String(scale.min), px(48), top);
+        context.textAlign = 'left';
+        context.fillText(`${scale.max}  ${scale.label}`, px(224), top);
+        context.fillStyle = gradient;
+        context.fillRect(px(56), top + px(1), px(160), px(12));
+    }
+
+    Object.assign(document.createElement('a'), { href: canvas.toDataURL('image/png'), download: `${file}.png` }).click();
+};
+
 const _L = window.L;
 if (!_L || typeof _L.map !== 'function') {
     console.warn('MODULE INIT: window.L invalid. type:', typeof _L, 'keys:', _L ? Object.keys(_L).slice(0, 15).join(',') : 'null, window keys with L:', Object.getOwnPropertyNames(window).filter(k => k.includes('L')).join(','));

@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Resources\Literatures\Pages\ListLiteratures;
+use App\Filament\Resources\Taxons\Pages\ListTaxons;
 use App\Models\Literature;
 use App\Models\Taxon;
 use App\Models\User;
@@ -25,6 +26,19 @@ it('sets who follows a discussion, adding and removing participants', function (
         ->callAction(TestAction::make('discussion_participants')->table($literature), ['participants' => [$this->scientist->id]]);
 
     expect($literature->getSubscribers()->modelKeys())->toBe([$this->scientist->id]);
+});
+
+it('chooses species discussion participants inside the Discussion window, saved as they change', function () {
+    $taxon = Taxon::factory()->create();
+    $taxon->subscribe($this->admin);
+
+    livewire(ListTaxons::class)
+        ->loadTable()
+        ->mountAction(TestAction::make('commentList')->table($taxon))
+        ->assertSchemaStateSet(['participants' => [$this->admin->id]])
+        ->fillForm(['participants' => [$this->scientist->id]]);
+
+    expect($taxon->getSubscribers()->modelKeys())->toBe([$this->scientist->id]);
 });
 
 it('notifies species discussion participants, not the author', function () {

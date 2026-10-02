@@ -20,6 +20,9 @@ class CatalogueStatsWidget extends BaseWidget
 
     protected static bool $isDiscovered = false;
 
+    /** Filament polls widgets every 5s by default; this data only changes on import or edit. */
+    protected ?string $pollingInterval = null;
+
     protected ?string $heading = 'MAMIAS Catalogue';
 
     protected function getStats(): array

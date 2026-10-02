@@ -116,6 +116,8 @@ class OccurrenceInfolist
             ->schema([
                 OccurrenceLocationsMapEntry::make('location')
                     ->hiddenLabel()
+                    // The cast returns a list of points; the map centres on one.
+                    ->state(fn (Occurrence $record): ?array => $record->location[0] ?? null)
                     ->height(284)
                     ->zoom(10)
                     ->pickMarker(fn (Marker $marker) => $marker->red())

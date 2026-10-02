@@ -2,7 +2,7 @@
     <div class="me-0.5 flex items-center gap-2">
         @php($role = Auth::user()?->getRoleNames()->first() ?? 'User')
         @php($isSpecial = Auth::user()?->hasAnyRole(['super_admin', 'scientist']) ?? false)
-        {{-- Install / Full screen, right beside the avatar or the Login link. --}}
+        {{-- Install app, right beside the avatar or the Login link. --}}
         @include('partials.app-controls')
         @if (Route::has('filament.mamias.auth.login'))
             @auth

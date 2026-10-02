@@ -7,6 +7,7 @@ namespace App\Filament\Widgets;
 use App\Enums\EstablishmentStatus;
 use App\Enums\Subregion;
 use App\Models\SubregionRecord;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Introduction events per subregion, stacked by establishment status in the
@@ -34,7 +35,7 @@ class SubregionEstablishmentChart extends IntroEventChart
         $totals = [];
 
         $rows = SubregionRecord::query()
-            ->whereHas('introEvent')
+            ->whereHas('introEvent', fn (Builder $query): Builder => $query->baseline())
             ->toBase()
             ->select('subregion', 'establishment_status')
             ->selectRaw('count(*) as total')
@@ -65,6 +66,7 @@ class SubregionEstablishmentChart extends IntroEventChart
         }
 
         return [
+            'toolbox' => $this->toolbox(),
             'tooltip' => $this->tooltip(),
             'legend' => [
                 'bottom' => 0,
@@ -74,7 +76,7 @@ class SubregionEstablishmentChart extends IntroEventChart
                 'itemGap' => 16,
                 'textStyle' => ['color' => self::GRAY_600, 'fontSize' => 12],
             ],
-            'grid' => ['left' => '3%', 'right' => '4%', 'top' => 16, 'bottom' => 40, 'containLabel' => true],
+            'grid' => ['left' => '3%', 'right' => '4%', 'top' => 32, 'bottom' => 40, 'containLabel' => true],
             // The codes: at half width the full names collide.
             'xAxis' => $this->categoryAxis(array_map(fn (Subregion $subregion): string => $subregion->value, $subregions)),
             'yAxis' => $this->valueAxis(),

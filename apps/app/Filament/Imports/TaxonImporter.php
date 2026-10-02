@@ -7,6 +7,7 @@ use App\Models\Taxon;
 use App\Services\TaxonNormalizer;
 use App\Services\WormsService;
 use Filament\Actions\Action;
+use Filament\Actions\Imports\Downloaders\Contracts\Downloader;
 use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
@@ -39,6 +40,11 @@ class TaxonImporter extends Importer
     public const WORMS_DUPLICATE_MESSAGE_PREFIX = 'WoRMS matches this scientific name to ';
 
     protected static ?string $model = Taxon::class;
+
+    public static function getFailedRowsDownloader(): Downloader
+    {
+        return app(XlsxFailedRowsDownloader::class);
+    }
 
     /**
      * Defines the CSV-to-model column mappings for the import.

@@ -9,8 +9,8 @@ date when WoRMS changes its accepted name.
 
 ![The NIS Taxon list with its status tabs](/images/docs/taxa/01-list.png)
 
-The list opens on **Checked & accepted**, the species ready to cite. The other
-tabs are work queues:
+The list opens on **All**. **Checked & accepted** holds the species ready to
+cite; the other tabs are work queues:
 
 - **Checked & not accepted.** WoRMS knows the name but accepts another one.
 - **Not checked Yet.** WoRMS check still pending. New imports land here.
@@ -23,12 +23,36 @@ tabs are work queues:
 
 The funnel icon filters by scientific name, kingdom, phylum, rank and
 environment. **Export** downloads the current tab, filters included. The
-**☰** icon at the end of each row holds every action on that species.
+**☰** icon at the end of each row holds every action on that species; clicking
+the row itself opens the species (see [View a species](#guide-view-a-species)).
 
 When WoRMS changes accepted names, a banner says how many species are affected.
 **Review them** opens the *Name to update* tab.
 
 ![Banner announcing new accepted names in WoRMS](/images/docs/taxa/02-banner.png)
+
+## View a species
+
+Click a row, or **View** in its **☰** menu.
+
+![A species' view window, on its Synonyms tab](/images/docs/taxa/08-view.png)
+
+- The top line is the classification, kingdom to genus.
+- **Aphia ID** opens the species in WoRMS and **EASIN ID** its EASIN factsheet;
+  **Copy LSID** copies the full LSID. Then come the rank, environment, WoRMS and
+  catalogue statuses, and when WoRMS was last checked.
+- An orange warning appears only when WoRMS accepts another name, with the
+  reason (see [Review names WoRMS has changed](#guide-review-names-worms-has-changed)).
+
+Three tabs, each with its count:
+
+- **Synonyms.** Every name WoRMS lists for the species, with authority, status
+  and reason; click a name to open it in WoRMS. Long lists scroll inside the tab.
+- **References.** The approved literature: original description, first records
+  and supporting references. **Download BibTeX** exports the list.
+- **Notes & audit.** Notes, and who created and last changed the record.
+
+The window keeps the same size whichever tab is open.
 
 ## Add or edit a species
 
@@ -36,7 +60,7 @@ When WoRMS changes accepted names, a banner says how many species are affected.
 2. Start typing the **Scientific Name** and pick the WoRMS suggestion, e.g.
    *Pterois miles (Bennett, 1828)*. Authority, Aphia ID, LSID and the full
    classification fill in.
-3. Set the **Environment** and check the **EASIN ID** (**↻** fetches it again).
+3. Set the **Environment** and check the **EASIN ID** (**↻** fetches it again, **↗** opens its EASIN factsheet).
 4. Click **Create**.
 
 ![Create NIS Taxon with a WoRMS suggestion](/images/docs/taxa/03-create-search.png)
@@ -74,11 +98,28 @@ Each species shows the new accepted name and a confidence score:
   ![Keep current name dialog](/images/docs/taxa/14-keep.png)
 
 - **Send for expert review.** Pick a scientist and, optionally, ask a question.
+  The question is posted in the species' [Discussion](#guide-discuss-a-species).
 
   ![Ask a scientist dialog](/images/docs/taxa/15-expert-review.png)
 
+- **Undo name move.** Reverses the latest move: the species gets its previous
+  name and classification back, or, after a merge, the records return to the
+  species they came from. Shown only while there is a move to undo.
+
 To move many at once, tick the rows and use the bulk action **Move to accepted
 names**. Only *Safe to move* species are moved; the rest are skipped.
+
+## Discuss a species
+
+**Discussion** in the **☰** menu (or at the top of the edit page) holds the
+conversation about a species, with who follows it in the same window.
+
+![Discussion window: participants above the messages](/images/docs/taxa/16-discussion.png)
+
+1. **Participants** at the top are notified of every new message. Add or remove
+   people there; the change is saved at once. Anyone who writes joins automatically.
+2. Click in the box below, write, then click **Comment** to post.
+3. The messages follow, newest first.
 
 ## Import species from a file
 

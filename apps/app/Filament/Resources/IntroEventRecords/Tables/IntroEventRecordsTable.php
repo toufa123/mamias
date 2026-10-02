@@ -6,10 +6,13 @@ use App\Enums\CbdPathwayCategory;
 use App\Enums\CbdPathwaySubcategory;
 use App\Enums\DataQuality;
 use App\Enums\EstablishmentStatus;
+use App\Enums\NisStatus;
 use App\Enums\PathwayType;
 use App\Enums\Subregion;
 use App\Filament\Imports\IntroEventRecordImporter;
+use App\Models\CountryRecord;
 use App\Models\IntroEventRecord;
+use App\Services\IntroEventPathwayReconciler;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -23,6 +26,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select as FormSelect;
 use Filament\Forms\Components\Slider;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
 use Filament\Tables\Enums\FiltersLayout;
@@ -30,6 +34,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Nakanakaii\Countries\Countries;
@@ -113,6 +118,41 @@ class IntroEventRecordsTable
                     ->formatStateUsing(fn (?string $state): string => nl2br(e((string) $state)))
                     ->html()
                     ->visible(fn ($livewire): bool => $livewire->activeTab === 'pathway_check'),
+                TextColumn::make('pathway_decision')
+                    ->label('EASIN Decision')
+                    ->state(fn (IntroEventRecord $record): string => app(IntroEventPathwayReconciler::class)->decide($record)['decision'])
+                    ->description(fn (IntroEventRecord $record): string => app(IntroEventPathwayReconciler::class)->decide($record)['detail'])
+                    ->badge()
+                    ->color(fn (string $state): string => match (true) {
+                        in_array($state, IntroEventPathwayReconciler::AGREEMENTS, true) => 'success',
+                        in_array($state, IntroEventPathwayReconciler::PROPOSALS, true) => 'warning',
+                        default => 'danger',
+                    })
+                    ->wrap()
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'pathway_check'),
+                TextColumn::make('pathway_resolution.decision')
+                    ->label('Decision')
+                    ->description(fn (IntroEventRecord $record): string => (string) ($record->pathway_resolution['detail'] ?? ''))
+                    ->badge()
+                    ->color(fn (string $state): string => match (true) {
+                        in_array($state, IntroEventPathwayReconciler::AGREEMENTS, true) => 'success',
+                        in_array($state, IntroEventPathwayReconciler::PROPOSALS, true) => 'warning',
+                        default => 'gray',
+                    })
+                    ->wrap()
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'pathway_checked'),
+                TextColumn::make('pathway_resolution.check')
+                    ->label('Original Check (EASIN)')
+                    ->placeholder('Not kept (settled before this was recorded)')
+                    ->formatStateUsing(fn (?string $state): string => nl2br(e((string) $state)))
+                    ->html()
+                    ->wrap()
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'pathway_checked'),
+                TextColumn::make('pathway_checked_at')
+                    ->label('Checked')
+                    ->date()
+                    ->sortable()
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'pathway_checked'),
                 //                TextColumn::make('data_source_type')
                 //                    ->badge()
                 //                    ->searchable(),
@@ -133,14 +173,20 @@ class IntroEventRecordsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            // 12-column grid so the two rows divide evenly: four record-level
-            // filters at 3 columns each, then the four pathway filters at 3.
-            // An int column count applies from the `lg` breakpoint up, so both
-            // rows still stack on narrow screens.
+            // 12-column grid: year, first country, NIS status and establishment
+            // status at 3 columns each on the first row, subregion and present
+            // country at 6 on the second, then the four pathway filters at 3. An
+            // int column count applies from the `lg` breakpoint up, so the rows
+            // still stack on narrow screens.
             ->filters([
                 self::getYearFilter()
                     ->columnSpan(3),
                 self::getCountryFilter()
+                    ->columnSpan(3),
+                SelectFilter::make('nis_status')
+                    ->label('NIS Status')
+                    ->multiple()
+                    ->options(NisStatus::class)
                     ->columnSpan(3),
                 SelectFilter::make('establishment_status')
                     ->label('Establishment Status')
@@ -148,7 +194,16 @@ class IntroEventRecordsTable
                     ->options(EstablishmentStatus::class)
                     ->columnSpan(3),
                 self::getRelatedEnumFilter('subregion', 'EcAp Subregion', 'subregionRecords', 'subregion', Subregion::class)
-                    ->columnSpan(3),
+                    ->columnSpan(6),
+                SelectFilter::make('present_country')
+                    ->label('Present in Country')
+                    ->multiple()
+                    ->searchable()
+                    ->options(fn (): array => CountryRecord::query()->distinct()->orderBy('country')->pluck('country', 'country')->all())
+                    ->query(fn (Builder $query, array $data): Builder => blank($data['values'] ?? null)
+                        ? $query
+                        : $query->whereHas('countryRecords', fn (Builder $related): Builder => $related->whereIn('country', $data['values'])))
+                    ->columnSpan(6),
                 self::getRelatedEnumFilter('pathway_category', 'CBD Pathway Category', 'pathwayRecords', 'category', CbdPathwayCategory::class)
                     // Live so the subcategory options narrow as soon as a
                     // category is picked, rather than on the next round trip.
@@ -173,12 +228,39 @@ class IntroEventRecordsTable
             ->columnManagerTriggerAction(fn (Action $action) => $action->slideOver())
             ->recordActions([
                 ActionGroup::make([
-                    // No view page: the modal renders the edit form read-only,
-                    // subregion and pathway repeaters included. Wide because
-                    // that form lays out five fields per row.
+                    // No view page: the modal shows IntroEventRecordInfolist. Species
+                    // name italic, authority upright (DESIGN-SYSTEM.md, Type).
                     ViewAction::make()
-                        ->modalWidth('6xl'),
+                        ->modalHeading(fn (IntroEventRecord $record): HtmlString => new HtmlString(trim('<em>'.e((string) $record->taxon?->scientificname).'</em> '.e((string) $record->taxon?->authority))))
+                        ->modalDescription(fn (IntroEventRecord $record): string => implode(' · ', array_filter(["Introduction event #{$record->id}", self::recordedAs($record)])))
+                        ->modalWidth('5xl'),
                     EditAction::make(),
+                    // The reconciler's own decision, as --apply would settle it.
+                    Action::make('settlePathwayCheck')
+                        ->label('Apply EASIN decision')
+                        ->icon('tabler-route')
+                        ->requiresConfirmation()
+                        ->modalDescription(fn (IntroEventRecord $record): string => app(IntroEventPathwayReconciler::class)->decide($record)['detail'])
+                        ->visible(fn (IntroEventRecord $record): bool => $record->pathway_check !== null && in_array(app(IntroEventPathwayReconciler::class)->decide($record)['decision'], [...IntroEventPathwayReconciler::AGREEMENTS, ...IntroEventPathwayReconciler::PROPOSALS], true))
+                        ->action(function (IntroEventRecord $record): void {
+                            $reconciler = app(IntroEventPathwayReconciler::class);
+                            $settled = $reconciler->settle($record, $reconciler->decide($record));
+
+                            $settled
+                                ? Notification::make()->title('Pathway check settled')->success()->send()
+                                : Notification::make()->title('No exact MAMIAS pathway for EASIN\'s; edit the record instead')->warning()->send();
+                        }),
+                    // Expert override for conflicts: MAMIAS stands as recorded.
+                    Action::make('keepMamiasPathways')
+                        ->label('Keep MAMIAS pathways')
+                        ->icon('tabler-check')
+                        ->requiresConfirmation()
+                        ->visible(fn (IntroEventRecord $record): bool => $record->pathway_check !== null)
+                        ->action(function (IntroEventRecord $record): void {
+                            $decision = app(IntroEventPathwayReconciler::class)->decide($record);
+                            app(IntroEventPathwayReconciler::class)->settle($record, ['decision' => 'expert-kept-mamias', 'detail' => 'expert kept MAMIAS over EASIN ('.$decision['detail'].')'] + $decision);
+                            Notification::make()->title('MAMIAS pathways kept')->success()->send();
+                        }),
                     DeleteAction::make(),
                     RestoreAction::make(),
                     // Only a permanent delete can hit the database: subregion
@@ -336,11 +418,16 @@ class IntroEventRecordsTable
      *
      * @return list<string>
      */
-    protected static function getReviewReasons(IntroEventRecord $record): array
+    public static function getReviewReasons(IntroEventRecord $record): array
     {
         foreach (preg_split('/\R/', (string) $record->notes) as $line) {
             if (str_starts_with($line, IntroEventRecordImporter::REVIEW_NOTE_PREFIX)) {
                 return explode('; ', substr($line, strlen(IntroEventRecordImporter::REVIEW_NOTE_PREFIX)));
+            }
+
+            // Any other "Needs review (<source>) — <reason>" line, e.g. from a data correction.
+            if (preg_match('/^Needs review \([^)]*\) — (.+)$/u', $line, $match) === 1) {
+                return explode('; ', $match[1]);
             }
         }
 

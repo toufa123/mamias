@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,16 +34,19 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property EstablishmentStatus $establishment_status
  * @property string|null $notes
  * @property string|null $pathway_check Pathway disagreement with EASIN; null when nothing to check
+ * @property array{decision: string, detail: string, easin_id: ?string, check: ?string}|null $pathway_resolution How the last pathway check was settled
+ * @property Carbon|null $pathway_checked_at When the last pathway check was settled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property int|null $created_by
  * @property int|null $updated_by
  *
- * @method BelongsTo taxon()
- * @method BelongsTo literature()
- * @method HasMany subregionRecords()
- * @method HasMany pathwayRecords()
+ * @method BelongsTo<Taxon, $this> taxon()
+ * @method BelongsTo<Literature, $this> literature()
+ * @method HasMany<SubregionRecord, $this> subregionRecords()
+ * @method HasMany<CountryRecord, $this> countryRecords()
+ * @method HasMany<PathwayRecord, $this> pathwayRecords()
  * @method HasMany occurrences()
  * @method HasMany eicatAssessments()
  */
@@ -54,6 +59,8 @@ class IntroEventRecord extends Model
     {
         return [
             'first_country' => 'array',
+            'pathway_resolution' => 'array',
+            'pathway_checked_at' => 'datetime',
             'nis_status' => NisStatus::class,
             'establishment_status' => EstablishmentStatus::class,
         ];
@@ -95,6 +102,14 @@ class IntroEventRecord extends Model
     }
 
     /**
+     * Every country the species has been recorded in, beyond the first one.
+     */
+    public function countryRecords(): HasMany
+    {
+        return $this->hasMany(CountryRecord::class, 'intro_event_id');
+    }
+
+    /**
      * Pathway records describing how the species was introduced.
      */
     public function pathwayRecords(): HasMany
@@ -108,6 +123,20 @@ class IntroEventRecord extends Model
     public function occurrences(): HasMany
     {
         return $this->hasMany(Occurrence::class, 'intro_event_record_id');
+    }
+
+    /**
+     * Events that count in the validated NIS baseline (Galanidi et al. 2023):
+     * NIS, plus events nobody has classified yet. Cryptogenic, questionable,
+     * range-expanding and data-deficient species are kept in the catalogue
+     * but stay out of the figures.
+     */
+    #[Scope]
+    protected function baseline(Builder $query): void
+    {
+        $query->where(fn (Builder $query): Builder => $query
+            ->where('intro_event_records.nis_status', NisStatus::NIS)
+            ->orWhereNull('intro_event_records.nis_status'));
     }
 
     /**

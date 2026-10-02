@@ -10,7 +10,8 @@ use Filament\Support\Contracts\HasLabel;
  * Establishment status categories for a species in a given area.
  *
  * Describes whether a non-indigenous species is casual, established, invasive,
- * or otherwise categorised in the recipient region.
+ * or otherwise categorised in the recipient region. A questionable record is
+ * not one of them: it is a NIS status (NisStatus::Questionable).
  */
 enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
 {
@@ -31,9 +32,6 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
 
     /** Excluded — confirmed absent or excluded from the area. */
     case Excluded = 'Excluded';
-
-    /** Questionable — record is doubtful or unverified. */
-    case Questionable = 'Questionable';
 
     /** Vagrant — occasional visitor, not self-sustaining. */
     case Vagrant = 'Vagrant';
@@ -60,7 +58,6 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
             self::Invasive => 'invasive',
             self::DataDeficient => 'gray',
             self::Excluded => 'gray',
-            self::Questionable => 'gray',
             self::Vagrant => 'casual',
 
         };
@@ -78,7 +75,6 @@ enum EstablishmentStatus: string implements HasColor, HasIcon, HasLabel
             self::Invasive => 'tabler-alert-triangle',
             self::DataDeficient => 'tabler-database-off',
             self::Excluded => 'tabler-x',
-            self::Questionable => 'tabler-help-circle',
             self::Vagrant => 'tabler-plane-arrival',
 
         };

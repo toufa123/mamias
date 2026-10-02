@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-it('links the app manifest and shows the fullscreen control on the public site', function () {
+it('links the app manifest and ships the install control on the public site', function () {
     $this->get('/')
         ->assertOk()
         ->assertSee('<link rel="manifest" href="/manifest.webmanifest" />', escape: false)
-        ->assertSee('Full screen');
+        ->assertSee('Install app');
 });
 
-it('keeps the fullscreen control beside the user menu when signed in on the public site', function () {
+it('keeps the install control beside the user menu when signed in on the public site', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get('/')
         ->assertOk()
-        ->assertSeeInOrder(['Full screen', $user->getFilamentName()]);
+        ->assertSeeInOrder(['Install app', $user->getFilamentName()]);
 });
 
-it('links the app manifest and shows the fullscreen control in the panel', function () {
+it('links the app manifest and ships the install control in the panel', function () {
     $this->actingAs(User::factory()->create()->assignRole('super_admin'))
         ->get('/mamias')
         ->assertOk()
         ->assertSee('<link rel="manifest" href="/manifest.webmanifest" />', escape: false)
-        ->assertSee('Full screen');
+        ->assertSee('Install app');
 });
 
 it('serves a manifest that browsers accept as installable', function () {

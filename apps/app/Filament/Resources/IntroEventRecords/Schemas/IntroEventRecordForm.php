@@ -2,25 +2,17 @@
 
 namespace App\Filament\Resources\IntroEventRecords\Schemas;
 
-use App\Enums\AcforScale;
 use App\Enums\CbdPathwayCategory;
 use App\Enums\CbdPathwaySubcategory;
 use App\Enums\DataQuality;
 use App\Enums\EstablishmentStatus;
-use App\Enums\Habitat;
 use App\Enums\NisStatus;
 use App\Enums\PathwayType;
 use App\Enums\Subregion;
 use App\Filament\Forms\Components\CountrySelectWithMedPriority;
-use App\Filament\Forms\MultipleMarkersMapPicker;
 use App\Filament\Resources\IntroEventRecords\Tables\IntroEventRecordsTable;
 use App\Models\IntroEventRecord;
-use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
-use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
-use Filament\Forms\Components\Component;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
+use App\Models\Taxon;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -29,13 +21,16 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Icetalker\FilamentStepper\Forms\Components\Stepper;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Configures the Filament form schema for intro event records.
  * Organises species identification, references, subregion records,
- * pathways, occurrences, and EICAT impact assessments into sections and tabs.
+ * pathways and EICAT impact assessments into sections and tabs. Occurrences
+ * are moderated on their own page (OccurrenceResource), not here.
  */
 class IntroEventRecordForm
 {
@@ -56,8 +51,32 @@ class IntroEventRecordForm
                         Grid::make(['default' => 1, 'md' => 3, 'lg' => 5])->schema([
                             Select::make('taxon_id')
                                 ->label('NIS Scientific Name')
-                                ->relationship('taxon', 'scientificname')
-                                ->getOptionLabelFromRecordUsing(fn ($record) => "<i>{$record->scientificname}</i>".($record->authority ? " ({$record->authority})" : ''))
+                                // How many species are left to choose from on a new event.
+                                ->afterLabel(fn (string $operation): array => $operation === 'create' ? [
+                                    Text::make((string) Taxon::whereDoesntHave('introEvents')->count())
+                                        ->badge()
+                                        ->color('gray')
+                                        ->tooltip('Species without an introduction event')
+                                        // A badge is taller than the label line; without this the input
+                                        // sits a few pixels below its neighbours in the row.
+                                        ->extraAttributes(['style' => 'margin-block: -0.25rem;']),
+                                ] : [])
+                                // Only species without an introduction event yet, so a species
+                                // is never entered twice; an edited event keeps its own species.
+                                ->relationship(
+                                    'taxon',
+                                    'scientificname',
+                                    modifyQueryUsing: fn (Builder $query, ?IntroEventRecord $record): Builder => $query->where(
+                                        fn (Builder $query): Builder => $query
+                                            ->whereDoesntHave('introEvents')
+                                            ->when($record?->taxon_id, fn (Builder $query, int $taxonId): Builder => $query->orWhereKey($taxonId)),
+                                    ),
+                                )
+                                // The name alone from lg up, where this field shrinks to a fifth
+                                // of the row; the authority returns wherever the field is wide,
+                                // and is always in the tooltip. WoRMS authorities carry their own
+                                // parentheses: none added.
+                                ->getOptionLabelFromRecordUsing(fn ($record): string => '<span title="'.e(trim($record->scientificname.' '.$record->authority)).'"><i>'.e($record->scientificname).'</i>'.($record->authority ? '<span class="lg:hidden"> '.e($record->authority).'</span>' : '').'</span>')
                                 ->allowHtml()
                                 ->searchable()
                                 ->preload()
@@ -83,7 +102,9 @@ class IntroEventRecordForm
                                 ->step(1)
                                 ->default(now()->year)
                                 ->columnSpan(1),
+                            // Stored as names (as the importers write them), picked by code.
                             CountrySelectWithMedPriority::make('first_country')
+                                ->storeNames()
                                 ->displayFlags(true)
                                 ->imageFlags()
                                 ->multiple()
@@ -129,6 +150,7 @@ class IntroEventRecordForm
                                     ->hiddenLabel()
                                     ->table([
                                         TableColumn::make('EcAp Sub-region'),
+                                        TableColumn::make('NIS Status'),
                                         TableColumn::make('Establishment Success'),
                                         TableColumn::make('Year of 1st Introduction'),
                                     ])
@@ -145,6 +167,13 @@ class IntroEventRecordForm
                                             ->preload()
                                             ->options(Subregion::class)
                                             ->columnSpan(2),
+                                        // May differ from the event's: a species validated in one
+                                        // sub-region can be questionable or debatable in another.
+                                        Select::make('nis_status')
+                                            ->label('NIS Status')
+                                            ->options(NisStatus::class)
+                                            ->placeholder('Select status')
+                                            ->columnSpan(2),
                                         Select::make('establishment_status')
                                             ->label('Establishment Success')
                                             ->options(EstablishmentStatus::class)
@@ -159,7 +188,51 @@ class IntroEventRecordForm
                                             ->extraAttributes(['style' => 'display:flex; justify-content:center;'])
                                             ->extraInputAttributes(['style' => 'width:5rem; min-width:0; flex:none; text-align:center;']),
                                     ])
-                                    ->columns(5),
+                                    ->columns(7),
+                            ]),
+                        Tab::make('Countries')
+                            ->icon('tabler-flag')
+                            ->schema([
+                                Text::make('Every Mediterranean country the species has been recorded in, including the first one.')
+                                    ->color('gray'),
+                                Repeater::make('countryRecords')
+                                    ->hiddenLabel()
+                                    ->table([
+                                        TableColumn::make('Country'),
+                                        TableColumn::make('Establishment Success'),
+                                        TableColumn::make('Year of 1st Record'),
+                                        TableColumn::make('Reference'),
+                                    ])
+                                    ->addActionLabel('Add Country Record')
+                                    ->compact()
+                                    ->minItems(0)
+                                    ->relationship()
+                                    ->schema([
+                                        // Stored as names, like first_country, so the two can be compared.
+                                        CountrySelectWithMedPriority::make('country')
+                                            ->storeNames()
+                                            ->displayFlags(true)
+                                            ->imageFlags()
+                                            ->required()
+                                            ->distinct()
+                                            ->label('Country'),
+                                        Select::make('establishment_status')
+                                            ->label('Establishment Success')
+                                            ->options(EstablishmentStatus::class),
+                                        Stepper::make('first_record_year')
+                                            ->label('Year of 1st Record')
+                                            ->minValue(1800)
+                                            ->maxValue(now()->year)
+                                            ->step(1)
+                                            ->default(now()->year)
+                                            ->extraAttributes(['style' => 'display:flex; justify-content:center;'])
+                                            ->extraInputAttributes(['style' => 'width:5rem; min-width:0; flex:none; text-align:center;']),
+                                        Select::make('literature_id')
+                                            ->relationship('literature', 'short_ref')
+                                            ->searchable()
+                                            ->label('Reference')
+                                            ->placeholder('Search literature...'),
+                                    ]),
                             ]),
                         Tab::make('Pathways')
                             ->icon('tabler-route')
@@ -181,16 +254,20 @@ class IntroEventRecordForm
                                         Select::make('pathway_type')
                                             ->label('Pathway Type')
                                             ->options(PathwayType::class)
-                                            ->placeholder('Select type'),
+                                            ->placeholder('Select type')
+                                            ->required(),
                                         Select::make('category')
                                             ->label('CBD Category')
                                             ->options(CbdPathwayCategory::class)
                                             ->placeholder('Select category')
+                                            ->required()
                                             ->live()
                                             ->afterStateUpdated(fn ($set) => $set('subcategory', null)),
+                                        // Optional: a pathway is often known only at category level.
                                         Select::make('subcategory')
                                             ->label('Subcategory')
-                                            ->placeholder('Select subcategory')
+                                            ->placeholder('Optional')
+                                            ->disabled(fn ($get): bool => blank($get('category')))
                                             ->options(function ($get) {
                                                 $category = $get('category');
 
@@ -210,103 +287,8 @@ class IntroEventRecordForm
                                             ->placeholder('Select level'),
                                     ]),
                             ]),
-                        Tab::make('Occurrences')
-                            ->icon('tabler-map-pin')
-                            ->schema(static::occurrenceSchema()),
 
                     ]),
             ]);
-    }
-
-    /**
-     * @return array<Component>
-     */
-    public static function occurrenceSchema(): array
-    {
-        return [
-            Repeater::make('occurrences')
-                ->hiddenLabel()
-                ->addActionLabel('Add Occurrence')
-                ->compact()
-                ->minItems(0)
-                ->maxItems(4)
-                ->relationship()
-                ->schema([
-                    Hidden::make('user_id')
-                        ->default(fn (): int => auth()->id()),
-                    Tabs::make()
-                        ->columnSpanFull()
-                        ->tabs([
-                            Tab::make('Details')
-                                ->icon('tabler-info-circle')
-                                ->schema([
-                                    Grid::make(['default' => 1, 'md' => 2, 'lg' => 4])->schema([
-                                        Stepper::make('depth')
-                                            ->label('Depth (m)')
-                                            ->minValue(0)
-                                            ->maxValue(11000)
-                                            ->step(1),
-                                        Select::make('acfor_scale')
-                                            ->label('Abundance (ACFOR)')
-                                            ->options(AcforScale::class)
-                                            ->native(false)
-                                            ->placeholder('Select ACFOR scale'),
-                                        Select::make('habitats')
-                                            ->label('Habitats')
-                                            ->multiple()
-                                            ->options(Habitat::class)
-                                            ->native(false)
-                                            ->placeholder('Select habitats'),
-                                        DateTimePicker::make('observed_at')
-                                            ->label('Date & Time of Observation')
-                                            ->required()
-                                            ->default(now())
-                                            ->seconds(false)
-                                            ->displayFormat('Y-m-d H:i'),
-                                    ]),
-                                ]),
-                            Tab::make('Map')
-                                ->icon('tabler-map-pin')
-                                ->schema([
-                                    MultipleMarkersMapPicker::make('location')
-                                        ->hiddenLabel()
-                                        ->height(300)
-                                        ->center([36, 14])
-                                        ->zoom(5)
-                                        ->tileLayersUrl(TileLayer::OpenStreetMap)
-                                        ->pickMarker(fn (Marker $marker) => $marker->red())
-                                        ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);']),
-                                ]),
-                            Tab::make('Photos')
-                                ->icon('tabler-photo')
-                                ->schema([
-                                    FileUpload::make('photo_paths')
-                                        ->hiddenLabel()
-                                        ->panelLayout('grid')
-                                        ->loadingIndicatorPosition('left')
-                                        ->panelAspectRatio('8:1')
-                                        ->removeUploadedFileButtonPosition('right')
-                                        ->uploadButtonPosition('left')
-                                        ->uploadProgressIndicatorPosition('left')
-                                        ->multiple()
-                                        ->image()
-                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                        ->disk('public')
-                                        ->directory('occurrences/photos')
-                                        ->visibility('public')
-                                        ->maxSize(5120)
-                                        ->imagePreviewHeight('80'),
-                                ]),
-                            Tab::make('Notes')
-                                ->icon('tabler-notes')
-                                ->schema([
-                                    Textarea::make('notes')
-                                        ->hiddenLabel()
-                                        ->rows(5)
-                                        ->columnSpanFull(),
-                                ]),
-                        ]),
-                ]),
-        ];
     }
 }

@@ -12,11 +12,13 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Livewire\Component;
 
 /**
  * Provides approve and reject actions for occurrence records.
  * Approve/reject update the occurrence status and notify the
- * submitter via database notification.
+ * submitter via database notification, and tell the occurrences map to
+ * recolour its pins.
  */
 class OccurrenceActions
 {
@@ -38,7 +40,9 @@ class OccurrenceActions
                     ->label('Moderation notes (optional)')
                     ->rows(3),
             ])
-            ->action(function (Occurrence $record, array $data) use ($afterAction): void {
+            ->action(function (Occurrence $record, array $data, Component $livewire) use ($afterAction): void {
+                $oldStatus = $record->status;
+
                 $record->update([
                     'status' => OccurrenceStatus::APPROVED,
                     'moderation_notes' => $data['moderation_notes'] ?? null,
@@ -48,7 +52,7 @@ class OccurrenceActions
                     ->causedBy(auth()->user())
                     ->performedOn($record)
                     ->withProperties([
-                        'old_status' => OccurrenceStatus::PENDING->value,
+                        'old_status' => $oldStatus->value,
                         'new_status' => OccurrenceStatus::APPROVED->value,
                         'moderation_notes' => $data['moderation_notes'] ?? null,
                     ])
@@ -61,6 +65,8 @@ class OccurrenceActions
                     ->title('Occurrence approved')
                     ->success()
                     ->send();
+
+                $livewire->dispatch('occurrence-moderated');
 
                 $afterAction?->call($record, $data);
             });
@@ -84,7 +90,9 @@ class OccurrenceActions
                     ->rows(3)
                     ->placeholder('Explain why the occurrence is being rejected…'),
             ])
-            ->action(function (Occurrence $record, array $data) use ($afterAction): void {
+            ->action(function (Occurrence $record, array $data, Component $livewire) use ($afterAction): void {
+                $oldStatus = $record->status;
+
                 $record->update([
                     'status' => OccurrenceStatus::REJECTED,
                     'moderation_notes' => $data['moderation_notes'],
@@ -94,7 +102,7 @@ class OccurrenceActions
                     ->causedBy(auth()->user())
                     ->performedOn($record)
                     ->withProperties([
-                        'old_status' => OccurrenceStatus::PENDING->value,
+                        'old_status' => $oldStatus->value,
                         'new_status' => OccurrenceStatus::REJECTED->value,
                         'moderation_notes' => $data['moderation_notes'],
                     ])
@@ -107,6 +115,8 @@ class OccurrenceActions
                     ->title('Occurrence rejected')
                     ->warning()
                     ->send();
+
+                $livewire->dispatch('occurrence-moderated');
 
                 $afterAction?->call($record, $data);
             });

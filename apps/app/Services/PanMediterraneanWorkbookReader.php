@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\NisStatus;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -38,6 +40,44 @@ final class PanMediterraneanWorkbookReader
     /** @var list<string> */
     private const SUBREGIONS = ['wmed', 'cmed', 'adria', 'emed'];
 
+    /** A held-out block title on a subregion sheet; the row has no subregion code in A. */
+    private const SUBREGION_BLOCK_TITLE = '/^(questionable records|status unresolved|to be removed|removed|shells only|cryptogenic|likely alien polychaeta|polychaeta reported)/i';
+
+    /**
+     * Subregion block title fragment => the NIS status its rows take (null:
+     * removed, not read as presence). Matched in order: the polychaeta titles
+     * also say "questionable or cryptogenic", and "to be removed" says "shells".
+     *
+     * @var array<string, ?NisStatus>
+     */
+    private const SUBREGION_BLOCKS = [
+        'removed' => null,
+        'shells' => null,
+        'polychaeta' => NisStatus::DataDeficient,
+        'status unresolved' => NisStatus::DataDeficient,
+        'questionable' => NisStatus::Questionable,
+        'cryptogenic' => NisStatus::Cryptogenic,
+    ];
+
+    /** The cell that opens the baseline's data-deficient annex, below the validated list. */
+    private const ANNEX_MARKER = 'data deficient';
+
+    /**
+     * Annex block title fragment => [NIS status to stage it under (null: not
+     * imported), whether its rows carry the year/country/subregion detail].
+     * Matched in order, so "removed" wins over "foraminifera".
+     *
+     * @var array<string, array{0: ?NisStatus, 1: bool}>
+     */
+    private const ANNEX_BLOCKS = [
+        'debatable' => [NisStatus::DataDeficient, false],
+        'excluded' => [NisStatus::Questionable, true],
+        'removed' => [null, true],
+        'polychaeta' => [NisStatus::DataDeficient, true],
+        'one location' => [NisStatus::DataDeficient, true],
+        'foraminifera' => [NisStatus::DataDeficient, true],
+    ];
+
     /**
      * The emitted header row: the importer's own column names, so mapping is
      * exact rather than guessed from the workbook's prose headers.
@@ -63,21 +103,29 @@ final class PanMediterraneanWorkbookReader
         return $this->findSheet(IOFactory::load($path), self::PAN_SHEET) instanceof Worksheet;
     }
 
+    /**
+     * Every species row of the four subregion sheets, held-out blocks
+     * included and flagged, keyed by subregion code then canonical name.
+     *
+     * @return array<string, array<string, array{species: string, nis: ?string, establishment: ?string, year: ?string, country: ?string, block: ?string, removed: bool}>>
+     */
+    public function subregionSheets(string $path): array
+    {
+        return $this->readSubregions(IOFactory::load($path));
+    }
+
     public function toCsvPath(string $sourcePath): string
     {
         $spreadsheet = IOFactory::load($sourcePath);
 
         $subregionData = [];
 
-        foreach (self::SUBREGIONS as $code) {
-            $sheet = $this->findSheet($spreadsheet, $code);
-
-            if (! $sheet instanceof Worksheet) {
-                continue;
-            }
-
-            foreach ($this->readSubregionSheet($sheet) as $speciesKey => $values) {
-                $subregionData[$speciesKey][$code] = $values;
+        foreach ($this->readSubregions($spreadsheet) as $code => $species) {
+            foreach ($species as $speciesKey => $values) {
+                // A "removed" block says the species is not in this subregion at all.
+                if (! $values['removed']) {
+                    $subregionData[$speciesKey][$code] = $values;
+                }
             }
         }
 
@@ -90,8 +138,34 @@ final class PanMediterraneanWorkbookReader
 
         if ($pan instanceof Worksheet) {
             $columns = $this->panColumns($pan);
+            $annexColumns = null;
+            $block = null;
 
             for ($row = 2; $row <= $pan->getHighestDataRow(); $row++) {
+                if ($annexColumns === null && $this->isAnnexMarker($pan, $row)) {
+                    $annexColumns = self::shiftColumns($columns);
+
+                    continue;
+                }
+
+                if ($annexColumns !== null) {
+                    $title = $this->annexTitle($pan, $columns, $annexColumns, $row);
+
+                    if ($title !== null) {
+                        $block = ['title' => $title, ...self::annexBlock($title)];
+
+                        continue;
+                    }
+
+                    $values = $block === null ? null : $this->annexRow($pan, $columns, $annexColumns, $row, $block, $subregionData, $seen);
+
+                    if ($values !== null) {
+                        fputcsv($handle, $values, ',', '"', '');
+                    }
+
+                    continue;
+                }
+
                 $species = $this->cell($pan, $columns['species'] ?? null, $row);
                 $key = $this->matcher->canonical($species);
 
@@ -143,6 +217,7 @@ final class PanMediterraneanWorkbookReader
                 (bool) preg_match('/country of first introduction/', $label) => $columns['country'] ??= $first,
                 (bool) preg_match('/^(es success|establishment)/', $label) => $columns['establishment'] ??= $first,
                 (bool) preg_match('/^status|^status of the species/', $label) => $columns['nis'] ??= $first,
+                (bool) preg_match('/citation/', $label) => $columns['citation'] ??= $first,
                 in_array($label, self::SUBREGIONS, true) => $columns[$label] = count($letters) > 1
                     ? [$letters[0], $letters[1]]   // paired: status, year
                     : [null, $letters[0]],          // single: year only
@@ -189,27 +264,64 @@ final class PanMediterraneanWorkbookReader
     }
 
     /**
-     * @return array<string, array{nis: ?string, establishment: ?string, year: ?string, country: ?string, species: string}>
+     * @return array<string, array<string, array{species: string, nis: ?string, establishment: ?string, year: ?string, country: ?string, block: ?string, removed: bool}>>
+     */
+    private function readSubregions(Spreadsheet $spreadsheet): array
+    {
+        $sheets = [];
+
+        foreach (self::SUBREGIONS as $code) {
+            $sheet = $this->findSheet($spreadsheet, $code);
+
+            if ($sheet instanceof Worksheet) {
+                $sheets[$code] = $this->readSubregionSheet($sheet);
+            }
+        }
+
+        return $sheets;
+    }
+
+    /**
+     * Each subregion sheet ends, like the PAN sheet, with held-out blocks
+     * under a title row ("QUESTIONABLE RECORDS", "STATUS UNRESOLVED", "To be
+     * removed"…). A block row takes the block's NIS status in place of its
+     * own; a removed block's rows are flagged so they are never read as
+     * presence. A species already on the validated list keeps that entry.
+     *
+     * @return array<string, array{species: string, nis: ?string, establishment: ?string, year: ?string, country: ?string, block: ?string, removed: bool}>
      */
     private function readSubregionSheet(Worksheet $sheet): array
     {
         $columns = $this->subregionColumns($sheet);
         $rows = [];
+        $block = null;
 
         for ($row = 2; $row <= $sheet->getHighestDataRow(); $row++) {
             $species = $this->cell($sheet, $columns['species'], $row);
-            $key = $this->matcher->canonical($species);
 
-            if ($key === '') {
+            if ($this->cell($sheet, 'A', $row) === '' && preg_match(self::SUBREGION_BLOCK_TITLE, $species) === 1) {
+                $block = ['title' => $species, 'status' => self::subregionBlockStatus($species)];
+
                 continue;
             }
 
+            $key = $this->matcher->canonical($species);
+
+            if ($key === '' || ($block !== null && isset($rows[$key]))) {
+                continue;
+            }
+
+            $year = $this->cell($sheet, $columns['year'] ?? null, $row);
+
             $rows[$key] = [
                 'species' => $species,
-                'nis' => $this->cell($sheet, $columns['nis'] ?? null, $row),
+                'nis' => $block === null ? $this->cell($sheet, $columns['nis'] ?? null, $row) : ($block['status']?->value ?? ''),
                 'establishment' => $this->cell($sheet, $columns['establishment'] ?? null, $row),
-                'year' => $this->cell($sheet, $columns['year'] ?? null, $row),
+                // The polychaeta lists keep country codes where the year goes.
+                'year' => $block === null || preg_match('/\d{4}/', $year) === 1 ? $year : '',
                 'country' => $this->cell($sheet, $columns['country'] ?? null, $row),
+                'block' => $block['title'] ?? null,
+                'removed' => $block !== null && $block['status'] === null,
             ];
         }
 
@@ -217,16 +329,30 @@ final class PanMediterraneanWorkbookReader
     }
 
     /**
+     * The NIS status a subregion block stands for; null for a removed block.
+     */
+    private static function subregionBlockStatus(string $title): ?NisStatus
+    {
+        foreach (self::SUBREGION_BLOCKS as $fragment => $status) {
+            if (str_contains(mb_strtolower($title), $fragment)) {
+                return $status;
+            }
+        }
+
+        return NisStatus::DataDeficient;
+    }
+
+    /**
      * @param  array<string, string|array{0: ?string, 1: ?string}>  $columns
      * @param  array<string, array<string, ?string>>  $perSubregion
      * @return list<string>
      */
-    private function panRow(Worksheet $pan, array $columns, int $row, string $species, array $perSubregion): array
+    private function panRow(Worksheet $pan, array $columns, int $row, string $species, array $perSubregion, ?NisStatus $nisStatus = null, string $note = ''): array
     {
         $values = [
             $species,
             $this->cell($pan, $columns['author'] ?? null, $row),
-            $this->cell($pan, $columns['nis'] ?? null, $row),
+            $nisStatus?->value ?? $this->cell($pan, $columns['nis'] ?? null, $row),
             $this->cell($pan, $columns['establishment'] ?? null, $row),
             $this->cell($pan, $columns['year'] ?? null, $row),
             $this->cell($pan, $columns['country'] ?? null, $row),
@@ -245,11 +371,125 @@ final class PanMediterraneanWorkbookReader
             $values[] = $panYear !== '' ? $panYear : ($perSubregion[$code]['year'] ?? '');
         }
 
-        $values[] = $perSubregion === []
+        $values[] = trim($note.' '.($perSubregion === []
             ? ''
-            : 'Subregion detail merged from: '.implode(', ', array_map('strtoupper', array_keys($perSubregion)));
+            : 'Subregion detail merged from: '.implode(', ', array_map('strtoupper', array_keys($perSubregion)))));
 
         return $values;
+    }
+
+    /**
+     * Whether this row opens the data-deficient annex. Everything below it is
+     * the paper's held-out material, laid out one column right of the header.
+     */
+    private function isAnnexMarker(Worksheet $pan, int $row): bool
+    {
+        foreach ($pan->rangeToArray("A{$row}:".$pan->getHighestDataColumn().$row, null, false, false)[0] as $value) {
+            if (mb_strtolower(trim((string) $value)) === self::ANNEX_MARKER) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The header's column map moved one column right, which is where the
+     * annex keeps every value: species in C, year in E, country in N.
+     *
+     * @param  array<string, string|array{0: ?string, 1: ?string}>  $columns
+     * @return array<string, string|array{0: ?string, 1: ?string}>
+     */
+    private static function shiftColumns(array $columns): array
+    {
+        $next = fn (?string $letter): ?string => $letter === null
+            ? null
+            : Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($letter) + 1);
+
+        return array_map(fn (string|array $letter): string|array => is_array($letter) ? array_map($next, $letter) : $next($letter), $columns);
+    }
+
+    /**
+     * A block title ("Likely alien polychaeta", "Removed foraminifera") is
+     * text in the species or the column before it, with no year, country or
+     * comment beside it. Debatable species always carry a comment, so they
+     * are never mistaken for one.
+     *
+     * @param  array<string, string|array{0: ?string, 1: ?string}>  $columns
+     * @param  array<string, string|array{0: ?string, 1: ?string}>  $annexColumns
+     */
+    private function annexTitle(Worksheet $pan, array $columns, array $annexColumns, int $row): ?string
+    {
+        $detail = $this->cell($pan, $annexColumns['year'] ?? null, $row)
+            .$this->cell($pan, $annexColumns['country'] ?? null, $row)
+            .$this->cell($pan, $annexColumns['cmed'][0] ?? null, $row);
+
+        if ($detail !== '') {
+            return null;
+        }
+
+        $title = $this->cell($pan, $columns['species'] ?? null, $row) ?: $this->cell($pan, $annexColumns['species'] ?? null, $row);
+
+        return $title === '' ? null : $title;
+    }
+
+    /**
+     * @return array{status: ?NisStatus, detail: bool}
+     */
+    private static function annexBlock(string $title): array
+    {
+        foreach (self::ANNEX_BLOCKS as $fragment => [$status, $detail]) {
+            if (str_contains(mb_strtolower($title), $fragment)) {
+                return ['status' => $status, 'detail' => $detail];
+            }
+        }
+
+        // An unknown block is still annex material: held out, never NIS.
+        return ['status' => NisStatus::DataDeficient, 'detail' => true];
+    }
+
+    /**
+     * One annex species as a CSV row, staged under its block's status, or null
+     * when the row is not imported: a removed block, a row marked "REMOVE" or
+     * "NAT" (native), or a cell with no readable binomial.
+     *
+     * Debatable species carry only a name and the experts' comment ("NIS in
+     * TR - CRY elsewhere"); the comment goes to the notes rather than being
+     * read as a CMED status.
+     *
+     * @param  array<string, string|array{0: ?string, 1: ?string}>  $columns
+     * @param  array<string, string|array{0: ?string, 1: ?string}>  $annexColumns
+     * @param  array{title: string, status: ?NisStatus, detail: bool}  $block
+     * @param  array<string, array<string, array<string, ?string>>>  $subregionData
+     * @param  array<string, true>  $seen
+     * @return list<string>|null
+     */
+    private function annexRow(Worksheet $pan, array $columns, array $annexColumns, int $row, array $block, array $subregionData, array &$seen): ?array
+    {
+        $flags = [mb_strtoupper($this->cell($pan, 'A', $row)), mb_strtoupper($this->cell($pan, $columns['species'] ?? null, $row))];
+
+        if ($block['status'] === null || array_intersect($flags, ['REMOVE', 'NAT']) !== []) {
+            return null;
+        }
+
+        $species = $this->cell($pan, $annexColumns['species'] ?? null, $row);
+        $key = $this->matcher->canonical($species);
+
+        if ($key === '') {
+            return null;
+        }
+
+        $seen[$key] = true;
+
+        $comment = $block['detail'] ? '' : $this->cell($pan, $annexColumns['cmed'][0] ?? null, $row);
+        $citation = $this->cell($pan, $annexColumns['citation'] ?? null, $row);
+        $note = trim("RAC/SPA data-deficient annex: {$block['title']}.".($comment === '' ? '' : " {$comment}.").($citation === '' ? '' : " Ref: {$citation}."));
+
+        $rowColumns = $block['detail']
+            ? $annexColumns
+            : array_intersect_key($annexColumns, array_flip(['species', 'author', 'year']));
+
+        return $this->panRow($pan, $rowColumns, $row, $species, $subregionData[$key] ?? [], $block['status'], $note);
     }
 
     /**
@@ -262,10 +502,17 @@ final class PanMediterraneanWorkbookReader
         $sheets = implode(', ', array_map('strtoupper', array_keys($perSubregion)));
         ['country' => $country, 'note' => $countryNote] = $this->splitCountry((string) ($first['country'] ?? ''));
 
+        // Held out in every subregion that lists it: held out basin-wide too,
+        // under the shared status, else Data Deficient. Never left blank, or
+        // the species would count as an unclassified NIS.
+        $heldOut = array_filter($perSubregion, fn (array $values): bool => ($values['block'] ?? null) !== null);
+        $statuses = array_unique(array_column($heldOut, 'nis'));
+        $nisStatus = count($heldOut) < count($perSubregion) ? '' : (count($statuses) === 1 ? reset($statuses) : NisStatus::DataDeficient->value);
+
         $values = [
             (string) $first['species'],
             '',
-            '',
+            $nisStatus,
             '',
             '',
             $country,

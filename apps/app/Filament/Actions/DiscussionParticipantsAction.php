@@ -29,7 +29,7 @@ class DiscussionParticipantsAction
             ->color('gray')
             ->modalHeading('Who follows this discussion')
             ->modalDescription('Participants are notified of every new message. Anyone who writes in the discussion joins automatically.')
-            ->fillForm(fn (Commentable&Model $record): array => ['participants' => $record->getSubscribers()->modelKeys()])
+            ->fillForm(fn (Commentable&Model $record): array => self::participantsState($record))
             ->schema(fn (Commentable&Model $record): array => [
                 UserSelect::make('participants')
                     ->hiddenLabel()
@@ -39,17 +39,73 @@ class DiscussionParticipantsAction
             ])
             ->modalSubmitActionLabel('Save')
             ->action(function (Commentable&Model $record, array $data): void {
-                $chosen = User::whereKey($data['participants'] ?? [])->get();
-                $current = $record->getSubscribers();
-
-                $chosen->reject(fn (User $user): bool => $current->contains($user))->each(fn (User $user) => $record->subscribe($user));
-                $current->reject(fn ($user): bool => $chosen->contains($user))->each(fn ($user) => $record->unsubscribe($user));
+                $count = self::sync($record, $data['participants'] ?? []);
 
                 Notification::make()
-                    ->title(trans_choice(':count participant|:count participants', $chosen->count()))
+                    ->title(trans_choice(':count participant|:count participants', $count))
                     ->success()
                     ->send();
             });
+    }
+
+    /**
+     * The participant picker inside a Discussion modal, above the thread, so
+     * one window both chooses who follows and holds the conversation. Each
+     * change is saved at once: the discussion modal has no submit button.
+     *
+     * @template TAction of Action
+     *
+     * @param  TAction  $discussion
+     * @return TAction
+     */
+    public static function inDiscussion(Action $discussion): Action
+    {
+        // ponytail: reads Filament's protected $modalContent to move the thread
+        // below the form (an action renders its content before its schema);
+        // breaks if Filament renames it — then subclass the two Commentions actions.
+        $thread = (fn () => $this->modalContent)->call($discussion);
+
+        return $discussion
+            ->modalContent(null)
+            ->modalContentFooter($thread)
+            ->modalDescription('Participants are notified of every new message. Anyone who writes in the discussion joins automatically.')
+            ->fillForm(fn (Commentable&Model $record): array => self::participantsState($record))
+            ->schema(fn (Commentable&Model $record): array => [
+                UserSelect::make('participants')
+                    ->label('Participants')
+                    ->placeholder('Add participants…')
+                    ->multiple()
+                    ->searchable()
+                    ->live()
+                    ->options(fn (): array => self::userOptions(self::candidates($record)))
+                    ->afterStateUpdated(fn (?array $state) => self::sync($record, $state ?? [])),
+            ]);
+    }
+
+    /**
+     * The picker's starting state: who follows the discussion now.
+     *
+     * @return array{participants: array<int, int|string>}
+     */
+    private static function participantsState(Commentable&Model $record): array
+    {
+        return ['participants' => $record->getSubscribers()->modelKeys()];
+    }
+
+    /**
+     * Make exactly $userIds the record's participants; returns how many there are.
+     *
+     * @param  array<int, int|string>  $userIds
+     */
+    public static function sync(Commentable&Model $record, array $userIds): int
+    {
+        $chosen = User::whereKey($userIds)->get();
+        $current = $record->getSubscribers();
+
+        $chosen->reject(fn (User $user): bool => $current->contains($user))->each(fn (User $user) => $record->subscribe($user));
+        $current->reject(fn ($user): bool => $chosen->contains($user))->each(fn ($user) => $record->unsubscribe($user));
+
+        return $chosen->count();
     }
 
     /**

@@ -24,6 +24,9 @@ class OccurrenceApproved extends Notification
             ->subject('[MAMIAS] Your occurrence report has been approved')
             ->greeting('Great news, '.$notifiable->name.'!')
             ->line("Your occurrence report for *{$this->occurrence->taxon?->scientificname}* has been approved and is now visible in the MAMIAS database.")
+            ->when($this->occurrence->moderation_notes, fn (MailMessage $mail): MailMessage => $mail
+                ->line('**Reviewer notes:** '.$this->occurrence->moderation_notes))
+            ->action('View my species reports', route('my-species-reports'))
             ->line('Thank you for contributing to the MAMIAS Non-Indigenous Species database.');
     }
 }

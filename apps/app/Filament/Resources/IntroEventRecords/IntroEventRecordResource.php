@@ -5,8 +5,8 @@ namespace App\Filament\Resources\IntroEventRecords;
 use App\Filament\Resources\IntroEventRecords\Pages\CreateIntroEventRecord;
 use App\Filament\Resources\IntroEventRecords\Pages\EditIntroEventRecord;
 use App\Filament\Resources\IntroEventRecords\Pages\ListIntroEventRecords;
-use App\Filament\Resources\IntroEventRecords\RelationManagers\OccurrencesRelationManager;
 use App\Filament\Resources\IntroEventRecords\Schemas\IntroEventRecordForm;
+use App\Filament\Resources\IntroEventRecords\Schemas\IntroEventRecordInfolist;
 use App\Filament\Resources\IntroEventRecords\Tables\IntroEventRecordsTable;
 use App\Models\IntroEventRecord;
 use BackedEnum;
@@ -70,23 +70,19 @@ class IntroEventRecordResource extends Resource
     }
 
     /**
+     * The read-only view window; see IntroEventRecordInfolist.
+     */
+    public static function infolist(Schema $schema): Schema
+    {
+        return IntroEventRecordInfolist::configure($schema);
+    }
+
+    /**
      * Configure the table for the resource.
      */
     public static function table(Table $table): Table
     {
         return IntroEventRecordsTable::configure($table);
-    }
-
-    /**
-     * Get the list of relation managers for the resource.
-     *
-     * @return array<int, class-string>
-     */
-    public static function getRelations(): array
-    {
-        return [
-            OccurrencesRelationManager::class,
-        ];
     }
 
     /**

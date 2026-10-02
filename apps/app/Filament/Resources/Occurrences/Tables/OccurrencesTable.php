@@ -100,6 +100,7 @@ class OccurrencesTable
             ->sortable()
             ->tooltip(fn (Occurrence $record): ?string => match (true) {
                 $record->status === OccurrenceStatus::REJECTED && $record->moderation_notes => $record->moderation_notes,
+                $record->status === OccurrenceStatus::PENDING && $record->moderation_notes => 'Resubmitted. Previously rejected: '.$record->moderation_notes,
                 default => null,
             });
     }

@@ -42,8 +42,9 @@ class FirstRecordCountriesChart extends IntroEventChart
             ->values();
 
         return [
+            'toolbox' => $this->toolbox(),
             'tooltip' => $this->tooltip(),
-            'grid' => ['left' => '3%', 'right' => '6%', 'top' => '3%', 'bottom' => '3%', 'containLabel' => true],
+            'grid' => ['left' => '3%', 'right' => '6%', 'top' => 32, 'bottom' => '3%', 'containLabel' => true],
             'xAxis' => $this->valueAxis(),
             'yAxis' => $this->categoryAxis($rows->pluck('country')->all()),
             'series' => [[

@@ -107,6 +107,25 @@ class Taxon extends Model implements Commentable
     use HasComments, HasFactory, LogsActivity, SoftDeletes, Userstamps;
 
     /**
+     * An identifying icon per kingdom. A kingdom is a category, not a status,
+     * so it gets an icon and no colour (DESIGN-SYSTEM.md). Tabler has no
+     * bacteria icon; the microscope stands in. Only the kingdoms in the
+     * catalogue: any other one gets the generic hierarchy icon.
+     */
+    public const KINGDOM_ICONS = [
+        'Animalia' => 'tabler-paw',
+        'Plantae' => 'tabler-plant-2',
+        'Chromista' => 'tabler-cell',
+        'Bacteria' => 'tabler-microscope',
+    ];
+
+    /** The kingdom's icon, or the generic hierarchy one for an unknown or blank kingdom. */
+    public static function kingdomIcon(?string $kingdom): string
+    {
+        return self::KINGDOM_ICONS[(string) $kingdom] ?? 'tabler-hierarchy-2';
+    }
+
+    /**
      * Introduction events counted when a delete starts, read back once it has
      * succeeded. Keyed weakly by the model so nothing is written onto it.
      *

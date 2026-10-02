@@ -57,10 +57,10 @@ it('writes a subregion record only where the file had something to say', functio
         ->toEqualCanonicalizing([Subregion::CMED, Subregion::EMED]);
 });
 
-it('splits a multi-country cell into the live array shape', function (): void {
+it('splits a multi-country cell into the live array shape, under the names the edit form stores', function (): void {
     $record = $this->promoter->promote(stage(['first_country' => 'Lebanon, Turkey']));
 
-    expect($record->first_country)->toBe(['Lebanon', 'Turkey']);
+    expect($record->first_country)->toBe(['Lebanon', 'Türkiye']);
 });
 
 it('is idempotent', function (): void {

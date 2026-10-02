@@ -11,6 +11,7 @@ use App\Filament\Forms\SinglePointMapPicker;
 use App\Models\IntroEventRecord;
 use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -62,6 +63,15 @@ class OccurrenceForm
                     ->live()
                     ->afterStateUpdated(fn (Get $get, Set $set, mixed $state) => self::populateKingdom($get, $set, $state))
                     ->hintIcon('tabler-fish')
+                    // Only species with an introduction event are listed; a new NIS goes through the suggestion form.
+                    ->hintAction(
+                        Action::make('suggestSpecies')
+                            ->label('Not listed?')
+                            ->tooltip('Suggest a new NIS for MAMIAS')
+                            ->url(fn (): string => route('suggestions'))
+                            ->openUrlInNewTab(),
+                    )
+                    ->noSearchResultsMessage('No listed species matches. Use "Not listed?" to suggest a new NIS.')
                     ->placeholder('Type at least 3 characters to search…'),
                 Stepper::make('depth')
                     ->label('Depth (m)')
@@ -219,7 +229,8 @@ class OccurrenceForm
             ->whereHas('taxon', fn ($q) => $q->where('scientificname', 'ilike', "%{$search}%"));
 
         if ($country) {
-            $query->where('first_country', $country);
+            // The occurrence stores a country code; first_country is a JSON list of names.
+            $query->whereJsonContains('first_country', CountrySelectWithMedPriority::storedNameFor($country) ?? $country);
         }
 
         return $query
