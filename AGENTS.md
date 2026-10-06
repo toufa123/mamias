@@ -6,7 +6,7 @@
 - Do not use `docker-compose.yml` for production; use `docker-compose.prod.yml` + `.env.production` (`README.md`).
 
 ## Big picture architecture
-- Runtime is Docker-first: FrankenPHP app + dedicated queue worker + PostGIS + Redis + Mailpit (`docker-compose.yml`).
+- Runtime is Docker-first: FrankenPHP app + dedicated queue worker + PostGIS + Redis (`docker-compose.yml`); dev mail is captured in-app by redberry/mailbox-for-laravel at `/mamias/mailbox`.
 - Main product surface is Filament panel at `/mamias`, not `routes/web.php` (which only serves `welcome`).
 - App boot wires only web/console routes plus health route `/up` (`apps/bootstrap/app.php`).
 - Filament panel configuration is centralized in `apps/app/Providers/Filament/MamiasPanelProvider.php` (plugins, auth flow, theme, middleware, widgets).

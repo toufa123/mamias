@@ -8,6 +8,7 @@ use App\Enums\LiteratureStatus;
 use App\Models\Traits\HasSpatialLocation;
 use Clickbar\Magellan\Data\Geometries\Point;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -79,6 +80,8 @@ use Spatie\Activitylog\Support\LogOptions;
     'taxon_id',
     'resubmitted_from_id',
 ])]
+// Derived from `location` on save; a PostGIS Point Livewire cannot serialize into form state.
+#[Hidden(['location_point'])]
 class NisSuggestion extends Model implements Commentable
 {
     use HasComments, HasFactory, HasSpatialLocation, LogsActivity, SoftDeletes, Userstamps;

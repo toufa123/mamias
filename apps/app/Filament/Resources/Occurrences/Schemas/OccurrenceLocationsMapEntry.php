@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources\Occurrences\Schemas;
 
+use App\Filament\Widgets\OccurrencesMap;
 use App\Models\Occurrence;
 use EduardoRibeiroDev\FilamentLeaflet\Infolists\MapEntry;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 
 /**
- * Custom MapEntry that renders the occurrence's location as a red
- * pick marker with taxon scientific name in the popup.
+ * Custom MapEntry that renders the occurrence's location as a pick marker
+ * coloured by review status, like the occurrences map, with taxon scientific name in the popup.
  */
 class OccurrenceLocationsMapEntry extends MapEntry
 {
@@ -30,8 +31,7 @@ class OccurrenceLocationsMapEntry extends MapEntry
             return parent::getPickMarkerData();
         }
 
-        $pickMarker = Marker::make((float) $first['lat'], (float) $first['lng'])
-            ->red()
+        $pickMarker = OccurrencesMap::colourByStatus(Marker::make((float) $first['lat'], (float) $first['lng']), $record->status)
             ->tooltipContent("{$first['lat']}, {$first['lng']}")
             ->tooltipOptions(['direction' => 'top'])
             ->popupContent("{$record->taxon?->scientificname}<br>Lat: {$first['lat']}<br>Lng: {$first['lng']}");

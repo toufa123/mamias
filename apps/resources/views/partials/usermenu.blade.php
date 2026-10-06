@@ -1,7 +1,6 @@
 <div class="flex items-center justify-end gap-2 lg:w-[400px] lg:gap-3.5">
     <div class="me-0.5 flex items-center gap-2">
         @php($role = Auth::user()?->getRoleNames()->first() ?? 'User')
-        @php($isSpecial = Auth::user()?->hasAnyRole(['super_admin', 'scientist']) ?? false)
         {{-- Install app, right beside the avatar or the Login link. --}}
         @include('partials.app-controls')
         @if (Route::has('filament.mamias.auth.login'))
@@ -22,7 +21,7 @@
                                 alt="{{ Auth::user()?->getFilamentName() ?? 'Avatar' }}"
                             />
                         </div>
-                        <span class="absolute -bottom-0.5 -end-0.5 block size-3 rounded-full border-2 border-white {{ $isSpecial ? 'bg-[var(--ring)]' : 'bg-muted-foreground' }}"></span>
+                        <span class="absolute -bottom-0.5 -end-0.5 block size-3 rounded-full border-2 border-white bg-[#018d9a]"></span>
                     </button>
                     <div class="kt-dropdown-menu w-[265px]" data-kt-dropdown-menu="true">
                         <div class="flex items-center justify-between gap-1.5 px-2.5 py-1.5">
@@ -35,7 +34,7 @@
                                             alt="{{ Auth::user()?->getFilamentName() ?? 'Avatar' }}"
                                         />
                                     </div>
-                                    <span class="absolute -bottom-0.5 -end-0.5 block size-3.5 rounded-full border-2 border-white {{ $isSpecial ? 'bg-[var(--ring)]' : 'bg-muted-foreground' }}"></span>
+                                    <span class="absolute -bottom-0.5 -end-0.5 block size-3.5 rounded-full border-2 border-white bg-[#018d9a]"></span>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
                                     <span class="text-foreground text-sm leading-none font-semibold">
@@ -91,7 +90,7 @@
                                         <path d="M10 14h4" />
                                         <path d="M12 12v4" />
                                     </svg>
-                                    My Species Report
+                                    My Species Reports
                                 </a>
                             </li>
 
@@ -102,7 +101,7 @@
                                         <path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" />
                                         <path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" />
                                     </svg>
-                                    My Species Suggestionss
+                                    My Species Suggestions
                                 </a>
                             </li>
                         </ul>

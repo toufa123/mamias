@@ -31,10 +31,11 @@ means the species is in the catalogue's trash while its event is still here.
 
 The funnel icon opens the filters:
 
-![Filters: year range, country, establishment, sub-region and pathways](/images/docs/intro-events/02-filters.png)
+![Filters: year range, country, statuses, sub-region and pathways](/images/docs/intro-events/02-filters.png)
 
 - **1st Year of Introduction.** Drag the two handles to set a year range.
-- **1st Country of Introduction**, **Establishment Status**, **EcAp Subregion.**
+- **1st Country of Introduction**, **NIS Status**, **Establishment Status**,
+  **EcAp Subregion.** Each takes several values; an event matches any of them.
 - **Present in Country.** Every country the species has been recorded in, not
   only the first one.
 - **CBD Pathway Category**, **Pathway Subcategory**, **Pathway Type**,
@@ -42,6 +43,19 @@ The funnel icon opens the filters:
   category's.
 
 Set the filters, then click **Apply filters**. **Reset** clears them.
+
+## Save a view of the list
+
+Set the list up the way you use it (filters, search, sort, visible columns),
+then open **Saved views** in the table toolbar, type a name and click **Save
+current view**. Clicking the view later brings that set-up back. Your views
+are yours alone; other users never see them.
+
+- Changing the list while a view is open does not change the view. A dot on
+  **Saved views** marks unsaved changes; **Update this view** writes them in.
+- Drag a view to reorder it, use the cog to rename it and the bin to delete it.
+- A view does not remember the tab. Open the tab first (e.g. *Needs review*),
+  then the view.
 
 ## View an event
 
@@ -122,7 +136,22 @@ category's subcategories.
 ![Pathways tab of the edit page](/images/docs/intro-events/06-edit-pathways.png)
 
 To change an event, click **Edit** in its **☰** menu, then **Save changes**.
-Saving takes the event off the *Needs review* tab.
+Saving takes the event off the *Needs review* tab and returns to the tab you
+came from. The edit page also has **Delete**, **Force delete** and **Restore**
+at the top.
+
+## When someone else is editing
+
+Opening the edit page of an event locks it for everyone else while you have
+it open. Anyone who opens it meanwhile sees a banner naming who is editing,
+and every field greyed out: they can read but not save. The lock lifts as soon
+as you save or leave the page, and on its own about 10 minutes after the page
+was closed without leaving it properly (a crashed browser, a dropped
+connection).
+
+A super_admin can click **Unlock page** in the banner to take over a record
+someone left open. Whatever that person had not saved is lost, so check with
+them first. **System → Resource Lock Manager** lists every current lock.
 
 ## Review flagged events
 
@@ -190,8 +219,9 @@ reassign those first. Ticking several rows gives the same actions in bulk.
 the catalogue first (**Import NIS Taxa** on the catalogue list): a row whose
 species is not in the catalogue is rejected.
 
-1. Prepare a CSV or Excel file, one species per row. The window offers example
-   CSV and XLSX files with every column.
+1. Prepare a CSV or Excel file, one species per row. From an Excel workbook
+   only the first sheet is read. The window offers example CSV and XLSX files
+   with every column.
 2. Click **Import Intro Events** and drop the file in the box.
 
    ![Import Intro Events window](/images/docs/intro-events/11-import-modal.png)
@@ -224,11 +254,15 @@ fails when its species is not in the catalogue. **Download information about
 the failed rows** lists them with the reason. Rows with values that could not
 be read are imported and flagged **Needs review**.
 
-### The RAC/SPA Mediterranean baseline workbook
+### How the RAC/SPA baseline workbook was loaded
 
 The 2023 baseline workbook (sheets PAN MEDITERRANEAN, WMED, CMED, ADRIA, EMED)
-follows each validated list with held-out blocks. They are read as follows,
-never as validated NIS:
+was loaded once, outside **Import Intro Events**: that button reads only the
+first sheet, so do not upload the workbook through it. This section explains
+the statuses that load left in the data.
+
+The workbook follows each validated list with held-out blocks. They were read
+as follows, never as validated NIS:
 
 | Block | Stored as |
 |---|---|
@@ -239,6 +273,6 @@ never as validated NIS:
 | Sub-region: *Cryptogenic* | sub-region status **Cryptogenic** |
 | *Removed*, *To be removed*, *Shells only*, rows marked *REMOVE* or *NAT* | not imported |
 
-A species on a validated list keeps that entry even when a held-out block also
-names it. Each annex event's notes say which block it came from, with the
+A species on a validated list kept that entry even when a held-out block also
+named it. Each annex event's notes say which block it came from, with the
 reference.

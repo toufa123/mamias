@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
+use Blendbyte\FilamentResourceLock\Models\Concerns\HasLocks;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,7 +54,7 @@ use Spatie\Activitylog\Support\LogOptions;
 #[Fillable(['taxon_id', 'verbatim_name', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes', 'pathway_check'])]
 class IntroEventRecord extends Model
 {
-    use HasFactory, LogsActivity, SoftDeletes, Userstamps;
+    use HasFactory, HasLocks, LogsActivity, SoftDeletes, Userstamps;
 
     protected function casts(): array
     {

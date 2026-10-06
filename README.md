@@ -121,7 +121,7 @@ mamias/
 
 - Docker & Docker Compose
 - `make` available on your system
-- Host ports available: `7443` (HTTPS), `5433` (PostGIS), `6380` (Redis), `8026` (Mailpit), `3000` (Cap)
+- Host ports available: `7443` (HTTPS), `5433` (PostGIS), `6380` (Redis), `3000` (Cap)
   - All are bound to `127.0.0.1` only. Keep them below `50000` — Windows/Hyper-V reserves large blocks of the ephemeral range and a container cannot bind a reserved port.
 
 ### Installation
@@ -167,7 +167,7 @@ mamias/
 |---------------------|-------------------------------------------------------------|
 | Admin Panel         | [https://mamias.local/mamias](https://mamias.local/mamias)  |
 | Health Check        | [https://mamias.local/up](https://mamias.local/up)          |
-| Mailpit (email UI)  | [http://localhost:8026](http://localhost:8026)               |
+| Mailbox (email UI)  | `/mamias/mailbox` on the app host (super_admin only)               |
 
 *Note: Accept the self-signed certificate on first visit.*
 
@@ -311,7 +311,6 @@ from the Cap dashboard instead.
 | **db** | kartoza/postgis | 5433 → 5432 (dev only) | PostgreSQL + PostGIS |
 | **db-backup** | kartoza/pg-backup | — | Automated database backups |
 | **redis** | redis:alpine | 6380 → 6379 (dev only) | Cache, sessions, queue broker |
-| **mail** | axllent/mailpit | 8026 (dev only) | SMTP catcher + web UI |
 | **cap** | tiago2/cap | 3000 (dev); internal-only in prod (via `/cap` proxy) | Proof-of-work CAPTCHA standalone server (`ADMIN_KEY` required) |
 | **cap-valkey** | valkey/valkey:9-alpine | — | Token storage for Cap |
 

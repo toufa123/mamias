@@ -17,6 +17,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Tabs\Tab;
+use Happenv\FilamentSavedViews\Filament\Concerns\HasSavedViews;
 use Illuminate\Database\Eloquent\Builder;
 use League\Csv\Info as CsvInfo;
 use League\Csv\Reader as CsvReader;
@@ -26,6 +27,8 @@ use League\Csv\Reader as CsvReader;
  */
 class ListIntroEventRecords extends ListRecords
 {
+    use HasSavedViews;
+
     protected static string $resource = IntroEventRecordResource::class;
 
     protected function getHeaderActions(): array

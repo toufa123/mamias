@@ -28,6 +28,19 @@ duplicate.
 - **Filters.** *Type*, *Year*, *Submitted by*, *Comments awaiting a reply*,
   *Retracted*, *DOI suggestion to review* and *Not cited by any record*.
 
+## Save a view of the list
+
+Set the list up the way you use it (filters, search, sort, visible columns),
+then open **Saved views** in the table toolbar, type a name and click **Save
+current view**. Clicking the view later brings that set-up back. Your views
+are yours alone; other users never see them.
+
+- Changing the list while a view is open does not change the view. A dot on
+  **Saved views** marks unsaved changes; **Update this view** writes them in.
+- Drag a view to reorder it, use the cog to rename it and the bin to delete it.
+- A view does not remember the tab. Open the tab first (e.g. *Pending Review*),
+  then the view.
+
 ## Add a reference
 
 1. Click **New Literature** at the top of the list.
@@ -114,6 +127,19 @@ Everything that cited the duplicate moves over.
 Introduction events, species suggestions and original descriptions now cite the
 reference you kept, and the duplicate is deleted. The merge is recorded in the
 kept reference's activity log. **It cannot be undone.**
+
+## When someone else is editing
+
+Opening the edit page of a reference locks it for everyone else while you have
+it open. Anyone who opens it meanwhile sees a banner naming who is editing,
+and every field greyed out: they can read but not save. The lock lifts as soon
+as you save or leave the page, and on its own about 10 minutes after the page
+was closed without leaving it properly (a crashed browser, a dropped
+connection).
+
+A super_admin can click **Unlock page** in the banner to take over a record
+someone left open. Whatever that person had not saved is lost, so check with
+them first. **System → Resource Lock Manager** lists every current lock.
 
 ## Delete a reference
 

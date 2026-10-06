@@ -28,10 +28,10 @@ it('links the app manifest and ships the install control in the panel', function
         ->assertSee('Install app');
 });
 
-it('serves a manifest that browsers accept as installable', function () {
+it('serves a manifest that opens in a normal browser tab, not an app window', function () {
     $manifest = json_decode(file_get_contents(public_path('manifest.webmanifest')), true, flags: JSON_THROW_ON_ERROR);
 
-    expect($manifest)->toMatchArray(['start_url' => '/', 'display' => 'standalone'])
+    expect($manifest)->toMatchArray(['start_url' => '/', 'display' => 'browser'])
         ->and(collect($manifest['icons'])->pluck('sizes')->all())->toContain('192x192', '512x512');
 
     foreach ($manifest['icons'] as $icon) {

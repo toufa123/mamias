@@ -4,6 +4,7 @@
 
 // Note: Laravel will automatically resolve `Breadcrumbs::` without
 // this import. This is nice for IDE syntax and refactoring.
+use App\Models\IntroEventRecord;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 // This import is also not required, and you could replace `BreadcrumbTrail $trail`
 //  with `$trail`. This is nice for IDE type checking and completion.
@@ -42,6 +43,24 @@ Breadcrumbs::for('my-species-reports', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('suggestions', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('My Suggestions', route('suggestions'));
+});
+
+// Home > User manual
+Breadcrumbs::for('manual', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('User manual', route('manual'));
+});
+
+// Home > Data
+Breadcrumbs::for('data', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Data', route('data'));
+});
+
+// Home > Data > Species
+Breadcrumbs::for('data.species', function (BreadcrumbTrail $trail, IntroEventRecord $record) {
+    $trail->parent('data');
+    $trail->push((string) $record->taxon?->scientificname, route('data.species', $record));
 });
 
 // CMS pages

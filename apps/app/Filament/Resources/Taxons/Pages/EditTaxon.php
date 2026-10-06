@@ -11,6 +11,7 @@ use App\Filament\Resources\Taxons\TaxonResource;
 use App\Models\Taxon;
 use App\Services\GbifService;
 use App\Services\TaxonService;
+use Blendbyte\FilamentResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -26,6 +27,7 @@ use Livewire\Attributes\On;
 class EditTaxon extends EditRecord
 {
     use AppliesTaxonMatch;
+    use UsesResourceLock;
 
     protected static string $resource = TaxonResource::class;
 

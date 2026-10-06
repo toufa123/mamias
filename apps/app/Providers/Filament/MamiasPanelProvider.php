@@ -17,6 +17,7 @@ use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BinaryBuilds\CommandRunner\CommandRunnerPlugin;
+use Blendbyte\FilamentResourceLock\ResourceLockPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Crumbls\Layup\LayupPlugin;
@@ -33,6 +34,8 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
+use Asignua\FilamentSeoFiles\SeoFilesPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Js;
@@ -44,6 +47,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
+use Happenv\FilamentSavedViews\FilamentSavedViewsPlugin;
 use Heyosseus\Vacuum\Filament\VacuumPlugin;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -62,6 +66,7 @@ use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 use Syofyanzuhad\ConnectionIndicator\ConnectionIndicatorPlugin;
+use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
 use UniFileManager\FilamentFileManager\FilamentFileManagerPlugin;
 use Vaslv\FilamentAppVersion\AppVersionPlugin;
 use Vaslv\FilamentAppVersion\Resolvers\ConfigVersionResolver;
@@ -178,6 +183,10 @@ class MamiasPanelProvider extends PanelProvider
                     ->authorize(fn (): bool => auth()->user()->hasRole('super_admin'))
                     ->navigationGroup('System')
                     ->navigationIcon('tabler-alert-triangle'),
+                // Writes robots.txt and the llms files into the web root: super_admin only.
+                SeoFilesPlugin::make()
+                    ->authorize(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
+                    ->navigationGroup('System'),
                 FilamentSpatieLaravelHealthPlugin::make()
                     ->usingPage(HealthCheckResults::class)
                     ->authorize(fn (): bool => auth()->user()->hasRole('super_admin')),
@@ -260,6 +269,24 @@ class MamiasPanelProvider extends PanelProvider
                     ->discoverUntrackedFiles(directory: storage_path('logs')),
                 ActivityLogPlugin::make()
                     ->navigationGroup('System'),
+                // Logins, logouts and failed attempts; the activity log above
+                // only records changes to data. Gated by AuthenticationLogPolicy.
+                FilamentAuthenticationLogPlugin::make(),
+                // Locks a Catalogue, Literature or Intro Event record while
+                // someone edits it. Others get a read-only page instead of a
+                // blocking modal; super_admin can force-unlock from the banner.
+                // The heartbeat renews the 10-minute lock while the page is
+                // open, even in a background tab (e.g. while checking WoRMS).
+                ResourceLockPlugin::make()
+                    ->readOnlyWhenLocked()
+                    ->usesPollingToDetectPresence()
+                    ->presencePollingInterval(60)
+                    ->pollingKeepAlive()
+                    ->navigationGroup('System')
+                    ->limitedAccessToResourceLockManager()
+                    ->gate('manageResourceLocks'),
+                // Per-user named views on the list pages using HasSavedViews.
+                FilamentSavedViewsPlugin::make(),
                 // Structured, searchable exception records with request and
                 // stack context. FilamentLogsExplorerPlugin above only tails
                 // the raw log files, so a thrown exception is prose there.
@@ -362,9 +389,19 @@ class MamiasPanelProvider extends PanelProvider
                 NavigationGroup::make('Dashboard'),
                 NavigationGroup::make('Use management'),
                 NavigationGroup::make('MAMIAS database'),
-                NavigationGroup::make('System'),
+                NavigationGroup::make('System')
+                    ->collapsed(),
                 NavigationGroup::make('Settings'),
                 NavigationGroup::make('Content management'),
+                NavigationGroup::make('Help'),
+            ])
+            // The admin manual is a page (Pages\AdminManual); the user manual lives on the public site.
+            ->navigationItems([
+                NavigationItem::make('User manual')
+                    ->url(fn (): string => route('manual'), shouldOpenInNewTab: true)
+                    ->icon('tabler-book-2')
+                    ->group('Help')
+                    ->sort(2),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -414,11 +451,22 @@ class MamiasPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::PAGE_START,
+                fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.pending-occurrences-alert'),
+            )
+            ->renderHook(
+                PanelsRenderHook::PAGE_START,
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.accepted-names-alert'),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.hooks.public-site-link'),
+            )
+            // Filament persists the sidebar's collapsed groups in localStorage
+            // and only applies ->collapsed() defaults while that key is empty,
+            // so clear it on the login page: System starts folded each session.
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn (): string => "<script>localStorage.removeItem('collapsedGroups')</script>",
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,

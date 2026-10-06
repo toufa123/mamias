@@ -12,6 +12,8 @@
 @source '../../../../vendor/vitisstudio/filament-choosable-chips/resources/views';
 @source '../../../../vendor/bezhansalleh/filament-exceptions/resources/views/**/*.blade.php';
 @source '../../../../vendor/kirschbaum-development/commentions/resources/views/**/*.blade.php';
+@source '../../../../vendor/happenv-com/filament-saved-views/resources/**/*.blade.php';
+@source '../../../../vendor/blendbyte/filament-resource-lock/resources/views/**/*.blade.php';
 
 
 /* Fix Leaflet 1.9 gray tile issue — mix-blend-mode makes tiles invisible on many browsers */

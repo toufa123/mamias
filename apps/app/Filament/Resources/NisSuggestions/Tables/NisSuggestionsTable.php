@@ -208,11 +208,10 @@ class NisSuggestionsTable
             })
             ->height(72)
             ->width(108)
-            ->zoom(5)
+            ->zoom(4)
             ->static()
             ->pickMarker(fn (Marker $marker) => $marker->red())
             ->placeholder('—')
-            ->hidden(fn (?NisSuggestion $record): bool => $record?->getRawOriginal('location') === null)
             ->toggleable();
     }
 

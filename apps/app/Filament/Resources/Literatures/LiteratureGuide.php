@@ -18,7 +18,18 @@ use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
  * - `literatures`: reviewers, on the panel's Literatures resource;
  * - `references`: contributors, on the public "My Bibliographic References";
  * - `taxa`: the MAMIAS catalogue (NIS Taxon list);
- * - `intro-events`: the Introduction Events list.
+ * - `intro-events`: the Introduction Events list;
+ * - `occurrences`: the Occurrences review list;
+ * - `species-reports`: contributors, on the public "My Species Reports";
+ * - `suggestions`: contributors, on the public "My Species Suggestions".
+ *
+ * Two manuals render the same way as whole pages rather than popups:
+ * `admin-manual` (panel, Pages\AdminManual) and `user-manual` (public, /pages/manual).
+ * Their master copies are the claude.ai documents they were written in; keep both in step.
+ * Both also download as PDF (Services\ManualPdf), screenshots included; the
+ * screenshots come from resources/docs/screenshots/*.cjs, anonymised (anonymise.cjs).
+ *
+ * Demo data for the occurrence and suggestion screenshots: `php artisan guides:demo-data`.
  *
  * The screenshots were taken from the dev stack with temporary demo
  * references; retake them when the screens change.

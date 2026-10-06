@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Occurrences;
 
-use App\Enums\OccurrenceStatus;
-use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
 use App\Filament\Resources\Occurrences\Actions\OccurrenceActions;
 use App\Filament\Resources\Occurrences\Pages\ListOccurrences;
 use App\Filament\Resources\Occurrences\Schemas\OccurrenceInfolist;
@@ -11,6 +9,7 @@ use App\Filament\Resources\Occurrences\Tables\OccurrencesTable;
 use App\Models\IntroEventRecord;
 use App\Models\Occurrence;
 use BackedEnum;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\PageRegistration;
@@ -20,8 +19,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Field occurrences submitted from the public site, moderated here. Shown as
- * a sub-item of Introduction Events: an occurrence always belongs to one.
+ * Field occurrences submitted from the public site, moderated here. A
+ * top-level item right after Introduction Events, not its sub-item: Filament
+ * only draws sub-items while their parent is open, and draws them without icons.
  *
  * There is no Occurrence policy: access follows the introduction-event
  * permissions, as it did when occurrences were a tab of the event.
@@ -31,22 +31,20 @@ class OccurrenceResource extends Resource
 {
     protected static ?string $model = Occurrence::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'tabler-map-pins';
+    /** A sighting in the field; the same icon as the "New occurrence" button. */
+    protected static string|BackedEnum|null $navigationIcon = 'tabler-binoculars';
 
     protected static ?string $navigationLabel = 'Occurrences';
 
     protected static string|null|\UnitEnum $navigationGroup = 'MAMIAS database';
 
-    /** Filament matches the parent by its exact label, trailing space included. */
-    public static function getNavigationParentItem(): ?string
-    {
-        return IntroEventRecordResource::getNavigationLabel();
-    }
+    /** Introduction Events' own sort: ties go alphabetically, so Occurrences lands right after it. */
+    protected static ?int $navigationSort = 3;
 
     /** Occurrences awaiting moderation. */
     public static function getNavigationBadge(): ?string
     {
-        $pending = Occurrence::where('status', OccurrenceStatus::PENDING)->count();
+        $pending = Occurrence::pendingCount();
 
         return $pending > 0 ? (string) $pending : null;
     }
@@ -68,7 +66,7 @@ class OccurrenceResource extends Resource
 
     public static function canCreate(): bool
     {
-        return false;
+        return auth()->user()?->hasAnyRole(['super_admin', 'scientist']) ?? false;
     }
 
     public static function canEdit(Model $record): bool
@@ -86,17 +84,19 @@ class OccurrenceResource extends Resource
     {
         return OccurrencesTable::configure($table)
             ->recordActions([
-                ViewAction::make()
-                    ->modalHeading(fn (Occurrence $record): string => "Occurrence #{$record->id}")
-                    ->modalWidth('6xl')
-                    // Moderate straight from the details (also where a map pin lands).
-                    ->extraModalFooterActions([
-                        OccurrenceActions::makeApproveAction()->cancelParentActions(),
-                        OccurrenceActions::makeRejectAction()->cancelParentActions(),
-                    ]),
-                OccurrenceActions::makeApproveAction(),
-                OccurrenceActions::makeRejectAction(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->modalHeading(fn (Occurrence $record): string => "Occurrence #{$record->id}")
+                        ->modalWidth('6xl')
+                        // Moderate straight from the details (also where a map pin lands).
+                        ->extraModalFooterActions([
+                            OccurrenceActions::makeApproveAction()->cancelParentActions(),
+                                OccurrenceActions::makeRejectAction()->cancelParentActions(),
+                        ]),
+                    OccurrenceActions::makeApproveAction(),
+                    OccurrenceActions::makeRejectAction(),
+                    DeleteAction::make(),
+                ]),
             ]);
     }
 

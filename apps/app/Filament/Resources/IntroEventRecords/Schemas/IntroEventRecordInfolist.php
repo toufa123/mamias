@@ -50,6 +50,27 @@ class IntroEventRecordInfolist
     }
 
     /**
+     * The public data page's version (App\Livewire\NisSpecies): no review or
+     * EASIN callouts and no notes & audit tab, which are curators' working state.
+     */
+    public static function configurePublic(Schema $schema): Schema
+    {
+        return $schema
+            ->columns(1)
+            ->components([
+                self::getFactsGrid(),
+                self::getReferenceEntry(),
+                Tabs::make('Event details')
+                    ->tabs([
+                        self::getSubregionsTab(),
+                        self::getCountriesTab(),
+                        self::getPathwaysTab(),
+                    ])
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    /**
      * When and where the species was first recorded, and its two statuses.
      */
     protected static function getFactsGrid(): Grid

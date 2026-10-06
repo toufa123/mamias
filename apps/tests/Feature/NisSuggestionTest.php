@@ -144,3 +144,13 @@ it('blocks submission when scientific name already exists in the catalogue', fun
 
     $existingTaxon->forceDelete();
 });
+
+it('opens a located suggestion on MySuggestions without serializing its PostGIS point', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $suggestion = NisSuggestion::factory()->for($user)->create(['location' => [['lat' => 34.75, 'lng' => 10.85]]]);
+
+    livewire(MySuggestions::class)
+        ->mountAction(TestAction::make('view')->table($suggestion))
+        ->assertActionMounted(TestAction::make('view')->table($suggestion));
+});

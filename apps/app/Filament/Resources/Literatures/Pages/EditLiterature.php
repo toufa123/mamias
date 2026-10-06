@@ -6,6 +6,7 @@ use App\Filament\Actions\DiscussionParticipantsAction;
 use App\Filament\Resources\Literatures\LiteratureGuide;
 use App\Filament\Resources\Literatures\LiteratureResource;
 use App\Filament\Resources\Literatures\Tables\LiteraturesTable;
+use Blendbyte\FilamentResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
@@ -17,6 +18,8 @@ use Kirschbaum\Commentions\Filament\Actions\CommentsAction;
  */
 class EditLiterature extends EditRecord
 {
+    use UsesResourceLock;
+
     protected static string $resource = LiteratureResource::class;
 
     protected function getRedirectUrl(): string

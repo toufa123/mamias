@@ -145,4 +145,10 @@ class Occurrence extends Model
             'taxon_id',
         );
     }
+
+    /** Reports awaiting review, once per request: the navigation badge and the panel alert both ask. */
+    public static function pendingCount(): int
+    {
+        return once(fn (): int => self::where('status', OccurrenceStatus::PENDING)->count());
+    }
 }

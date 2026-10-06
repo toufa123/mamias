@@ -9,9 +9,9 @@ use App\Enums\Habitat;
 use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Filament\Forms\SinglePointMapPicker;
 use App\Models\IntroEventRecord;
-use EduardoRibeiroDev\FilamentLeaflet\Enums\TileLayer;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -63,15 +63,19 @@ class OccurrenceForm
                     ->live()
                     ->afterStateUpdated(fn (Get $get, Set $set, mixed $state) => self::populateKingdom($get, $set, $state))
                     ->hintIcon('tabler-fish')
-                    // Only species with an introduction event are listed; a new NIS goes through the suggestion form.
+                    // Only species with an introduction event are listed; a new NIS goes through the
+                    // public suggestion form. Staff in the panel add the introduction event instead.
                     ->hintAction(
                         Action::make('suggestSpecies')
                             ->label('Not listed?')
                             ->tooltip('Suggest a new NIS for MAMIAS')
                             ->url(fn (): string => route('suggestions'))
-                            ->openUrlInNewTab(),
+                            ->openUrlInNewTab()
+                            ->hidden(fn (): bool => Filament::isServing()),
                     )
-                    ->noSearchResultsMessage('No listed species matches. Use "Not listed?" to suggest a new NIS.')
+                    ->noSearchResultsMessage(fn (): string => Filament::isServing()
+                        ? 'No listed species matches.'
+                        : 'No listed species matches. Use "Not listed?" to suggest a new NIS.')
                     ->placeholder('Type at least 3 characters to search…'),
                 Stepper::make('depth')
                     ->label('Depth (m)')
@@ -157,8 +161,7 @@ class OccurrenceForm
                                 ->helperText('Click the map to place the observation point. Clicking again moves it.')
                                 ->height(280)
                                 ->center([36, 14])
-                                ->zoom(5)
-                                ->tileLayersUrl(TileLayer::OpenStreetMap)
+                                ->zoom(4)
                                 ->pickMarker(fn (Marker $marker) => $marker->red())
                                 ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])
                                 ->columnSpanFull(),
@@ -236,9 +239,7 @@ class OccurrenceForm
         return $query
             ->limit(50)
             ->get()
-            ->mapWithKeys(fn (IntroEventRecord $ie): array => [
-                $ie->id => ($ie->taxon?->scientificname ?? 'Unknown species').' — '.($ie->first_introduction_year ?? '?').', '.($ie->first_country ?? '?'),
-            ])
+            ->mapWithKeys(fn (IntroEventRecord $ie): array => [$ie->id => self::speciesOptionLabel($ie)])
             ->toArray();
     }
 
@@ -258,7 +259,18 @@ class OccurrenceForm
             return (string) $value;
         }
 
-        return ($ie->taxon?->scientificname ?? 'Unknown species').' — '.($ie->first_introduction_year ?? '?').', '.($ie->first_country ?? '?');
+        return self::speciesOptionLabel($ie);
+    }
+
+    /**
+     * "Species — first year, first countries", as the species picker lists it.
+     * first_country is a JSON list of names, so it is joined, never cast.
+     */
+    private static function speciesOptionLabel(IntroEventRecord $ie): string
+    {
+        $countries = implode(', ', array_filter((array) $ie->first_country));
+
+        return ($ie->taxon?->scientificname ?? 'Unknown species').' — '.($ie->first_introduction_year ?? '?').', '.($countries ?: '?');
     }
 
     /**

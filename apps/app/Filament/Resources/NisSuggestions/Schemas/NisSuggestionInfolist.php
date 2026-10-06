@@ -155,8 +155,10 @@ class NisSuggestionInfolist
             ->schema([
                 SpeciesLocationsMapEntry::make('location')
                     ->hiddenLabel()
+                    // The cast returns a list of points; the map's own script reads one {lat, lng}.
+                    ->state(fn (NisSuggestion $record): ?array => SpeciesLocationsMapEntry::firstPoint($record->location))
                     ->height(284)
-                    ->zoom(10)
+                    ->zoom(9)
                     ->pickMarker(fn (Marker $marker) => $marker->red())
                     ->static()
                     ->extraAttributes(['x-on:x-modal-opened.window' => 'setTimeout(() => mapCore?.map?.invalidateSize(), 50); setTimeout(() => mapCore?.map?.invalidateSize(), 300);'])

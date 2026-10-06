@@ -500,13 +500,14 @@ html:root.dark .kt-badge-outline.kt-badge-primary {
     place-items: center;
 }
 
+/* The hole (120px × 70% ≈ 84px) must clear the widest label, "ESTABLISHED". */
 .mamias-ring {
-    width: 104px;
-    height: 104px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     background: conic-gradient(#fff var(--pct, 0%), rgb(255 255 255 / 0.2) 0);
-    -webkit-mask: radial-gradient(farthest-side, transparent 63%, #000 65%);
-    mask: radial-gradient(farthest-side, transparent 63%, #000 65%);
+    -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 72%);
+    mask: radial-gradient(farthest-side, transparent 70%, #000 72%);
 }
 
 .mamias-ring-label {
@@ -524,7 +525,7 @@ html:root.dark .kt-badge-outline.kt-badge-primary {
 
 .mamias-ring-label span {
     font-size: 0.5625rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: rgb(255 255 255 / 0.7);
 }

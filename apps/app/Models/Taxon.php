@@ -6,6 +6,7 @@ use App\Enums\Catalogue_Status;
 use App\Enums\LiteratureStatus;
 use App\Enums\Worms_Status;
 use App\Services\TaxonNormalizer;
+use Blendbyte\FilamentResourceLock\Models\Concerns\HasLocks;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -104,19 +105,20 @@ use WeakMap;
 #[Table('taxas')]
 class Taxon extends Model implements Commentable
 {
-    use HasComments, HasFactory, LogsActivity, SoftDeletes, Userstamps;
+    use HasComments, HasFactory, HasLocks, LogsActivity, SoftDeletes, Userstamps;
 
     /**
      * An identifying icon per kingdom. A kingdom is a category, not a status,
-     * so it gets an icon and no colour (DESIGN-SYSTEM.md). Tabler has no
-     * bacteria icon; the microscope stands in. Only the kingdoms in the
-     * catalogue: any other one gets the generic hierarchy icon.
+     * so it gets an icon and no colour (DESIGN-SYSTEM.md). Marine shapes, from
+     * the "marine" set (resources/svg/marine): Plantae here is seagrass and
+     * green/red algae, Chromista mostly brown algae and diatoms. Only the
+     * kingdoms in the catalogue: any other one gets the generic hierarchy icon.
      */
     public const KINGDOM_ICONS = [
-        'Animalia' => 'tabler-paw',
-        'Plantae' => 'tabler-plant-2',
-        'Chromista' => 'tabler-cell',
-        'Bacteria' => 'tabler-microscope',
+        'Animalia' => 'marine-fish',
+        'Plantae' => 'marine-seagrass',
+        'Chromista' => 'marine-algae',
+        'Bacteria' => 'marine-bacteria',
     ];
 
     /** The kingdom's icon, or the generic hierarchy one for an unknown or blank kingdom. */

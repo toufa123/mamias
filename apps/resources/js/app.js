@@ -81,7 +81,10 @@ window.mamiasExportPng = async ({ src, title, note = null, scale = null, file, p
     Object.assign(document.createElement('a'), { href: canvas.toDataURL('image/png'), download: `${file}.png` }).click();
 };
 
-const _L = window.L;
+// Leaflet, as filament-leaflet's bundle left it. app.blade.php loads
+// laravel-notify as a module so its own `L` cannot replace this global.
+const leaflet = () => window.L;
+const _L = leaflet();
 if (!_L || typeof _L.map !== 'function') {
     console.warn('MODULE INIT: window.L invalid. type:', typeof _L, 'keys:', _L ? Object.keys(_L).slice(0, 15).join(',') : 'null, window keys with L:', Object.getOwnPropertyNames(window).filter(k => k.includes('L')).join(','));
 }
@@ -94,6 +97,8 @@ class LeafletPMStub {
     _createTextMarker() {}
 }
 function ensureLeafletPM() {
+    // On the global `L` on purpose: geoman, inside the leaflet bundle, reads
+    // `L.PM` from the global.
     if (window.L && !window.L.PM) {
         window.L.PM = {
             optIn: false,
@@ -116,6 +121,27 @@ function ensureLeafletPM() {
 document.addEventListener('livewire:init', ensureLeafletPM);
 document.addEventListener('x-modal-opened', ensureLeafletPM);
 
+// The UNEP/MAP basemap (config/filament-leaflet.php) is cached in EPSG:4326, not
+// Leaflet's default web mercator, so every map, minimap included, uses that CRS.
+// Every map also opens on the whole Mediterranean, fitted to its own size. Maps
+// that fit their markers afterwards still do (those are Mediterranean too). A map
+// still hidden at load (in a modal) is fitted on its first resize instead.
+const MEDITERRANEAN = [[30, -6], [46, 36.5]];
+function useBasemapCrs() {
+    const L = leaflet();
+    if (!L?.Map || L.Map._mamiasBasemap) return;
+    L.Map._mamiasBasemap = true;
+    L.Map.mergeOptions({ crs: L.CRS.EPSG4326, mediterraneanView: true });
+    L.Map.addInitHook(function () {
+        if (!this.options.mediterraneanView) return;
+        this.once('load', () => {
+            const fit = () => this.fitBounds(MEDITERRANEAN, { animate: false });
+            this.getSize().x ? fit() : this.once('resize', fit);
+        });
+    });
+}
+useBasemapCrs();
+
 function addMinimap(map, L) {
     if (!map || map._myMiniMap) return;
 
@@ -131,6 +157,7 @@ function addMinimap(map, L) {
     container.appendChild(wrapper);
 
     const mini = L.map(wrapper, {
+        mediterraneanView: false, // follows the main map instead
         zoomControl: false,
         attributionControl: false,
         dragging: false,
@@ -139,7 +166,7 @@ function addMinimap(map, L) {
         touchZoom: false,
         keyboard: false,
     });
-    L.tileLayer(tileUrl, { minZoom: 0, maxZoom: 13 }).addTo(mini);
+    L.tileLayer(tileUrl, { minZoom: 0, maxZoom: 10 }).addTo(mini);
 
     map.on('move', function () {
         try {
@@ -183,7 +210,7 @@ document.addEventListener('livewire:init', () => {
 
             base.setupPickMarker = function () {
                 origSetup();
-                const L = _L || window.L;
+                const L = _L || leaflet();
                 if (!L || typeof L.map !== 'function') {
                     console.warn('entry window.L invalid. keys:', L ? Object.keys(L).slice(0, 15).join(',') : 'null');
                 }
@@ -323,10 +350,10 @@ document.addEventListener('livewire:init', () => {
             base.init = function () {
                 origInit();
                 const map = this.mapCore?.map;
-                if (!window.L || typeof window.L.map !== 'function') {
-                    console.warn('window.L invalid at init. keys:', window.L ? Object.keys(window.L).slice(0, 15).join(',') : 'null/undef');
+                if (!leaflet() || typeof leaflet().map !== 'function') {
+                    console.warn('window.L invalid at init. keys:', leaflet() ? Object.keys(leaflet()).slice(0, 15).join(',') : 'null/undef');
                 }
-                addMapControls(map, _L || window.L);
+                addMapControls(map, _L || leaflet());
 
                 const prefix = config.state.statePath.replace(/\.[^.]+$/, '');
                 const namePath = prefix + '.suggested_scientific_name';

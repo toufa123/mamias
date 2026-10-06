@@ -14,6 +14,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Tabs\Tab;
+use Happenv\FilamentSavedViews\Filament\Concerns\HasSavedViews;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class ListTaxons extends ListRecords
 {
+    use HasSavedViews;
+
     protected static string $resource = TaxonResource::class;
 
     protected function getHeaderWidgets(): array

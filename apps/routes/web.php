@@ -4,7 +4,10 @@ use App\Http\Controllers\DownloadNotImportedRows;
 use App\Livewire\MyReferences;
 use App\Livewire\MySpeciesReports;
 use App\Livewire\MySuggestions;
+use App\Livewire\NisData;
+use App\Livewire\NisSpecies;
 use App\Livewire\PublicProfile;
+use App\Services\ManualPdf;
 use Crumbls\Layup\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use Lubusin\Decomposer\Controllers\DecomposerController;
@@ -24,6 +27,19 @@ Route::get('/', PageController::class)->name('home');
 Route::get('/about', PageController::class)
     ->defaults('slug', 'about')
     ->name('about');
+
+// Public NIS data: the introduction events table, then one page per species.
+// 'pages/data' is in layup.frontend.excluded_paths so the CMS catch-all leaves it alone.
+Route::get('/pages/data', NisData::class)->name('data');
+
+// The user manual (resources/docs/user-manual.md), public: anonymous visitors read it too.
+Route::view('/pages/manual', 'manual')->name('manual');
+Route::get('/pages/manual.pdf', fn (ManualPdf $pdf) => $pdf->download('user-manual'))->name('manual.pdf');
+// The admin manual describes back-office tools: staff only, like the panel page it comes from.
+Route::get('mamias/admin-manual.pdf', fn (ManualPdf $pdf) => $pdf->download('admin-manual'))
+    ->middleware(['auth', 'role:super_admin|scientist'])
+    ->name('admin-manual.pdf');
+Route::get('/pages/data/{introEventRecord}', NisSpecies::class)->name('data.species');
 
 Route::get('/profile', PublicProfile::class)
     ->middleware(['auth', 'verified'])

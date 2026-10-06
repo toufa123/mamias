@@ -98,7 +98,7 @@ after a `view:clear` silently purges them — the bundle drops from ~108 kB to
 
 ## Architecture
 
-**Runtime stack:** FrankenPHP + PostgreSQL/PostGIS + Redis + Mailpit (dev) — all in Docker.
+**Runtime stack:** FrankenPHP + PostgreSQL/PostGIS + Redis — all in Docker. Dev mail is captured in-app by redberry/mailbox-for-laravel (`/mamias/mailbox`, super_admin only).
 
 **Panel:** `MamiasPanelProvider` (`apps/app/Providers/Filament/MamiasPanelProvider.php`) is the single source of truth for plugins, auth flow, theme, middleware, and widgets. Panel id/path is `mamias` — do not change without explicit approval.
 

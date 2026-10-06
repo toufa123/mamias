@@ -109,7 +109,7 @@ dev-ports: ## Show published ports and Windows reserved ranges
 	@docker ps --format "table {{.Names}}\t{{.Ports}}"
 	@echo ""
 	@echo "--- Host processes listening on mail/db ports ---"
-	@ss -tlnp 2>/dev/null | grep -E ':1025|:11025|:8025|:8026|:5432|:5433|:6379|:6380|:7443|:3000' || true
+	@ss -tlnp 2>/dev/null | grep -E ':5432|:5433|:6379|:6380|:7443|:3000' || true
 	@echo ""
 	@echo "--- Windows/Hyper-V reserved TCP ranges (a published port inside one cannot bind) ---"
 	@powershell.exe -NoProfile -Command "netsh interface ipv4 show excludedportrange protocol=tcp" 2>/dev/null || true

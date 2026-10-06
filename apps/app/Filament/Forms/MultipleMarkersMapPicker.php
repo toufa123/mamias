@@ -36,7 +36,7 @@ class MultipleMarkersMapPicker extends MapPicker
 
         if (is_array($state) && isset($state[0]['lat'], $state[0]['lng'])) {
             return [
-                'lat' => $state[0]['lat'] + 0.5 ** ($this->getDefaultZoom() - 4),
+                'lat' => $state[0]['lat'] + 0.5 ** ($this->getDefaultZoom() - 3),
                 'lng' => $state[0]['lng'],
             ];
         }

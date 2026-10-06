@@ -93,7 +93,7 @@ class SinglePointMapPicker extends MapPicker
         return [
             // Nudged north by roughly half a screen so the pin sits below the
             // modal's header rather than under it, mirroring the sibling picker.
-            'lat' => $point['lat'] + 0.5 ** ($this->getDefaultZoom() - 4),
+            'lat' => $point['lat'] + 0.5 ** ($this->getDefaultZoom() - 3),
             'lng' => $point['lng'],
         ];
     }

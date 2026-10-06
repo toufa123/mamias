@@ -5,7 +5,9 @@
     "description": "Database of non-indigenous marine species in the Mediterranean Sea.",
     "start_url": "/",
     "scope": "/",
-    "display": "standalone",
+    "display": "browser",
+    "handle_links": "not-preferred",
+    "launch_handler": { "client_mode": "navigate-new" },
     "background_color": "#ffffff",
     "theme_color": "#056273",
     "icons": [

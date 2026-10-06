@@ -12,6 +12,7 @@ use App\Enums\Subregion;
 use App\Filament\Imports\IntroEventRecordImporter;
 use App\Models\CountryRecord;
 use App\Models\IntroEventRecord;
+use App\Models\Taxon;
 use App\Services\IntroEventPathwayReconciler;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -74,6 +75,10 @@ class IntroEventRecordsTable
                     ->formatStateUsing(fn ($state, $record): string => "<span class='italic'>".e((string) $state).'</span>'
                         .($record?->taxon?->authority ? ' ('.e((string) $record->taxon->authority).')' : '')
                         .($record?->taxon?->trashed() ? ' — species deleted from catalogue' : ''))
+                    // The kingdom at a glance, as on the Taxa list.
+                    ->icon(fn (IntroEventRecord $record): string => Taxon::kingdomIcon($record->taxon?->kingdom))
+                    ->iconColor('gray')
+                    ->tooltip(fn (IntroEventRecord $record): ?string => $record->taxon?->kingdom)
                     ->description(fn (IntroEventRecord $record): ?string => self::recordedAs($record)),
                 TextColumn::make('first_introduction_year')
                     ->label('1st Year of Introduction')
@@ -178,45 +183,7 @@ class IntroEventRecordsTable
             // country at 6 on the second, then the four pathway filters at 3. An
             // int column count applies from the `lg` breakpoint up, so the rows
             // still stack on narrow screens.
-            ->filters([
-                self::getYearFilter()
-                    ->columnSpan(3),
-                self::getCountryFilter()
-                    ->columnSpan(3),
-                SelectFilter::make('nis_status')
-                    ->label('NIS Status')
-                    ->multiple()
-                    ->options(NisStatus::class)
-                    ->columnSpan(3),
-                SelectFilter::make('establishment_status')
-                    ->label('Establishment Status')
-                    ->multiple()
-                    ->options(EstablishmentStatus::class)
-                    ->columnSpan(3),
-                self::getRelatedEnumFilter('subregion', 'EcAp Subregion', 'subregionRecords', 'subregion', Subregion::class)
-                    ->columnSpan(6),
-                SelectFilter::make('present_country')
-                    ->label('Present in Country')
-                    ->multiple()
-                    ->searchable()
-                    ->options(fn (): array => CountryRecord::query()->distinct()->orderBy('country')->pluck('country', 'country')->all())
-                    ->query(fn (Builder $query, array $data): Builder => blank($data['values'] ?? null)
-                        ? $query
-                        : $query->whereHas('countryRecords', fn (Builder $related): Builder => $related->whereIn('country', $data['values'])))
-                    ->columnSpan(6),
-                self::getRelatedEnumFilter('pathway_category', 'CBD Pathway Category', 'pathwayRecords', 'category', CbdPathwayCategory::class)
-                    // Live so the subcategory options narrow as soon as a
-                    // category is picked, rather than on the next round trip.
-                    ->modifyFormFieldUsing(fn (FormSelect $field): FormSelect => $field->live())
-                    ->columnSpan(3),
-                self::getRelatedEnumFilter('pathway_subcategory', 'Pathway Subcategory', 'pathwayRecords', 'subcategory', CbdPathwaySubcategory::class)
-                    ->options(fn ($livewire): array => self::getPathwaySubcategoryOptions($livewire))
-                    ->columnSpan(3),
-                self::getRelatedEnumFilter('pathway_type', 'Pathway Type', 'pathwayRecords', 'pathway_type', PathwayType::class)
-                    ->columnSpan(3),
-                self::getRelatedEnumFilter('pathway_uncertainty', 'Uncertainty', 'pathwayRecords', 'uncertainty', DataQuality::class)
-                    ->columnSpan(3),
-            ])
+            ->filters(self::getFilters())
             ->filtersLayout(FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(12)
             // Filters have no extraAttributes() of their own in Filament v5, so
@@ -288,6 +255,54 @@ class IntroEventRecordsTable
                 ]),
             ])
             ->defaultSort('taxon.scientificname');
+    }
+
+    /**
+     * Shared with the public data page (App\Livewire\NisData), so both offer the same filters.
+     *
+     * @return list<Filter|SelectFilter>
+     */
+    public static function getFilters(): array
+    {
+        return [
+            self::getYearFilter()
+                ->columnSpan(3),
+            self::getCountryFilter()
+                ->columnSpan(3),
+            SelectFilter::make('nis_status')
+                ->label('NIS Status')
+                ->multiple()
+                ->options(NisStatus::class)
+                ->columnSpan(3),
+            SelectFilter::make('establishment_status')
+                ->label('Establishment Status')
+                ->multiple()
+                ->options(EstablishmentStatus::class)
+                ->columnSpan(3),
+            self::getRelatedEnumFilter('subregion', 'EcAp Subregion', 'subregionRecords', 'subregion', Subregion::class)
+                ->columnSpan(6),
+            SelectFilter::make('present_country')
+                ->label('Present in Country')
+                ->multiple()
+                ->searchable()
+                ->options(fn (): array => CountryRecord::query()->distinct()->orderBy('country')->pluck('country', 'country')->all())
+                ->query(fn (Builder $query, array $data): Builder => blank($data['values'] ?? null)
+                    ? $query
+                    : $query->whereHas('countryRecords', fn (Builder $related): Builder => $related->whereIn('country', $data['values'])))
+                ->columnSpan(6),
+            self::getRelatedEnumFilter('pathway_category', 'CBD Pathway Category', 'pathwayRecords', 'category', CbdPathwayCategory::class)
+                // Live so the subcategory options narrow as soon as a
+                // category is picked, rather than on the next round trip.
+                ->modifyFormFieldUsing(fn (FormSelect $field): FormSelect => $field->live())
+                ->columnSpan(3),
+            self::getRelatedEnumFilter('pathway_subcategory', 'Pathway Subcategory', 'pathwayRecords', 'subcategory', CbdPathwaySubcategory::class)
+                ->options(fn ($livewire): array => self::getPathwaySubcategoryOptions($livewire))
+                ->columnSpan(3),
+            self::getRelatedEnumFilter('pathway_type', 'Pathway Type', 'pathwayRecords', 'pathway_type', PathwayType::class)
+                ->columnSpan(3),
+            self::getRelatedEnumFilter('pathway_uncertainty', 'Uncertainty', 'pathwayRecords', 'uncertainty', DataQuality::class)
+                ->columnSpan(3),
+        ];
     }
 
     /**
@@ -366,7 +381,7 @@ class IntroEventRecordsTable
      * Full country name for a stored ISO alpha-2 code. Values that are not a
      * known code (legacy imports) are shown as stored rather than throwing.
      */
-    protected static function countryName(?string $code): string
+    public static function countryName(?string $code): string
     {
         static $names = null;
 

@@ -6,6 +6,7 @@ namespace App\Filament\Resources\IntroEventRecords\Pages;
 
 use App\Filament\Resources\IntroEventRecords\IntroEventRecordResource;
 use App\Models\IntroEventRecord;
+use Blendbyte\FilamentResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -17,6 +18,8 @@ use Illuminate\Contracts\Support\Htmlable;
  */
 class EditIntroEventRecord extends EditRecord
 {
+    use UsesResourceLock;
+
     protected static string $resource = IntroEventRecordResource::class;
 
     protected function getHeaderActions(): array

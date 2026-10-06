@@ -9,9 +9,9 @@
 <head>
     <base href="../../" />
     <title>
-        @hasSection('title')
+        @hasSection ('title')
             MAMIAS ::
-            @yield('title')
+            @yield ('title')
             | Since 2012
         @elseif (isset($pageTitle))
             MAMIAS :: {{ $pageTitle }} | Since 2012
@@ -28,7 +28,7 @@
     <link href="{{ asset('images/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png" />
     <link href="{{ asset('images/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png" />
     <link href="{{ asset('images/favicon.ico') }}" rel="shortcut icon" />
-    @include('partials.pwa-head')
+    @include ('partials.pwa-head')
     {{--
         Geist / Geist Mono — see DESIGN-SYSTEM.md. This replaces a Roboto link
         that nothing on the site used: --font-sans asked for 'Instrument Sans',
@@ -38,7 +38,10 @@
         Weights are deliberately few. Hierarchy comes from size and from
         negative tracking on the large sizes, not from bolding.
     --}}
-    <link href="https://fonts.bunny.net/css?family=geist:300,400,500,600|geist-mono:400,500&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.bunny.net/css?family=geist:300,400,500,600|geist-mono:400,500&display=swap"
+        rel="stylesheet"
+    />
     <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet" />
 
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
@@ -51,7 +54,7 @@
         A public page that starts using another plugin must add it here and
         to @filamentScripts below.
     --}}
-    @filamentStyles([
+    @filamentStyles ([
         'crumbls/layup',
         'eduardoribeirodev/filament-leaflet',
         'filament-stepper',
@@ -72,11 +75,11 @@
         Keep these two in this relative order: app.css defines --font-sans, so
         swapping it past styles.css would change the site font.
     --}}
-    @vite(['resources/css/app.css'])
+    @vite (['resources/css/app.css'])
     <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" />
     @livewireStyles
-    @stack('styles')
-    @stack('head')
+    @stack ('styles')
+    @stack ('head')
     <!-- Add Laravel Notify CSS -->
     @notifyCss
     <style>
@@ -131,7 +134,8 @@
     would be printed literally. The class is server-rendered, so there is no
     flash of the wrong variant.
 --}}
-<body @class([
+<body
+    @class ([
     {{-- Layout B: header and mega menu are one 64px bar, not 78px + a strip. --}}
     {{-- No theme class here: the script below writes `light` or `dark` onto
          <html>, which is what the token blocks in app.css key off. A `light`
@@ -140,23 +144,24 @@
     'is-authenticated' => auth()->check(),
     'is-guest' => ! auth()->check(),
     'is-staff' => (bool) auth()->user()?->hasAnyRole(['super_admin', 'scientist', 'admin']),
-])>
+])
+>
     <!-- Theme Mode -->
     <script>
-        const defaultThemeMode = 'light'; // light|dark|system
+        const defaultThemeMode = "light"; // light|dark|system
         let themeMode;
 
         if (document.documentElement) {
-            if (localStorage.getItem('kt-theme')) {
-                themeMode = localStorage.getItem('kt-theme');
-            } else if (document.documentElement.hasAttribute('data-kt-theme-mode')) {
-                themeMode = document.documentElement.getAttribute('data-kt-theme-mode');
+            if (localStorage.getItem("kt-theme")) {
+                themeMode = localStorage.getItem("kt-theme");
+            } else if (document.documentElement.hasAttribute("data-kt-theme-mode")) {
+                themeMode = document.documentElement.getAttribute("data-kt-theme-mode");
             } else {
                 themeMode = defaultThemeMode;
             }
 
-            if (themeMode === 'system') {
-                themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            if (themeMode === "system") {
+                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
             }
 
             document.documentElement.classList.add(themeMode);
@@ -179,7 +184,11 @@
             <div class="kt-container-fixed flex items-center gap-4">
                 <!-- Logo -->
                 <div class="flex shrink-0 items-center gap-1">
-                    <button class="kt-btn kt-btn-icon kt-btn-ghost -ms-2.5 lg:hidden" data-kt-drawer-toggle="#navbar" type="button">
+                    <button
+                        class="kt-btn kt-btn-icon kt-btn-ghost -ms-2.5 lg:hidden"
+                        data-kt-drawer-toggle="#navbar"
+                        type="button"
+                    >
                         <i class="ki-filled ki-menu"></i>
                     </button>
                     <a class="flex shrink-0 items-center" href="{{ route('home') }}">
@@ -201,11 +210,11 @@
                     and data-kt-drawer-* attributes, which is what KTDrawer
                     binds to.
                 --}}
-                @include('partials.navbar')
+                @include ('partials.navbar')
 
                 <!-- Topbar -->
                 <div class="ms-auto flex shrink-0 items-center">
-                    @include('partials.usermenu')
+                    @include ('partials.usermenu')
                 </div>
                 <!-- End of Topbar -->
             </div>
@@ -229,17 +238,17 @@
                     <div class="kt-container-fixed flex flex-wrap items-end justify-between gap-5 py-7">
                         <div class="flex flex-col flex-wrap items-start justify-center gap-1 lg:gap-2">
                             <h1 class="text-mono text-2xl font-medium tracking-tight">
-                                @hasSection('title')
-                                    @yield('title')
+                                @hasSection ('title')
+                                @yield ('title')
                                 @elseif (isset($pageTitle))
-                                    {{ $pageTitle }}
+                                {{ $pageTitle }}
                                 @endif
                             </h1>
                             <div class="flex items-center gap-1 text-sm font-normal">
-                                @hasSection('breadcrumbs')
-                                    @yield('breadcrumbs')
+                                @hasSection ('breadcrumbs')
+                                @yield ('breadcrumbs')
                                 @else
-                                    {{ Breadcrumbs::render('home') }}
+                                {{ Breadcrumbs::render('home') }}
                                 @endif
                             </div>
                         </div>
@@ -261,16 +270,13 @@
                             <line x1="12" y1="18" x2="12.01" y2="18" />
                         </svg>
                         <h2 class="text-mono mb-2 text-xl font-semibold">Optimized for Larger Screens</h2>
-                        <p class="text-muted-foreground max-w-md text-base">
-                            This website is best viewed on a tablet or desktop computer. Please switch to a larger
-                            screen for the full experience.
-                        </p>
+                        <p class="text-muted-foreground max-w-md text-base">This website is best viewed on a tablet or desktop computer. Please switch to a larger screen for the full experience.</p>
                     </div>
                 </div>
 
                 <!-- Content -->
                 <div class="desktop-content kt-container-fixed grow">
-                    @yield('content')
+                    @yield ('content')
                 </div>
                 <!-- End of Content -->
 
@@ -281,14 +287,23 @@
                             <div class="order-2 flex gap-2 text-sm font-normal md:order-1">
                                 <span class="text-muted-foreground">{{ now()->format('Y') }}©</span>
                                 <a class="text-secondary-foreground hover:text-primary" href="https://spa-rac.org"
-                                    >SPA/RAC.</a>
+                                    >SPA/RAC.</a
+                                >
                             </div>
-                            <nav class="text-secondary-foreground order-1 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm font-normal md:order-2">
+                            <nav
+                                class="text-secondary-foreground order-1 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm font-normal md:order-2"
+                            >
+                                <a class="hover:text-primary" href="{{ route('manual') }}">User manual</a>
                                 <a class="hover:text-primary" href="{{ url('legal-notice') }}">Legal notice</a>
                                 <a class="hover:text-primary" href="{{ url('terms-of-use') }}">Terms of use</a>
                                 <a class="hover:text-primary" href="{{ url('cookies-policy') }}">Cookies policy</a>
-                                <button type="button" class="hover:text-primary cursor-pointer"
-                                    onclick="showHideToggleCookiePreferencesModal()">Change Cookie Preferences</button>
+                                <button
+                                    type="button"
+                                    class="hover:text-primary cursor-pointer"
+                                    onclick="showHideToggleCookiePreferencesModal()"
+                                >
+                                    Change Cookie Preferences
+                                </button>
                                 <a class="hover:text-primary" href="{{ url('sitemap.xml') }}">SiteMap</a>
                             </nav>
                         </div>
@@ -303,7 +318,7 @@
     <!-- End of Main -->
 
     <!-- Scripts -->
-    @filamentScripts([
+    @filamentScripts ([
         'app',
         'filament/actions',
         'filament/notifications',
@@ -315,11 +330,19 @@
         'kirschbaum-development/commentions',
     ])
     @livewireScripts
-    @notifyJs
+    {{--
+        Not @notifyJs: that emits notify.js as a classic script, whose top-level
+        `var L=[]` overwrites the global Leaflet. filament-leaflet's map
+        components call the bare global `L` at runtime, so every map on this
+        layout rendered grey. The script is a bundled Alpine that only starts
+        when window.Alpine is unset, which Livewire never leaves it, so as a
+        module it changes nothing but keeps its vars private.
+    --}}
+    <script type="module" src="{{ asset('vendor/mckenziearts/laravel-notify/dist/notify.js') }}"></script>
     {!! CookieConsent::scripts() !!}
-    @stack('scripts')
+    @stack ('scripts')
     <script>
-        document.addEventListener('x-modal-opened', () => {
+        document.addEventListener("x-modal-opened", () => {
             setTimeout(() => {
                 document.querySelectorAll('[x-data^="leafletMapField"]').forEach((el) => {
                     const data = window.Alpine?.$data(el);
@@ -339,24 +362,24 @@
         // alone, which never fires on a first page load — so on a cold visit
         // the mega menu had no behaviour at all.
         const initKtui = () => {
-            if (window.KTMenu && typeof KTMenu.init === 'function') {
+            if (window.KTMenu && typeof KTMenu.init === "function") {
                 KTMenu.init();
             }
-            if (window.KTDropdown && typeof KTDropdown.reinit === 'function') {
+            if (window.KTDropdown && typeof KTDropdown.reinit === "function") {
                 KTDropdown.reinit();
-            } else if (window.KTDropdown && typeof KTDropdown.init === 'function') {
+            } else if (window.KTDropdown && typeof KTDropdown.init === "function") {
                 KTDropdown.init();
             }
-            if (window.KTDrawer && typeof KTDrawer.reinit === 'function') {
+            if (window.KTDrawer && typeof KTDrawer.reinit === "function") {
                 KTDrawer.reinit();
-            } else if (window.KTDrawer && typeof KTDrawer.init === 'function') {
+            } else if (window.KTDrawer && typeof KTDrawer.init === "function") {
                 KTDrawer.init();
             }
         };
 
         // This script sits at the end of <body>, so the menu markup is parsed.
         initKtui();
-        document.addEventListener('livewire:navigated', initKtui);
+        document.addEventListener("livewire:navigated", initKtui);
     </script>
     <!-- End of Scripts -->
 </body>

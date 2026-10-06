@@ -89,14 +89,15 @@ it('dates the sub-region spread by the event\'s first Mediterranean record, not 
     ]);
 });
 
-it('stacks sub-regions by the event\'s own status and drops empty stacks', function () {
-    $event = IntroEventRecord::factory()->create(['establishment_status' => EstablishmentStatus::Vagrant]);
-    // The sub-region record's own status is ignored: the event's status decides.
-    SubregionRecord::factory()->create(['intro_event_id' => $event->id, 'subregion' => Subregion::CMED, 'establishment_status' => EstablishmentStatus::Established]);
+it('stacks sub-regions by the sub-region\'s own status and drops empty stacks', function () {
+    // The event's basin-level status is ignored: each sub-region record decides.
+    $event = IntroEventRecord::factory()->create(['establishment_status' => EstablishmentStatus::Established]);
+    SubregionRecord::factory()->create(['intro_event_id' => $event->id, 'subregion' => Subregion::CMED, 'establishment_status' => EstablishmentStatus::Vagrant]);
+    SubregionRecord::factory()->create(['intro_event_id' => $event->id, 'subregion' => Subregion::EMED, 'establishment_status' => EstablishmentStatus::Invasive]);
 
     expect(app(MediterraneanDashboard::class)->statusBySubregion())->toBe([
         'subregions' => ['WMED', 'CMED', 'ADRIA', 'EMED'],
-        'stacks' => ['Casual / vagrant' => [0, 1, 0, 0]],
+        'stacks' => ['Invasive' => [0, 0, 0, 1], 'Casual / vagrant' => [0, 1, 0, 0]],
     ]);
 });
 

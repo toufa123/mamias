@@ -13,6 +13,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Nakanakaii\FilamentCountries\Tables\Columns\CountryColumn;
@@ -64,7 +65,8 @@ class UsersTable
                         return $record->roles->pluck('name')->join(', ');
                     })
                     ->badge()
-                    ->searchable(),
+                    // Roles live in Spatie's pivot, not a users column: search the relation.
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->orWhereHas('roles', fn (Builder $roles): Builder => $roles->where('name', 'ilike', "%{$search}%"))),
                 TextColumn::make('phone')
                     ->label('Phone')
                     ->searchable()

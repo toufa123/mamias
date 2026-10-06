@@ -26,3 +26,24 @@ it('redirects /email-verification/prompt to filament verification prompt', funct
     get('/email-verification/prompt')
         ->assertRedirect('/mamias/email-verification/prompt');
 });
+
+it('lets a newly registered public user reach the verification prompt and verify', function () {
+    $user = User::factory()->unverified()->create()->assignRole('user');
+    $this->actingAs($user);
+
+    get('/mamias/email-verification/prompt')->assertOk();
+
+    get(Filament\Facades\Filament::getPanel('mamias')->getVerifyEmailUrl($user))
+        ->assertRedirect();
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+
+    // The rest of the panel stays closed to them.
+    get('/mamias')->assertForbidden();
+});
+
+it('sends an already-verified public user from the verification prompt to the home page', function () {
+    $this->actingAs(User::factory()->create()->assignRole('user'));
+
+    get('/mamias/email-verification/prompt')->assertRedirect('/');
+});

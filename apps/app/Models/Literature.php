@@ -6,6 +6,7 @@ use App\Enums\LiteratureStatus;
 use App\Enums\LiteratureType;
 use App\Observers\LiteratureObserver;
 use App\Services\DoiMetadataService;
+use Blendbyte\FilamentResourceLock\Models\Concerns\HasLocks;
 use Closure;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -78,7 +79,7 @@ use Spatie\Activitylog\Support\LogOptions;
 #[ObservedBy([LiteratureObserver::class])]
 class Literature extends Model implements Commentable
 {
-    use HasComments, HasFactory, LogsActivity, Userstamps;
+    use HasComments, HasFactory, HasLocks, LogsActivity, Userstamps;
 
     /**
      * Configure activity logging to track all attribute changes.

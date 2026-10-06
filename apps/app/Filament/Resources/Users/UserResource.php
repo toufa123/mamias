@@ -15,6 +15,7 @@ use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Tapp\FilamentAuthenticationLog\RelationManagers\AuthenticationLogsRelationManager;
 
 /**
  * Filament resource for managing application users.
@@ -72,7 +73,9 @@ class UserResource extends Resource
      */
     public static function getRelations(): array
     {
-        return [];
+        return [
+            AuthenticationLogsRelationManager::class,
+        ];
     }
 
     /**

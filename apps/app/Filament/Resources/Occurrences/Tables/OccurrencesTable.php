@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Occurrences\Tables;
 use App\Enums\Habitat;
 use App\Enums\OccurrenceStatus;
 use App\Filament\Resources\Occurrences\Actions\OccurrenceActions;
+use App\Filament\Widgets\OccurrencesMap;
 use App\Models\Occurrence;
 use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
 use EduardoRibeiroDev\FilamentLeaflet\Tables\MapColumn;
@@ -12,6 +13,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Support\Enums\FontFamily;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -106,7 +108,7 @@ class OccurrencesTable
     }
 
     /**
-     * @return MapColumn The location map column, toggleable with a red pick marker.
+     * @return MapColumn The location map column, toggleable, its pin coloured by review status.
      */
     public static function getMapColumn(): MapColumn
     {
@@ -119,11 +121,12 @@ class OccurrencesTable
             })
             ->height(72)
             ->width(108)
-            ->zoom(5)
+            ->visibleFrom('xl')
+            ->zoom(4)
             ->static()
-            ->pickMarker(fn (Marker $marker) => $marker->red())
+            // Green approved, gray pending, red rejected, like every other occurrence map.
+            ->pickMarker(fn (Marker $marker, ?Occurrence $record): Marker => $record ? OccurrencesMap::colourByStatus($marker, $record->status) : $marker)
             ->placeholder('—')
-            ->hidden(fn (?Occurrence $record): bool => $record?->getRawOriginal('location') === null)
             ->toggleable();
     }
 
@@ -137,6 +140,8 @@ class OccurrencesTable
             ->placeholder('—')
             ->suffix(' m')
             ->numeric(thousandsSeparator: '')
+            ->fontFamily(FontFamily::Mono)
+            ->visibleFrom('md')
             ->sortable();
     }
 
@@ -149,11 +154,12 @@ class OccurrencesTable
             ->label('Abundance (density)')
             ->badge()
             ->sortable()
+            ->visibleFrom('lg')
             ->placeholder('—');
     }
 
     /**
-     * @return TextColumn The habitats column, toggleable with human-readable labels.
+     * @return TextColumn The habitats column, toggleable, one neutral icon badge per habitat.
      */
     public static function getHabitatsColumn(): TextColumn
     {
@@ -161,11 +167,23 @@ class OccurrencesTable
             ->label('Habitats')
             ->placeholder('—')
             ->toggleable(isToggledHiddenByDefault: true)
-            ->formatStateUsing(fn (Occurrence $record): ?string => $record->habitats
-                ? collect($record->habitats)
-                    ->map(fn (string $h) => Habitat::tryFrom($h)?->getLabel() ?? $h)
-                    ->implode(', ')
-                : null);
+            ->visibleFrom('xl')
+            ->badge()
+            ->state(fn (Occurrence $record): array => self::habitats($record));
+    }
+
+    /**
+     * Habitats as enum cases, so badges take the enum's neutral colour and icon.
+     *
+     * @return list<Habitat>
+     */
+    public static function habitats(Occurrence $record): array
+    {
+        return collect($record->habitats ?? [])
+            ->map(fn (string $habitat): ?Habitat => Habitat::tryFrom($habitat))
+            ->filter()
+            ->values()
+            ->all();
     }
 
     /**
@@ -175,7 +193,9 @@ class OccurrencesTable
     {
         return TextColumn::make('observed_at')
             ->label('Observed')
-            ->dateTime()
+            ->dateTime('d M Y H:i')
+            ->fontFamily(FontFamily::Mono)
+            ->visibleFrom('sm')
             ->sortable();
     }
 
@@ -186,6 +206,7 @@ class OccurrencesTable
     {
         return TextColumn::make('user.name')
             ->label('Reported By')
+            ->visibleFrom('md')
             ->sortable()
             ->searchable();
     }
@@ -197,7 +218,9 @@ class OccurrencesTable
     {
         return TextColumn::make('created_at')
             ->label('Submitted')
-            ->dateTime()
+            ->dateTime('d M Y H:i')
+            ->fontFamily(FontFamily::Mono)
+            ->visibleFrom('lg')
             ->sortable();
     }
 }

@@ -58,6 +58,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Kirschbaum\Commentions\Contracts\Commenter;
+use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
@@ -81,7 +82,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements Commenter, FilamentUser, HasAvatar, HasName, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, LogsActivity, Notifiable;
+    use AuthenticationLoggable, HasFactory, HasRoles, LogsActivity, Notifiable;
 
     /**
      * Bootstrap the model - run during model initialization.
@@ -211,6 +212,16 @@ class User extends Authenticatable implements Commenter, FilamentUser, HasAvatar
     {
         if ($panel->getId() !== 'mamias') {
             return false;
+        }
+
+        // Public users register and verify through the panel's auth pages
+        // (email-verification prompt + signed link, logout). Filament puts those
+        // behind Authenticate, which 403s on canAccessPanel(); everything else in
+        // the panel still sends them to "/" via RedirectIfNotPanelUser.
+        // The local-only "Login as" buttons check this too, and log a public user
+        // straight back out without the second route; the panel then sends them to "/".
+        if (request()->routeIs("filament.{$panel->getId()}.auth.*", 'filament-developer-logins.login-as')) {
+            return true;
         }
 
         return $this->hasAnyRole(['super_admin', 'scientist']);

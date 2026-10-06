@@ -25,17 +25,27 @@ class OccurrencesMap extends MapWidget
 
     protected static bool $isDiscovered = false;
 
+    protected string $view = 'filament.widgets.occurrences-map';
+
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $heading = 'Occurrences map — green approved · gray pending · red rejected';
 
     protected array|\Closure|null $mapCenter = [36, 14];
 
-    protected int|\Closure $defaultZoom = 5;
+    protected int|\Closure $defaultZoom = 4;
+
+    protected int|\Closure $maxZoom = 10;
 
     protected int|\Closure $mapHeight = 420;
 
     protected bool|\Closure $hasFullscreenControl = true;
+
+    /** The UNEP/MAP basemap (config/filament-leaflet.php), like every other map. */
+    protected function getTileLayersUrl(): array
+    {
+        return [config('filament-leaflet.basemap.label') => config('filament-leaflet.basemap.url')];
+    }
 
     protected function getTablePage(): string
     {
@@ -103,14 +113,20 @@ class OccurrencesMap extends MapWidget
                     ->tooltipContent(e(implode(' · ', $details)))
                     ->tooltipOptions(['direction' => 'top']);
 
-                return match ($occurrence->status) {
-                    OccurrenceStatus::APPROVED => $marker->green(),
-                    OccurrenceStatus::PENDING => $marker->gray(),
-                    OccurrenceStatus::REJECTED => $marker->red(),
-                };
+                return self::colourByStatus($marker, $occurrence->status);
             })
             ->filter()
             ->values()
             ->all();
+    }
+
+    /** Green approved, gray pending, red rejected: the same on every occurrence map. */
+    public static function colourByStatus(Marker $marker, OccurrenceStatus $status): Marker
+    {
+        return match ($status) {
+            OccurrenceStatus::APPROVED => $marker->green(),
+            OccurrenceStatus::PENDING => $marker->gray(),
+            OccurrenceStatus::REJECTED => $marker->red(),
+        };
     }
 }

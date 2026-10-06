@@ -1,12 +1,12 @@
 # ===================================================================================================
 #  DEV-ONLY Docker Compose — Laravel 13 / FrankenPHP (serversideup/php:8.5-frankenphp)
-#  / PostGIS (kartoza/postgis) / Redis / mail (axllent/mailpit)
+#  / PostGIS (kartoza/postgis) / Redis
 #  Local : https://mamias.local   (self-signed cert, accept in browser)
 #  WARNING: Do NOT use this file on a public/server deployment.
 #           Use docker-compose.prod.yml + .env.production instead.
 #  Dev : set APP_ENV=development, APP_DEBUG=true, weak secrets in .env
 #  Prod  : set APP_ENV=production, APP_DEBUG=false, strong secrets in .env
-#  Mail  : Mailpit (axllent/mailpit) at http://localhost:8025
+#  Mail  : captured in-app by redberry/mailbox-for-laravel at /mailbox
 # ====================================================================================================
 
 
@@ -47,8 +47,6 @@ services :
     container_name : "${name:-mamias}_app"
     depends_on :
       db :
-        condition : service_healthy
-      mail :
         condition : service_healthy
       redis :
         condition : service_healthy
@@ -178,12 +176,7 @@ services :
       DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
       DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
 
-      MAIL_MAILER : "smtp"
-      MAIL_HOST : "mail"
-      MAIL_PORT : "1025"
-      MAIL_USERNAME : ""
-      MAIL_PASSWORD : ""
-      MAIL_ENCRYPTION : ""
+      MAIL_MAILER : "mailbox"
       MAIL_FROM_ADDRESS : "${MAIL_FROM_ADDRESS:-no-reply@localhost}"
       MAIL_FROM_NAME: "${name:-mamias}"
 
@@ -252,12 +245,7 @@ services :
       DB_USERNAME: "${DB_USERNAME:?DB_USERNAME is required}"
       DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is required}"
 
-      MAIL_MAILER : "smtp"
-      MAIL_HOST : "mail"
-      MAIL_PORT : "1025"
-      MAIL_USERNAME : ""
-      MAIL_PASSWORD : ""
-      MAIL_ENCRYPTION : ""
+      MAIL_MAILER : "mailbox"
       MAIL_FROM_ADDRESS : "${MAIL_FROM_ADDRESS:-no-reply@localhost}"
       MAIL_FROM_NAME: "${name:-mamias}"
 
@@ -374,22 +362,6 @@ services :
       interval : 5s
       timeout : 5s
       retries : 5
-    restart : unless-stopped
-
-  # ── Mailpit service (SMTP catcher + web UI) ───────────────────────
-  mail :
-    profiles : ["dev"]
-    image : axllent/mailpit:latest
-    container_name: "${name:-mamias}_mail"
-    ports :
-      - "127.0.0.1:${MAIL_SMTP_PORT:-11025}:1025"
-      - "127.0.0.1:${MAIL_WEB_PORT:-8026}:8025"
-    healthcheck :
-      test : [ "CMD", "wget", "-q", "-O", "-", "http://localhost:8025/livez" ]
-      interval : 10s
-      timeout : 5s
-      retries : 10
-      start_period : 15s
     restart : unless-stopped
 
   # ── Cap Standalone (proof-of-work CAPTCHA) ──────────────────────────

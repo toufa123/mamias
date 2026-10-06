@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\OccurrenceStatus;
+use App\Filament\Resources\Literatures\LiteratureGuide;
 use App\Filament\Resources\Occurrences\Schemas\OccurrenceForm;
 use App\Filament\Resources\Occurrences\Schemas\OccurrenceInfolist;
 use App\Filament\Resources\Occurrences\Tables\OccurrencesTable;
@@ -18,7 +19,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Width;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -41,8 +41,8 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
                 OccurrencesTable::getStatusColumn(),
                 OccurrencesTable::getMapColumn(),
                 OccurrencesTable::getDepthColumn(),
-                TextColumn::make('observed_at')->label('Observed')->dateTime()->sortable(),
-                TextColumn::make('created_at')->label('Submitted')->dateTime()->sortable(),
+                OccurrencesTable::getObservedAtColumn(),
+                OccurrencesTable::getSubmittedAtColumn(),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -52,7 +52,7 @@ class MySpeciesReports extends Component implements HasActions, HasForms, HasTab
                 $this->editAction(),
                 $this->withdrawAction(),
             ])
-            ->headerActions([$this->createAction()])
+            ->headerActions([LiteratureGuide::action('species-reports', 'How My Species Reports works')->size('lg'), $this->createAction()])
             ->defaultSort('created_at', 'desc');
     }
 

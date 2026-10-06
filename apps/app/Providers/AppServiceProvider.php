@@ -2,12 +2,23 @@
 
 namespace App\Providers;
 
+use Asignua\FilamentSeoFiles\Contracts\LlmsIndexSource;
+use Asignua\FilamentSeoFiles\Contracts\SitemapSource;
+use Asignua\FilamentSeoFiles\Data\LlmsLink;
+use Asignua\FilamentSeoFiles\Data\LlmsSection;
+use Asignua\FilamentSeoFiles\Data\SitemapEntry;
+use Asignua\FilamentSeoFiles\SeoFiles;
+use Asignua\FilamentSeoFiles\Sources\ModelSource;
+use Crumbls\Layup\Models\Page;
+use App\Models\IntroEventRecord;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Auth\Responses\EmailVerificationResponse;
 use App\Filament\Auth\Responses\LoginResponse;
 use App\Filament\Auth\Responses\RegistrationResponse;
 use App\Listeners\LogRoleChangeListener;
 use App\Listeners\TaxonImportCompletedListener;
 use App\Models\User;
+use App\Policies\AuthenticationLogPolicy;
 use App\Services\TaxonMatcher;
 use App\Support\MamiasNavigationManager;
 use Filament\Actions\Imports\Events\ImportCompleted;
@@ -24,6 +35,7 @@ use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog;
 use Spatie\Health\Checks\Checks\CacheCheck;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
@@ -45,6 +57,13 @@ use Spatie\Permission\Events\RoleDetachedEvent;
  * (local only), application-wide colour palette, event listeners, and
  * server health checks.
  */
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\File;
+use BladeUI\Icons\Factory as IconFactory;
+use EduardoRibeiroDev\FilamentLeaflet\Fields\MapPicker;
+use EduardoRibeiroDev\FilamentLeaflet\Infolists\MapEntry;
+use EduardoRibeiroDev\FilamentLeaflet\Tables\MapColumn;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -55,6 +74,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(LoginResponseContract::class, LoginResponse::class);
         $this->app->bind(RegistrationResponseContract::class, RegistrationResponse::class);
         $this->app->bind(EmailVerificationResponseContract::class, EmailVerificationResponse::class);
+
+        // Marine kingdom icons (resources/svg/marine), used as "marine-fish" etc.
+        // Tabler has no seaweed or seagrass, so these come from other open sets.
+        $this->callAfterResolving(IconFactory::class, fn (IconFactory $factory): IconFactory => $factory->add('marine', [
+            'path' => resource_path('svg/marine'),
+            'prefix' => 'marine',
+        ]));
 
         // Re-homes Vacuum under System and limits System to super_admin; scoped
         // like Filament's own binding so each request builds a fresh sidebar.
@@ -76,6 +102,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerSeoFiles();
+
+        // Every Leaflet map uses the UNEP/MAP basemap (config/filament-leaflet.php).
+        // Runs at make(), so a map's own ->zoom()/->center() still wins.
+        foreach ([MapPicker::class, MapEntry::class, MapColumn::class] as $map) {
+            $map::configureUsing(fn (MapPicker|MapEntry|MapColumn $component) => $component
+                ->tileLayersUrl([config('filament-leaflet.basemap.label') => config('filament-leaflet.basemap.url')])
+                ->maxZoom(config('filament-leaflet.basemap.max_zoom')));
+        }
+
         // Surfaces N+1 access outside production. Filament tables eager-load in
         // their own modifyQueryUsing(); anything that still lazy-loads is a bug
         // we want raised before it is paid for per row in production.
@@ -166,14 +202,19 @@ class AppServiceProvider extends ServiceProvider
             ],
         ]);
 
-        // Embed the MAMIAS logo inline (CID "mamias-logo", referenced by the mail
-        // header) so it renders reliably without depending on a publicly reachable
-        // asset URL and isn't blocked as a remote image by mail clients.
+        // Embed the MAMIAS logo inline (CID "mamias-logo@mamias", referenced by the
+        // mail header) so it renders reliably without depending on a publicly
+        // reachable asset URL and isn't blocked as a remote image by mail clients.
+        // The fixed Content-ID keeps the HTML identical before and after Symfony
+        // prepares the parts; with a generated one, the dev mailbox (which stores
+        // the pre-send HTML) can't resolve the image.
         Event::listen(MessageSending::class, function (MessageSending $event): void {
             $logo = public_path('images/mamias.png');
 
             if (is_file($logo)) {
-                $event->message->embedFromPath($logo, 'mamias-logo');
+                $event->message->addPart(
+                    (new DataPart(new File($logo), 'mamias-logo', 'image/png'))->asInline()->setContentId('mamias-logo@mamias'),
+                );
             }
         });
 
@@ -183,6 +224,18 @@ class AppServiceProvider extends ServiceProvider
         // checks $user->can('manageFileManager'), which resolves through this
         // gate — the package requires this exact ability name.
         Gate::define('manageFileManager', fn (User $user): bool => $user->hasRole('super_admin'));
+
+        // The lock manager page and the force-unlock button on a locked record.
+        Gate::define('manageResourceLocks', fn (User $user): bool => $user->hasRole('super_admin'));
+
+        // redberry/mailbox-for-laravel dashboard (/mamias/mailbox). Open to
+        // everyone, guests included, so new registrants can read their
+        // verification mail. Captured mail includes password-reset links, so
+        // never in production (mailbox.enabled also unregisters the routes there).
+        Gate::define('viewMailbox', fn (?User $user = null): bool => ! app()->isProduction());
+
+        // A vendor model, so Laravel's policy discovery never finds this one.
+        Gate::policy(AuthenticationLog::class, AuthenticationLogPolicy::class);
 
         // heyosseus/vacuum exposes the database shape and query statistics;
         // outside `local` it refuses everyone unless this callback allows.
@@ -205,5 +258,71 @@ class AppServiceProvider extends ServiceProvider
             CacheCheck::new(),
             QueueCheck::new(),
         ]);
+    }
+
+    /**
+     * What sitemap.xml, llms.txt and llms-full.txt list (asignua/filament-seo-files):
+     * the published CMS pages, the data explorer and one page per catalogued species.
+     * Generated from the panel (System → SEO files) or `seo-files:sitemap` / `seo-files:llms`.
+     */
+    private function registerSeoFiles(): void
+    {
+        $home = config('layup.pages.default_slug', 'home');
+
+        SeoFiles::siteNameUsing(fn (): string => 'MAMIAS');
+        SeoFiles::descriptionUsing(fn (): string => 'Marine Mediterranean Invasive Alien Species: the database of non-indigenous species recorded in the Mediterranean Sea, with their first records, status, pathways and occurrences.');
+
+        // A manual "Sitemap URL" can never duplicate a page the site already serves.
+        SeoFiles::ownedPathUsing(fn (string $locale, string $path): bool => in_array($path, ['', 'pages/data', 'pages/manual'], true)
+            || preg_match('#^pages/data/\d+$#', $path) === 1
+            || Page::query()->where('slug', $path)->exists());
+
+        SeoFiles::source(
+            ModelSource::make(Page::class)
+                ->query(fn (Builder $query): Builder => $query->published())
+                // Page::getUrl() builds from `path`, which these pages leave empty.
+                ->url(fn (Page $page): string => $page->slug === $home ? '/' : '/'.$page->slug)
+                ->title(fn (Page $page): string => $page->title)
+                ->description(fn (Page $page): ?string => $page->getMetaDescription())
+                ->body(fn (Page $page): string => $page->toHtml())
+                ->section('Pages'),
+            new class implements LlmsIndexSource, SitemapSource
+            {
+                public function sitemapEntries(): iterable
+                {
+                    yield new SitemapEntry(url: SeoFiles::localizedUrl(SeoFiles::defaultLocale(), 'pages/data'));
+                    yield new SitemapEntry(url: SeoFiles::localizedUrl(SeoFiles::defaultLocale(), 'pages/manual'));
+                }
+
+                public function llmsSections(string $locale): iterable
+                {
+                    yield new LlmsSection('Data', [
+                        new LlmsLink('NIS data explorer', SeoFiles::localizedUrl($locale, 'pages/data'), 'Every non-indigenous species in the catalogue, searchable, with its first Mediterranean record.'),
+                        new LlmsLink('User manual', SeoFiles::localizedUrl($locale, 'pages/manual'), 'How to browse MAMIAS, create an account and contribute references, sightings and species suggestions.'),
+                    ]);
+                }
+            },
+            ModelSource::make(IntroEventRecord::class)
+                // Events of species deleted from the catalogue have no page (NisSpecies aborts 404).
+                ->query(fn (Builder $query): Builder => $query->whereHas('taxon')->with('taxon'))
+                ->url(fn (IntroEventRecord $record): string => route('data.species', $record, absolute: false))
+                ->title(fn (IntroEventRecord $record): string => (string) $record->taxon?->scientificname)
+                ->description(fn (IntroEventRecord $record): string => self::speciesSummary($record))
+                ->body(fn (IntroEventRecord $record): string => '# '.trim($record->taxon?->scientificname.' '.$record->taxon?->authority)."\n\n".self::speciesSummary($record))
+                ->markdown()
+                ->section('Species'),
+        );
+    }
+
+    /** One line on a species page: NIS and establishment status, first Mediterranean record. */
+    private static function speciesSummary(IntroEventRecord $record): string
+    {
+        // Either status can be empty on imported events, whatever the docblock says.
+        $statuses = implode(', ', array_filter([$record->nis_status?->getLabel(), $record->establishment_status?->getLabel()]));
+
+        return implode(' ', array_filter([
+            $statuses === '' ? null : "{$statuses}.",
+            $record->first_introduction_year ? "First recorded in the Mediterranean in {$record->first_introduction_year}." : null,
+        ]));
     }
 }

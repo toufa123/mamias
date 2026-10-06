@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\LiteratureStatus;
+use App\Filament\Resources\Literatures\LiteratureGuide;
 use App\Filament\Resources\NisSuggestions\Schemas\NisSuggestionForm;
 use App\Filament\Resources\NisSuggestions\Schemas\NisSuggestionInfolist;
 use App\Filament\Resources\NisSuggestions\Tables\NisSuggestionsTable;
@@ -47,7 +48,7 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
                 $this->editAction(),
                 $this->resubmitAction(),
             ])
-            ->headerActions([$this->createAction()])
+            ->headerActions([LiteratureGuide::action('suggestions', 'How My Species Suggestions works')->size('lg'), $this->createAction()])
             ->defaultSort('created_at', 'desc');
     }
 

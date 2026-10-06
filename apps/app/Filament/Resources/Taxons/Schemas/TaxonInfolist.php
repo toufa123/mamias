@@ -51,6 +51,27 @@ class TaxonInfolist
     }
 
     /**
+     * The public data page's version (App\Livewire\NisSpecies): no notes &
+     * audit tab, which holds internal notes and editors' names.
+     */
+    public static function configurePublic(Schema $schema): Schema
+    {
+        return $schema
+            ->columns(1)
+            ->components([
+                self::getClassificationEntry(),
+                self::getDetailsGrid(),
+                self::getNameWarning(),
+                Tabs::make('Taxon Details')
+                    ->tabs([
+                        self::getSynonymsTab(),
+                        self::getReferencesTab(),
+                    ])
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    /**
      * Kingdom › phylum › class › order › family › genus, the genus in italics,
      * led by the kingdom's icon.
      */

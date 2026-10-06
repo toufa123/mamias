@@ -118,7 +118,9 @@ it('hides developer login shortcuts on the login page outside local environment'
 
     $this->get(route('filament.mamias.auth.login'))
         ->assertOk()
-        ->assertDontSee('Admin')
+        // The buttons read "Admin (email)"; a bare "Admin" also names the Admin manual page in Spotlight's index.
+        ->assertDontSee('Login as')
+        ->assertDontSee('Admin (')
         ->assertDontSee('atef.ouerghi@spa-rac.org');
 });
 
@@ -205,4 +207,19 @@ it('restores developer-login accounts idempotently via database seeding', functi
         ->and(User::query()->where('email', 'atef.ouerghi@gmail.com')->count())->toBe(1)
         ->and($admin?->hasRole('super_admin'))->toBeTrue()
         ->and($panelUser?->hasRole('user'))->toBeTrue();
+});
+
+it('searches the users list by email and by role without querying a missing column', function () {
+    $this->actingAs(User::factory()->create()->assignRole('super_admin'));
+    $scientist = User::factory()->create(['email' => 'marine.biologist@example.test'])->assignRole('scientist');
+    $user = User::factory()->create(['email' => 'contributor@example.test'])->assignRole('user');
+
+    Livewire::test(ListUsers::class)
+        ->searchTable('example.test')
+        ->assertCanSeeTableRecords([$scientist, $user]);
+
+    Livewire::test(ListUsers::class)
+        ->searchTable('scientist')
+        ->assertCanSeeTableRecords([$scientist])
+        ->assertCanNotSeeTableRecords([$user]);
 });

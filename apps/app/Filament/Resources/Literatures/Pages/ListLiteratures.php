@@ -10,6 +10,7 @@ use App\Models\Literature;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Happenv\FilamentSavedViews\Filament\Concerns\HasSavedViews;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class ListLiteratures extends ListRecords
 {
+    use HasSavedViews;
+
     protected static string $resource = LiteratureResource::class;
 
     protected function getHeaderActions(): array

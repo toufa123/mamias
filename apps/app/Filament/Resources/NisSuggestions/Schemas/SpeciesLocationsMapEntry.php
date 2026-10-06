@@ -13,6 +13,29 @@ use EduardoRibeiroDev\FilamentLeaflet\Layers\Marker;
  */
 class SpeciesLocationsMapEntry extends MapEntry
 {
+    /**
+     * `location` is a list of points (CoordinatesCast); older rows hold a single
+     * {lat, lng}. The package's own centre/marker code only reads the latter.
+     *
+     * @return array{lat: float, lng: float}|null
+     */
+    public static function firstPoint(mixed $coords): ?array
+    {
+        $point = is_array($coords) && array_is_list($coords) ? ($coords[0] ?? null) : $coords;
+
+        return is_array($point) && isset($point['lat'], $point['lng'])
+            ? ['lat' => (float) $point['lat'], 'lng' => (float) $point['lng']]
+            : null;
+    }
+
+    /** @return array{lat: float, lng: float} */
+    protected function getMapCenter(): array
+    {
+        $point = self::firstPoint($this->getRecord()?->location);
+
+        return $point ?? $this->getParentMapCenter();
+    }
+
     /** @return array<int, Marker> */
     protected function getMarkers(): array
     {
@@ -30,13 +53,13 @@ class SpeciesLocationsMapEntry extends MapEntry
 
         return $records
             ->map(function (NisSuggestion $other): ?Marker {
-                $coords = json_decode($other->getRawOriginal('location'), true);
-                $lat = $coords['lat'] ?? null;
-                $lng = $coords['lng'] ?? null;
+                $point = self::firstPoint(json_decode($other->getRawOriginal('location'), true));
 
-                if ($lat === null || $lng === null) {
+                if ($point === null) {
                     return null;
                 }
+
+                ['lat' => $lat, 'lng' => $lng] = $point;
 
                 return Marker::make((float) $lat, (float) $lng)
                     ->gray()
@@ -60,10 +83,9 @@ class SpeciesLocationsMapEntry extends MapEntry
             return parent::getPickMarkerData();
         }
 
-        $coords = $record->location;
-        $first = is_array($coords) ? ($coords[0] ?? null) : $coords;
+        $first = self::firstPoint($record->location);
 
-        if (! $first || ! isset($first['lat'], $first['lng'])) {
+        if ($first === null) {
             return parent::getPickMarkerData();
         }
 

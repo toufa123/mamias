@@ -183,16 +183,17 @@ final class MediterraneanDashboard
     }
 
     /**
-     * NIS per sub-region, split into the status stacks by the introduction
-     * event's (basin-level) establishment status.
+     * NIS per sub-region, split into the status stacks by the sub-region's own
+     * establishment status: invasiveness is only ever assessed per sub-region,
+     * so the basin-level status would hide it.
      *
      * @return array{subregions: list<string>, stacks: array<string, list<int>>}
      */
     public function statusBySubregion(): array
     {
         $rows = $this->subregionRecords()
-            ->groupBy('subregion_records.subregion', 'intro_event_records.establishment_status')
-            ->selectRaw('subregion_records.subregion, intro_event_records.establishment_status, count(distinct intro_event_records.id) as total')
+            ->groupBy('subregion_records.subregion', 'subregion_records.establishment_status')
+            ->selectRaw('subregion_records.subregion, subregion_records.establishment_status, count(distinct intro_event_records.id) as total')
             ->toBase()
             ->get();
 

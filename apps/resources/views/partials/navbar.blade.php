@@ -147,6 +147,12 @@
                 </div>
                 <div class="kt-menu-dropdown kt-menu-default w-full max-w-[260px] py-2.5">
                     <div class="kt-menu-item">
+                        <a class="kt-menu-link" href="{{ route('manual') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-book-open"></i></span>
+                            <span class="kt-menu-title">User manual</span>
+                        </a>
+                    </div>
+                    <div class="kt-menu-item">
                         <a class="kt-menu-link" href="{{ url('pages/resources') }}" tabindex="0">
                             <span class="kt-menu-icon"><i class="ki-filled ki-data"></i></span>
                             <span class="kt-menu-title">Resources</span>

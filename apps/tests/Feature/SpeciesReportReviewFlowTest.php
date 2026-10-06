@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\OccurrenceStatus;
+use App\Filament\Resources\Occurrences\Schemas\OccurrenceForm;
 use App\Livewire\MySpeciesReports;
 use App\Models\IntroEventRecord;
 use App\Models\Occurrence;
@@ -70,4 +71,26 @@ it('lets the reporter withdraw only a pending report', function () {
 
     expect(Occurrence::find($pending->id))->toBeNull()
         ->and(Occurrence::find($approved->id))->not->toBeNull();
+});
+
+it('opens "Revise & resubmit" on a report whose species has first countries', function () {
+    // first_country is a JSON list: the species label once cast it to a string and 500'd.
+    $event = IntroEventRecord::factory()->create(['first_country' => ['Tunisia', 'Malta']]);
+    $occurrence = Occurrence::factory()->for($this->reporter)->for($event)->create([
+        'status' => OccurrenceStatus::REJECTED,
+        'moderation_notes' => 'Duplicate of an occurrence already reported.',
+        'habitats' => ['rocks'],
+        'acfor_scale' => 'occasional',
+        'depth' => 5,
+        'coverage_value' => null,
+        'coverage_unit' => null,
+        'coverage_method' => null,
+    ]);
+
+    livewire(MySpeciesReports::class)
+        ->mountAction(TestAction::make('edit')->table($occurrence))
+        ->assertActionMounted(TestAction::make('edit')->table($occurrence));
+
+    // The modal's fields are not rendered in a Livewire test, so ask the picker's label directly.
+    expect(OccurrenceForm::getSpeciesLabel($event->id))->toEndWith(', Tunisia, Malta');
 });
