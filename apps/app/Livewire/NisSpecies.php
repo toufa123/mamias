@@ -40,6 +40,31 @@ class NisSpecies extends Component implements HasActions, HasSchemas
         $this->introEventRecord = $introEventRecord;
     }
 
+    /**
+     * One-sentence summary for the meta description and link previews; any
+     * fact the record lacks is left out rather than shown as "Unknown".
+     */
+    public function previewDescription(): string
+    {
+        $event = $this->introEventRecord;
+        $taxon = $event->taxon;
+
+        $name = $taxon->phylum ? "{$taxon->scientificname} ({$taxon->phylum})" : $taxon->scientificname;
+        $countries = implode(', ', array_filter((array) $event->first_country));
+        $firstRecord = match (true) {
+            $event->first_introduction_year && $countries !== '' => ", first recorded in {$event->first_introduction_year} ({$countries})",
+            (bool) $event->first_introduction_year => ", first recorded in {$event->first_introduction_year}",
+            $countries !== '' => ", first recorded in {$countries}",
+            default => '',
+        };
+
+        return implode(' ', array_filter([
+            "{$name}: non-indigenous species in the Mediterranean{$firstRecord}.",
+            $event->nis_status ? "NIS status: {$event->nis_status->getLabel()}." : null,
+            $event->establishment_status ? "Establishment: {$event->establishment_status->getLabel()}." : null,
+        ]));
+    }
+
     public function catalogueInfolist(Schema $schema): Schema
     {
         return TaxonInfolist::configurePublic($schema->record($this->introEventRecord->taxon));

@@ -1,5 +1,6 @@
 <div>
     @section ('title', trim($taxon->scientificname . ' ' . $taxon->authority))
+    @section ('description', $this->previewDescription())
 
     @section ('breadcrumbs')
         {{ Breadcrumbs::render('data.species', $introEventRecord) }}

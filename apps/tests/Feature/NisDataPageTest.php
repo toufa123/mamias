@@ -38,14 +38,20 @@ it('shows the catalogue and event data without the internal notes', function () 
         ->assertSee('No occurrence has been recorded for this species yet.');
 });
 
-it('names the species in the page title and its link preview', function () {
-    $event = IntroEventRecord::factory()->create();
-    $title = e(trim($event->taxon->scientificname.' '.$event->taxon->authority));
+it('names and describes the species in the page title and its link preview', function () {
+    $event = IntroEventRecord::factory()->create([
+        'first_introduction_year' => 2003,
+        'first_country' => ['Türkiye'],
+    ]);
+    $event->taxon->update(['scientificname' => 'Acteocina crithodes', 'authority' => '(Melvill & Standen, 1901)', 'phylum' => 'Mollusca']);
 
     get(route('data.species', $event))
         ->assertOk()
-        ->assertSee("<title>MAMIAS :: {$title} | Since 2012</title>", false)
-        ->assertSee("content=\"{$title} — MAMIAS\"", false)
+        // Escaped exactly once: "&amp;", never "&amp;amp;".
+        ->assertSee('<title>MAMIAS :: Acteocina crithodes (Melvill &amp; Standen, 1901) | Since 2012</title>', false)
+        ->assertSee('content="Acteocina crithodes (Melvill &amp; Standen, 1901) — MAMIAS"', false)
+        ->assertSee('content="Acteocina crithodes (Mollusca): non-indigenous species in the Mediterranean, first recorded in 2003 (Türkiye).', false)
+        ->assertDontSee('&amp;amp;', false)
         ->assertSee(asset('images/og-image.png'), false)
         ->assertDontSee('<base', false);
 });

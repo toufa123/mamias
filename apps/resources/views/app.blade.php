@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html class="h-full" dir="ltr" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    {{-- Pages name themselves with @section('title'); Livewire pages may pass $pageTitle instead. --}}
+    {{--
+        Pages name and describe themselves with @section('title') / @section('description');
+        Livewire pages may pass $pageTitle instead. Sections arrive already escaped, so they
+        are decoded once here and escaped again on output — otherwise "&" renders as "&amp;".
+    --}}
     @php
-        $metaTitle = trim($__env->yieldContent('title')) ?: ($pageTitle ?? null);
+        $section = fn (string $name): string => html_entity_decode(trim($__env->yieldContent($name)), ENT_QUOTES | ENT_HTML5);
+        $metaTitle = $section('title') ?: ($pageTitle ?? null);
+        $metaDescription = $section('description') ?: 'Database of non-indigenous marine species in the Mediterranean Sea.';
     @endphp
     <title>{{ $metaTitle ? "MAMIAS :: {$metaTitle} | Since 2012" : 'MAMIAS | Since 2012' }}</title>
     <meta charset="utf-8" />
     <meta content="follow, index" name="robots" />
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-    <meta content="Database of non-indigenous marine species in the Mediterranean Sea." name="description" />
+    <meta content="{{ $metaDescription }}" name="description" />
     {{-- Link previews (WhatsApp, LinkedIn, Slack, X…). Crawlers need absolute URLs. --}}
     <meta content="website" property="og:type" />
     <meta content="MAMIAS" property="og:site_name" />
@@ -17,7 +23,7 @@
         content="{{ $metaTitle && ! request()->is('/') ? "{$metaTitle} — MAMIAS" : 'MAMIAS — Marine Mediterranean Invasive Alien Species' }}"
         property="og:title"
     />
-    <meta content="Database of non-indigenous marine species in the Mediterranean Sea." property="og:description" />
+    <meta content="{{ $metaDescription }}" property="og:description" />
     <meta content="{{ url()->current() }}" property="og:url" />
     <meta content="{{ asset('images/og-image.png') }}" property="og:image" />
     <meta content="1200" property="og:image:width" />
