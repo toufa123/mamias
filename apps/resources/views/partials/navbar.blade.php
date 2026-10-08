@@ -141,7 +141,7 @@
             <div
                 @class([
                     'kt-menu-item',
-                    'active' => request()->is('pages/resources', 'pages/post-2020-sapbio', 'pages/ballast-water/*'),
+                    'active' => request()->is('pages/spa-bd-protocol', 'pages/post-2020-sapbio', 'pages/mediterranean-action-plan', 'pages/imap', 'pages/ballast-water/*'),
                 ])
                 data-kt-menu-item-offset="0,0|lg:-20px, 0"
                 data-kt-menu-item-offset-rtl="0,0|lg:20px, 0"
@@ -164,63 +164,33 @@
                 </div>
                 <div class="kt-menu-dropdown kt-menu-default w-full max-w-[260px] py-2.5">
                     <div class="kt-menu-item">
-                        <a class="kt-menu-link" href="{{ url('pages/resources') }}" tabindex="0">
-                            <span class="kt-menu-icon"><i class="ki-filled ki-data"></i></span>
-                            <span class="kt-menu-title">Resources</span>
+                        <a class="kt-menu-link" href="{{ url('pages/spa-bd-protocol') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-shield-tick"></i></span>
+                            <span class="kt-menu-title">SPA/BD Protocol</span>
                         </a>
                     </div>
                     <div class="kt-menu-item">
                         <a class="kt-menu-link" href="{{ url('pages/post-2020-sapbio') }}" tabindex="0">
-                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
+                            <span class="kt-menu-icon"><i class="ki-filled ki-tree"></i></span>
                             <span class="kt-menu-title">Post-2020 SAPBIO</span>
                         </a>
                     </div>
-                    <div
-                        class="kt-menu-item"
-                        data-kt-menu-item-placement="bottom-start|lg:right-start"
-                        data-kt-menu-item-placement-rtl="bottom-start|lg:left-start"
-                        data-kt-menu-item-toggle="dropdown"
-                        data-kt-menu-item-trigger="click|lg:hover"
-                    >
-                        <div class="kt-menu-link">
-                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
-                            <span class="kt-menu-title">Ballast Water Management</span>
-                            <span class="kt-menu-arrow">
-                                <span class="lg:hidden">
-                                    <span class="kt-menu-item-show:hidden flex">
-                                        <i class="ki-filled ki-plus text-secondary-foreground text-xs"></i>
-                                    </span>
-                                    <span class="kt-menu-item-show:inline-flex hidden">
-                                        <i class="ki-filled ki-minus text-secondary-foreground text-xs"></i>
-                                    </span>
-                                </span>
-                                <span class="hidden lg:inline-flex">
-                                    <i class="ki-filled ki-right text-xs rtl:rotate-180 rtl:transform"></i>
-                                </span>
-                            </span>
-                        </div>
-                        <div class="kt-menu-dropdown kt-menu-default w-full max-w-[260px]">
-                            <div class="kt-menu-item">
-                                <a class="kt-menu-link" href="{{ url('pages/ballast-water/strategy') }}" tabindex="0">
-                                    <span class="kt-menu-title">The Mediterranean Ballast Water Management Strategy</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                     <div class="kt-menu-item">
-                        <a
-                            class="kt-menu-link"
-                            href="{{ url('pages/ballast-water/non-indigenous-species') }}"
-                            tabindex="0"
-                        >
-                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
-                            <span class="kt-menu-title">Non-indigenous species management</span>
+                        <a class="kt-menu-link" href="{{ url('pages/mediterranean-action-plan') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-compass"></i></span>
+                            <span class="kt-menu-title">The Mediterranean Action Plan</span>
                         </a>
                     </div>
                     <div class="kt-menu-item">
-                        <a class="kt-menu-link" href="{{ url('pages/ballast-water/imap') }}" tabindex="0">
-                            <span class="kt-menu-icon"><i class="ki-filled ki-information"></i></span>
+                        <a class="kt-menu-link" href="{{ url('pages/imap') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-chart-line-up"></i></span>
                             <span class="kt-menu-title">IMAP</span>
+                        </a>
+                    </div>
+                    <div class="kt-menu-item">
+                        <a class="kt-menu-link" href="{{ url('pages/ballast-water/strategy') }}" tabindex="0">
+                            <span class="kt-menu-icon"><i class="ki-filled ki-ship"></i></span>
+                            <span class="kt-menu-title">Ballast Water Management</span>
                         </a>
                     </div>
                 </div>
