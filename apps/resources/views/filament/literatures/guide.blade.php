@@ -4,18 +4,19 @@
     theme.css (panel) / app.css (public) keep it square and hairline-ruled
     (DESIGN-SYSTEM.md).
 
-    In-page links are scrolled here rather than followed: the public layout
-    carries <base href="../../"> from the Metronic template, which resolves
-    "#section" against the site root and navigated away from the page.
+    In-page links are scrolled here rather than followed, so the jump stays
+    inside the modal's own scroll container and animates.
 --}}
 <div
     class="fi-prose mamias-guide"
     x-data
     x-on:click="
-        const link = $event.target.closest('a[href^=\'#\']')
+        const link = $event.target.closest('a[href^=\'#\']');
         if (link) {
-            $event.preventDefault()
-            document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            $event.preventDefault();
+            document
+                .getElementById(link.getAttribute('href').slice(1))
+                ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     "
 >

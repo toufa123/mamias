@@ -38,6 +38,18 @@ it('shows the catalogue and event data without the internal notes', function () 
         ->assertSee('No occurrence has been recorded for this species yet.');
 });
 
+it('names the species in the page title and its link preview', function () {
+    $event = IntroEventRecord::factory()->create();
+    $title = e(trim($event->taxon->scientificname.' '.$event->taxon->authority));
+
+    get(route('data.species', $event))
+        ->assertOk()
+        ->assertSee("<title>MAMIAS :: {$title} | Since 2012</title>", false)
+        ->assertSee("content=\"{$title} — MAMIAS\"", false)
+        ->assertSee(asset('images/og-image.png'), false)
+        ->assertDontSee('<base', false);
+});
+
 it('pins approved occurrences only, with escaped popups', function () {
     $event = IntroEventRecord::factory()->create();
     Occurrence::factory()->approved()->for($event)->create([

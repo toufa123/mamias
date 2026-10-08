@@ -124,7 +124,7 @@
                     {{ $isCountries ? 'species first recorded here' : 'species recorded' }}
                 </p>
                 @if ($selectedCount)
-                    {{-- Absolute: app.blade.php's <base href="../../"> sends a bare "#species" to the home page. --}}
+                    {{-- Full URL keeps the active filters when the link is opened in a new tab. --}}
                     <x-filament::link
                         :href="route('map', ['layer' => $this->layer, 'subregion' => $this->subregion, 'country' => $this->country]) . '#species'"
                         x-on:click.prevent="

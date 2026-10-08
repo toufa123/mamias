@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html
-    class="h-full"
-    data-kt-theme="true"
-    data-kt-theme-mode="light"
-    dir="ltr"
-    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
->
+<html class="h-full" dir="ltr" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <base href="../../" />
-    <title>
-        @hasSection ('title')
-            MAMIAS ::
-            @yield ('title')
-            | Since 2012
-        @elseif (isset($pageTitle))
-            MAMIAS :: {{ $pageTitle }} | Since 2012
-        @else
-            MAMIAS | Since 2012
-        @endif
-    </title>
+    {{-- Pages name themselves with @section('title'); Livewire pages may pass $pageTitle instead. --}}
+    @php
+        $metaTitle = trim($__env->yieldContent('title')) ?: ($pageTitle ?? null);
+    @endphp
+    <title>{{ $metaTitle ? "MAMIAS :: {$metaTitle} | Since 2012" : 'MAMIAS | Since 2012' }}</title>
     <meta charset="utf-8" />
     <meta content="follow, index" name="robots" />
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-    <meta content="" property="og:description" />
-    <meta content="assets/media/app/og-image.png" property="og:image" />
+    <meta content="Database of non-indigenous marine species in the Mediterranean Sea." name="description" />
+    {{-- Link previews (WhatsApp, LinkedIn, Slack, X…). Crawlers need absolute URLs. --}}
+    <meta content="website" property="og:type" />
+    <meta content="MAMIAS" property="og:site_name" />
+    <meta
+        content="{{ $metaTitle && ! request()->is('/') ? "{$metaTitle} — MAMIAS" : 'MAMIAS — Marine Mediterranean Invasive Alien Species' }}"
+        property="og:title"
+    />
+    <meta content="Database of non-indigenous marine species in the Mediterranean Sea." property="og:description" />
+    <meta content="{{ url()->current() }}" property="og:url" />
+    <meta content="{{ asset('images/og-image.png') }}" property="og:image" />
+    <meta content="1200" property="og:image:width" />
+    <meta content="630" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
     <link href="{{ asset('images/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180" />
     <link href="{{ asset('images/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png" />
     <link href="{{ asset('images/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png" />
@@ -159,8 +158,6 @@
         if (document.documentElement) {
             if (localStorage.getItem("kt-theme")) {
                 themeMode = localStorage.getItem("kt-theme");
-            } else if (document.documentElement.hasAttribute("data-kt-theme-mode")) {
-                themeMode = document.documentElement.getAttribute("data-kt-theme-mode");
             } else {
                 themeMode = defaultThemeMode;
             }
