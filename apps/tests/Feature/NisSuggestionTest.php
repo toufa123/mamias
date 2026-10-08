@@ -6,12 +6,15 @@ use App\Enums\Catalogue_Status;
 use App\Filament\Resources\NisSuggestions\Pages\ListNisSuggestions;
 use App\Filament\Resources\NisSuggestions\Pages\ViewNisSuggestion;
 use App\Livewire\MySuggestions;
+use App\Models\Literature;
 use App\Models\NisSuggestion;
 use App\Models\Taxon;
 use App\Models\User;
 use App\Services\WormsService;
 use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 use function Pest\Laravel\assertDatabaseHas;
@@ -136,13 +139,52 @@ it('blocks submission when scientific name already exists in the catalogue', fun
     livewire(MySuggestions::class)
         ->callAction('create', [
             'aphia_id' => $aphiaId,
-            'suggested_scientific_name' => $uniqueName,
+            // The Select's value is the picked AphiaID; afterStateUpdated swaps in the name.
+            'suggested_scientific_name' => $aphiaId,
             'authority' => 'Test, 2026',
             'worms_status' => 'accepted',
         ])
         ->assertHasActionErrors(['suggested_scientific_name' => 'unique']);
 
     $existingTaxon->forceDelete();
+});
+
+it('saves the references picked when suggesting a species', function () {
+    Storage::fake('public');
+    $literature = Literature::factory()->create();
+
+    $aphiaId = 999997;
+    $mockWorms = Mockery::mock(WormsService::class);
+    $mockWorms->shouldReceive('getRecordByAphiaID')->andReturn(['AphiaID' => $aphiaId, 'scientificname' => 'Testus referencius', 'authority' => 'Test, 2026', 'status' => 'accepted']);
+    $mockWorms->shouldReceive('searchSpecies')->andReturn([]);
+    app()->instance(WormsService::class, $mockWorms);
+
+    livewire(MySuggestions::class)
+        ->callAction('create', [
+            'aphia_id' => $aphiaId,
+            'suggested_scientific_name' => $aphiaId,
+            'authority' => 'Test, 2026',
+            'worms_status' => 'accepted',
+            'photo_paths' => [UploadedFile::fake()->image('specimen.jpg')],
+            'literatures' => [$literature->id],
+        ])
+        ->assertHasNoActionErrors();
+
+    expect(NisSuggestion::where('suggested_scientific_name', 'Testus referencius')->sole()->literatures->modelKeys())
+        ->toBe([$literature->id]);
+});
+
+it('saves the references changed when editing a suggestion', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('suggestions/photos/specimen.jpg', UploadedFile::fake()->image('specimen.jpg')->getContent());
+    $suggestion = NisSuggestion::factory()->for($this->user)->create(['photo_paths' => ['suggestions/photos/specimen.jpg']]);
+    $literature = Literature::factory()->create();
+
+    livewire(MySuggestions::class)
+        ->callAction(TestAction::make('edit')->table($suggestion), ['literatures' => [$literature->id]])
+        ->assertHasNoActionErrors();
+
+    expect($suggestion->fresh()->literatures->modelKeys())->toBe([$literature->id]);
 });
 
 it('opens a located suggestion on MySuggestions without serializing its PostGIS point', function () {

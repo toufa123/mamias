@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\NisSuggestions\Schemas;
 
 use App\Filament\Resources\Literatures\Schemas\LiteratureForm;
+use App\Models\Taxon;
 use App\Services\WormsService;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -14,6 +15,7 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Validation\Rule;
 
 /**
  * Configures the Filament form schema for NIS suggestions.
@@ -101,6 +103,12 @@ class NisSuggestionForm
                 ->getOptionLabelUsing(fn (mixed $value) => self::getWormsLabel($value, $wormsService))
                 ->live()
                 ->afterStateUpdated(fn (Set $set, mixed $state) => self::populateTaxonData($set, $state, $wormsService))
+                // Dropped by accident in b023240. Approving a duplicate would hit the
+                // taxa scientificname unique index, so turn it away here, kindly. A plain
+                // rule, not ->unique(): that ignores the form's record, a NisSuggestion,
+                // and so filters taxas on nis_suggestions.id when editing.
+                ->rules([Rule::unique(Taxon::class, 'scientificname')])
+                ->validationMessages(['unique' => 'This species already exists in the MAMIAS catalogue. Please contribute to the existing record instead.'])
                 ->hintIcon('tabler-info-circle', tooltip: 'Type at least 4 characters to search the WoRMS database'),
             TextInput::make('authority')
                 ->label('Authority')

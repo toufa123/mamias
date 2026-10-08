@@ -15,6 +15,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -62,17 +63,19 @@ class MySuggestions extends Component implements HasActions, HasForms, HasTable
             ->size('lg')
             ->modalHeading('Suggest a New NIS Species')
             ->modalWidth(Width::SevenExtraLarge)
+            // The references Select is relationship-backed: it needs a model to
+            // resolve against (without one the modal crashes on re-render), and it
+            // is never in $data — it is saved through the schema, as CreateAction does.
+            ->model(NisSuggestion::class)
             ->schema(NisSuggestionForm::getComponents())
-            ->action(function (array $data): void {
+            ->action(function (array $data, Schema $schema): void {
                 $suggestion = NisSuggestion::create([
                     ...$data,
                     'user_id' => auth()->id(),
                     'status' => LiteratureStatus::PENDING,
                 ]);
 
-                if ($literatures = $data['literatures'] ?? []) {
-                    $suggestion->literatures()->sync($literatures);
-                }
+                $schema->model($suggestion)->saveRelationships();
 
                 Notification::make()
                     ->title('Suggestion submitted')

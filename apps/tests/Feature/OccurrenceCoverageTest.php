@@ -144,7 +144,9 @@ it('pins the detail tabs to one height without stretching the tab strip', functi
     // The floor belongs on the container. Filament merges a Tab's own
     // extraAttributes into its strip button as well as its panel, so putting a
     // height on the tabs themselves turns the strip into a tall column.
-    expect($tabs->getExtraAttributes())->toBe(['style' => 'min-height: 34rem;'])
+    // The value tracks the map height in the Location tab, so only its shape is pinned.
+    expect($tabs->getExtraAttributes())->toHaveKey('style')
+        ->and($tabs->getExtraAttributes()['style'])->toMatch('/^min-height: \d+(\.\d+)?rem;$/')
         ->and(collect($tabs->getDefaultChildComponents())->map(fn (Tab $tab): array => $tab->getExtraAttributes())->all())
         ->toBe([[], [], []]);
 });
