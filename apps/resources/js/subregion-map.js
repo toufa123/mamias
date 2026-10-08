@@ -19,6 +19,11 @@ export const SUBREGIONS = {
     EMED: [[22.5,36.4],[23.0,36.5],[23.2,37.4],[24.0,37.7],[23.4,38.3],[22.9,39.2],[22.6,40.3],[23.3,39.9],[24.3,40.8],[25.8,40.8],[26.2,40.1],[26.6,39.3],[26.8,38.5],[27.2,37.4],[28.0,36.8],[29.6,36.2],[30.6,36.8],[32.5,36.1],[34.6,36.8],[36.0,36.9],[35.9,35.5],[35.6,34.3],[35.1,33.1],[34.5,31.6],[33.0,31.1],[31.5,31.5],[30.0,31.4],[29.0,30.9],[27.3,31.3],[25.2,31.6],[24.0,32.0],[23.2,32.2],[23.5,35.3]],
 }
 
+/** Open-sea point in each sub-region (lat, lng) where its count bubble sits. */
+const BUBBLES = { WMED: [39.0, 5.5], ADRIA: [43.0, 15.6], CMED: [34.8, 17.5], EMED: [33.8, 31.0] }
+
+const BUBBLE_RADIUS = 15
+
 const RADIUS = 6381372 // jsvectormap's Proj.radius
 
 export const SEA = '#edf3f5'
@@ -83,6 +88,22 @@ export async function renderSubregionMap(el, values, labels) {
             hover: { fillOpacity: 0.85, cursor: 'default' },
         },
         visualizeData: { scale: SCALE, values },
+        // Count bubbles: white disc, teal ring and figure, readable over both ends of SCALE.
+        markers: Object.keys(BUBBLES).filter((code) => code in values).map((code) => ({
+            name: `${labels[code]}: ${values[code]} reported NIS`,
+            coords: BUBBLES[code],
+            count: values[code],
+        })),
+        markerStyle: {
+            initial: { r: BUBBLE_RADIUS, fill: '#ffffff', stroke: SCALE[1], strokeWidth: 1.5, strokeOpacity: 1 },
+            hover: { fill: '#ffffff', cursor: 'default' },
+        },
+        markerLabelStyle: {
+            initial: { fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600, fill: SCALE[1], textAnchor: 'middle', cursor: 'default' },
+            hover: { cursor: 'default' },
+        },
+        // jsvectormap places marker labels r + 5px right of the marker; cancel that to centre the figure.
+        labels: { markers: { render: (marker) => String(marker.count), offsets: () => [-(BUBBLE_RADIUS + 5), 0] } },
         onRegionTooltipShow(event, tooltip, code) {
             if (!(code in values)) {
                 return event.preventDefault()

@@ -18,7 +18,7 @@ class IntroductionPathwaysChart extends IntroEventChart
 
     private const NOTE = 'An event with several pathways counts in each';
 
-    protected static int $contentHeight = 360;
+    protected static int $contentHeight = 280;
 
     protected function getOptions(): array
     {

@@ -37,30 +37,32 @@ class IntroEventStatsWidget extends BaseWidget
         $established = (int) $counts->established;
         $share = $total > 0 ? round($established / $total * 100) : 0;
 
-        return [
-            Stat::make('Introduction events', number_format($total))
+        // Raw ints: StatPlus animates the value, and a formatted "1,067" reads as 0.
+        // Compact cards (theme.css): this row sits above four charts on the MAMIAS Data tab.
+        return array_map(fn (Stat $stat): Stat => $stat->extraAttributes(['class' => 'mamias-stat-compact']), [
+            Stat::make('Introduction events', $total)
                 ->description('Species × first Mediterranean record')
-                ->descriptionIcon('tabler-fish')
-                ->icon('tabler-fish')
+                ->descriptionIcon('tabler-map-pin')
+                ->icon('tabler-map-pin')
                 ->color('primary')
                 ->url(IntroEventRecordResource::getUrl('index')),
-            Stat::make('Established', number_format($established))
+            Stat::make('Established', $established)
                 ->description("{$share}% of events, basin level")
                 ->descriptionIcon('tabler-circle-check')
                 ->icon('tabler-circle-check')
                 ->color('established'),
-            Stat::make('Needs review', number_format((int) $counts->needs_review))
+            Stat::make('Needs review', (int) $counts->needs_review)
                 ->description('Values the importer could not read')
                 ->descriptionIcon('tabler-eye-search')
                 ->icon('tabler-eye-search')
                 ->color('gray')
                 ->url(IntroEventRecordResource::getUrl('index', ['tab' => 'needs_review'])),
-            Stat::make('Pathway check', number_format((int) $counts->pathway_check))
+            Stat::make('Pathway check', (int) $counts->pathway_check)
                 ->description('Pathway differs from EASIN')
                 ->descriptionIcon('tabler-route')
                 ->icon('tabler-route')
                 ->color('gray')
                 ->url(IntroEventRecordResource::getUrl('index', ['tab' => 'pathway_check'])),
-        ];
+        ]);
     }
 }

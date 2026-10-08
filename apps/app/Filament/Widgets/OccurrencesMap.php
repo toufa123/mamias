@@ -39,8 +39,6 @@ class OccurrencesMap extends MapWidget
 
     protected int|\Closure $mapHeight = 420;
 
-    protected bool|\Closure $hasFullscreenControl = true;
-
     /** The UNEP/MAP basemap (config/filament-leaflet.php), like every other map. */
     protected function getTileLayersUrl(): array
     {

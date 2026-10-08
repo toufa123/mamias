@@ -15,9 +15,7 @@ class FirstRecordCountriesChart extends IntroEventChart
 {
     protected static ?string $heading = 'Top countries of first record';
 
-    protected static int $contentHeight = 360;
-
-    protected int|string|array $columnSpan = 'full';
+    protected static int $contentHeight = 280;
 
     private const LIMIT = 10;
 

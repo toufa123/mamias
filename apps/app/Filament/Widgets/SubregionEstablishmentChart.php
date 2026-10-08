@@ -18,7 +18,7 @@ class SubregionEstablishmentChart extends IntroEventChart
 {
     protected static ?string $heading = 'Establishment status by EcAp sub-regions';
 
-    protected static int $contentHeight = 360;
+    protected static int $contentHeight = 280;
 
     private const OTHER = 'Unknown / other';
 

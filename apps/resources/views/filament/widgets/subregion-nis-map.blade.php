@@ -14,7 +14,7 @@
         </x-slot>
 
         {{-- Height on the wrapper: jsvectormap's unlayered .jvm-container { height: 100% } beats a utility on the map element itself. --}}
-        <div class="h-[358px] w-full">
+        <div class="h-[278px] w-full">
             {{-- x-intersect, not x-init: the dashboard tab may be hidden at load, and a 0×0 container makes jsvectormap's focus scale NaN. --}}
             <div
                 wire:ignore

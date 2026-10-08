@@ -99,6 +99,19 @@
     @apply border border-gray-200 bg-white shadow-none dark:border-gray-700 dark:bg-gray-800;
 }
 
+/* Compact stat row (IntroEventStatsWidget): tighter padding and value. */
+.fi-wi-stats-overview-stat.mamias-stat-compact {
+    @apply px-4 py-3;
+
+    & .fi-wi-stats-overview-stat-content {
+        @apply gap-y-1;
+    }
+
+    & .fi-wi-stats-overview-stat-value {
+        @apply text-2xl;
+    }
+}
+
 /* A widget with a $heading renders its content inside a section, so on the
    dashboard the hairline landed twice — once on the group, once on every stat
    card — and it read as a box inside a box. The rule is: whatever already

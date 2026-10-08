@@ -15,7 +15,7 @@ class IntroductionsByDecadeChart extends IntroEventChart
 {
     protected static ?string $heading = 'Introductions by decade of first record';
 
-    protected static int $contentHeight = 360;
+    protected static int $contentHeight = 260;
 
     protected int|string|array $columnSpan = 'full';
 
