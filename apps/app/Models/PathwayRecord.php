@@ -33,7 +33,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int|null $created_by
  * @property int|null $updated_by
  *
- * @method BelongsTo introEvent()
+ * @method BelongsTo<IntroEventRecord, $this> introEvent()
  */
 #[Fillable(['intro_event_id', 'category', 'subcategory', 'pathway_type', 'description', 'uncertainty'])]
 class PathwayRecord extends Model

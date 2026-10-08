@@ -74,7 +74,7 @@ class MamiasSummaryWidget extends BaseWidget
             ->all();
 
         $phyla = collect($dashboard->taxonomy())
-            ->flatMap(fn (array $kingdom): array => $kingdom['children'] ?? [])
+            ->flatMap(fn (array $kingdom): array => $kingdom['children'])
             ->sortByDesc('value')
             ->take(5)
             ->values()

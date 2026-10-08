@@ -7,6 +7,7 @@ namespace App\Filament\Imports;
 use Filament\Actions\Imports\Downloaders\Contracts\Downloader;
 use Filament\Actions\Imports\Models\FailedImportRow;
 use Filament\Actions\Imports\Models\Import;
+use Illuminate\Support\LazyCollection;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
@@ -38,7 +39,10 @@ final class XlsxFailedRowsDownloader implements Downloader
         $write(1, $headers);
         $row = 2;
 
-        $import->failedRows()->lazyById(100)->each(function (FailedImportRow $failed) use ($write, &$row): void {
+        /** @var LazyCollection<int, FailedImportRow> $failedRows */
+        $failedRows = $import->failedRows()->lazyById(100);
+
+        $failedRows->each(function (FailedImportRow $failed) use ($write, &$row): void {
             $write($row++, [
                 ...$failed->data,
                 $failed->validation_error ?? __('filament-actions::import.failure_csv.system_error'),

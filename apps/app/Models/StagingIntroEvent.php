@@ -29,6 +29,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * came from, so the review screen can show "proposed Established, because
  * CMED and EMED both have arrival years" next to the field.
  *
+ * The migration adds the per-subregion columns in a loop, so they are listed
+ * here for static analysis along with the enum casts.
+ *
+ * @property NisStatus|null $nis_status
+ * @property EstablishmentStatus|null $establishment_status
+ * @property NisStatus|null $wmed_nis_status
+ * @property NisStatus|null $cmed_nis_status
+ * @property NisStatus|null $adria_nis_status
+ * @property NisStatus|null $emed_nis_status
+ * @property EstablishmentStatus|null $wmed_establishment_status
+ * @property EstablishmentStatus|null $cmed_establishment_status
+ * @property EstablishmentStatus|null $adria_establishment_status
+ * @property EstablishmentStatus|null $emed_establishment_status
+ * @property int|null $wmed_first_arrival_year
+ * @property int|null $cmed_first_arrival_year
+ * @property int|null $adria_first_arrival_year
+ * @property int|null $emed_first_arrival_year
  * @property-read Taxon|null $taxon
  */
 class StagingIntroEvent extends Model

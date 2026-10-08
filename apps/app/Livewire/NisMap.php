@@ -36,6 +36,8 @@ use Livewire\Component;
  * above the map, narrow all three; the EcAp subregion filter also limits which
  * subregions the map counts and lets the visitor pick. Approved occurrences
  * can be pinned on top.
+ *
+ * @property-read array<string, int> $countryCounts
  */
 class NisMap extends Component implements HasActions, HasForms, HasTable
 {
@@ -274,7 +276,12 @@ class NisMap extends Component implements HasActions, HasForms, HasTable
             ->limit(5)
             ->get()
             ->toBase()
-            ->map(fn (SubregionRecord $record): array => ['event' => $record->introEvent, 'year' => (int) $record->first_arrival_year]);
+            ->map(function (SubregionRecord $record): array {
+                /** @var IntroEventRecord $event never null: whereHas('introEvent.taxon') above */
+                $event = $record->introEvent;
+
+                return ['event' => $event, 'year' => (int) $record->first_arrival_year];
+            });
     }
 
     /**

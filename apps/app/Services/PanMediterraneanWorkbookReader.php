@@ -30,6 +30,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
  * What it will not do: invent a value. Where a workbook has no establishment
  * status the field stays empty for the reviewer, rather than being guessed
  * from the presence of a year.
+ *
+ * @phpstan-type SubregionRow array{species: string, nis: ?string, establishment: ?string, year: ?string, country: ?string, block: ?string, removed: bool}
  */
 final class PanMediterraneanWorkbookReader
 {
@@ -107,7 +109,7 @@ final class PanMediterraneanWorkbookReader
      * Every species row of the four subregion sheets, held-out blocks
      * included and flagged, keyed by subregion code then canonical name.
      *
-     * @return array<string, array<string, array{species: string, nis: ?string, establishment: ?string, year: ?string, country: ?string, block: ?string, removed: bool}>>
+     * @return array<string, array<string, SubregionRow>>
      */
     public function subregionSheets(string $path): array
     {
@@ -264,7 +266,7 @@ final class PanMediterraneanWorkbookReader
     }
 
     /**
-     * @return array<string, array<string, array{species: string, nis: ?string, establishment: ?string, year: ?string, country: ?string, block: ?string, removed: bool}>>
+     * @return array<string, array<string, SubregionRow>>
      */
     private function readSubregions(Spreadsheet $spreadsheet): array
     {
@@ -315,7 +317,7 @@ final class PanMediterraneanWorkbookReader
 
             $rows[$key] = [
                 'species' => $species,
-                'nis' => $block === null ? $this->cell($sheet, $columns['nis'] ?? null, $row) : ($block['status']?->value ?? ''),
+                'nis' => $block === null ? $this->cell($sheet, $columns['nis'] ?? null, $row) : ($block['status']->value ?? ''),
                 'establishment' => $this->cell($sheet, $columns['establishment'] ?? null, $row),
                 // The polychaeta lists keep country codes where the year goes.
                 'year' => $block === null || preg_match('/\d{4}/', $year) === 1 ? $year : '',
@@ -344,7 +346,7 @@ final class PanMediterraneanWorkbookReader
 
     /**
      * @param  array<string, string|array{0: ?string, 1: ?string}>  $columns
-     * @param  array<string, array<string, ?string>>  $perSubregion
+     * @param  array<string, SubregionRow>  $perSubregion
      * @return list<string>
      */
     private function panRow(Worksheet $pan, array $columns, int $row, string $species, array $perSubregion, ?NisStatus $nisStatus = null, string $note = ''): array
@@ -352,7 +354,7 @@ final class PanMediterraneanWorkbookReader
         $values = [
             $species,
             $this->cell($pan, $columns['author'] ?? null, $row),
-            $nisStatus?->value ?? $this->cell($pan, $columns['nis'] ?? null, $row),
+            $nisStatus->value ?? $this->cell($pan, $columns['nis'] ?? null, $row),
             $this->cell($pan, $columns['establishment'] ?? null, $row),
             $this->cell($pan, $columns['year'] ?? null, $row),
             $this->cell($pan, $columns['country'] ?? null, $row),
@@ -460,7 +462,7 @@ final class PanMediterraneanWorkbookReader
      * @param  array<string, string|array{0: ?string, 1: ?string}>  $columns
      * @param  array<string, string|array{0: ?string, 1: ?string}>  $annexColumns
      * @param  array{title: string, status: ?NisStatus, detail: bool}  $block
-     * @param  array<string, array<string, array<string, ?string>>>  $subregionData
+     * @param  array<string, array<string, SubregionRow>>  $subregionData
      * @param  array<string, true>  $seen
      * @return list<string>|null
      */
@@ -493,7 +495,7 @@ final class PanMediterraneanWorkbookReader
     }
 
     /**
-     * @param  array<string, array<string, ?string>>  $perSubregion
+     * @param  array<string, SubregionRow>  $perSubregion
      * @return list<string>
      */
     private function subregionOnlyRow(array $perSubregion): array

@@ -31,7 +31,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int|null $created_by
  * @property int|null $updated_by
  *
- * @method BelongsTo introEvent()
+ * @method BelongsTo<IntroEventRecord, $this> introEvent()
  * @method BelongsTo literature()
  */
 #[Fillable(['intro_event_id', 'country', 'establishment_status', 'first_record_year', 'literature_id', 'notes'])]

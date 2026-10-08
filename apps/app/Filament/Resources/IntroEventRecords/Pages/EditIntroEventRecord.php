@@ -42,7 +42,9 @@ class EditIntroEventRecord extends EditRecord
      */
     protected function beforeSave(): void
     {
-        $this->record->needs_review = false;
+        /** @var IntroEventRecord $record */
+        $record = $this->getRecord();
+        $record->needs_review = false;
     }
 
     /**

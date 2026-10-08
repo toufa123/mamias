@@ -56,7 +56,7 @@ class ManualPdf
         // keeps its proportion of it instead of being blown up.
         $html = preg_replace_callback('#<img src="/(images/[^"]+)"#', function (array $match): string {
             $file = public_path($match[1]);
-            $width = (int) (@getimagesize($file)[0] ?? 0);
+            $width = (int) (@getimagesize($file) ?: [0])[0];
             $percent = $width > 0 ? min(100, (int) round($width / 1750 * 100)) : 100;
 
             return '<img style="width: '.max($percent, 35).'%" src="'.$file.'"';

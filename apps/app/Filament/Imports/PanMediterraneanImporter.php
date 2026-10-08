@@ -198,8 +198,11 @@ class PanMediterraneanImporter extends Importer
                 continue;
             }
 
-            if (in_array($this->record->{$nisColumn}, [null, NisStatus::NIS], true)) {
-                $this->record->{$nisColumn} = NisStatus::Questionable;
+            /** @var StagingIntroEvent $record */
+            $record = $this->record;
+
+            if (in_array($record->{$nisColumn}, [null, NisStatus::NIS], true)) {
+                $record->{$nisColumn} = NisStatus::Questionable;
             }
 
             $this->rowProposals[$establishmentColumn] = [

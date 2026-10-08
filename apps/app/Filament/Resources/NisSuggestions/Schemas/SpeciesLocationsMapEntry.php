@@ -31,7 +31,8 @@ class SpeciesLocationsMapEntry extends MapEntry
     /** @return array{lat: float, lng: float} */
     protected function getMapCenter(): array
     {
-        $point = self::firstPoint($this->getRecord()?->location);
+        $record = $this->getRecord();
+        $point = $record instanceof NisSuggestion ? self::firstPoint($record->location) : null;
 
         return $point ?? $this->getParentMapCenter();
     }

@@ -46,7 +46,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read Taxon|null $taxon
  *
  * @method BelongsTo user()
- * @method BelongsTo introEventRecord()
+ * @method BelongsTo<IntroEventRecord, $this> introEventRecord()
  * @method HasOneThrough taxon()
  */
 #[Fillable([

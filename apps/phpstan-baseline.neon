@@ -657,7 +657,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>scientificname" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 2
+			count: 1
 			path: app/Filament/Resources/Occurrences/Schemas/OccurrenceForm.php
 
 		-
@@ -973,78 +973,6 @@ parameters:
 			path: app/Notifications/NewLiteratureReferenceNotification.php
 
 		-
-			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:delete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockAuditPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:forceDelete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockAuditPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:replicate\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockAuditPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:restore\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockAuditPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:update\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockAuditPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLockAudit of method App\\Policies\\ResourceLockAuditPolicy\:\:view\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLockAudit\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockAuditPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:delete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:forceDelete\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:replicate\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:restore\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:update\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockPolicy.php
-
-		-
-			message: '#^Parameter \$resourceLock of method App\\Policies\\ResourceLockPolicy\:\:view\(\) has invalid type Blendbyte\\FilamentResourceLock\\Models\\ResourceLock\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Policies/ResourceLockPolicy.php
-
-		-
 			message: '#^Call to an undefined method Filament\\Panel\:\:dragAndScroll\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1057,92 +985,8 @@ parameters:
 			path: app/Providers/Filament/MamiasPanelProvider.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$adria_establishment_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$adria_first_arrival_year\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$adria_nis_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$cmed_establishment_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$cmed_first_arrival_year\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$cmed_nis_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$emed_establishment_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$emed_first_arrival_year\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$emed_nis_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$wmed_establishment_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$wmed_first_arrival_year\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\StagingIntroEvent\:\:\$wmed_nis_status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
 			message: '#^Method App\\Services\\PromoteStagedIntroEvent\:\:promote\(\) should return App\\Models\\IntroEventRecord but returns Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Property App\\Models\\IntroEventRecord\:\:\$establishment_status \(App\\Enums\\EstablishmentStatus\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Services/PromoteStagedIntroEvent.php
-
-		-
-			message: '#^Property App\\Models\\IntroEventRecord\:\:\$nis_status \(App\\Enums\\NisStatus\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: app/Services/PromoteStagedIntroEvent.php
 

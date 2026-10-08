@@ -283,12 +283,19 @@ class AppServiceProvider extends ServiceProvider
             || preg_match('#^pages/data/\d+$#', $path) === 1
             || Page::query()->where('slug', $path)->exists());
 
+        // ModelSource::make() binds its model template from a static call, which
+        // PHPStan cannot follow; typing the variables keeps the callbacks checked.
+        /** @var ModelSource<Page> $pages */
+        $pages = ModelSource::make(Page::class);
+        /** @var ModelSource<IntroEventRecord> $species */
+        $species = ModelSource::make(IntroEventRecord::class);
+
         SeoFiles::source(
-            ModelSource::make(Page::class)
+            $pages
                 ->query(fn (Builder $query): Builder => $query->published())
                 // Page::getUrl() builds from `path`, which these pages leave empty.
                 ->url(fn (Page $page): string => $page->slug === $home ? '/' : '/'.$page->slug)
-                ->title(fn (Page $page): string => $page->title)
+                ->title(fn (Page $page): string => (string) $page->getAttribute('title'))
                 ->description(fn (Page $page): ?string => $page->getMetaDescription())
                 ->body(fn (Page $page): string => $page->toHtml())
                 ->section('Pages'),
@@ -310,7 +317,7 @@ class AppServiceProvider extends ServiceProvider
                     ]);
                 }
             },
-            ModelSource::make(IntroEventRecord::class)
+            $species
                 // Events of species deleted from the catalogue have no page (NisSpecies aborts 404).
                 ->query(fn (Builder $query): Builder => $query->whereHas('taxon')->with('taxon'))
                 ->url(fn (IntroEventRecord $record): string => route('data.species', $record, absolute: false))
@@ -325,7 +332,7 @@ class AppServiceProvider extends ServiceProvider
     /** One line on a species page: NIS and establishment status, first Mediterranean record. */
     private static function speciesSummary(IntroEventRecord $record): string
     {
-        // Either status can be empty on imported events, whatever the docblock says.
+        // Either status can be empty on imported events.
         $statuses = implode(', ', array_filter([$record->nis_status?->getLabel(), $record->establishment_status?->getLabel()]));
 
         return implode(' ', array_filter([

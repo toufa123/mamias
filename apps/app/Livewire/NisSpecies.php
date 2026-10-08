@@ -24,6 +24,8 @@ use Livewire\Component;
  * MAMIAS catalogue entry, the event itself, and its approved occurrences on a
  * map. Bound to the event rather than the taxon because occurrences hang off
  * the event, so the page shows exactly the row it was opened from.
+ *
+ * @property-read Collection<int, Occurrence> $occurrences
  */
 class NisSpecies extends Component implements HasActions, HasSchemas
 {

@@ -48,7 +48,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method HasMany<SubregionRecord, $this> subregionRecords()
  * @method HasMany<CountryRecord, $this> countryRecords()
  * @method HasMany<PathwayRecord, $this> pathwayRecords()
- * @method HasMany occurrences()
+ * @method HasMany<Occurrence, $this> occurrences()
  * @method HasMany eicatAssessments()
  */
 #[Fillable(['taxon_id', 'verbatim_name', 'first_introduction_year', 'first_country', 'nis_status', 'establishment_status', 'literature_id', 'notes', 'pathway_check'])]

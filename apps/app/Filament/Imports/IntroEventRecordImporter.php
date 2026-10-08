@@ -279,8 +279,11 @@ class IntroEventRecordImporter extends Importer
             // not an unreadable value: the event's here, the sub-region's in
             // syncSubregionRecords().
             if (str_ends_with($columnName, 'establishment_status') && NisStatus::isQuestionableCode($rawValue)) {
-                if ($columnName === 'establishment_status' && in_array($this->record->nis_status, [null, NisStatus::NIS], true)) {
-                    $this->record->nis_status = NisStatus::Questionable;
+                /** @var IntroEventRecord $record */
+                $record = $this->record;
+
+                if ($columnName === 'establishment_status' && in_array($record->nis_status, [null, NisStatus::NIS], true)) {
+                    $record->nis_status = NisStatus::Questionable;
                 }
 
                 continue;

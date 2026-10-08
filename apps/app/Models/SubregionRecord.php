@@ -32,7 +32,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int|null $created_by
  * @property int|null $updated_by
  *
- * @method BelongsTo introEvent()
+ * @method BelongsTo<IntroEventRecord, $this> introEvent()
  */
 #[Fillable(['intro_event_id', 'subregion', 'nis_status', 'establishment_status', 'first_arrival_year', 'notes'])]
 class SubregionRecord extends Model
