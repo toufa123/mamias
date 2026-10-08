@@ -16,7 +16,9 @@ function layupBodyClasses(string $html): string
     return $matches[1] ?? '';
 }
 
-it('builds the page out of stored content, not a bespoke widget type', function (string $slug) {
+// Stored html throughout, editable in the page builder; the home page's one
+// exception is its live "MAMIAS at a glance" figures (MamiasSummaryWidget).
+it('builds the page out of stored content, not a bespoke widget type', function (string $slug, array $expected) {
     $types = collect(Page::where('slug', $slug)->sole()->content['rows'])
         ->flatMap(fn (array $row): array => $row['columns'])
         ->flatMap(fn (array $column): array => $column['widgets'])
@@ -24,8 +26,11 @@ it('builds the page out of stored content, not a bespoke widget type', function 
         ->unique()
         ->values();
 
-    expect($types->all())->toBe(['html']);
-})->with(['home', 'about']);
+    expect($types->all())->toBe($expected);
+})->with([
+    'home' => ['home', ['html', 'mamias-summary']],
+    'about' => ['about', ['html']],
+]);
 
 it('marks the body as a guest and ships the register and sign-in buttons', function (string $url) {
     $response = get($url)->assertOk();

@@ -2,6 +2,16 @@
 
 namespace App\Providers;
 
+use App\Filament\Auth\Responses\EmailVerificationResponse;
+use App\Filament\Auth\Responses\LoginResponse;
+use App\Filament\Auth\Responses\RegistrationResponse;
+use App\Listeners\LogRoleChangeListener;
+use App\Listeners\TaxonImportCompletedListener;
+use App\Models\IntroEventRecord;
+use App\Models\User;
+use App\Policies\AuthenticationLogPolicy;
+use App\Services\TaxonMatcher;
+use App\Support\MamiasNavigationManager;
 use Asignua\FilamentSeoFiles\Contracts\LlmsIndexSource;
 use Asignua\FilamentSeoFiles\Contracts\SitemapSource;
 use Asignua\FilamentSeoFiles\Data\LlmsLink;
@@ -9,18 +19,11 @@ use Asignua\FilamentSeoFiles\Data\LlmsSection;
 use Asignua\FilamentSeoFiles\Data\SitemapEntry;
 use Asignua\FilamentSeoFiles\SeoFiles;
 use Asignua\FilamentSeoFiles\Sources\ModelSource;
+use BladeUI\Icons\Factory as IconFactory;
 use Crumbls\Layup\Models\Page;
-use App\Models\IntroEventRecord;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Auth\Responses\EmailVerificationResponse;
-use App\Filament\Auth\Responses\LoginResponse;
-use App\Filament\Auth\Responses\RegistrationResponse;
-use App\Listeners\LogRoleChangeListener;
-use App\Listeners\TaxonImportCompletedListener;
-use App\Models\User;
-use App\Policies\AuthenticationLogPolicy;
-use App\Services\TaxonMatcher;
-use App\Support\MamiasNavigationManager;
+use EduardoRibeiroDev\FilamentLeaflet\Fields\MapPicker;
+use EduardoRibeiroDev\FilamentLeaflet\Infolists\MapEntry;
+use EduardoRibeiroDev\FilamentLeaflet\Tables\MapColumn;
 use Filament\Actions\Imports\Events\ImportCompleted;
 use Filament\Auth\Http\Responses\Contracts\EmailVerificationResponse as EmailVerificationResponseContract;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
@@ -29,12 +32,15 @@ use Filament\Navigation\NavigationManager;
 use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Facades\FilamentColor;
 use Heyosseus\Vacuum\Vacuum;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog;
 use Spatie\Health\Checks\Checks\CacheCheck;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
@@ -45,11 +51,6 @@ use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
-use Spatie\Permission\Events\PermissionAttachedEvent;
-use Spatie\Permission\Events\PermissionDetachedEvent;
-use Spatie\Permission\Events\RoleAttachedEvent;
-use Spatie\Permission\Events\RoleDetachedEvent;
-
 /**
  * Core service provider for the MAMIAS application.
  *
@@ -57,12 +58,12 @@ use Spatie\Permission\Events\RoleDetachedEvent;
  * (local only), application-wide colour palette, event listeners, and
  * server health checks.
  */
+use Spatie\Permission\Events\PermissionAttachedEvent;
+use Spatie\Permission\Events\PermissionDetachedEvent;
+use Spatie\Permission\Events\RoleAttachedEvent;
+use Spatie\Permission\Events\RoleDetachedEvent;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Mime\Part\File;
-use BladeUI\Icons\Factory as IconFactory;
-use EduardoRibeiroDev\FilamentLeaflet\Fields\MapPicker;
-use EduardoRibeiroDev\FilamentLeaflet\Infolists\MapEntry;
-use EduardoRibeiroDev\FilamentLeaflet\Tables\MapColumn;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -103,6 +104,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerSeoFiles();
+
+        // The cookie-consent script writes its choice cookie in plain text, which
+        // EncryptCookies would null out. The banner view reads it server-side to
+        // render already visible or already hidden (same name as its data-cookie-prefix).
+        EncryptCookies::except(Str::slug(config('laravel-cookie-consent.cookie_prefix')).'_'.date('Y'));
 
         // Every Leaflet map uses the UNEP/MAP basemap (config/filament-leaflet.php).
         // Runs at make(), so a map's own ->zoom()/->center() still wins.
@@ -291,6 +297,7 @@ class AppServiceProvider extends ServiceProvider
                 public function sitemapEntries(): iterable
                 {
                     yield new SitemapEntry(url: SeoFiles::localizedUrl(SeoFiles::defaultLocale(), 'pages/data'));
+                    yield new SitemapEntry(url: SeoFiles::localizedUrl(SeoFiles::defaultLocale(), 'pages/map'));
                     yield new SitemapEntry(url: SeoFiles::localizedUrl(SeoFiles::defaultLocale(), 'pages/manual'));
                 }
 
@@ -298,6 +305,7 @@ class AppServiceProvider extends ServiceProvider
                 {
                     yield new LlmsSection('Data', [
                         new LlmsLink('NIS data explorer', SeoFiles::localizedUrl($locale, 'pages/data'), 'Every non-indigenous species in the catalogue, searchable, with its first Mediterranean record.'),
+                        new LlmsLink('NIS map', SeoFiles::localizedUrl($locale, 'pages/map'), 'The species on a map of the Mediterranean, by EcAp sub-region or by country of first record, with a summary of each.'),
                         new LlmsLink('User manual', SeoFiles::localizedUrl($locale, 'pages/manual'), 'How to browse MAMIAS, create an account and contribute references, sightings and species suggestions.'),
                     ]);
                 }

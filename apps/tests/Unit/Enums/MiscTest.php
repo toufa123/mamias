@@ -107,7 +107,9 @@ describe('OccurrenceStatus', function () {
 describe('Subregion', function () {
     it('returns all labels', function () {
         expect(Subregion::WMED->getLabel())->toBe('Western Mediterranean')
-            ->and(Subregion::EMED->getLabel())->toBe('Eastern Mediterranean');
+            ->and(Subregion::CMED->getLabel())->toBe('Ionian Sea and Central Mediterranean')
+            ->and(Subregion::ADRIA->getLabel())->toBe('Adriatic Sea')
+            ->and(Subregion::EMED->getLabel())->toBe('Aegean-Levantine Sea');
     });
 });
 

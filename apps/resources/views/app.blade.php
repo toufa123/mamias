@@ -30,18 +30,12 @@
     <link href="{{ asset('images/favicon.ico') }}" rel="shortcut icon" />
     @include ('partials.pwa-head')
     {{--
-        Geist / Geist Mono — see DESIGN-SYSTEM.md. This replaces a Roboto link
-        that nothing on the site used: --font-sans asked for 'Instrument Sans',
-        which was never loaded, so every page actually rendered in the OS font
-        while still paying for a Roboto download.
+        Geist / Geist Mono — see DESIGN-SYSTEM.md. Self-hosted: the @font-face
+        rules are in resources/css/app.css, the files in public/fonts/geist.
 
         Weights are deliberately few. Hierarchy comes from size and from
         negative tracking on the large sizes, not from bolding.
     --}}
-    <link
-        href="https://fonts.bunny.net/css?family=geist:300,400,500,600|geist-mono:400,500&display=swap"
-        rel="stylesheet"
-    />
     <link href="{{ asset('assets/vendors/keenicons/styles.bundle.css') }}" rel="stylesheet" />
 
     {!! \Filament\Support\Facades\FilamentAsset::getTheme('app', 'filament/filament')->getHtml() !!}
@@ -91,6 +85,15 @@
         }
         .notify .text-green-400 {
             color: var(--mamias-teal-600) !important;
+        }
+        /*
+            The package slides the banner in from bottom:-150% over 1s, and only
+            after DOMContentLoaded — while its dim overlay is already up. The page
+            sat greyed out for ~1.5s before the banner arrived. `html` outranks the
+            package rule, whose stylesheet is emitted after this block.
+        */
+        html .cookie-consent-root {
+            transition-duration: 0.25s;
         }
     </style>
     <style>
@@ -144,6 +147,8 @@
     'is-authenticated' => auth()->check(),
     'is-guest' => ! auth()->check(),
     'is-staff' => (bool) auth()->user()?->hasAnyRole(['super_admin', 'scientist', 'admin']),
+    // Printed on A4 landscape (app.css, @media print).
+    'print-landscape' => request()->is('pages/map'),
 ])
 >
     <!-- Theme Mode -->
@@ -173,7 +178,7 @@
     <div class="in-data-kt-[sticky-header=on]:pt-(--header-height) flex grow flex-col">
         <!-- Header -->
         <header
-            class="bg-background flex h-(--header-height) shrink-0 items-center transition-[height]"
+            class="bg-background print-hidden flex h-(--header-height) shrink-0 items-center transition-[height]"
             data-kt-sticky="true"
             data-kt-sticky-class="transition-[height] fixed z-10 top-0 left-0 right-0 backdrop-blur-md bg-background/70 border border-border"
             data-kt-sticky-name="header"
@@ -234,7 +239,7 @@
                     gives the page title somewhere to sit. Breadcrumbs move to
                     the right so the title owns the left edge.
                 --}}
-                <div class="bg-muted border-border mb-5 border-b lg:mb-7.5">
+                <div class="bg-muted border-border print-hidden mb-5 border-b lg:mb-7.5">
                     <div class="kt-container-fixed flex flex-wrap items-end justify-between gap-5 py-7">
                         <div class="flex flex-col flex-wrap items-start justify-center gap-1 lg:gap-2">
                             <h1 class="text-mono text-2xl font-medium tracking-tight">
@@ -252,12 +257,13 @@
                                 @endif
                             </div>
                         </div>
-                        {{--                     <div class="flex items-center flex-wrap gap-1.5 lg:gap-3.5"> --}}
-                        {{--                         <a class="kt-btn kt-btn-sm kt-btn-outline" href="#"> --}}
-                        {{--                             <i class="ki-filled ki-exit-down"></i> --}}
-                        {{--                             Export --}}
-                        {{--                         </a> --}}
-                        {{--                     </div> --}}
+                        {{-- The pages with a print layout (app.css, @media print). --}}
+                        @if (request()->is('pages/dashboard/*', 'pages/map'))
+                        <button type="button" class="kt-btn kt-btn-sm kt-btn-outline" onclick="window.print()">
+                            <i class="ki-filled ki-printer"></i>
+                            Print
+                        </button>
+                        @endif
                     </div>
                 </div>
                 <!-- End of Toolbar -->
@@ -275,13 +281,41 @@
                 </div>
 
                 <!-- Content -->
+                {{-- The Explore MAMIAS pages print through a frame whose <thead> and <tfoot>
+                     repeat on every sheet (partials/print-header, print-footer); on
+                     screen it is display: contents, so the page lays out as before. --}}
+                @php
+                    $printable = request()->is('pages/dashboard/*', 'pages/map');
+                @endphp
                 <div class="desktop-content kt-container-fixed grow">
-                    @yield ('content')
+                    @if ($printable)
+                    <table class="print-frame">
+                        <thead>
+                            <tr>
+                                <td>@include ('partials.print-header')</td>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <td>@include ('partials.print-footer')</td>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    @endif
+                                    @yield ('content')
+                                    @if ($printable)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    @endif
                 </div>
                 <!-- End of Content -->
 
                 <!-- Footer -->
-                <footer class="footer">
+                <footer class="footer print-hidden">
                     <div class="kt-container-fixed">
                         <div class="flex flex-col items-center gap-3 py-5 md:flex-row md:justify-between">
                             <div class="order-2 flex gap-2 text-sm font-normal md:order-1">

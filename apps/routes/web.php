@@ -5,6 +5,7 @@ use App\Livewire\MyReferences;
 use App\Livewire\MySpeciesReports;
 use App\Livewire\MySuggestions;
 use App\Livewire\NisData;
+use App\Livewire\NisMap;
 use App\Livewire\NisSpecies;
 use App\Livewire\PublicProfile;
 use App\Services\ManualPdf;
@@ -31,6 +32,7 @@ Route::get('/about', PageController::class)
 // Public NIS data: the introduction events table, then one page per species.
 // 'pages/data' is in layup.frontend.excluded_paths so the CMS catch-all leaves it alone.
 Route::get('/pages/data', NisData::class)->name('data');
+Route::get('/pages/map', NisMap::class)->name('map');
 
 // The user manual (resources/docs/user-manual.md), public: anonymous visitors read it too.
 Route::view('/pages/manual', 'manual')->name('manual');

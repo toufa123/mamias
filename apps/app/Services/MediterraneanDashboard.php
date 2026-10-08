@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\CbdPathwayCategory;
+use App\Enums\CbdPathwaySubcategory;
 use App\Enums\EstablishmentStatus;
 use App\Enums\Subregion;
 use App\Filament\Forms\Components\CountrySelectWithMedPriority;
@@ -164,6 +165,94 @@ final class MediterraneanDashboard
         }
 
         return ['labels' => $labels, 'counts' => $counts, 'cumulative' => $cumulative];
+    }
+
+    /**
+     * Reported NIS per CBD pathway subcategory in use, most first. An event
+     * with several pathways counts in each.
+     *
+     * @return list<array{code: string, label: string, value: int}>
+     */
+    public function pathwaySubcategories(): array
+    {
+        $counts = $this->events()
+            ->join('pathway_records', 'pathway_records.intro_event_id', '=', 'intro_event_records.id')
+            ->whereNotNull('pathway_records.subcategory')
+            ->groupBy('pathway_records.subcategory')
+            ->selectRaw('pathway_records.subcategory, count(distinct intro_event_records.id) as total')
+            ->toBase()
+            ->pluck('total', 'subcategory');
+
+        return collect(CbdPathwaySubcategory::cases())
+            ->filter(fn (CbdPathwaySubcategory $subcategory): bool => (int) $counts->get($subcategory->value, 0) > 0)
+            ->map(fn (CbdPathwaySubcategory $subcategory): array => [
+                'code' => $subcategory->value,
+                'label' => (string) $subcategory->getLabel(),
+                'value' => (int) $counts->get($subcategory->value),
+            ])
+            ->sortByDesc('value')
+            ->values()
+            ->all();
+    }
+
+    /**
+     * The families with the most reported NIS, with their kingdom and phylum.
+     *
+     * @return list<array{name: string, kingdom: ?string, phylum: ?string, value: int}>
+     */
+    public function families(int $limit = 45): array
+    {
+        return $this->taxa()
+            ->whereNotNull('taxas.family')
+            ->groupBy('taxas.family', 'taxas.kingdom', 'taxas.phylum')
+            ->selectRaw('taxas.family as name, taxas.kingdom as kingdom, taxas.phylum as phylum, count(*) as total')
+            ->orderByDesc('total')
+            ->orderBy('taxas.family')
+            ->limit($limit)
+            ->toBase()
+            ->get()
+            ->map(fn (object $row): array => ['name' => $row->name, 'kingdom' => $row->kingdom, 'phylum' => $row->phylum, 'value' => (int) $row->total])
+            ->all();
+    }
+
+    /**
+     * Basin-level establishment status of the reported NIS, most common first;
+     * a missing status counts as "Not assessed".
+     *
+     * @return list<array{status: ?string, label: string, count: int}>
+     */
+    public function establishment(): array
+    {
+        return $this->events()
+            ->toBase()
+            ->selectRaw('establishment_status, count(*) as total')
+            ->groupBy('establishment_status')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn (object $row): array => [
+                'status' => $row->establishment_status,
+                'label' => EstablishmentStatus::tryFrom((string) $row->establishment_status)?->getLabel() ?? 'Not assessed',
+                'count' => (int) $row->total,
+            ])
+            ->all();
+    }
+
+    /**
+     * The reported NIS with the latest first Mediterranean record, newest first.
+     *
+     * @return Collection<int, IntroEventRecord>
+     */
+    public function latestArrivals(int $limit = 5): Collection
+    {
+        return $this->events()
+            ->whereNotNull('first_introduction_year')
+            ->whereHas('taxon')
+            ->with('taxon')
+            ->orderByDesc('first_introduction_year')
+            ->orderByDesc('intro_event_records.id')
+            ->limit($limit)
+            ->get()
+            ->toBase();
     }
 
     /**

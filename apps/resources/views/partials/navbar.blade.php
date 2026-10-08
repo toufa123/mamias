@@ -38,7 +38,9 @@
                     <span class="kt-menu-title text-foreground grow-0 text-sm font-medium">About MAMIAS</span>
                 </a>
             </div>
+            {{-- id: opened from the home page's "MAMIAS at a glance" (layup/widgets/mamias-summary). --}}
             <div
+                id="explore-menu"
                 @class(['kt-menu-item', 'active' => request()->is('pages/data', 'pages/map', 'pages/dashboard/*')])
                 data-kt-menu-item-offset="0,0|lg:-20px, 0"
                 data-kt-menu-item-offset-rtl="0,0|lg:20px, 0"
@@ -98,19 +100,34 @@
                             <div class="kt-menu-item">
                                 <a class="kt-menu-link" href="{{ url('pages/dashboard/mediterranean') }}" tabindex="0">
                                     <span class="kt-menu-icon"><i class="ki-filled ki-graph"></i></span>
-                                    <span class="kt-menu-title grow-0">Mediterranean</span>
+                                    <span class="kt-menu-title">Mediterranean</span>
+                                    <span class="kt-menu-badge" data-kt-tooltip="#menu_tooltip_5">
+                                        <i class="ki-filled ki-information-2 text-muted-foreground text-base"></i>
+                                    </span>
+                                    <div class="kt-tooltip max-w-64" id="menu_tooltip_5">
+                                        The whole Mediterranean at a glance: how many non-indigenous species, since
+                                        when, in which EcAp subregions and countries, by which pathways and in which
+                                        groups.
+                                    </div>
                                 </a>
                             </div>
                             <div class="kt-menu-item">
                                 <a class="kt-menu-link" href="{{ url('pages/dashboard/by-country') }}" tabindex="0">
                                     <span class="kt-menu-icon"><i class="ki-filled ki-graph-up"></i></span>
-                                    <span class="kt-menu-title grow-0">By Country</span>
+                                    <span class="kt-menu-title">By Country</span>
+                                    <span class="kt-menu-badge" data-kt-tooltip="#menu_tooltip_6">
+                                        <i class="ki-filled ki-information-2 text-muted-foreground text-base"></i>
+                                    </span>
+                                    <div class="kt-tooltip max-w-64" id="menu_tooltip_6">
+                                        The same figures for one Barcelona Convention country: pick it on the page to
+                                        see its species, first records, pathways and groups.
+                                    </div>
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="kt-menu-item">
-                        <a class="kt-menu-link" href="{{ url('pages/map') }}" tabindex="0">
+                        <a class="kt-menu-link" href="{{ route('map') }}" tabindex="0">
                             <span class="kt-menu-icon"><i class="ki-filled ki-map"></i></span>
                             <span class="kt-menu-title">MAP</span>
                             <span class="kt-menu-badge" data-kt-tooltip="#menu_tooltip_4">
@@ -146,12 +163,6 @@
                     </span>
                 </div>
                 <div class="kt-menu-dropdown kt-menu-default w-full max-w-[260px] py-2.5">
-                    <div class="kt-menu-item">
-                        <a class="kt-menu-link" href="{{ route('manual') }}" tabindex="0">
-                            <span class="kt-menu-icon"><i class="ki-filled ki-book-open"></i></span>
-                            <span class="kt-menu-title">User manual</span>
-                        </a>
-                    </div>
                     <div class="kt-menu-item">
                         <a class="kt-menu-link" href="{{ url('pages/resources') }}" tabindex="0">
                             <span class="kt-menu-icon"><i class="ki-filled ki-data"></i></span>

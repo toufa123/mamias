@@ -73,7 +73,7 @@ class IntroEventRecordsTable
                     // nomenclatural convention, and it is why the two are
                     // wrapped separately rather than the whole string slanted.
                     ->formatStateUsing(fn ($state, $record): string => "<span class='italic'>".e((string) $state).'</span>'
-                        .($record?->taxon?->authority ? ' ('.e((string) $record->taxon->authority).')' : '')
+                        .($record?->taxon?->authority ? ' '.e((string) $record->taxon->authority) : '')
                         .($record?->taxon?->trashed() ? ' — species deleted from catalogue' : ''))
                     // The kingdom at a glance, as on the Taxa list.
                     ->icon(fn (IntroEventRecord $record): string => Taxon::kingdomIcon($record->taxon?->kingdom))

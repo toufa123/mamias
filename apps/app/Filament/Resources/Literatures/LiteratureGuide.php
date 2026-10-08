@@ -22,6 +22,8 @@ use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
  * - `occurrences`: the Occurrences review list;
  * - `species-reports`: contributors, on the public "My Species Reports";
  * - `suggestions`: contributors, on the public "My Species Suggestions".
+ * - `map`: anyone, on the public map (/pages/map);
+ * - `data`: anyone, on the public data explorer (/pages/data) and its species pages.
  *
  * Two manuals render the same way as whole pages rather than popups:
  * `admin-manual` (panel, Pages\AdminManual) and `user-manual` (public, /pages/manual).

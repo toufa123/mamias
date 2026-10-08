@@ -20,9 +20,15 @@
   "dependencies": {
     "cap-widget": "^0.1.57",
     "echarts": "^6.1.0",
+    "echarts-wordcloud": "2.1.0",
     "jsvectormap": "^1.7.0",
     "leaflet": "^1.9.4",
     "leaflet-mouse-position": "^1.2.0",
     "materialwind-css": "^0.1.0"
+  },
+  "overrides": {
+    "echarts-wordcloud": {
+      "echarts": "$echarts"
+    }
   }
 }

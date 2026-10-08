@@ -41,6 +41,9 @@ class MamiasChartWidget extends BaseWidget
         'phylum-pathways' => ['Phylum × pathway heatmap', 'Introduction pathways of reported NIS by phylum', 'Reported NIS per phylum and CBD pathway; an introduction event with several pathways counts in each'],
         'phylum-subregions' => ['Phylum × sub-region heatmap', 'Reported NIS by phylum and EcAp sub-region', 'Reported NIS per phylum in each sub-region'],
         'taxonomy-treemap' => ['Taxonomy treemap (drill-down)', 'Taxonomy of reported NIS', 'Kingdom › phylum › class › family; click a block to drill down, the path above to go back'],
+        // Word clouds (echarts-wordcloud): an overview to explore, each word opening the data explorer
+        'pathway-cloud' => ['Pathway word cloud', 'How reported NIS arrive', 'CBD pathways, sized by number of reported NIS; an introduction event with several pathways counts in each. Click a pathway to list its species.'],
+        'family-cloud' => ['Family word cloud', 'Families of reported NIS', 'The 45 families with the most reported NIS, coloured by kingdom. Click a family to list its species.'],
         // After Zenetos et al. 2023, Diversity 15:962 (MediterraneanNisPatterns)
         'pathway-shares' => ['Pathway shares by sub-region (Fig. 2)', 'Primary pathways of reported NIS, Mediterranean and by EcAp sub-region', 'Share of reported NIS per pathway; an event with several pathways is split equally between them'],
         'introduction-rate' => ['Annual introduction rate (Fig. 3a)', 'Annual rate of new reported NIS', 'Mean new reported NIS per year in each 10-year cycle, with standard error'],
@@ -63,12 +66,40 @@ class MamiasChartWidget extends BaseWidget
         'taxon-status' => 460,
         'phylum-pathways' => 460,
         'phylum-subregions' => 460,
+        'pathway-cloud' => 420,
+        'family-cloud' => 420,
         'shared-subregions' => 460,
         'groups-subregions' => 460,
         'country-ranking' => 460,
     ];
 
     public const DEFAULT_HEIGHT = 380;
+
+    /**
+     * CBD pathway subcategories as a word cloud shows them: a few words each,
+     * the full CBD wording staying in the tooltip.
+     */
+    public const PATHWAY_WORDS = [
+        '1.1' => 'Hunting & angling',
+        '1.2' => 'Deliberate release',
+        '1.3' => 'Pet & garden release',
+        '2.1' => 'Aquaculture escapes',
+        '2.2' => 'Pet & aquarium escapes',
+        '2.3' => 'Research escapes',
+        '2.4' => 'Transport confinement escapes',
+        '3.1' => 'Shipping',
+        '3.2' => 'Marine debris',
+        '3.3' => 'Vehicles',
+        '3.4' => 'Packing & containers',
+        '3.5' => 'Tourism & leisure',
+        '4.1' => 'Seed & plant material',
+        '4.2' => 'Parasites on imports',
+        '4.3' => 'Contaminated imports',
+        '5.1' => 'Canals (Suez, Gibraltar)',
+        '5.2' => 'Interbasin transfer',
+        '6.1' => 'Natural spread',
+        '6.2' => 'Climate-driven spread',
+    ];
 
     public static function getType(): string
     {
@@ -177,6 +208,20 @@ class MamiasChartWidget extends BaseWidget
             'phylum-pathways' => $dashboard->pathwaysByPhylum(),
             'phylum-subregions' => $dashboard->subregionsByPhylum(),
             'taxonomy-treemap' => ['tree' => $dashboard->taxonomyTree()],
+            'pathway-cloud' => ['words' => array_map(fn (array $row): array => [
+                'name' => self::PATHWAY_WORDS[$row['code']] ?? $row['label'],
+                'full' => $row['label'],
+                'group' => (int) $row['code'],
+                'value' => $row['value'],
+                'url' => route('data', ['pathway' => $row['code']]),
+            ], $dashboard->pathwaySubcategories())],
+            'family-cloud' => ['words' => array_map(fn (array $row): array => [
+                'name' => $row['name'],
+                'full' => trim($row['name'].' · '.$row['phylum'], ' ·'),
+                'group' => $row['kingdom'],
+                'value' => $row['value'],
+                'url' => route('data', ['search' => $row['name']]),
+            ], $dashboard->families())],
             'spread-bars', 'spread-map' => [...$dashboard->spread(), 'names' => $labels],
             'pathway-shares' => $patterns->pathwayShares(),
             'introduction-rate' => $patterns->introductionRates(),

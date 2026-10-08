@@ -355,6 +355,7 @@ return [
             // Not top-level, but served by Livewire rather than a Layup page.
             // The lookahead is a prefix match, so this covers pages/data/{taxon}.
             'pages/data',
+            'pages/map',
             'pages/manual',
             // Package route, requested by CookieConsent::scripts() on every page.
             'laravel-cookie-consent',

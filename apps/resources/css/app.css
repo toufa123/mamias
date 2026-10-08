@@ -1,24 +1,149 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-@source '../../vendor/crumbls/layup/resources/**/*.blade.php';
-@source '../../vendor/crumbls/layup/resources/**/*.js';
-@source '../../storage/layup-safelist.txt';
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../../vendor/crumbls/layup/resources/**/*.blade.php";
+@source "../../vendor/crumbls/layup/resources/**/*.js";
+@source "../../storage/layup-safelist.txt";
+
+/* Geist / Geist Mono, self-hosted from public/fonts/geist (latin + latin-ext
+   subsets, woff2). Bundled here rather than linked from fonts.bunny.net, whose
+   stylesheet blocked first paint on a third-party round trip. */
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-300-normal.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+        U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-ext-300-normal.woff2") format("woff2");
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+        U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-400-normal.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+        U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-ext-400-normal.woff2") format("woff2");
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+        U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-500-normal.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+        U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-ext-500-normal.woff2") format("woff2");
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+        U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-600-normal.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+        U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/geist/geist-latin-ext-600-normal.woff2") format("woff2");
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+        U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: "Geist Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/geist/geist-mono-latin-400-normal.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+        U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Geist Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/geist/geist-mono-latin-ext-400-normal.woff2") format("woff2");
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+        U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: "Geist Mono";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/geist/geist-mono-latin-500-normal.woff2") format("woff2");
+    unicode-range:
+        U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+        U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Geist Mono";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/geist/geist-mono-latin-ext-500-normal.woff2") format("woff2");
+    unicode-range:
+        U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+        U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 
 @theme {
     /* Geist stands in for Cloudflare's STK Bureau, which is a commercial
        licence we do not hold — same low-contrast wide-aperture grotesque,
        openly licensed. Loaded in app.blade.php; if STK Bureau is ever
        licensed, only the @font-face source changes, not these tokens. */
-    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 
     /* Mono is not decoration: it carries anything a reader copies or compares
        column-to-column — AphiaIDs, coordinates, counts, dates, file sizes. */
-    --font-mono: 'Geist Mono', ui-monospace, 'Courier New', monospace;
+    --font-mono: "Geist Mono", ui-monospace, "Courier New", monospace;
 }
 
 /* ── MAMIAS brand palette ──────────────────────────────────────
@@ -73,14 +198,15 @@ html:root {
        default --font-sans in the same layer — so the site rendered in the
        system font while Geist downloaded unused. Unlayered html:root wins
        over any layered declaration regardless of order. */
-    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-mono: 'Geist Mono', ui-monospace, 'Courier New', monospace;
+    --font-sans:
+        "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-mono: "Geist Mono", ui-monospace, "Courier New", monospace;
     /* Filament's own names for the same families. The panel sets them from
        ->font()/->monoFont(); on public pages they were undefined, which made
        `.fi-font-mono` invalid and fall back to the inherited sans. */
-    --font-family: 'Geist';
-    --mono-font-family: 'Geist Mono';
+    --font-family: "Geist";
+    --mono-font-family: "Geist Mono";
 
     /* ── Square corners ────────────────────────────────────────
        Keenthemes derives every rounded-* utility from --radius. Zeroing the
@@ -813,7 +939,9 @@ html:root .cookie-preferences-modal-footer button {
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
 }
 
 html:root .cookie-consent-button-container button:hover,
@@ -1210,4 +1338,269 @@ html:root .mamias-guide h3 {
 html:root .mamias-guide code::before,
 html:root .mamias-guide code::after {
     content: none;
+}
+
+/* ==========================================================================
+   Print: the Explore MAMIAS pages (dashboards, map)
+   --------------------------------------------------------------------------
+   app.blade.php wraps those pages in .print-frame, a table whose <thead> and
+   <tfoot> (partials/print-header, print-footer) the browser repeats on every
+   sheet; on screen the frame is display: contents and its head and foot are
+   hidden. A4, portrait for the dashboards, landscape for the map. Chart
+   resizing for paper is in mediterranean-dashboard.js and app.js.
+   ========================================================================== */
+
+.print-frame,
+.print-frame > tbody,
+.print-frame > tbody > tr,
+.print-frame > tbody > tr > td {
+    display: contents;
+}
+
+.print-frame > thead,
+.print-frame > tfoot,
+.print-only {
+    display: none;
+}
+
+/* No page margin: browsers print their own header and footer (title, date,
+   URL, page number) only in it. The spacing is padding on the frame instead,
+   its head and foot repeating it on every sheet. */
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+@page landscape {
+    size: A4 landscape;
+    margin: 0;
+}
+
+@media print {
+    html:root {
+        --background: #ffffff;
+    }
+
+    body {
+        background: #ffffff !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    body.print-landscape .desktop-content {
+        page: landscape;
+    }
+
+    /* Below 768px the layout swaps the page for a "larger screen" notice: never on paper. */
+    .mobile-notice,
+    .cookie-consent-root,
+    .print-hidden {
+        display: none !important;
+    }
+
+    .desktop-content {
+        display: block !important;
+        padding: 0 12mm !important;
+        max-width: none !important;
+    }
+
+    .print-only {
+        display: block;
+    }
+
+    .print-frame {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .print-frame > thead {
+        display: table-header-group;
+    }
+
+    .print-frame > tfoot {
+        display: table-footer-group;
+    }
+
+    .print-frame > tbody {
+        display: table-row-group;
+    }
+
+    .print-frame > * > tr {
+        display: table-row;
+    }
+
+    .print-frame > * > tr > td {
+        display: table-cell;
+        padding: 0;
+    }
+
+    .print-frame > thead > tr > td {
+        padding-top: 10mm;
+    }
+
+    .print-frame > tfoot > tr > td {
+        padding-bottom: 10mm;
+    }
+
+    .print-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+        border-bottom: 1.5px solid #0e2630;
+        color: #0e2630;
+    }
+
+    .print-logo {
+        height: 34px;
+        width: auto;
+    }
+
+    .print-title {
+        font-size: 13pt;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .print-crumb {
+        font-size: 8pt;
+        color: #5f7783;
+    }
+
+    .print-scope {
+        display: block;
+        margin: 0 0 10px;
+        padding: 4px 8px;
+        border-radius: 3px;
+        background: #f3f7f8;
+        font-size: 8pt;
+        color: #5f7783;
+    }
+
+    .print-scope b {
+        margin-left: 10px;
+        color: #0e2630;
+        font-weight: 600;
+    }
+
+    .print-scope b:first-child {
+        margin-left: 0;
+    }
+
+    /* Three 12px lines beside a 36px logo: the logo spans the source block exactly. */
+    .print-footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 6px;
+        border-top: 0.5px solid #d8e3e8;
+        font-size: 8pt;
+        color: #5f7783;
+    }
+
+    .print-partners {
+        height: 36px;
+        width: auto;
+    }
+
+    .print-source {
+        display: flex;
+        flex-direction: column;
+        line-height: 12px;
+    }
+
+    /* Every block open, and none cut across two sheets. */
+    .fi-section.fi-collapsed > .fi-section-content-ctn {
+        display: block !important;
+    }
+
+    .fi-section-collapse-btn,
+    .fi-section-header-after-ctn,
+    [data-chart-download],
+    form:has(#mamias-country),
+    [data-spread-controls],
+    .leaflet-control-container {
+        display: none !important;
+    }
+
+    .fi-section,
+    section:has([data-mamias-chart]) {
+        break-inside: avoid;
+    }
+
+    /* A chart drawn at screen width still fits the card: its canvas scales down
+       (mediterranean-dashboard.js also redraws it at the paper width when the
+       browser reports the print layout). */
+    [data-mamias-chart] > div,
+    [data-mamias-chart] canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        margin-inline: auto;
+    }
+
+    .fi-section,
+    section:has([data-mamias-chart]) {
+        box-shadow: none !important;
+    }
+
+    /* The screen's layout: the charts side by side on screen share a row on
+       paper too, though A4 is narrower than the lg breakpoint. */
+    .lg\:col-span-6 {
+        grid-column: span 6 / span 6;
+    }
+
+    /* The heatmaps read by their colour scale, too faint on paper: left off,
+       column and all, and the chart beside one takes the whole row. */
+    section:has(
+        > div > [data-mamias-chart="phylum-pathways"],
+        > div > [data-mamias-chart="phylum-subregions"],
+        > div > [data-mamias-chart="groups-subregions"]
+    ),
+    .lg\:col-span-6:has([data-mamias-chart="phylum-pathways"], [data-mamias-chart="phylum-subregions"]) {
+        display: none !important;
+    }
+
+    .lg\:col-span-6:has(+ * :is([data-mamias-chart="phylum-pathways"], [data-mamias-chart="phylum-subregions"])),
+    .lg\:col-span-6:has([data-mamias-chart="phylum-pathways"], [data-mamias-chart="phylum-subregions"])
+        + .lg\:col-span-6 {
+        grid-column: span 12 / span 12;
+    }
+
+    /* A Leaflet map is scaled by app.js; its fixed-height wrappers follow it. */
+    div:has(> .leaflet-container),
+    div:has(> div > .leaflet-container) {
+        height: auto !important;
+    }
+
+    .leaflet-container {
+        margin-inline: auto;
+    }
+
+    /* A section heading stays with the block that follows it, through the Layup
+       row and column wrappers around it. */
+    h1,
+    h2,
+    h3,
+    section > header,
+    div:has(> h2 + p:last-child) {
+        break-after: avoid;
+    }
+
+    /* Tables print the rows on screen, without their controls. */
+    .fi-ta-header-toolbar,
+    .fi-ta-pagination,
+    .fi-pagination,
+    .fi-ta-filter-indicators,
+    .fi-ta-actions,
+    td:has(> .fi-ta-actions),
+    th.fi-ta-actions-header-cell {
+        display: none !important;
+    }
+
+    .fi-ta-row {
+        break-inside: avoid;
+    }
 }

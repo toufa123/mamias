@@ -53,11 +53,27 @@
         </section>
     @else
         <section class="border-border bg-card flex h-full flex-col rounded-xl border p-5" aria-label="{{ $title }}">
-            <header class="mb-3">
-                <h2 class="text-mono text-lg font-semibold">{{ $title }}</h2>
-                @if ($note)
-                    <p class="text-secondary-foreground mt-1 text-sm">{{ $note }}</p>
-                @endif
+            <header class="mb-3 flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <h2 class="text-mono text-lg font-semibold">{{ $title }}</h2>
+                    @if ($note)
+                        <p class="text-secondary-foreground mt-1 text-sm">{{ $note }}</p>
+                    @endif
+                </div>
+                {{-- Signed-in visitors only; enabled by mediterranean-dashboard.js once the chart is drawn. --}}
+                @auth
+                    <button
+                        type="button"
+                        class="kt-btn kt-btn-sm kt-btn-outline shrink-0"
+                        data-chart-download
+                        disabled
+                        title="Download this chart as a PNG image"
+                        aria-label="Download “{{ $title }}” as a PNG image"
+                    >
+                        <x-filament::icon icon="tabler-download" class="size-4" />
+                        PNG
+                    </button>
+                @endauth
             </header>
 
             @if ($chart === 'spread-map')

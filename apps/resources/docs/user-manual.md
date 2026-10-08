@@ -9,6 +9,7 @@ for UNEP/MAP. Anyone can browse it; with a free account you can also contribute.
 | You can | Without an account | With an account |
 | --- | --- | --- |
 | Browse the species catalogue and each species' page | Yes | Yes |
+| Explore the species on a map, by subregion or country | Yes | Yes |
 | See the Mediterranean and by-country dashboards | Yes | Yes |
 | Read the legal pages, cookies policy and terms | Yes | Yes |
 | Submit bibliographic references | No | Yes |
@@ -25,7 +26,11 @@ The whole database can be read without signing in. Use a computer or a tablet:
 on a phone-sized screen the site currently shows a notice asking for a larger
 screen.
 
-**Home page (/).** An overview of MAMIAS with links to everything below.
+**Home page (/).** An overview of MAMIAS with links to everything below. Its
+**MAMIAS at a glance** block sums up the Mediterranean dashboard: how many
+non-indigenous species are reported, how many per EcAp sub-region (click one to
+see it on the map), how established they are, the main groups and the latest
+arrivals.
 
 ![The home page](/images/docs/manuals/user-02-home.png)
 
@@ -41,19 +46,30 @@ one row each:
 | 1st Country of Introduction | Country of that first record |
 | NIS Status | Whether it counts as introduced (NIS), cryptogenic, questionable, a range expansion or data deficient |
 | Establishment Status | Whether it reproduces there: established, invasive, casual, and so on |
-| Occurrences | How many approved sightings MAMIAS holds |
 
-Type in **Search** to find a species by name. **Filters** above the table narrow
-it by year range, country, statuses, EcAp sub-region and introduction pathway.
-Click a row to open the species.
+Type in **Search** to find a species by name or family. **Filters** above the table narrow
+it by year range, country, statuses, EcAp sub-region and introduction pathway:
+pick them, then click **Apply filters**. Click a row, or its **View data**
+button, to open the species. The page's **Guide** button explains it step by step.
 
-**Species page (/pages/data/…).** Three parts: **MAMIAS catalogue** (name,
-authority and classification, with tabs for synonyms and references; the Aphia ID
-links to WoRMS), **Introduction event** (first record, statuses and the reference
-that documents it, with tabs for sub-regions, countries and pathways), and
-**Occurrences**, a map of every approved sighting.
+**Species page (/pages/data/…).** Three parts. First, three tabs on one row: the
+**species** itself (its name and authority as the tab title, then its
+classification, identifiers and statuses; the Aphia ID links to WoRMS),
+**Synonyms** and **References**. Then the **Introduction event** (first record,
+statuses and the reference that documents it, with tabs for sub-regions,
+countries and pathways), and **Occurrences**, a map of every approved sighting.
 
 ![A species page](/images/docs/manuals/user-04-species.png)
+
+**Map (/pages/map).** The species on a map of the Mediterranean, either by EcAp
+subregion (shaded by the number of species) or by country of first record (one
+bubble per country, at its centre or near its coast, sized by the number of species; no national
+boundaries are drawn). Click an area to see its summary (statuses, main groups, latest
+arrivals) and its species. The data explorer's filters sit above the map and
+apply at once; tick **Occurrences** to pin the approved sightings. The page's
+**Guide** button explains it step by step.
+
+![The map, a subregion picked](/images/docs/map/02-subregion.png)
 
 **Dashboards.** *Mediterranean dashboard* gives the basin-wide picture: how many
 species, since when, where, by which pathway, in which groups. *Dashboard by

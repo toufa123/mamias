@@ -3,15 +3,20 @@
 declare(strict_types=1);
 
 use App\Enums\CbdPathwayCategory;
+use App\Enums\CbdPathwaySubcategory;
 use App\Enums\EstablishmentStatus;
 use App\Enums\NisStatus;
 use App\Enums\Subregion;
+use App\Layup\Widgets\MamiasChartWidget;
+use App\Livewire\NisData;
 use App\Models\IntroEventRecord;
 use App\Models\PathwayRecord;
 use App\Models\SubregionRecord;
 use App\Models\Taxon;
+use App\Models\User;
 use App\Services\MediterraneanDashboard;
 use Database\Seeders\LayupMediterraneanDashboardSeeder;
+use Livewire\Livewire;
 
 it('builds the phylum grids and the taxonomy tree', function () {
     $taxon = fn (string $phylum, string $family) => Taxon::factory()->state(['kingdom' => 'Animalia', 'phylum' => $phylum, 'class' => "{$phylum} class", 'family' => $family]);
@@ -139,6 +144,8 @@ it('publishes the dashboard page, basin-wide charts before sub-region charts', f
         'data-mamias-chart="yearly-rate"',
         'data-mamias-chart="pathways"',
         'data-mamias-chart="taxonomy"',
+        'data-mamias-chart="pathway-cloud"',
+        'data-mamias-chart="family-cloud"',
         'data-mamias-chart="taxon-status"',
         'data-mamias-chart="phylum-pathways"',
         'data-mamias-chart="taxonomy-treemap"',
@@ -155,4 +162,43 @@ it('publishes the dashboard page, basin-wide charts before sub-region charts', f
 
     // The spread map's last decade already shows reported NIS per sub-region.
     $response->assertDontSee('data-mamias-chart="subregion-map"', escape: false);
+});
+
+it('sizes the word clouds by reported NIS and links each word to the data explorer', function () {
+    $veneridae = Taxon::factory()->state(['kingdom' => 'Animalia', 'phylum' => 'Mollusca', 'family' => 'Veneridae']);
+    $shipped = IntroEventRecord::factory()->for($veneridae)->create();
+    $alsoShipped = IntroEventRecord::factory()->for($veneridae)->create();
+    $canal = IntroEventRecord::factory()->for(Taxon::factory()->state(['kingdom' => 'Plantae', 'phylum' => 'Rhodophyta', 'family' => 'Rhodomelaceae']))->create();
+    foreach ([$shipped, $alsoShipped] as $event) {
+        PathwayRecord::factory()->create(['intro_event_id' => $event->id, 'category' => CbdPathwayCategory::TransportStowaway, 'subcategory' => CbdPathwaySubcategory::TransportStowaway_3_1]);
+    }
+    PathwayRecord::factory()->create(['intro_event_id' => $canal->id, 'category' => CbdPathwayCategory::Corridor, 'subcategory' => CbdPathwaySubcategory::Corridor_5_1]);
+
+    $pathways = MamiasChartWidget::payload('pathway-cloud', app(MediterraneanDashboard::class))['words'];
+    $families = MamiasChartWidget::payload('family-cloud', app(MediterraneanDashboard::class))['words'];
+
+    expect(array_column($pathways, 'name'))->toBe(['Shipping', 'Canals (Suez, Gibraltar)'])
+        ->and($pathways[0])->toMatchArray(['value' => 2, 'group' => 3, 'full' => '3.1: Shipping (ballast water, hull fouling, sediments)'])
+        ->and(array_column($families, 'name'))->toBe(['Veneridae', 'Rhodomelaceae'])
+        ->and($families[1])->toMatchArray(['value' => 1, 'group' => 'Plantae']);
+
+    // The links open the data explorer already filtered on the pathway, or searching the family.
+    expect($pathways[0]['url'])->toBe(route('data', ['pathway' => '3.1']))
+        ->and($families[0]['url'])->toBe(route('data', ['search' => 'Veneridae']));
+    Livewire::withQueryParams(['pathway' => '3.1'])->test(NisData::class)
+        ->assertCanSeeTableRecords([$shipped, $alsoShipped])
+        ->assertCanNotSeeTableRecords([$canal]);
+    Livewire::withQueryParams(['search' => 'Veneridae'])->test(NisData::class)
+        ->assertCanSeeTableRecords([$shipped, $alsoShipped])
+        ->assertCanNotSeeTableRecords([$canal]);
+});
+
+it('offers the PNG download of each chart to signed-in visitors only', function () {
+    IntroEventRecord::factory()->create();
+    $this->seed(LayupMediterraneanDashboardSeeder::class);
+
+    $this->get('/pages/dashboard/mediterranean')->assertOk()->assertDontSee('data-chart-download', escape: false);
+
+    $this->actingAs(User::factory()->create())
+        ->get('/pages/dashboard/mediterranean')->assertOk()->assertSee('data-chart-download', escape: false);
 });

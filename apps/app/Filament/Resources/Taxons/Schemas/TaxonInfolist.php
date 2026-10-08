@@ -59,11 +59,18 @@ class TaxonInfolist
         return $schema
             ->columns(1)
             ->components([
-                self::getClassificationEntry(),
-                self::getDetailsGrid(),
-                self::getNameWarning(),
+                // The species itself is the first tab, so name, synonyms and references share one row.
                 Tabs::make('Taxon Details')
                     ->tabs([
+                        Tabs\Tab::make(fn (Taxon $record): HtmlString => new HtmlString('<em>'.e((string) $record->scientificname).'</em>'
+                            .(filled($record->authority) ? ' <span class="font-normal text-gray-500">'.e((string) $record->authority).'</span>' : '')))
+                            ->key('species')
+                            ->icon('tabler-book')
+                            ->schema([
+                                self::getClassificationEntry(),
+                                self::getDetailsGrid(),
+                                self::getNameWarning(),
+                            ]),
                         self::getSynonymsTab(),
                         self::getReferencesTab(),
                     ])

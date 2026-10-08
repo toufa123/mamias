@@ -126,11 +126,11 @@ return [
      *
      * When enabled, users must interact with the cookie banner before accessing content.
      *
-     * @default true
+     * @default false — the page stays usable; consent still gates non-essential cookies
      *
      * @env COOKIE_CONSENT_DISABLE_INTERACTION
      */
-    'disable_page_interaction' => env('COOKIE_CONSENT_DISABLE_INTERACTION', true),
+    'disable_page_interaction' => env('COOKIE_CONSENT_DISABLE_INTERACTION', false),
 
     /**
      * Color theme for the cookie banner

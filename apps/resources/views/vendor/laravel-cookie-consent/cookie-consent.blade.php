@@ -1,10 +1,19 @@
+{{--
+    Visible from first paint when no choice is recorded: the package's script
+    only un-hides the banner on DOMContentLoaded, i.e. after every page script.
+    The cookie is readable here because AppServiceProvider exempts it from
+    EncryptCookies.
+--}}
+@php
+    $consentCookie = Str::slug($cookieConfig['cookie_prefix']).'_'.date('Y');
+@endphp
 <!-- Main Cookie Consent Banner -->
 <div class="cookie-consent-root
-    cookie-consent-hide
+    {{ in_array(request()->cookie($consentCookie), ['accepted', 'rejected'], true) ? 'cookie-consent-hide' : '' }}
     {{ $cookieConfig['disable_page_interaction'] ? 'cookie-disable-interaction' : '' }}
     consent-layout-{{ $cookieConfig['consent_modal_layout'] ?? 'bar' }}
     theme-{{ $cookieConfig['theme'] ?? 'default' }}"
-     data-cookie-prefix="{{ Str::slug($cookieConfig['cookie_prefix']) }}_{{ date('Y') }}"
+     data-cookie-prefix="{{ $consentCookie }}"
      data-cookie-lifetime="{{ $cookieConfig['cookie_lifetime'] }}"
      data-reject-lifetime="{{ $cookieConfig['reject_lifetime'] }}"
      role="dialog"

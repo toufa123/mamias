@@ -55,12 +55,13 @@ class LayupMediterraneanDashboardSeeder extends Seeder
             self::row('trend', [['mamias-chart', ['chart' => 'trend']]]),
             self::row('rates', [['mamias-chart', ['chart' => 'introduction-rate']], ['mamias-chart', ['chart' => 'yearly-rate']]]),
             self::row('composition', [['mamias-chart', ['chart' => 'pathways']], ['mamias-chart', ['chart' => 'taxonomy']]]),
+            self::row('word_clouds', [['mamias-chart', ['chart' => 'pathway-cloud']], ['mamias-chart', ['chart' => 'family-cloud']]]),
             self::row('taxon_status', [['mamias-chart', ['chart' => 'taxon-status']]]),
             self::row('phylum_pathways', [['mamias-chart', ['chart' => 'phylum-pathways']]]),
             self::row('taxonomy_treemap', [['mamias-chart', ['chart' => 'taxonomy-treemap']]]),
 
             // …then by EcAp sub-region.
-            self::row('subregion_heading', [['html', ['content' => self::sectionHeading('By EcAp sub-region', 'Reported NIS in the Western, Central, Adriatic and Eastern Mediterranean.')]]]),
+            self::row('subregion_heading', [['html', ['content' => self::sectionHeading('By EcAp sub-region', 'Reported NIS in the Western Mediterranean, the Adriatic Sea, the Ionian Sea and Central Mediterranean, and the Aegean-Levantine Sea.')]]]),
             self::row('subregions', [['mamias-chart', ['chart' => 'spread-bars']], ['mamias-chart', ['chart' => 'subregion-status']]]),
             self::row('pathway_shares', [['mamias-chart', ['chart' => 'pathway-shares']]]),
             self::row('subregion_pathways', [['mamias-chart', ['chart' => 'subregion-pathways']], ['mamias-chart', ['chart' => 'phylum-subregions']]]),

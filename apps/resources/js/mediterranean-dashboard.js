@@ -9,6 +9,8 @@ import {
     VisualMapComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+// Registers the wordCloud series on the same ECharts core (echarts-wordcloud 2.1.0, run on ECharts 6 via an npm override).
+import "echarts-wordcloud";
 import jsVectorMap from "jsvectormap";
 import "jsvectormap/dist/jsvectormap.css";
 import { register as registerMediterranean, renderSubregionMap, SEA, SUBREGIONS } from "./subregion-map.js";
@@ -785,8 +787,15 @@ const OPTIONS = {
     }),
 };
 
+/** Chart element => its ECharts instance, for the PNG download. The maps are SVG and need none. */
+const CHARTS = new WeakMap();
+/** Every drawn ECharts instance and jsVectorMap map, to fit them to paper when printing. */
+const DRAWN = [];
+
 function renderEchart(el, kind, payload) {
     const chart = echarts.init(el, null, { renderer: "canvas" });
+    CHARTS.set(el, chart);
+    DRAWN.push(chart);
     const defaults = { animationDuration: 1200, animationEasing: "cubicOut", textStyle: { fontFamily: "inherit" } };
     const option = OPTIONS[kind](payload);
     // A timeline option keeps its shared settings in baseOption; root keys beside it are not read.
@@ -943,27 +952,233 @@ async function renderSpreadMap(el, { labels, series, names }) {
     return map;
 }
 
+/**
+ * Words sized by reported NIS, each linking to the data explorer listing them
+ * (word.url). No rotation, so every word reads left to right; the exact values
+ * are in the tooltip.
+ */
+function renderWordCloud(el, { words }, colourOf) {
+    const chart = echarts.init(el, null, { renderer: "canvas" });
+    CHARTS.set(el, chart);
+    // Not in DRAWN: a word cloud lays out over several ticks, too late for the printed sheet; it prints at screen size, centred.
+
+    // The layout draws on a raw canvas, where "inherit" is no font at all and every word falls back to 10px.
+    const fontFamily = getComputedStyle(el).fontFamily;
+    chart.setOption({
+        textStyle: { fontFamily: "inherit" },
+        tooltip: {
+            formatter: (item) => `${echarts.format.encodeHTML(item.data.full)}<br><b>${item.value}</b> reported NIS`,
+        },
+        series: [
+            {
+                type: "wordCloud",
+                shape: "circle",
+                left: "center",
+                top: "center",
+                width: "96%",
+                height: "96%",
+                sizeRange: words.length > 20 ? [12, 40] : [13, 60],
+                rotationRange: [0, 0],
+                gridSize: 8,
+                drawOutOfBound: false,
+                // A long word at the largest size can be wider than the cloud; shrink it rather than drop it.
+                shrinkToFit: true,
+                textStyle: { fontFamily, fontWeight: 600, color: (item) => colourOf(item.data) },
+                emphasis: { textStyle: { textShadowBlur: 6, textShadowColor: "rgba(14, 38, 48, 0.3)" } },
+                data: words,
+            },
+        ],
+    });
+    chart.on("click", (item) => {
+        if (item.data?.url) window.location.href = item.data.url;
+    });
+    window.addEventListener("resize", () => chart.resize());
+}
+
 const RENDERERS = {
     "subregion-map": (el, { values, labels }) => renderSubregionMap(el, values, labels),
+    // A pathway takes its CBD category's colour (its code's first digit), a family its kingdom's.
+    "pathway-cloud": (el, payload) =>
+        renderWordCloud(el, payload, (word) => PATHWAY_COLOURS[word.group - 1] ?? GRAY_500),
+    "family-cloud": (el, payload) => renderWordCloud(el, payload, (word) => KINGDOM_COLOURS[word.group] ?? GRAY_500),
     "spread-map": renderSpreadMap,
 };
+
+/** Charts not drawn yet: they draw when scrolled into view, or all at once when printing starts. */
+const PENDING = new Set();
+
+function draw(el) {
+    observer.unobserve(el);
+    PENDING.delete(el);
+    const kind = el.dataset.mamiasChart;
+    const payload = JSON.parse(el.closest("section").querySelector("[data-mamias-payload]").textContent);
+
+    return Promise.resolve((RENDERERS[kind] ?? ((target, data) => renderEchart(target, kind, data)))(el, payload)).then(
+        (map) => {
+            if (map?.updateSize) DRAWN.push(map);
+            const button = el.closest("section").querySelector("[data-chart-download]");
+            if (button) button.disabled = false;
+        },
+    );
+}
 
 const observer = new IntersectionObserver(
     (entries) => {
         for (const entry of entries) {
-            if (!entry.isIntersecting) {
-                continue;
-            }
-            observer.unobserve(entry.target);
-
-            const el = entry.target;
-            const kind = el.dataset.mamiasChart;
-            const payload = JSON.parse(el.closest("section").querySelector("[data-mamias-payload]").textContent);
-
-            (RENDERERS[kind] ?? ((target, data) => renderEchart(target, kind, data)))(el, payload);
+            if (entry.isIntersecting) draw(entry.target);
         }
     },
     { threshold: 0.25 },
 );
 
-document.querySelectorAll("[data-mamias-chart]").forEach((el) => observer.observe(el));
+document.querySelectorAll("[data-mamias-chart]").forEach((el) => {
+    PENDING.add(el);
+    observer.observe(el);
+});
+
+/**
+ * Printing (app.css, @media print): draw what has not been drawn, then fit
+ * every chart to the paper while the page is laid out for print, and back
+ * to the screen afterwards. Resized without animation, so the sheet catches
+ * the final frame.
+ */
+function fitDrawn() {
+    for (const item of DRAWN) {
+        if (item.resize) item.resize({ animation: { duration: 0 } });
+        else {
+            // jsVectorMap keeps its zoom on resize: frame the basin again at the new size.
+            item.updateSize();
+            if (item.params.focusOn) item.setFocus(item.params.focusOn);
+        }
+    }
+}
+
+// The maps wait for their shapes: load them now, so a print started before
+// the map was scrolled to still draws it before the sheet is laid out.
+if (document.querySelector('[data-mamias-chart="spread-map"], [data-mamias-chart="subregion-map"]'))
+    registerMediterranean();
+
+window.addEventListener("beforeprint", () => [...PENDING].forEach(draw));
+window.matchMedia("print").addEventListener("change", fitDrawn);
+window.addEventListener("afterprint", fitDrawn);
+
+/**
+ * The chart as an image, at twice its on-screen size: an ECharts chart from
+ * its canvas, a jsVectorMap map by drawing its SVG.
+ */
+async function chartImage(el) {
+    const width = el.clientWidth;
+    const height = el.clientHeight;
+    const chart = CHARTS.get(el);
+    if (chart) {
+        return { src: chart.getDataURL({ type: "png", pixelRatio: 2, backgroundColor: "#ffffff" }), width, height };
+    }
+
+    const original = el.querySelector("svg");
+    const svg = original.cloneNode(true);
+    // The map's look comes from stylesheets an image cannot see: copy each shape's computed style onto the copy.
+    const sources = original.querySelectorAll("path, circle, text, line, rect, g");
+    svg.querySelectorAll("path, circle, text, line, rect, g").forEach((node, index) => {
+        const style = getComputedStyle(sources[index]);
+        for (const property of [
+            "fill",
+            "fill-opacity",
+            "stroke",
+            "stroke-width",
+            "stroke-opacity",
+            "opacity",
+            "font-family",
+            "font-size",
+            "font-weight",
+            "paint-order",
+            "vector-effect",
+        ]) {
+            node.style.setProperty(property, style.getPropertyValue(property));
+        }
+    });
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+    // A data: URL, not a blob: one: the site's CSP (img-src 'self' data: https:) refuses blob: images.
+    const markup = new XMLSerializer().serializeToString(svg);
+
+    return { src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`, width, height };
+}
+
+/** Text split into lines no wider than maxWidth, for the canvas. */
+function wrapText(ctx, text, maxWidth) {
+    const lines = [];
+    let line = "";
+    for (const word of text.split(" ")) {
+        const candidate = line ? `${line} ${word}` : word;
+        if (line && ctx.measureText(candidate).width > maxWidth) {
+            lines.push(line);
+            line = word;
+        } else {
+            line = candidate;
+        }
+    }
+
+    return [...lines, line];
+}
+
+/**
+ * A PNG of one chart card, ready for a report: its title, the chart on white,
+ * and where the figures come from, dated.
+ */
+async function downloadChart(section) {
+    const el = section.querySelector("[data-mamias-chart]");
+    const title = section.querySelector("h2")?.textContent.trim() || "MAMIAS chart";
+    const { src, width, height } = await chartImage(el);
+    const image = new Image();
+    await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = src;
+    });
+
+    const scale = 2;
+    const pad = 24;
+    const font = getComputedStyle(section).fontFamily;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    ctx.font = `600 18px ${font}`;
+    const titleLines = wrapText(ctx, title, width);
+    const head = pad + titleLines.length * 24 + 8;
+    const foot = 36;
+
+    canvas.width = (width + pad * 2) * scale;
+    canvas.height = (head + height + foot) * scale;
+    ctx.scale(scale, scale);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width + pad * 2, head + height + foot);
+
+    ctx.fillStyle = INK;
+    ctx.font = `600 18px ${font}`;
+    titleLines.forEach((line, index) => ctx.fillText(line, pad, pad + 18 + index * 24));
+
+    ctx.drawImage(image, pad, head, width, height);
+
+    ctx.fillStyle = GRAY_500;
+    ctx.font = `12px ${font}`;
+    // The public address, whatever host the chart was exported from; the date it was read.
+    const accessed = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    ctx.fillText(`Source: MAMIAS (SPA/RAC), www.mamias.org. Accessed on: ${accessed}`, pad, head + height + 24);
+
+    canvas.toBlob((blob) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${
+            title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-|-$/g, "") || "mamias-chart"
+        }.png`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    }, "image/png");
+}
+
+document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-chart-download]");
+    if (button && !button.disabled) downloadChart(button.closest("section"));
+});

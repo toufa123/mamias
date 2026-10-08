@@ -83,49 +83,54 @@ class NisSpecies extends Component implements HasActions, HasSchemas
     }
 
     /**
-     * One pin per occurrence, at its first coordinate. The plugin's popups are
-     * raw HTML, and habitats are submitted by the public, so every value is escaped.
-     *
      * @return list<Marker>
      */
     protected function occurrenceMarkers(): array
     {
-        $name = e((string) $this->introEventRecord->taxon?->scientificname);
+        $name = (string) $this->introEventRecord->taxon?->scientificname;
 
         return $this->occurrences
-            ->map(function (Occurrence $occurrence) use ($name): ?Marker {
-                $coords = $occurrence->location;
-                $first = is_array($coords) ? ($coords[0] ?? null) : null;
-
-                if (! $first || ! isset($first['lat'], $first['lng'])) {
-                    return null;
-                }
-
-                $lat = (float) $first['lat'];
-                $lng = (float) $first['lng'];
-
-                $rows = array_filter([
-                    'Observed' => $occurrence->observed_at?->format('d/m/Y'),
-                    'Coordinates' => sprintf('%.5f, %.5f', $lat, $lng),
-                    'Depth' => $occurrence->depth !== null ? "{$occurrence->depth} m" : null,
-                    'Abundance (ACFOR)' => $occurrence->acfor_scale?->getLabel(),
-                    'Habitats' => filled($occurrence->habitats) ? implode(', ', (array) $occurrence->habitats) : null,
-                ], filled(...));
-
-                $popup = "<em>{$name}</em>".implode('', array_map(
-                    fn (string $label, string $value): string => '<br><strong>'.e($label).':</strong> '.e($value),
-                    array_keys($rows),
-                    $rows,
-                ));
-
-                return Marker::make($lat, $lng)
-                    ->red()
-                    ->tooltipContent($occurrence->observed_at?->format('d/m/Y') ?? 'Occurrence')
-                    ->popupContent($popup);
-            })
+            ->map(fn (Occurrence $occurrence): ?Marker => self::occurrenceMarker($occurrence, $name))
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * One pin at the occurrence's first coordinate, or none without one. The
+     * plugin's popups are raw HTML, and habitats are submitted by the public,
+     * so every value is escaped. Shared with the map page (App\Livewire\NisAreaMap).
+     */
+    public static function occurrenceMarker(Occurrence $occurrence, string $scientificName): ?Marker
+    {
+        $coords = $occurrence->location;
+        $first = is_array($coords) ? ($coords[0] ?? null) : null;
+
+        if (! $first || ! isset($first['lat'], $first['lng'])) {
+            return null;
+        }
+
+        $lat = (float) $first['lat'];
+        $lng = (float) $first['lng'];
+
+        $rows = array_filter([
+            'Observed' => $occurrence->observed_at?->format('d/m/Y'),
+            'Coordinates' => sprintf('%.5f, %.5f', $lat, $lng),
+            'Depth' => $occurrence->depth !== null ? "{$occurrence->depth} m" : null,
+            'Abundance (ACFOR)' => $occurrence->acfor_scale?->getLabel(),
+            'Habitats' => filled($occurrence->habitats) ? implode(', ', (array) $occurrence->habitats) : null,
+        ], filled(...));
+
+        $popup = '<em>'.e($scientificName).'</em>'.implode('', array_map(
+            fn (string $label, string $value): string => '<br><strong>'.e($label).':</strong> '.e($value),
+            array_keys($rows),
+            $rows,
+        ));
+
+        return Marker::make($lat, $lng)
+            ->red()
+            ->tooltipContent($occurrence->observed_at?->format('d/m/Y') ?? 'Occurrence')
+            ->popupContent($popup);
     }
 
     public function render(): View

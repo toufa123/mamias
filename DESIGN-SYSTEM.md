@@ -285,6 +285,27 @@ Tables: `gray-200` frame, `gray-50` header, `gray-100` between rows, accent edge
 on the selected row. Overlays (dropdown, modal, toast) get the one shadow:
 `0 12px 28px rgba(14, 38, 48, 0.12)`.
 
+### Blocks
+
+Each block of a public page — filters, a map, a summary, a table, an infolist —
+sits in its own collapsible section, so visitors can fold away what they do not
+need. Use `<x-block>` (`apps/resources/views/components/block.blade.php`), never
+a bare `<x-filament::section>`:
+
+| | Default | |
+|---|---|---|
+| Collapsible | yes | Every block has a heading and a chevron; it starts open. |
+| Compact | yes | Filters, summaries, tables. `:compact="false"` for a map or an infolist that needs the air. |
+| `table` | no | A Filament table filling the block edge to edge, rows 40px instead of 56px. |
+
+- Filters are a block of their own above what they filter (`FiltersLayout::Hidden`
+  on the table, `getTableFiltersForm()` in the block, **Reset** in the header).
+- A block holding a map or chart is safe to fold: opening it fires a resize,
+  so the map measures itself again.
+- Not a block: a page's title area (the species page's name tabs), and a page
+  whose only content is one table (the "My …" pages) — nothing to fold.
+- Live examples: `/pages/data`, `/pages/map`, a species page.
+
 ---
 
 ## Where it lives

@@ -7,23 +7,24 @@ use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 /**
- * Mediterranean Sea subregions for species occurrence tracking.
+ * The four EcAp subregions of the Mediterranean (Barcelona Convention,
+ * UNEP/MAP Ecosystem Approach), used for biogeographic analysis and reporting.
  *
- * Divides the Mediterranean basin into four standard subregions
- * for biogeographic analysis and reporting.
+ * The stored codes predate the EcAp names: CMED is the Ionian Sea and
+ * Central Mediterranean, EMED the Aegean-Levantine Sea.
  */
 enum Subregion: string implements HasColor, HasIcon, HasLabel
 {
-    /** Western Mediterranean Basin. */
+    /** Western Mediterranean. */
     case WMED = 'WMED';
 
-    /** Central Mediterranean Basin. */
+    /** Ionian Sea and Central Mediterranean. */
     case CMED = 'CMED';
 
     /** Adriatic Sea. */
     case ADRIA = 'ADRIA';
 
-    /** Eastern Mediterranean Basin including the Levantine Sea. */
+    /** Aegean-Levantine Sea. */
     case EMED = 'EMED';
 
     /**
@@ -33,9 +34,9 @@ enum Subregion: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::WMED => 'Western Mediterranean',
-            self::CMED => 'Central Mediterranean',
+            self::CMED => 'Ionian Sea and Central Mediterranean',
             self::ADRIA => 'Adriatic Sea',
-            self::EMED => 'Eastern Mediterranean',
+            self::EMED => 'Aegean-Levantine Sea',
         };
     }
 

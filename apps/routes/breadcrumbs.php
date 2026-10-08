@@ -51,21 +51,34 @@ Breadcrumbs::for('manual', function (BreadcrumbTrail $trail) {
     $trail->push('User manual', route('manual'));
 });
 
-// Home > Data
-Breadcrumbs::for('data', function (BreadcrumbTrail $trail) {
+// Home > Explore MAMIAS: the navbar menu holding Data, the dashboards and the
+// map. A menu, not a page, so it has no link.
+Breadcrumbs::for('explore', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
+    $trail->push('Explore MAMIAS');
+});
+
+// Home > Explore MAMIAS > Data
+Breadcrumbs::for('data', function (BreadcrumbTrail $trail) {
+    $trail->parent('explore');
     $trail->push('Data', route('data'));
 });
 
-// Home > Data > Species
+// Home > Explore MAMIAS > Map
+Breadcrumbs::for('map', function (BreadcrumbTrail $trail) {
+    $trail->parent('explore');
+    $trail->push('Map', route('map'));
+});
+
+// Home > Explore MAMIAS > Data > Species
 Breadcrumbs::for('data.species', function (BreadcrumbTrail $trail, IntroEventRecord $record) {
     $trail->parent('data');
     $trail->push((string) $record->taxon?->scientificname, route('data.species', $record));
 });
 
-// CMS pages
+// CMS pages; the dashboards sit under Explore MAMIAS, like in the navbar.
 Breadcrumbs::for('layup.page.show', function (BreadcrumbTrail $trail, $page = null) {
-    $trail->parent('home');
+    $trail->parent(str_starts_with((string) $page?->path, 'pages/dashboard/') ? 'explore' : 'home');
     if ($page) {
         $trail->push($page->title, url('pages/'.$page->path));
     }

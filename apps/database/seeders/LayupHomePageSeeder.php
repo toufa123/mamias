@@ -10,10 +10,12 @@ use Illuminate\Database\Seeder;
 /**
  * Publishes the MAMIAS landing page as a Layup page.
  *
- * Mirrors resources/views/mamias/home.blade.php. Every section — carousel, key
- * features and CTA — is static markup stored in `html` widgets, so the whole
- * page is editable from the page builder and no bespoke widget class exists for
- * it. Their <style>/<script> are inlined because Layup renders widget HTML
+ * Mirrors resources/views/mamias/home.blade.php, less its Key Features, which
+ * now sit on the About page under Our Mission (LayupAboutPageSeeder). The
+ * carousel and CTA are static markup stored in `html` widgets, so the whole
+ * page is editable from the page builder; the one live section, "MAMIAS at a
+ * glance" under the carousel, is the mamias-summary widget
+ * (App\Layup\Widgets\MamiasSummaryWidget). Their <style>/<script> are inlined because Layup renders widget HTML
  * outside the @push('styles')/@push('scripts') stacks.
  *
  * The CTA buttons still follow the visitor: Layup echoes stored HTML raw rather
@@ -55,18 +57,18 @@ class LayupHomePageSeeder extends Seeder
                             ],
                         ],
                         [
-                            'id' => 'row_features',
+                            'id' => 'row_summary',
                             'settings' => ['gap' => 'gap-0'],
                             'columns' => [
                                 [
-                                    'id' => 'col_features',
+                                    'id' => 'col_summary',
                                     'span' => ['sm' => 12, 'md' => 12, 'lg' => 12, 'xl' => 12],
                                     'settings' => [],
                                     'widgets' => [
                                         [
-                                            'id' => 'widget_features',
-                                            'type' => 'html',
-                                            'data' => ['content' => self::featuresHtml()],
+                                            'id' => 'widget_summary',
+                                            'type' => 'mamias-summary',
+                                            'data' => ['title' => null],
                                         ],
                                     ],
                                 ],
@@ -169,100 +171,6 @@ class LayupHomePageSeeder extends Seeder
     resetTimer();
 })();
 </script>
-HTML;
-    }
-
-    private static function featuresHtml(): string
-    {
-        return <<<'HTML'
-<style>
-.features-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-@media (min-width: 48rem) {
-    .features-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-</style>
-<section id="features" class="py-20 bg-white">
-    <div class="kt-container-fixed">
-        <div class="flex flex-col items-center text-center gap-3 mb-14">
-            <a href="#features" class="text-sm font-medium text-primary hover:text-primary/80 border-b border-primary pb-0.5">Key Features</a>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900">MAMIAS Key Features</h2>
-            <p class="text-base text-gray-500 max-w-2xl">
-                Our platform provides all the tools you need to monitor, report, and analyse Non-Indigenous Species data across the Mediterranean.
-            </p>
-        </div>
-
-        <div class="features-grid">
-
-            <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="size-12 rounded-full flex items-center justify-center bg-blue-50">
-                        <i class="ki-filled ki-flash text-xl text-blue-500"></i>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-bold text-gray-900">10x faster</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider text-gray-400">Speed Increase</div>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Lightning Workflows</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Supercharge your daily operations with automation that not only saves time, but intelligently adapts to your evolving business routines.</p>
-                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-            </div>
-
-            <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="size-12 rounded-full flex items-center justify-center bg-red-50">
-                        <i class="ki-filled ki-shield-tick text-xl text-red-400"></i>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-bold text-gray-900">99.9%</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider text-gray-400">Uptime</div>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Adaptive Safeguards</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Protect your data and streamline processes with real-time AI security, adapting instantly to threats and keeping your operations resilient and confidential.</p>
-                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-            </div>
-
-            <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="size-12 rounded-full flex items-center justify-center bg-[#4cafbf]/10">
-                        <i class="ki-filled ki-people text-xl text-[#018d9a]"></i>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-bold text-gray-900">10k+</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider text-gray-400">Active Users</div>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Smart Team Sync</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Let AI handle the chaos of calendars and meetings — Smart Team Sync coordinates, schedules, and adapts to your team's needs, so you can focus on what matters most.</p>
-                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-            </div>
-
-            <div class="group relative overflow-hidden rounded-none border border-gray-200 bg-white p-8 transition-all duration-300 hover:shadow-lg hover:border-[#4cafbf]">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="size-12 rounded-full flex items-center justify-center bg-amber-50">
-                        <i class="ki-filled ki-graph-up text-xl text-amber-500"></i>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-bold text-gray-900">25%</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider text-gray-400">Growth Boost</div>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Predictive Insights</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Reveal hidden trends and forecast outcomes with analytics that learn from your unique data, giving you a competitive edge and actionable clarity.</p>
-                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#018d9a] via-[#4cafbf] to-[#005f98] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-            </div>
-
-        </div>
-    </div>
-</section>
 HTML;
     }
 

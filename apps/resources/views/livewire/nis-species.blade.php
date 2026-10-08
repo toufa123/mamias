@@ -1,27 +1,19 @@
 <div>
-    @section('title', $taxon->scientificname)
+    @section ('title', trim($taxon->scientificname . ' ' . $taxon->authority))
 
-    @section('breadcrumbs')
+    @section ('breadcrumbs')
         {{ Breadcrumbs::render('data.species', $introEventRecord) }}
     @endsection
 
     <div class="space-y-8">
-        <h1 class="text-2xl font-semibold tracking-tight">
-            <em>{{ $taxon->scientificname }}</em>
-            @if ($taxon->authority)
-                <span class="font-normal text-gray-500">{{ $taxon->authority }}</span>
-            @endif
-        </h1>
+        {{ $this->catalogueInfolist }}
 
-        <x-filament::section heading="MAMIAS catalogue" icon="tabler-book">
-            {{ $this->catalogueInfolist }}
-        </x-filament::section>
-
-        <x-filament::section heading="Introduction event" icon="tabler-calendar-event">
+        <x-block heading="Introduction event" icon="tabler-calendar-event" :compact="false">
             {{ $this->introEventInfolist }}
-        </x-filament::section>
+        </x-block>
 
-        <x-filament::section
+        <x-block
+            :compact="false"
             heading="Occurrences"
             icon="tabler-map-pin"
             :description="$occurrenceCount ? trans_choice(':count approved occurrence|:count approved occurrences', $occurrenceCount) . ' · click a pin for details' : null"
@@ -31,6 +23,6 @@
             @else
                 <p class="text-sm text-gray-500">No occurrence has been recorded for this species yet.</p>
             @endif
-        </x-filament::section>
+        </x-block>
     </div>
 </div>
