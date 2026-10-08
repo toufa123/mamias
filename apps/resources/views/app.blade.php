@@ -356,7 +356,6 @@
 
     <!-- Scripts -->
     @filamentScripts ([
-        'app',
         'filament/actions',
         'filament/notifications',
         'filament/schemas',
@@ -366,6 +365,8 @@
         'jeffersongoncalves/filament-action-export',
         'kirschbaum-development/commentions',
     ])
+    {{-- The panel loads the same bundle through a SCRIPTS_AFTER render hook (MamiasPanelProvider). --}}
+    @vite (['resources/js/app.js'])
     @livewireScripts
     {{--
         Not @notifyJs: that emits notify.js as a classic script, whose top-level

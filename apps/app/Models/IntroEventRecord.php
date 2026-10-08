@@ -31,8 +31,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $verbatim_name Name the record was published under, kept across renames
  * @property int|null $first_introduction_year
  * @property array|null $first_country
- * @property NisStatus $nis_status
- * @property EstablishmentStatus $establishment_status
+ * @property NisStatus|null $nis_status
+ * @property EstablishmentStatus|null $establishment_status
  * @property string|null $notes
  * @property string|null $pathway_check Pathway disagreement with EASIN; null when nothing to check
  * @property array{decision: string, detail: string, easin_id: ?string, check: ?string}|null $pathway_resolution How the last pathway check was settled

@@ -18,5 +18,5 @@ it('keeps panel-only plugin assets off the public site', function () {
 
 it('loads the Vite app bundle as a module', function () {
     expect(get('/')->assertOk()->content())
-        ->toMatch('#<script\s[^>]*src="[^"]*/build/assets/app-[^"]+\.js"[^>]*type="module"#');
+        ->toMatch('#<script\s(?=[^>]*type="module")[^>]*src="[^"]*/build/assets/app-[^"]+\.js"#');
 });

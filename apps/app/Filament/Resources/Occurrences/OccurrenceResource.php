@@ -91,7 +91,7 @@ class OccurrenceResource extends Resource
                         // Moderate straight from the details (also where a map pin lands).
                         ->extraModalFooterActions([
                             OccurrenceActions::makeApproveAction()->cancelParentActions(),
-                                OccurrenceActions::makeRejectAction()->cancelParentActions(),
+                            OccurrenceActions::makeRejectAction()->cancelParentActions(),
                         ]),
                     OccurrenceActions::makeApproveAction(),
                     OccurrenceActions::makeRejectAction(),

@@ -13,6 +13,7 @@ use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Pages\NpmDependencies;
 use App\Filament\Widgets\MamiasInfoWidget;
 use App\Http\Middleware\RedirectIfNotPanelUser;
+use Asignua\FilamentSeoFiles\SeoFilesPlugin;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
 use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
@@ -35,27 +36,25 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
-use Asignua\FilamentSeoFiles\SeoFilesPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Size;
 use Filament\Support\Enums\VerticalAlignment;
 use Filament\Support\Enums\Width;
-use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Happenv\FilamentSavedViews\FilamentSavedViewsPlugin;
 use Heyosseus\Vacuum\Filament\VacuumPlugin;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Vite;
 use JeffersonGoncalves\Filament\RefreshSidebar\RefreshSidebarPlugin;
 use LaBoiteACode\DependencyGraph\DependencyGraphPlugin;
 use LaBoiteACode\FilamentLogsExplorer\FilamentLogsExplorerPlugin;
@@ -84,18 +83,6 @@ use Zvizvi\FilamentNotificationsTabs\FilamentNotificationsTabsPlugin;
  */
 class MamiasPanelProvider extends PanelProvider
 {
-    /**
-     * Register any panel-specific assets.
-     */
-    public function boot(): void
-    {
-        FilamentAsset::register([
-            // Vite emits ES modules (`import …` from a shared runtime chunk);
-            // as a classic <script> the browser rejects the whole file.
-            Js::make('app-scripts', Vite::asset('resources/js/app.js'))->module(),
-        ]);
-    }
-
     /**
      * Build and return the panel configuration.
      */
@@ -430,6 +417,14 @@ class MamiasPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            // The app bundle, resolved when a page renders. Registering it in
+            // boot() read the Vite manifest on every boot — composer install,
+            // artisan and Larastan all died wherever assets were not built (CI).
+            // @vite emits it as a module, which its `import` chunks require.
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): Htmlable => app(Vite::class)('resources/js/app.js'),
+            )
             ->renderHook(
                 'panels::body.start',
                 fn (): Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View => view('filament.mobile-notice'),

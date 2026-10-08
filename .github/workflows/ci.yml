@@ -12,6 +12,13 @@ concurrency:
 env:
   PHP_VERSION: "8.5"
   PHP_EXTENSIONS: soap, intl, bcmath, redis, gd, pdo_pgsql, pgsql
+  # Every job boots the app — composer install's package:discover first of all —
+  # and the cookie-consent provider hits the cache in boot(). With no .env the
+  # default store is the database one on SQLite, whose file does not exist, so
+  # keep cache/session/queue in memory everywhere. phpunit.xml sets the same.
+  CACHE_STORE: array
+  SESSION_DRIVER: array
+  QUEUE_CONNECTION: sync
 
 jobs:
   lint:
@@ -60,14 +67,8 @@ jobs:
 
       - run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      # Larastan boots the app; the cookie-consent provider hits the cache in
-      # boot(), so keep it off Redis (there is no Redis service in this job).
       # phpstan-baseline.neon holds the pre-existing errors: shrink it, never grow it.
       - run: composer analyse -- --no-progress
-        env:
-          CACHE_STORE: array
-          SESSION_DRIVER: array
-          QUEUE_CONNECTION: sync
 
   test:
     name: Pest (mamias_test on PostGIS)
@@ -111,6 +112,17 @@ jobs:
       - run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - run: cp .env.example .env && php artisan key:generate
+
+      # Pages render through Vite, and PublicLayoutAssetsTest checks the real
+      # bundle, so build it as the Dockerfile does. view:cache first: Tailwind
+      # scans the compiled Blade for classes that only exist in vendor views.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/package-lock.json
+
+      - run: npm ci --ignore-scripts && php artisan view:cache && npm run build
 
       # phpunit.xml already forces DB_CONNECTION/DB_DATABASE (mamias_test) and
       # the app-behaviour env (CACHE_STORE=array, QUEUE_CONNECTION=sync,
