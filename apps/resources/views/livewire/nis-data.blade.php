@@ -9,9 +9,9 @@
         $table = $this->getTable();
     @endphp
 
-    <div class="flex justify-end">{{ $this->guideAction }}</div>
+    <div class="flex justify-end" data-tour="data-guide">{{ $this->guideAction }}</div>
 
-    <x-block heading="Filters" icon="tabler-filter">
+    <x-block heading="Filters" icon="tabler-filter" data-tour="data-filters">
         <x-slot name="afterHeader">
             {{ $table->getFiltersResetAction()->defaultView($table->getFiltersResetAction()::LINK_VIEW) }}
         </x-slot>
@@ -23,5 +23,5 @@
         </div>
     </x-block>
 
-    <x-block heading="Non-indigenous species" icon="tabler-list" table> {{ $this->table }} </x-block>
+    <x-block heading="Non-indigenous species" icon="tabler-list" table data-tour="data-table"> {{ $this->table }} </x-block>
 </div>

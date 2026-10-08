@@ -25,7 +25,7 @@
         <b>Occurrences</b> {{ $this->pins ? count($this->occurrenceIds) . ' pinned' : 'not shown' }}
     </p>
 
-    <x-block heading="Filters" icon="tabler-filter" class="print-hidden">
+    <x-block heading="Filters" icon="tabler-filter" class="print-hidden" data-tour="map-filters">
         <x-slot name="afterHeader">
             {{ $table->getFiltersResetAction()->defaultView($table->getFiltersResetAction()::LINK_VIEW) }}
         </x-slot>
@@ -35,6 +35,7 @@
 
     {{-- Full width: the basin needs ~970px to fit at zoom 4 in the basemap's EPSG:4326. --}}
     <x-block
+        data-tour="map-layer"
         :compact="false"
         :heading="$isCountries ? 'Countries of first record' : 'EcAp subregions'"
         :description="$isCountries
@@ -108,7 +109,7 @@
         </div>
     </x-block>
 
-    <x-block heading="Summary" icon="tabler-chart-bar">
+    <x-block heading="Summary" icon="tabler-chart-bar" data-tour="map-summary">
         <div class="grid gap-x-6 gap-y-4 md:grid-cols-2 xl:grid-cols-4">
             <div class="space-y-1">
                 <p class="text-xs tracking-wider text-gray-500 uppercase">
@@ -203,6 +204,7 @@
 
     <x-block
         id="species"
+        data-tour="map-species"
         table
         :heading="($isCountries ? 'Species first recorded in ' : 'Species recorded in ') . $areaLabel"
         icon="tabler-list"

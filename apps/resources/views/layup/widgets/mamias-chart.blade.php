@@ -26,7 +26,7 @@
             <p class="text-secondary-foreground w-full text-sm">Counts are NIS first recorded in the Mediterranean in the chosen country, not its national inventory.</p>
         </form>
     @elseif ($chart === 'headline')
-        <section aria-label="{{ $title }}">
+        <section aria-label="{{ $title }}" data-tour="headline">
             <h2 class="text-mono mb-4 text-xl font-semibold">{{ $title }}</h2>
             {{-- Four on one line from sm up; two on phones. Arbitrary base value: assets/css/styles.css re-declares .grid-cols-2 after app.css and would beat the sm: variant. --}}
             <div class="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(4,minmax(0,1fr))]">

@@ -1604,3 +1604,98 @@ html:root .mamias-guide code::after {
         break-inside: avoid;
     }
 }
+
+/* ── Guided tours (resources/js/tour.js) ────────────────────────
+   DESIGN-SYSTEM.md: zero radius, hairline frame, the one overlay shadow.
+   The first-visit offer is the same card, docked bottom-right without a spot.
+   The spot dims everything around the highlighted block and rings it in
+   the logo teal; it lets clicks through, so the page stays usable. */
+.mamias-tour-spot {
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 0 0 9999px rgba(8, 25, 31, 0.55);
+    outline: 2px solid var(--mamias-teal-500);
+    outline-offset: 0;
+    transition:
+        top 0.2s ease,
+        left 0.2s ease,
+        width 0.2s ease,
+        height 0.2s ease;
+}
+
+.mamias-tour-card {
+    position: fixed;
+    z-index: 101;
+    padding: 16px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: 0 12px 28px rgba(14, 38, 48, 0.12);
+    outline: none;
+}
+
+.mamias-tour-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mamias-tour-count {
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.mamias-tour-close {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--muted-foreground);
+}
+
+.mamias-tour-close:hover {
+    color: var(--foreground);
+}
+
+.mamias-tour-title {
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mamias-tour-text {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--secondary-foreground);
+}
+
+.mamias-tour-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+/* Dismiss at any step: plain text, pushed away from Back/Next. 44px tall touch target. */
+.mamias-tour-skip {
+    min-height: 44px;
+    margin-inline-end: auto;
+    font-size: 14px;
+    color: var(--muted-foreground);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.mamias-tour-skip:hover {
+    color: var(--foreground);
+}
+
+@media print {
+    .mamias-tour-spot,
+    .mamias-tour-card {
+        display: none;
+    }
+}

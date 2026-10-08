@@ -38,7 +38,7 @@
             />
         @endif
 
-        <div class="flex justify-end gap-3">
+        <div class="flex justify-end gap-3" data-tour="references-actions">
             {{ $this->guideAction }}
 
             <x-filament::button wire:click="mountAction('create')" icon="tabler-file-plus" size="lg">

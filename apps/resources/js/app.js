@@ -1,4 +1,5 @@
 import "cap-widget";
+import "./tour.js";
 
 // elemind/filament-echarts watches each chart with a ResizeObserver that calls
 // chart.resize(). An observer always fires once right after observe(), and
