@@ -14,7 +14,7 @@ class CatalogueEnvironmentChart extends EChartWidget
 {
     protected static ?string $heading = 'Distribution by Environment';
 
-    protected static int $contentHeight = 350;
+    protected static int $contentHeight = 280;
 
     protected static bool $isDiscovered = false;
 

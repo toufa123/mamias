@@ -29,12 +29,13 @@ class CatalogueStatsWidget extends BaseWidget
     {
         $stats = $this->getCatalogueStatistics();
 
-        return [
+        // Compact cards (theme.css), like the MAMIAS Data row.
+        return array_map(fn (Stat $stat): Stat => $stat->extraAttributes(['class' => 'mamias-stat-compact']), [
             $this->createTotalSpeciesStat($stats),
             $this->createAcceptedStat($stats),
             $this->createNotAcceptedStat($stats),
             $this->createNotCheckedStat($stats),
-        ];
+        ]);
     }
 
     protected function getCatalogueStatistics(): array
@@ -88,7 +89,6 @@ class CatalogueStatsWidget extends BaseWidget
             ->description('All species records')
             ->descriptionIcon('tabler-list')
             ->icon('tabler-list')
-            ->chart($this->generateChartData($stats['total']))
             ->color('primary');
     }
 
@@ -98,7 +98,6 @@ class CatalogueStatsWidget extends BaseWidget
             ->description("{$stats['accepted_percentage']}% of total")
             ->descriptionIcon('tabler-circle-check')
             ->icon('tabler-circle-check')
-            ->chart($this->generateChartData($stats['accepted']))
             ->color('success');
     }
 
@@ -108,7 +107,6 @@ class CatalogueStatsWidget extends BaseWidget
             ->description("{$stats['not_accepted_percentage']}% of total")
             ->descriptionIcon('tabler-circle-x')
             ->icon('tabler-circle-x')
-            ->chart($this->generateChartData($stats['not_accepted']))
             ->color('danger');
     }
 
@@ -118,12 +116,6 @@ class CatalogueStatsWidget extends BaseWidget
             ->description("{$stats['not_checked_percentage']}% of total")
             ->descriptionIcon('tabler-clock')
             ->icon('tabler-clock')
-            ->chart($this->generateChartData($stats['not_checked']))
             ->color('warning');
-    }
-
-    protected function generateChartData(int $value): array
-    {
-        return [70, 50, 60, 80, 75, 90, max($value, 1)];
     }
 }

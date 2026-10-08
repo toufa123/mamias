@@ -20,9 +20,7 @@ class PhylumByKingdomChart extends EChartWidget
     /** Filament polls widgets every 5s by default; this data only changes on import or edit. */
     protected ?string $pollingInterval = null;
 
-    protected static int $contentHeight = 400;
-
-    protected int|string|array $columnSpan = 'full';
+    protected static int $contentHeight = 280;
 
     protected const PHYLUM_COLORS = [
         '#078da0', '#10b981', '#f59e0b', '#F43F5E',
