@@ -191,20 +191,23 @@ it('allows an admin to edit and delete users in the Filament resource', function
 });
 
 it('restores developer-login accounts idempotently via database seeding', function () {
+    $adminEmail = config('services.dev_login.admin_email');
+    $publicEmail = config('services.dev_login.public_email');
+
     User::query()
-        ->whereIn('email', ['atef.ouerghi@spa-rac.org', 'atef.ouerghi@gmail.com'])
+        ->whereIn('email', [$adminEmail, $publicEmail])
         ->delete();
 
     Artisan::call('db:seed', ['--class' => DatabaseSeeder::class]);
     Artisan::call('db:seed', ['--class' => DatabaseSeeder::class]);
 
-    $admin = User::query()->where('email', 'atef.ouerghi@spa-rac.org')->first();
-    $panelUser = User::query()->where('email', 'atef.ouerghi@gmail.com')->first();
+    $admin = User::query()->where('email', $adminEmail)->first();
+    $panelUser = User::query()->where('email', $publicEmail)->first();
 
     expect($admin)->not->toBeNull()
         ->and($panelUser)->not->toBeNull()
-        ->and(User::query()->where('email', 'atef.ouerghi@spa-rac.org')->count())->toBe(1)
-        ->and(User::query()->where('email', 'atef.ouerghi@gmail.com')->count())->toBe(1)
+        ->and(User::query()->where('email', $adminEmail)->count())->toBe(1)
+        ->and(User::query()->where('email', $publicEmail)->count())->toBe(1)
         ->and($admin?->hasRole('super_admin'))->toBeTrue()
         ->and($panelUser?->hasRole('user'))->toBeTrue();
 });

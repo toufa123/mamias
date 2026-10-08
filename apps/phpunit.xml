@@ -71,6 +71,7 @@
             to the dev Mailpit.
         -->
         <env name="MAIL_MAILER" value="array" force="true"/>
+        <env name="MAILBOX_STORE_DRIVER" value="file" force="true"/>
         <server name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <server name="QUEUE_CONNECTION" value="sync"/>

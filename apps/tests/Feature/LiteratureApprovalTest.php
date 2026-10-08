@@ -310,7 +310,7 @@ it('renders the review pop-up in the design-system colours', function () {
     $html = view('filament.literatures.review-comment', ['record' => $rejected, 'reviewerLabel' => $this->admin->name])->render();
 
     expect($html)
-        ->toContain('Rejection reason', 'Not a primary source.', $rejected->code, $this->admin->name, '2026-09-25 14:30')
+        ->toContain('Rejection reason', 'Not a primary source.', $rejected->code, e($this->admin->name), '2026-09-25 14:30')
         ->toContain('var(--status-invasive-fill,var(--danger-50))')
         ->not->toContain('dark:')
         ->not->toContain('rounded');
