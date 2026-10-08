@@ -221,6 +221,24 @@ services:
     networks:
       - app_net
 
+  # Runs routes/console.php's schedule (Health queue heartbeat, literature and
+  # WoRMS jobs). Same image/env as the queue worker; only the process differs.
+  scheduler:
+    extends: queue
+    container_name: "${NAME:-mamias}_scheduler"
+    depends_on:
+      app:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'artisan [s]chedule:work' >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
   db:
     image: "${POSTGIS_IMAGE:-kartoza/postgis:17-3.5}"
     container_name: "${NAME:-mamias}_db"

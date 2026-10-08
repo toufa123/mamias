@@ -253,7 +253,8 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Health::checks([
-            OptimizedAppCheck::new(),
+            // Dev deliberately runs uncached so .env edits apply live; prod caches via AUTORUN_LARAVEL_*_CACHE.
+            OptimizedAppCheck::new()->if(app()->isProduction()),
             DebugModeCheck::new(),
             EnvironmentCheck::new(),
             DatabaseCheck::new(),

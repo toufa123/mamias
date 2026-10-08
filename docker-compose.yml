@@ -300,6 +300,24 @@ services :
 
     restart : unless-stopped
 
+  # Runs routes/console.php's schedule (Health queue heartbeat, literature and
+  # WoRMS jobs). Same image/env as the queue worker; only the process differs.
+  scheduler :
+    extends : queue
+    container_name : "${name:-mamias}_scheduler"
+    depends_on :
+      app :
+        condition : service_healthy
+      redis :
+        condition : service_healthy
+    command : [ "php", "artisan", "schedule:work" ]
+    healthcheck :
+      test : [ "CMD-SHELL", "pgrep -f 'artisan [s]chedule:work' >/dev/null" ]
+      interval : 30s
+      timeout : 10s
+      retries : 3
+      start_period : 60s
+
   # ── PostGIS database service ───────────────────────────────────────
   db :
     profiles : ["dev"]
