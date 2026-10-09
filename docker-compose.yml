@@ -387,7 +387,10 @@ services :
   # ── Cap Standalone (proof-of-work CAPTCHA) ──────────────────────────
   cap :
     profiles : ["dev"]
-    image : tiago2/cap:latest
+    # Pinned (was :latest). The server version decides the challenge format
+    # and the cap-widget npm package must understand it: 3.1.x issues hashwx
+    # keys, which need cap-widget >= 0.1.58. Bump both together.
+    image : "${CAP_IMAGE:-tiago2/cap:3.1.14}"
     container_name: "${name:-mamias}_cap"
     ports :
       - "127.0.0.1:3000:3000"

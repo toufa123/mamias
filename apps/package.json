@@ -18,7 +18,7 @@
     "tailwindcss": "^4.3.3"
   },
   "dependencies": {
-    "cap-widget": "^0.1.57",
+    "cap-widget": "^0.1.58",
     "echarts": "^6.1.0",
     "echarts-wordcloud": "2.1.0",
     "jsvectormap": "^1.7.0",
