@@ -1,4 +1,4 @@
-.PHONY: menu help dev-env dev-keys dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-keys prod-up
+.PHONY: menu help dev-env dev-keys dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-keys prod-mail prod-up
 
 # Recipes here use bash-isms (read -p, [[ ]]). Without this they run under
 # /bin/sh, which is dash on Debian/Ubuntu — where `read -p` is not supported and
@@ -283,8 +283,9 @@ prod-env: ## Create and populate .env.production interactively
 		[ -z "$$V" ] && { V=$$(openssl rand -hex 24); echo "  -> generated REDIS_PASSWORD"; }; \
 		sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD=$$V|" .env.production
 	@bash env-keys.sh prod
+	@bash env-mail.sh
 	@echo ""
-	@echo ".env.production seeded. Still set MAIL_* to real SMTP values, then run 'make prod-up'."
+	@echo ".env.production seeded. Next: 'make prod-up'."
 
 # ── APP_KEY + Cap CAPTCHA keys, on an existing .env.production ───────
 #    Re-runnable: keeps every value already set unless you choose to replace
@@ -293,6 +294,12 @@ prod-env: ## Create and populate .env.production interactively
 #    container (production Cap publishes no port). See env-keys.sh.
 prod-keys: ## Set up APP_KEY and Cap CAPTCHA keys interactively (production)
 	@bash env-keys.sh prod
+
+# ── SMTP (outgoing mail), on an existing .env.production ────────────
+#    Presets for Microsoft 365 and Gmail, hidden password typed twice, and a
+#    test message when the stack is running. Re-runnable. See env-mail.sh.
+prod-mail: ## Set up SMTP (mail server, user, password) and send a test (production)
+	@bash env-mail.sh
 
 prod-up: ##! Build and start the PRODUCTION stack
 	@if [ ! -f .env.production ]; then \
