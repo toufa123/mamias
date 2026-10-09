@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Livewire\Mechanisms\HandleRequests\HandleRequests;
 
 use function Pest\Laravel\get;
 
@@ -40,6 +41,21 @@ it('lets a newly registered public user reach the verification prompt and verify
 
     // The rest of the panel stays closed to them.
     get('/mamias')->assertForbidden();
+});
+
+it('lets a public user make Livewire requests from the verification prompt', function () {
+    $this->actingAs(User::factory()->unverified()->create()->assignRole('user'));
+
+    $html = get('/mamias/email-verification/prompt')->assertOk()->getContent();
+
+    preg_match('/wire:snapshot="([^"]+)"/', $html, $match);
+    $snapshot = html_entity_decode($match[1], ENT_QUOTES);
+
+    $this->withHeaders(['X-Livewire' => 'true'])
+        ->postJson(app(HandleRequests::class)->getUpdateUri(), [
+            'components' => [['snapshot' => $snapshot, 'updates' => [], 'calls' => []]],
+        ])
+        ->assertOk();
 });
 
 it('sends an already-verified public user from the verification prompt to the home page', function () {

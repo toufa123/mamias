@@ -55,13 +55,16 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Kirschbaum\Commentions\Contracts\Commenter;
+use Livewire\Livewire;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 #[Fillable([
     'name',
@@ -220,11 +223,42 @@ class User extends Authenticatable implements Commenter, FilamentUser, HasAvatar
         // the panel still sends them to "/" via RedirectIfNotPanelUser.
         // The local-only "Login as" buttons check this too, and log a public user
         // straight back out without the second route; the panel then sends them to "/".
-        if (request()->routeIs("filament.{$panel->getId()}.auth.*", 'filament-developer-logins.login-as')) {
+        if ($this->isOnPublicAuthRoute($panel)) {
             return true;
         }
 
         return $this->hasAnyRole(['super_admin', 'scientist']);
+    }
+
+    /**
+     * Whether the current page is one of the panel's auth pages.
+     *
+     * A Livewire update from such a page (resend link, notifications) hits
+     * Livewire's own endpoint, and Filament re-runs Authenticate for it as
+     * persistent middleware, so the page's route is resolved from the path
+     * Livewire stored in the component snapshot.
+     */
+    private function isOnPublicAuthRoute(Panel $panel): bool
+    {
+        $routes = ["filament.{$panel->getId()}.auth.*", 'filament-developer-logins.login-as'];
+
+        if (request()->routeIs($routes)) {
+            return true;
+        }
+
+        if (! Livewire::isLivewireRequest()) {
+            return false;
+        }
+
+        try {
+            $route = app('router')->getRoutes()->match(
+                Request::create('/'.ltrim(Livewire::originalPath(), '/'), Livewire::originalMethod())
+            );
+        } catch (HttpException) {
+            return false;
+        }
+
+        return $route->named($routes);
     }
 
     public function sendEmailVerificationNotification(): void
