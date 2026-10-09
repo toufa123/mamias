@@ -13,8 +13,10 @@ use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContrac
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Custom login page with CAPTCHA, redirect logic for authenticated users,
@@ -137,7 +139,27 @@ class Login extends BaseLogin
      */
     protected function isUserAllowedToAccessPanel(Authenticatable $user): bool
     {
+        $this->ensureAccountIsApproved($user);
+
         return true;
+    }
+
+    /**
+     * With registration approval on, an account a super_admin has not yet
+     * verified stays signed out. The parent only gets here once the password
+     * has matched, so saying why does not reveal anything to a stranger.
+     */
+    protected function ensureAccountIsApproved(Authenticatable $user): void
+    {
+        if (
+            config('auth.registration_approval')
+            && ($user instanceof MustVerifyEmail)
+            && (! $user->hasVerifiedEmail())
+        ) {
+            throw ValidationException::withMessages([
+                'data.email' => __('Your account is awaiting approval by an administrator. You can sign in once it is approved.'),
+            ]);
+        }
     }
 
     protected function getRedirectUrl(): string

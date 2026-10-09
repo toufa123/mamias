@@ -11,7 +11,9 @@ use App\Filament\Pages\Auth\Concerns\ValidatesCapToken;
 use App\Models\User;
 use App\Notifications\NewUserAwaitingApproval;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
+use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Pages\Register as BaseRegister;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -122,6 +124,27 @@ class Register extends BaseRegister
     }
 
     /**
+     * With registration approval on, the new account is not left signed in:
+     * it browses as a guest until a super_admin approves it, and lands on the
+     * login page, where the "registration received" notice is shown.
+     */
+    public function register(): ?RegistrationResponse
+    {
+        $response = parent::register();
+
+        if (($response === null) || (! config('auth.registration_approval'))) {
+            return $response;
+        }
+
+        Filament::auth()->logout();
+        session()->regenerateToken();
+
+        $this->redirect(Filament::getLoginUrl());
+
+        return null;
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      */
     protected function handleRegistration(array $data): Model
@@ -190,6 +213,7 @@ class Register extends BaseRegister
             ->title(__('Registration received'))
             ->body(__('An administrator will review your account. You can sign in as soon as it is approved.'))
             ->success()
+            ->persistent()
             ->send();
     }
 }

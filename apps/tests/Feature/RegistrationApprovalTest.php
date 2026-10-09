@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Filament\Pages\Auth\Login as LoginPage;
 use App\Filament\Pages\Auth\Register as RegisterPage;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
@@ -48,15 +49,59 @@ it('keeps emailing the verification link when approval is off', function () {
     expect(Notification::sentNotifications())->toHaveKey(User::class);
 });
 
-it('tells a waiting user their account is awaiting approval', function () {
+it('leaves a newly registered account signed out until it is approved', function () {
+    config(['auth.registration_approval' => true, 'honeypot.enabled' => false]);
+    Notification::fake();
+
+    Livewire::test(RegisterPage::class)
+        ->fillForm([
+            'title' => 'Dr',
+            'first_name' => 'Waiting',
+            'last_name' => 'User',
+            'email' => 'waiting@example.com',
+            'country' => 'TN',
+            'password' => 'password',
+            'passwordConfirmation' => 'password',
+        ])
+        ->call('register')
+        ->assertHasNoFormErrors()
+        ->assertRedirect(Filament::getLoginUrl());
+
+    $this->assertGuest();
+    expect(User::where('email', 'waiting@example.com')->first())
+        ->not->toBeNull()
+        ->hasVerifiedEmail()->toBeFalse();
+});
+
+it('refuses to sign in an account that is awaiting approval', function () {
+    config(['auth.registration_approval' => true]);
+
+    Livewire::test(LoginPage::class)
+        ->fillForm(['email' => $this->newUser->email, 'password' => 'password'])
+        ->call('authenticate')
+        ->assertHasFormErrors(['email']);
+
+    $this->assertGuest();
+});
+
+it('signs in an unverified account normally when approval is off', function () {
+    config(['auth.registration_approval' => false]);
+
+    Livewire::test(LoginPage::class)
+        ->fillForm(['email' => $this->newUser->email, 'password' => 'password'])
+        ->call('authenticate')
+        ->assertHasNoFormErrors();
+
+    $this->assertAuthenticatedAs($this->newUser);
+});
+
+it('signs out an unapproved account that is still logged in', function () {
     config(['auth.registration_approval' => true]);
     $this->actingAs($this->newUser);
 
-    get('/mamias/email-verification/prompt')
-        ->assertOk()
-        ->assertSee('Awaiting approval')
-        ->assertSee($this->newUser->email)
-        ->assertDontSee('Resend');
+    get('/mamias/email-verification/prompt')->assertRedirect(Filament::getLoginUrl());
+
+    $this->assertGuest();
 });
 
 it('lists unverified accounts with the email verified filter', function () {
@@ -78,7 +123,13 @@ it('lets a super_admin verify an account from the users table', function () {
 
     expect($this->newUser->fresh()->hasVerifiedEmail())->toBeTrue();
 
-    $this->actingAs($this->newUser->fresh());
+    auth()->logout();
+    config(['auth.registration_approval' => true]);
 
-    get('/mamias/email-verification/prompt')->assertRedirect('/');
+    Livewire::test(LoginPage::class)
+        ->fillForm(['email' => $this->newUser->email, 'password' => 'password'])
+        ->call('authenticate')
+        ->assertHasNoFormErrors();
+
+    $this->assertAuthenticatedAs($this->newUser->fresh());
 });
