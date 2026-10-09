@@ -41,7 +41,7 @@ two disagree, this document follows what MAMIAS actually is.
 `.github/workflows/ci.yml`, three jobs on every push/PR to `main`/`master`:
 
 1. **`lint`** — `vendor/bin/pint --test`.
-2. **`test`** — Pest against a `kartoza/postgis:17-3.5` service container
+2. **`test`** — Pest against a `kartoza/postgis:18-3.6` service container
    (same image family as dev/prod), env vars matched to what
    `apps/phpunit.xml` already forces (`CACHE_STORE=array`,
    `QUEUE_CONNECTION=sync`, `CAP_SITE_KEY=""`,

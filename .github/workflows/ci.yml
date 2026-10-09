@@ -80,7 +80,7 @@ jobs:
     # the app relies on PostGIS types that plain postgres/sqlite cannot express.
     services:
       postgres:
-        image: kartoza/postgis:17-3.5
+        image: kartoza/postgis:18-3.6
         env:
           POSTGRES_DB: mamias_test
           POSTGRES_USER: mamias
