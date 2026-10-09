@@ -40,7 +40,7 @@ it('lets a newly registered public user reach the verification prompt and verify
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
 
     // The rest of the panel stays closed to them.
-    get('/mamias')->assertForbidden();
+    get('/mamias')->assertRedirect('/');
 });
 
 it('lets a public user make Livewire requests from the verification prompt', function () {

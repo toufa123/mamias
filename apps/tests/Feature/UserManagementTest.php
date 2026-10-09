@@ -125,22 +125,43 @@ it('resolves the public home page as the post-login target for a regular user', 
     expect(FilamentAuthRedirect::for($user))->toBe(url('/'));
 });
 
-it('forbids a regular user from accessing the mamias panel', function () {
+it('sends a regular user from the mamias panel to the home page', function () {
     $user = User::factory()->create(['email_verified_at' => now()]);
     $user->assignRole('user');
 
     $this->actingAs($user)
         ->get(filament()->getPanel('mamias')->getUrl())
-        ->assertForbidden();
+        ->assertRedirect(url('/'));
 });
 
-it('forbids an admin from accessing the mamias panel', function () {
+it('sends an admin from the mamias panel to the home page', function () {
     $user = User::factory()->create(['email_verified_at' => now()]);
     $user->assignRole('admin');
 
     $this->actingAs($user)
         ->get(filament()->getPanel('mamias')->getUrl())
-        ->assertForbidden();
+        ->assertRedirect(url('/'));
+});
+
+it('sends a guest from the mamias panel to the login page', function () {
+    $this->get(filament()->getPanel('mamias')->getUrl())
+        ->assertRedirect(filament()->getPanel('mamias')->getLoginUrl());
+});
+
+it('signs out an account awaiting approval that opens the mamias panel', function () {
+    config(['auth.registration_approval' => true]);
+
+    $user = User::factory()->unverified()->create();
+    $user->assignRole('user');
+
+    $this->actingAs($user)
+        ->get(filament()->getPanel('mamias')->getUrl())
+        ->assertRedirect(route('filament.mamias.auth.email-verification.prompt'));
+
+    $this->followRedirects($this->get(route('filament.mamias.auth.email-verification.prompt')))
+        ->assertOk();
+
+    $this->assertGuest();
 });
 
 it('allows a scientist to access the mamias panel', function () {

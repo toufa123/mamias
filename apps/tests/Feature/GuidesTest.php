@@ -81,7 +81,8 @@ it('shows the admin manual in the panel to staff only', function (string $role, 
 })->with([
     'super_admin' => ['super_admin', 200],
     'scientist' => ['scientist', 200],
-    'user' => ['user', 403],
+    // Not a 403 page: the panel sends public users back to the site.
+    'user' => ['user', 302],
 ]);
 
 it('links only to headings the manuals have', function (string $manual) {

@@ -12,6 +12,7 @@ use App\Filament\Pages\FileManager;
 use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Pages\NpmDependencies;
 use App\Filament\Widgets\MamiasInfoWidget;
+use App\Http\Middleware\AuthenticatePanelUser;
 use App\Http\Middleware\RedirectIfNotPanelUser;
 use Asignua\FilamentSeoFiles\SeoFilesPlugin;
 use AzGasim\FilamentUnsavedChangesModal\FilamentUnsavedChangesModalPlugin;
@@ -30,7 +31,6 @@ use Elemind\FilamentECharts\FilamentEChartsPlugin;
 use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
 use Filament\FontProviders\BunnyFontProvider;
-use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -422,7 +422,7 @@ class MamiasPanelProvider extends PanelProvider
                 RedirectIfNotPanelUser::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                AuthenticatePanelUser::class,
             ])
             // The app bundle, resolved when a page renders. Registering it in
             // boot() read the Vite manifest on every boot — composer install,
