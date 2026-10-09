@@ -240,7 +240,10 @@ services:
       start_period: 60s
 
   db:
-    image: "${POSTGIS_IMAGE:-kartoza/postgis:17-3.5}"
+    # PostgreSQL 18, same major as dev. Never change the major on an existing
+    # volume: data lives in /var/lib/postgresql/<major>/main, so another major
+    # starts an empty cluster beside it. See POSTGIS_IMAGE in .env.production.example.
+    image: "${POSTGIS_IMAGE:-kartoza/postgis:18-3.6}"
     container_name: "${NAME:-mamias}_db"
     env_file:
       - .env.production
@@ -274,7 +277,7 @@ services:
       - app_net
 
   db-backup:
-    image: "${PG_BACKUP_IMAGE:-kartoza/pg-backup:latest}"
+    image: "${PG_BACKUP_IMAGE:-kartoza/pg-backup:18-3.6}"
     container_name: "${NAME:-mamias}_db_backup"
     env_file:
       - .env.production
