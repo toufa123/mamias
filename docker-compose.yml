@@ -321,9 +321,9 @@ services :
   # ── PostGIS database service ───────────────────────────────────────
   db :
     profiles : ["dev"]
-    # Pinned to PostgreSQL 18 (was :latest). The tag tracks 18.x patch releases
-    # only; a major bump would start an empty cluster in /var/lib/postgresql/<major>.
-    image : kartoza/postgis:18-3.6
+    # Set in .env (POSTGIS_IMAGE). The default follows 18.x patch releases only;
+    # a major bump would start an empty cluster in /var/lib/postgresql/<major>.
+    image : "${POSTGIS_IMAGE:-kartoza/postgis:18-3.6}"
     container_name: "${name:-mamias}_db"
     ports :
       # Default kept below 50000 — Windows/Hyper-V reserves large blocks of the
@@ -354,7 +354,7 @@ services :
 
   db-backup:
     profiles: ["dev"]
-    image: kartoza/pg-backup:18-3.6
+    image: "${PG_BACKUP_IMAGE:-kartoza/pg-backup:18-3.6}"
     container_name: "${name:-mamias}_db_backup"
     volumes:
       - ./backups:/backups
