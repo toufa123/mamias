@@ -270,8 +270,11 @@ if [ "$mode" = dev ]; then
         echo "Apply later with: make dev-up"
     fi
 else
+    # `if`, not `is_unset … && printf`: when the last key IS set, the && list
+    # returns 1, the substitution inherits it, and set -e aborted the script
+    # here — so prod-env failed exactly when every key was in place.
     still="$(for k in APP_KEY CAP_ADMIN_KEY CAP_SITE_KEY CAP_SECRET_KEY; do
-        is_unset "$(get_kv "$primary" "$k")" && printf '%s ' "$k"; done)"
+        if is_unset "$(get_kv "$primary" "$k")"; then printf '%s ' "$k"; fi; done)"
     if [ -n "$still" ]; then
         echo "Still not set: $still— the production stack will refuse to start until they are."
     fi
