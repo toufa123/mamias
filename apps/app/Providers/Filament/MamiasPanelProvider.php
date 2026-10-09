@@ -96,9 +96,12 @@ class MamiasPanelProvider extends PanelProvider
             ->darkMode(false)
             ->defaultThemeMode(ThemeMode::Light)
             ->brandName('MAMIAS Web Application')
-            ->brandLogo(asset('images/mamias.png'))
+            // Closures, not asset(...) directly: the panel is configured before
+            // the trusted-proxy middleware runs, so behind a TLS-terminating
+            // proxy an eager asset() call yields http:// (blocked by the CSP).
+            ->brandLogo(fn (): string => asset('images/mamias.png'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('images/favicon-32x32.png'))
+            ->favicon(fn (): string => asset('images/favicon-32x32.png'))
             ->maxContentWidth(Width::Full)
             ->dragAndScroll()
             ->spa(hasPrefetching: true)
