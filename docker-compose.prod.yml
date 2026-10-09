@@ -147,6 +147,10 @@ services:
   queue:
     container_name: "${NAME:-mamias}_queue"
     image: "${APP_IMAGE:-mamias-app:prod}"
+    # Built locally by the `app` service, never on a registry: without this,
+    # `up` tries to pull mamias-app:prod first and fails on a fresh server
+    # ("pull access denied"). The scheduler inherits it via `extends`.
+    pull_policy: never
     user: root
     init: true
     depends_on:
