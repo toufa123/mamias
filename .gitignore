@@ -12,6 +12,7 @@
 /apps/.junie
 ./apps/.vscode
 /.ai
+/.playwright
 /.claude
 /.codex
 /.cursor/
@@ -20,6 +21,7 @@
 /.phpunit.cache
 /.vscode
 /.zed
+/.freebuff
 /auth.json
 /node_modules
 /public/build
