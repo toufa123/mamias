@@ -343,7 +343,10 @@ services:
   #   4. Put the returned keys in .env.production as CAP_SITE_KEY / CAP_SECRET_KEY.
   #   5. Recreate the app:  docker compose --env-file .env.production -f docker-compose.prod.yml up -d app
   cap:
-    image: "${CAP_IMAGE:-tiago2/cap:latest}"
+    # Pinned (was :latest): the widget bundled in the app must support the
+    # server's challenge format (hashwx keys need cap-widget >= 0.1.58).
+    # Bump this and cap-widget in apps/package.json together.
+    image: "${CAP_IMAGE:-tiago2/cap:3.1.14}"
     container_name: "${NAME:-mamias}_cap"
     environment:
       ADMIN_KEY: "${CAP_ADMIN_KEY:?CAP_ADMIN_KEY is required — set it in .env.production}"
