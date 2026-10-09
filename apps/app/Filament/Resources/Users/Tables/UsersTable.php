@@ -3,16 +3,20 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ColumnManagerLayout;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Database\Eloquent\Builder;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
@@ -99,9 +103,32 @@ class UsersTable
                 CountryFilter::make('country'),
                 // ->displayFlags(true) // Show or hide the flag in the dropdown options (default: true)
                 // ->imageFlags()
+                TernaryFilter::make('email_verified_at')
+                    ->label('Email verified')
+                    ->nullable(),
             ])
             ->actions([
                 ActionGroup::make([
+                    // Manual approval, for accounts that never got (or could
+                    // not use) the emailed link — see auth.registration_approval.
+                    Action::make('verifyEmail')
+                        ->label('Verify email')
+                        ->icon('tabler-user-check')
+                        ->color('success')
+                        ->visible(fn (User $record): bool => ! $record->hasVerifiedEmail())
+                        ->authorize('update')
+                        ->requiresConfirmation()
+                        ->modalDescription(fn (User $record): string => "Mark {$record->email} as verified? The user can then sign in.")
+                        ->action(function (User $record): void {
+                            $record->markEmailAsVerified();
+
+                            event(new Verified($record));
+
+                            Notification::make()
+                                ->title('Email verified')
+                                ->success()
+                                ->send();
+                        }),
                     ViewAction::make()
                         ->modalWidth('6xl')
                         ->modalHeading(fn ($record,

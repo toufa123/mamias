@@ -114,4 +114,17 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Registration Approval
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, new accounts are not sent a verification link. Every
+    | super_admin is notified instead (panel bell + email) and verifies the
+    | account from the Users table. Use it while outgoing mail is unavailable.
+    |
+    */
+
+    'registration_approval' => (bool) env('AUTH_REGISTRATION_APPROVAL', false),
+
 ];

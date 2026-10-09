@@ -8,6 +8,8 @@ use App\Filament\Forms\Components\CapField;
 use App\Filament\Forms\Components\CountrySelectWithMedPriority;
 use App\Filament\Forms\Components\HoneypotField;
 use App\Filament\Pages\Auth\Concerns\ValidatesCapToken;
+use App\Models\User;
+use App\Notifications\NewUserAwaitingApproval;
 use DiogoGPinto\AuthUIEnhancer\Pages\Auth\Concerns\HasCustomLayout;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Select;
@@ -17,6 +19,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Spatie\Honeypot\Http\Livewire\Concerns\HoneypotData;
 use Spatie\Honeypot\Http\Livewire\Concerns\UsesSpamProtection;
 use Spatie\Permission\Models\Role;
@@ -145,9 +148,18 @@ class Register extends BaseRegister
      * Sends the email-verification link, then shows an on-screen confirmation
      * that the link was emailed. The notification carries over the redirect and
      * is displayed on the email-verification prompt page.
+     *
+     * With registration approval on, no link is sent: super_admins are asked
+     * to verify the account instead.
      */
     protected function sendEmailVerificationNotification(Model $user): void
     {
+        if (config('auth.registration_approval')) {
+            $this->requestApproval($user);
+
+            return;
+        }
+
         parent::sendEmailVerificationNotification($user);
 
         if (! $user instanceof MustVerifyEmail || $user->hasVerifiedEmail()) {
@@ -159,6 +171,24 @@ class Register extends BaseRegister
             ->body(__('We have emailed a verification link to :email. Please check your inbox to activate your account.', [
                 'email' => $user->getAttribute('email'),
             ]))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Notifies every super_admin that the account is waiting for them.
+     */
+    protected function requestApproval(Model $user): void
+    {
+        /** @var User $user */
+        NotificationFacade::send(
+            User::role('super_admin')->get(),
+            new NewUserAwaitingApproval($user),
+        );
+
+        Notification::make()
+            ->title(__('Registration received'))
+            ->body(__('An administrator will review your account. You can sign in as soon as it is approved.'))
             ->success()
             ->send();
     }
