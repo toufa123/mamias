@@ -71,7 +71,9 @@ return [
     |
     */
 
-    'default_scope' => GraphScope::Filament,
+    // The package is require-dev: production images (composer install --no-dev)
+    // do not have it, and an unguarded enum here broke every artisan command.
+    'default_scope' => class_exists(GraphScope::class) ? GraphScope::Filament : null,
 
     'laravel_scope_enabled' => true,
 
