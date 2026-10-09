@@ -265,6 +265,13 @@ prod-env: ## Create and populate .env.production interactively
 		[ -n "$$V" ] && sed -i "s|^SERVER_NAME=.*|SERVER_NAME=$$V|" .env.production || true
 	@read -p "APP_URL (e.g. https://app.example.com): " V; \
 		[ -n "$$V" ] && sed -i "s|^APP_URL=.*|APP_URL=$$V|" .env.production || true
+	@read -p "No Plesk in front — let the stack's own proxy handle HTTPS? (y/N): " V; \
+		if [[ $$V =~ ^[Yy] ]]; then \
+			D=$$(sed -n 's/^SERVER_NAME=//p' .env.production); \
+			sed -i -e "s|^# *COMPOSE_PROFILES=.*|COMPOSE_PROFILES=standalone|" \
+				-e "s|^PUBLIC_DOMAIN=.*|PUBLIC_DOMAIN=$$D|" .env.production; \
+			echo "  -> standalone proxy enabled for $$D (DNS must point here before prod-up)"; \
+		fi
 	@read -p "DB_DATABASE [mamias_db]: " V; \
 		[ -n "$$V" ] && sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$$V|" .env.production || true
 	@read -p "DB_USERNAME: " V; \

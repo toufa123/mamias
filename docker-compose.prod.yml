@@ -377,7 +377,44 @@ services:
     networks:
       - app_net
 
+  # ── Standalone TLS proxy — only for hosts WITHOUT Plesk (bare VPS/droplet) ──
+  # Off by default; enable with `--profile standalone`. Takes the role Plesk's
+  # nginx plays otherwise: owns 80/443, gets a Let's Encrypt cert for
+  # PUBLIC_DOMAIN, redirects HTTP→HTTPS and proxies to app:8080 over the
+  # internal network. The original Host and X-Forwarded-* headers are kept,
+  # so Laravel (TRUSTED_PROXIES) builds https:// URLs as it does behind Plesk.
+  # The domain's DNS A/AAAA record must point at this host before first start.
+  #   docker compose --env-file .env.production -f docker-compose.prod.yml --profile standalone up -d
+  proxy:
+    image: "${PROXY_IMAGE:-caddy:2.10-alpine}"
+    container_name: "${NAME:-mamias}_proxy"
+    profiles: ["standalone"]
+    environment:
+      PUBLIC_DOMAIN: "${PUBLIC_DOMAIN:-}"
+    command: ["sh", "-c", "caddy reverse-proxy --from \"$${PUBLIC_DOMAIN:?PUBLIC_DOMAIN is required for the standalone proxy}\" --to app:8080"]
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - proxy_data:/data
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - app_net
+
 volumes:
+  proxy_data:
+    name: "${NAME:-mamias}_proxy_prod"
   db_data:
     name: "${NAME:-mamias}_data_prod"
   redis_data:
