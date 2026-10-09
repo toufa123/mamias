@@ -146,19 +146,23 @@ class MamiasPanelProvider extends PanelProvider
                     ])
                     ->tooltip(fn (): string => __('Application version')),
 
-                DependencyGraphPlugin::make()
-                    ->visible(fn () => app()->environment('local') || auth()->user()?->hasRole('super_admin'))
-                    ->navigationLabel('Architecture')
-                    ->navigationIcon('heroicon-o-share')
-                    ->activeNavigationIcon('heroicon-s-share')
-                    ->navigationGroup('System')      // string, enum or closure
-                    // ->navigationSort(30)
-                    // ->navigationParentItem('Tooling')
-                    ->navigationBadge(fn (): string => 'beta'),
-                // ->registerNavigation(false)               // keep the route, hide the menu entry
-                // ->slug('architecture-map')
-                // ->cluster(\App\Filament\Clusters\Developer::class)
-                // ->maxContentWidth(Width::SevenExtraLarge),
+                // require-dev package: absent from production images, so only
+                // registered where it is installed.
+                ...(class_exists(DependencyGraphPlugin::class) ? [
+                    DependencyGraphPlugin::make()
+                        ->visible(fn () => app()->environment('local') || auth()->user()?->hasRole('super_admin'))
+                        ->navigationLabel('Architecture')
+                        ->navigationIcon('heroicon-o-share')
+                        ->activeNavigationIcon('heroicon-s-share')
+                        ->navigationGroup('System')      // string, enum or closure
+                        // ->navigationSort(30)
+                        // ->navigationParentItem('Tooling')
+                        ->navigationBadge(fn (): string => 'beta'),
+                    // ->registerNavigation(false)               // keep the route, hide the menu entry
+                    // ->slug('architecture-map')
+                    // ->cluster(\App\Filament\Clusters\Developer::class)
+                    // ->maxContentWidth(Width::SevenExtraLarge),
+                ] : []),
                 FilamentNotificationCenterPlugin::make(),
                 FilamentNotificationsTabsPlugin::make(),
                 SidebarResizePlugin::make()
