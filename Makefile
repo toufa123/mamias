@@ -1,4 +1,4 @@
-.PHONY: menu help dev-env dev-keys dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-keys prod-mail prod-up
+.PHONY: menu help dev-env dev-keys dev-approval dev-up dev-down dev-clean dev-ports dev-kill-ports dev-cache dev-clear dev-queue dev-db-heal dev-db-backup dev-db-restore dev-db-full-restore dev-db-list dev-test prod-env prod-keys prod-mail prod-approval prod-up
 
 # Recipes here use bash-isms (read -p, [[ ]]). Without this they run under
 # /bin/sh, which is dash on Debian/Ubuntu — where `read -p` is not supported and
@@ -71,6 +71,7 @@ dev-env: ## Create and populate .env + apps/.env interactively (local dev)
 		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" .env; \
 		sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$$V|" apps/.env
 	@bash env-keys.sh dev
+	@bash env-approval.sh dev
 	@echo ""
 	@echo ".env + apps/.env seeded. DB_HOST/DB_PORT in apps/.env are left as shipped"
 	@echo "(127.0.0.1:5433/6380 — the host-published ports; never point them at db/redis)."
@@ -82,6 +83,12 @@ dev-env: ## Create and populate .env + apps/.env interactively (local dev)
 #    no trip to the dashboard is needed. See env-keys.sh.
 dev-keys: ## Set up APP_KEY and Cap CAPTCHA keys interactively (local dev)
 	@bash env-keys.sh dev
+
+# ── New account activation: email link or admin approval ────────────
+#    Sets AUTH_REGISTRATION_APPROVAL and, when the stack is up, recreates the
+#    PHP containers so it takes effect. Re-runnable. See env-approval.sh.
+dev-approval: ## Choose how new accounts are activated: email link or admin approval (local dev)
+	@bash env-approval.sh dev
 
 ##@ Stack
 
@@ -284,6 +291,7 @@ prod-env: ## Create and populate .env.production interactively
 		sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD=$$V|" .env.production
 	@bash env-keys.sh prod
 	@bash env-mail.sh
+	@bash env-approval.sh prod
 	@echo ""
 	@echo ".env.production seeded. Next: 'make prod-up'."
 
@@ -300,6 +308,11 @@ prod-keys: ## Set up APP_KEY and Cap CAPTCHA keys interactively (production)
 #    test message when the stack is running. Re-runnable. See env-mail.sh.
 prod-mail: ## Set up SMTP (mail server, user, password) and send a test (production)
 	@bash env-mail.sh
+
+# ── New account activation, on an existing .env.production ──────────
+#    Email link (needs working mail) or admin approval. See env-approval.sh.
+prod-approval: ## Choose how new accounts are activated: email link or admin approval (production)
+	@bash env-approval.sh prod
 
 prod-up: ##! Build and start the PRODUCTION stack
 	@if [ ! -f .env.production ]; then \
