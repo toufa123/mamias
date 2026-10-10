@@ -32,17 +32,21 @@ it('builds the page out of stored content, not a bespoke widget type', function 
     'about' => ['about', ['html']],
 ]);
 
-it('marks the body as a guest and ships the register and sign-in buttons', function (string $url) {
+it('marks the body as a guest', function (string $url) {
     $response = get($url)->assertOk();
 
     expect(layupBodyClasses($response->content()))
         ->toContain('is-guest')
         ->not->toContain('is-authenticated');
+})->with(['/', '/about']);
 
-    $response
+// The About page dropped its "Get Involved" block, so the CTA lives on home only.
+it('ships the register and sign-in buttons on the home page', function () {
+    get('/')
+        ->assertOk()
         ->assertSee('Create Free Account')
         ->assertSee('Sign In');
-})->with(['/', '/about']);
+});
 
 it('marks the body as authenticated for a signed-in reporter', function (string $url) {
     $user = User::factory()->create();
@@ -71,11 +75,13 @@ it('marks the body as staff for an admin and offers the admin area', function ()
     $response->assertSee('Go to Admin Area');
 });
 
+// External citations (MED QSR, UNEP documents) are absolute by nature; only
+// links back into this app must stay root-relative.
 it('stores root-relative links so the page works under any hostname', function (string $slug) {
     $content = json_encode(Page::where('slug', $slug)->sole()->content);
 
     expect($content)
-        ->toContain('href=\"\/mamias')
+        ->toContain('href=\"\/')
         ->not->toContain('http://')
-        ->not->toContain('https://');
+        ->not->toMatch('#https:\\\\/\\\\/[^"\\\\]*(mamias|localhost|127\.0\.0\.1)#i');
 })->with(['home', 'about']);
