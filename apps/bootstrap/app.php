@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RedirectUnverifiedUser;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +27,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // `permission` / `role_or_permission` here if a route ever needs them.
         $middleware->alias([
             'role' => RoleMiddleware::class,
+        ]);
+
+        // The public site (routes/web.php and the Layup CMS pages, all in the
+        // web group) is closed to signed-in accounts that are not verified.
+        // The panel has its own middleware stack and is unaffected.
+        $middleware->web(append: [
+            RedirectUnverifiedUser::class,
         ]);
 
         // Behind Plesk's nginx reverse proxy (TLS terminated upstream):

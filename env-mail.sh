@@ -89,13 +89,24 @@ fi
 if [ "$change" -eq 1 ]; then
     echo "  1) Microsoft 365 / Outlook   (smtp.office365.com:587)"
     echo "  2) Google Workspace / Gmail  (smtp.gmail.com:587, needs an app password)"
-    echo "  3) Other SMTP server"
-    echo "  4) Skip for now"
+    echo "  3) Mailgun                   (smtp.mailgun.org / smtp.eu.mailgun.org:587)"
+    echo "  4) Other SMTP server"
+    echo "  5) Skip for now"
     read -r -p "  Choice [1]: " choice
     case "${choice:-1}" in
         1) host=smtp.office365.com; port=587 ;;
         2) host=smtp.gmail.com; port=587 ;;
         3)
+            # The region is the one the sending domain was created in (Mailgun →
+            # Sending → Domains); an EU domain does not authenticate on the US host.
+            port=587
+            if ask_yes "  Is the Mailgun domain in the EU region?" y; then
+                host=smtp.eu.mailgun.org
+            else
+                host=smtp.mailgun.org
+            fi
+            ;;
+        4)
             default_host="$host"
             if is_unset "$default_host"; then default_host=""; fi
             host="$(ask "  SMTP host" "$default_host")"
@@ -111,6 +122,10 @@ if [ "$change" -eq 1 ]; then
 
     default_user="$user"
     if is_unset "$default_user"; then default_user=""; fi
+    if [[ $host == *mailgun.org ]]; then
+        echo "  Mailgun: use the domain's SMTP credentials (Sending → Domain settings →"
+        echo "  SMTP credentials), e.g. postmaster@mg.your-domain — not the API key."
+    fi
     user="$(ask "  Username (usually the full mailbox address)" "$default_user")"
     [ -n "$user" ] || { echo "  -> no username given; nothing written"; exit 1; }
 
@@ -134,7 +149,7 @@ if [ "$change" -eq 1 ]; then
     if { is_unset "$default_from" || [ "$configured" -eq 0 ]; } && [[ $user == *@* ]]; then
         default_from="$user"
     fi
-    from="$(ask "  Sender address (Microsoft 365 requires the mailbox itself)" "$default_from")"
+    from="$(ask "  Sender address (Microsoft 365: the mailbox itself; Mailgun: an address on the verified domain)" "$default_from")"
     name="$(get_kv MAIL_FROM_NAME)"
     if [ -z "$name" ]; then name=MAMIAS; fi
     name="$(ask "  Sender name" "$name")"
@@ -204,6 +219,10 @@ else
     if [[ $result == *5.7.139* || $result == *SmtpClientAuthentication* || $result == *535* ]]; then
         echo "     Microsoft 365 refused the login: SMTP AUTH must be enabled for this mailbox"
         echo "     by a tenant admin, or the tenant no longer accepts password logins for SMTP."
+    fi
+    if [[ $(get_kv MAIL_HOST) == *mailgun.org && $result == *535* ]]; then
+        echo "     Mailgun refused the login: check the SMTP credential (not the API key) and"
+        echo "     that the region matches the domain (EU domains need smtp.eu.mailgun.org)."
     fi
     echo "     Fix the settings with 'make prod-mail' and try again."
     exit 1

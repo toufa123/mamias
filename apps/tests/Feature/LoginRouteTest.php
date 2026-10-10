@@ -23,6 +23,18 @@ it('redirects unverified authenticated users to verification notice', function (
         ->assertRedirect('/email-verification/prompt');
 });
 
+it('keeps an unverified signed-in user off the public pages', function (string $path) {
+    $this->actingAs(User::factory()->unverified()->create()->assignRole('user'));
+
+    get($path)->assertRedirect('/email-verification/prompt');
+})->with(['/', '/about', '/pages/data', '/pages/manual']);
+
+it('lets a verified user browse the public pages', function () {
+    $this->actingAs(User::factory()->create()->assignRole('user'));
+
+    get('/')->assertOk();
+});
+
 it('redirects /email-verification/prompt to filament verification prompt', function () {
     get('/email-verification/prompt')
         ->assertRedirect('/mamias/email-verification/prompt');
